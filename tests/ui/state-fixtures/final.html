@@ -1,0 +1,1698 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light">
+  <title>Japan Autumn — Final Reference · Final itinerary</title>
+  <style>:root {
+  --mineral: #edf1ec;
+  --paper: #fffdf7;
+  --teal: #173c44;
+  --maple: #bd4a36;
+  --brass: #d1a044;
+  --moss: #496b58;
+  --ink-soft: #456068;
+  --line: #bdcac6;
+  --focus: #0b67b2;
+  --serif: "Source Serif 4", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --sans: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2rem;
+  --space-6: 3rem;
+  --space-8: 4rem;
+  --control: 2.75rem;
+  color-scheme: light;
+  font-family: var(--sans);
+  color: var(--teal);
+  background: var(--mineral);
+  scroll-behavior: smooth;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 20rem;
+  scroll-padding-top: 5rem;
+}
+
+body {
+  margin: 0;
+  background: var(--mineral);
+  color: var(--teal);
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(90deg, transparent 0 6%, rgb(23 60 68 / 4%) 6% 6.1%, transparent 6.1%),
+    var(--mineral);
+}
+
+a {
+  color: #8c2d20;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.2em;
+}
+
+a:hover {
+  color: var(--teal);
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.icon-sprite {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.icon {
+  width: 1.15rem;
+  height: 1.15rem;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.skip-link {
+  position: fixed;
+  top: var(--space-2);
+  left: var(--space-2);
+  z-index: 100;
+  transform: translateY(-180%);
+  padding: 0.7rem 1rem;
+  border-radius: 8px;
+  background: var(--teal);
+  color: var(--paper);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+.trip-hero,
+.document-grid,
+.document-footer {
+  width: min(100% - 2rem, 90rem);
+  margin-inline: auto;
+  background: var(--paper);
+}
+
+.trip-hero {
+  position: relative;
+  min-height: min(48rem, calc(100vh - 2rem));
+  margin-top: var(--space-2);
+  padding: clamp(2rem, 6vw, 6rem);
+  border-top: 0.5rem solid var(--teal);
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(17rem, 0.7fr);
+  gap: clamp(2rem, 6vw, 6rem);
+  align-items: center;
+}
+
+.hero-copy {
+  max-width: 58rem;
+}
+
+.status-line,
+.meta-line,
+.summary-counts,
+.day-meta,
+.status-with-icon {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-2);
+  align-items: center;
+}
+
+.document-status,
+.status,
+.filter-button {
+  display: inline-flex;
+  min-height: 2rem;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.2rem 0.7rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 750;
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.document-status--draft,
+.status--blocking,
+.status--conflicting {
+  color: #8c2d20;
+  background: #fff1ec;
+}
+
+.document-status--final,
+.status--confirmed,
+.status--ready {
+  color: #355442;
+  background: #edf5ed;
+}
+
+.status--stale,
+.status--recheck,
+.status--unknown,
+.status--not-released-yet {
+  color: #68501a;
+  background: #fff7db;
+}
+
+h1,
+h2,
+h3,
+.route-ribbon,
+.day-thesis,
+.decision-question {
+  font-family: var(--serif);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+h1 {
+  max-width: 13ch;
+  margin: var(--space-3) 0 var(--space-2);
+  font-size: clamp(3rem, 7vw, 6rem);
+  line-height: 0.98;
+}
+
+h2 {
+  margin: 0 0 var(--space-3);
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  line-height: 1.08;
+}
+
+h3 {
+  margin: var(--space-4) 0 var(--space-2);
+  font-size: clamp(1.4rem, 2.5vw, 2rem);
+  line-height: 1.2;
+}
+
+h4 {
+  margin: var(--space-4) 0 var(--space-1);
+  font-size: 0.88rem;
+  line-height: 1.3;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+p,
+li {
+  max-width: 72ch;
+}
+
+.trip-thesis {
+  max-width: 58ch;
+  margin: var(--space-2) 0 var(--space-4);
+  font-family: var(--serif);
+  font-size: clamp(1.25rem, 2.2vw, 1.65rem);
+  line-height: 1.45;
+}
+
+.route-ribbon {
+  margin: var(--space-4) 0;
+  padding-block: var(--space-3);
+  border-block: 1px solid var(--teal);
+  font-size: clamp(1.15rem, 2.2vw, 1.75rem);
+}
+
+.hero-aside {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-3);
+}
+
+.readiness-panel,
+.budget-panel {
+  padding: var(--space-3);
+  border-radius: 12px;
+  background: var(--mineral);
+  box-shadow: 0 0.8rem 2.4rem rgb(23 60 68 / 10%);
+}
+
+.readiness-panel strong,
+.budget-panel strong {
+  display: block;
+  font-family: var(--serif);
+  font-size: 1.5rem;
+}
+
+.stamp {
+  width: 7rem;
+  margin-left: auto;
+  color: var(--maple);
+  transform: rotate(3deg);
+}
+
+.stamp svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.warning-block {
+  margin: var(--space-2) 0;
+  padding: var(--space-2) var(--space-3);
+  border-left: 4px solid var(--maple);
+  background: #fff4ef;
+}
+
+.warning-block p {
+  margin: 0.25rem 0;
+}
+
+.document-grid {
+  display: grid;
+  grid-template-columns: 16rem minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 5rem);
+  padding: var(--space-6) clamp(1.5rem, 5vw, 5rem) var(--space-8);
+}
+
+.contents {
+  position: sticky;
+  top: var(--space-2);
+  height: max-content;
+  border-top: 2px solid var(--teal);
+}
+
+.contents summary {
+  min-height: var(--control);
+  padding: var(--space-2) 0;
+  cursor: pointer;
+  font-weight: 750;
+  list-style: none;
+}
+
+.contents summary::-webkit-details-marker {
+  display: none;
+}
+
+.contents summary::before {
+  content: "";
+  display: inline-block;
+  width: 0.8rem;
+  height: 0.8rem;
+  margin-right: 0.6rem;
+  border: solid currentColor;
+  border-width: 0 1px 1px 0;
+  transform: rotate(-45deg);
+}
+
+.contents[open] summary::before {
+  transform: rotate(45deg) translateY(-0.2rem);
+}
+
+.contents ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.contents a {
+  display: flex;
+  min-height: var(--control);
+  align-items: center;
+  border-top: 1px solid var(--line);
+  color: var(--teal);
+  text-decoration: none;
+}
+
+.contents a:hover {
+  color: var(--maple);
+}
+
+.day-links {
+  padding-left: var(--space-2) !important;
+  font-size: 0.9rem;
+}
+
+.document-main {
+  min-width: 0;
+}
+
+.document-section {
+  padding: var(--space-8) 0;
+  border-top: 1px solid var(--teal);
+  scroll-margin-top: 5rem;
+}
+
+.document-section:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.route-sequence {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  margin: var(--space-4) 0 var(--space-6);
+  padding: 0;
+  list-style: none;
+}
+
+.route-stop {
+  position: relative;
+  min-height: 8rem;
+  padding: var(--space-2) var(--space-3) var(--space-2) 0;
+  border-top: 3px solid var(--teal);
+}
+
+.route-stop:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: -0.45rem;
+  right: 0;
+  width: 0.8rem;
+  height: 0.8rem;
+  border-top: 2px solid var(--teal);
+  border-right: 2px solid var(--teal);
+  transform: rotate(45deg);
+}
+
+.route-stop strong {
+  display: block;
+  font-family: var(--serif);
+  font-size: 1.4rem;
+}
+
+.route-stop span {
+  display: block;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+.day-overview {
+  margin: 0;
+  padding: 0;
+  border-bottom: 1px solid var(--teal);
+  list-style: none;
+}
+
+.day-overview a {
+  display: grid;
+  grid-template-columns: 4rem minmax(7rem, 0.8fr) minmax(12rem, 1.8fr) minmax(7rem, 0.7fr);
+  gap: var(--space-2);
+  min-height: var(--control);
+  align-items: center;
+  padding: 0.8rem 0;
+  border-top: 1px solid var(--line);
+  color: var(--teal);
+  text-decoration: none;
+}
+
+.day-overview strong {
+  font-variant-numeric: tabular-nums;
+}
+
+.day-overview small {
+  color: var(--ink-soft);
+}
+
+.interactive-controls {
+  display: none;
+}
+
+.js-enabled .interactive-controls {
+  display: block;
+}
+
+.search-row {
+  display: flex;
+  gap: var(--space-1);
+  margin: var(--space-4) 0 var(--space-2);
+}
+
+.search-row label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.search-row input {
+  width: min(100%, 32rem);
+  min-height: var(--control);
+  padding: 0.65rem 0.9rem;
+  border: 1px solid var(--teal);
+  border-radius: 8px;
+  background: var(--paper);
+  color: var(--teal);
+  font: inherit;
+}
+
+.filters,
+.scenario-switch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.filter-feedback {
+  display: flex;
+  min-height: var(--control);
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+.filter-feedback p {
+  margin: var(--space-1) 0 var(--space-2);
+}
+
+.filter-empty {
+  color: #8c2d20;
+}
+
+.filter-empty button {
+  margin-left: var(--space-1);
+}
+
+button {
+  min-height: var(--control);
+  padding: 0.55rem 0.9rem;
+  border: 1px solid var(--teal);
+  border-radius: 8px;
+  background: var(--paper);
+  color: var(--teal);
+  font: 700 0.9rem/1.2 var(--sans);
+  cursor: pointer;
+}
+
+.filter-button {
+  min-height: var(--control);
+}
+
+button:hover,
+button[aria-pressed="true"] {
+  background: var(--teal);
+  color: var(--paper);
+}
+
+.decision-list,
+.readiness-list,
+.source-list,
+.risk-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.decision-item,
+.readiness-item,
+.source-item,
+.risk-item {
+  padding: var(--space-3) 0;
+  border-top: 1px solid var(--line);
+}
+
+.decision-question {
+  margin: 0 0 var(--space-1);
+  font-size: 1.35rem;
+}
+
+.decision-details,
+.source-meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-1) var(--space-3);
+  margin-top: var(--space-2);
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+.day-article {
+  padding: var(--space-8) 0;
+  border-top: 2px solid var(--teal);
+  scroll-margin-top: 5rem;
+}
+
+.day-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-3);
+  align-items: start;
+}
+
+.day-number {
+  display: block;
+  color: var(--maple);
+  font: 750 0.82rem/1.2 var(--sans);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.day-thesis {
+  max-width: 48ch;
+  margin: var(--space-2) 0 var(--space-3);
+  font-size: 1.3rem;
+  line-height: 1.45;
+}
+
+.day-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(14rem, 0.34fr);
+  gap: clamp(2rem, 4vw, 4rem);
+  margin-top: var(--space-4);
+}
+
+.day-context {
+  order: 2;
+}
+
+.constraint-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.constraint-list li {
+  margin-bottom: var(--space-1);
+  padding: var(--space-2);
+  border-left: 4px solid var(--maple);
+  background: #fff4ef;
+  font-weight: 650;
+}
+
+.timeline {
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.timeline-event {
+  display: grid;
+  grid-template-columns: 6rem minmax(0, 1fr);
+  gap: var(--space-2);
+  padding: var(--space-2) 0;
+  border-top: 1px solid var(--line);
+}
+
+.timeline-time {
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+}
+
+.timeline-event strong,
+.scenario-panel strong,
+.food-list strong {
+  display: block;
+}
+
+.timeline-event p,
+.scenario-panel p {
+  margin: 0.25rem 0 0;
+}
+
+.scenario-switch {
+  margin-bottom: var(--space-2);
+}
+
+.scenario-panel {
+  min-height: 8rem;
+  padding: var(--space-3) 0;
+  border-block: 1px solid var(--teal);
+}
+
+.scenario-panel + .scenario-panel {
+  border-top: 0;
+}
+
+.scenario-kind {
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+  font-weight: 750;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.food-list,
+.link-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.food-list li,
+.link-list li {
+  padding: 0.7rem 0;
+  border-top: 1px solid var(--line);
+}
+
+.external-link {
+  display: inline-flex;
+  min-height: var(--control);
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+}
+
+.network-label {
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+}
+
+.day-photo {
+  margin: var(--space-4) 0;
+}
+
+.day-photo img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  background: var(--mineral);
+}
+
+.day-photo:not(.media-loaded, .media-unavailable) img {
+  opacity: 0.72;
+}
+
+.day-photo.media-unavailable img {
+  display: none;
+}
+
+.day-photo.media-unavailable {
+  margin-block: var(--space-2);
+}
+
+.media-fallback {
+  display: block;
+  min-height: 0;
+  margin: 0;
+  padding: 0.65rem 0.8rem;
+  border-left: 3px solid var(--brass);
+  background: var(--mineral);
+  color: var(--ink-soft);
+  font-size: 0.875rem;
+}
+
+.day-photo figcaption {
+  margin-top: var(--space-1);
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+}
+
+.day-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-top: var(--space-6);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--teal);
+}
+
+.day-nav a {
+  display: inline-flex;
+  min-height: var(--control);
+  align-items: center;
+}
+
+.budget-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin: var(--space-4) 0;
+  padding-block: var(--space-3);
+  border-block: 1px solid var(--teal);
+}
+
+.budget-summary strong {
+  display: block;
+  font: 600 clamp(1.25rem, 2.4vw, 2rem)/1.2 var(--serif);
+  font-variant-numeric: tabular-nums;
+}
+
+.budget-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.budget-table th,
+.budget-table td {
+  padding: 0.8rem 0.5rem;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+}
+
+.budget-table th {
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.risk-item--blocking {
+  border-left: 4px solid var(--maple);
+  padding-left: var(--space-2);
+}
+
+.source-url {
+  overflow-wrap: anywhere;
+}
+
+.document-footer {
+  margin-bottom: var(--space-2);
+  padding: var(--space-3) clamp(1.5rem, 5vw, 5rem);
+  border-top: 0.5rem solid var(--teal);
+  font-size: 0.85rem;
+}
+
+.screen-reader-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.enhancement-error {
+  padding: var(--space-2);
+  border: 1px solid var(--brass);
+  background: #fff7db;
+}
+
+.enhancement-failed .interactive-controls {
+  display: none !important;
+}
+
+@media (max-width: 1023px) {
+  .trip-hero {
+    grid-template-columns: minmax(0, 1.3fr) minmax(15rem, 0.7fr);
+    padding: clamp(2rem, 5vw, 4rem);
+  }
+
+  .document-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .contents {
+    position: static;
+    z-index: 20;
+    background: var(--paper);
+  }
+
+  .contents ol {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0 var(--space-2);
+  }
+
+  .day-links {
+    display: none !important;
+  }
+
+  .day-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .day-context {
+    order: 0;
+  }
+}
+
+@media (max-width: 639px) {
+  :root {
+    scroll-padding-top: var(--space-2);
+  }
+
+  body {
+    padding-bottom: calc(4.5rem + env(safe-area-inset-bottom));
+  }
+
+  .trip-hero,
+  .document-grid,
+  .document-footer {
+    width: 100%;
+    margin: 0;
+  }
+
+  .trip-hero {
+    min-height: 0;
+    padding: var(--space-2);
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    align-items: start;
+  }
+
+  h1 {
+    max-width: calc(100% - 3.5rem);
+    margin: 0.75rem 0 var(--space-1);
+    font-size: clamp(2.25rem, 11vw, 3rem);
+    line-height: 0.96;
+  }
+
+  .status-line {
+    max-width: calc(100% - 3.5rem);
+    gap: 0.25rem 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.35;
+  }
+
+  .trip-thesis {
+    margin: var(--space-1) 0 0.75rem;
+    font-size: 1rem;
+    line-height: 1.35;
+  }
+
+  .route-ribbon {
+    margin: 0.75rem 0;
+    padding-block: 0.7rem;
+    font-size: 1rem;
+  }
+
+  .summary-counts {
+    gap: var(--space-1);
+  }
+
+  .summary-counts a,
+  .readiness-panel a {
+    display: inline-flex;
+    min-block-size: var(--control);
+    align-items: center;
+  }
+
+  .hero-aside {
+    display: contents;
+  }
+
+  .stamp {
+    position: absolute;
+    top: 0.8rem;
+    right: var(--space-2);
+    width: 3.25rem;
+  }
+
+  .readiness-panel,
+  .budget-panel {
+    min-height: 0;
+    padding: 0.65rem 0.8rem;
+    border-radius: 8px;
+    box-shadow: 0 0.6rem 1.8rem rgb(23 60 68 / 8%);
+  }
+
+  .readiness-panel strong,
+  .budget-panel strong {
+    font-size: 1.05rem;
+    line-height: 1.2;
+  }
+
+  .hero-aside .warning-block {
+    margin: 0;
+    padding: 0.55rem 0.8rem;
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+
+  .document-grid {
+    padding: var(--space-3) var(--space-2) var(--space-6);
+  }
+
+  .js-enabled .contents {
+    position: fixed;
+    inset: auto var(--space-1) calc(var(--space-1) + env(safe-area-inset-bottom));
+    z-index: 50;
+    border: 0;
+    background: transparent;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(calc(100% + var(--space-2)));
+    transition: transform 160ms ease, visibility 160ms;
+  }
+
+  .js-enabled .contents.contents--available {
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .js-enabled .contents summary {
+    width: 100%;
+    min-height: 3.25rem;
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--teal);
+    border-radius: 8px;
+    background: var(--teal);
+    color: var(--paper);
+    box-shadow: 0 0.7rem 2rem rgb(23 60 68 / 24%);
+    text-align: center;
+  }
+
+  .js-enabled .contents[open] ol {
+    max-height: min(70vh, 32rem);
+    margin-bottom: var(--space-1);
+    padding: var(--space-1) var(--space-2);
+    overflow: auto;
+    border: 1px solid var(--teal);
+    background: var(--paper);
+    box-shadow: 0 0.7rem 2rem rgb(23 60 68 / 18%);
+  }
+
+  .contents ol {
+    grid-template-columns: 1fr;
+  }
+
+  .route-sequence {
+    grid-template-columns: 1fr;
+  }
+
+  .route-stop {
+    min-height: 0;
+    padding: var(--space-2) 0 var(--space-3) var(--space-3);
+    border-top: 0;
+    border-left: 3px solid var(--teal);
+  }
+
+  .route-stop::before {
+    content: "";
+    position: absolute;
+    top: 1.2rem;
+    left: -0.42rem;
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 2px solid var(--maple);
+  }
+
+  .route-stop:not(:last-child)::after {
+    display: none;
+  }
+
+  .day-overview a {
+    grid-template-columns: 3.2rem minmax(0, 1fr);
+  }
+
+  .document-status,
+  .status,
+  .filter-button,
+  .scenario-kind,
+  .day-number,
+  .network-label,
+  .day-photo figcaption,
+  .budget-table th,
+  .document-footer {
+    font-size: 0.875rem;
+  }
+
+  .readiness-panel a,
+  .source-url {
+    min-block-size: var(--control);
+    align-items: center;
+  }
+
+  .source-url {
+    display: flex;
+  }
+
+  .filter-feedback {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .day-overview span:nth-child(3),
+  .day-overview small {
+    grid-column: 2;
+  }
+
+  .document-section,
+  .day-article {
+    padding: var(--space-6) 0;
+    scroll-margin-top: var(--space-2);
+  }
+
+  .day-heading {
+    grid-template-columns: 1fr;
+  }
+
+  .timeline-event {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+
+  .decision-details,
+  .source-meta,
+  .budget-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .budget-table,
+  .budget-table tbody,
+  .budget-table tr,
+  .budget-table th,
+  .budget-table td {
+    display: block;
+  }
+
+  .budget-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+
+  .budget-table tr {
+    padding: var(--space-2) 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .budget-table td {
+    padding: 0.25rem 0;
+    border: 0;
+  }
+
+  .budget-table td::before {
+    content: attr(data-label) ": ";
+    font-weight: 750;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 16mm 14mm 18mm;
+    @bottom-left { content: string(trip-title) " · " string(trip-status); }
+    @bottom-right { content: counter(page) " / " counter(pages); }
+  }
+
+  :root,
+  body {
+    background: #fff;
+    color: #111;
+    font-size: 10.5pt;
+  }
+
+  body {
+    padding: 0;
+  }
+
+  h1 {
+    string-set: trip-title content();
+  }
+
+  .document-status {
+    string-set: trip-status content();
+  }
+
+  .trip-hero,
+  .document-grid,
+  .document-footer {
+    width: 100%;
+    margin: 0;
+    padding-inline: 0;
+    background: #fff;
+  }
+
+  .trip-hero {
+    min-height: 0;
+    padding-block: 0 12mm;
+    grid-template-columns: 1fr 45mm;
+    break-after: page;
+  }
+
+  .document-grid {
+    display: block;
+  }
+
+  .contents,
+  .interactive-controls,
+  .day-nav,
+  .skip-link,
+  .screen-reader-live,
+  .enhancement-error {
+    display: none !important;
+  }
+
+  .scenario-panel[hidden] {
+    display: block !important;
+  }
+
+  .document-section {
+    padding: 8mm 0 0;
+  }
+
+  .day-article {
+    break-before: page;
+    padding: 8mm 0 0;
+  }
+
+  .day-article:first-of-type {
+    break-before: auto;
+  }
+
+  .day-article,
+  .warning-block,
+  .constraint-list li,
+  .timeline-event,
+  .decision-item,
+  .readiness-item,
+  .risk-item {
+    break-inside: avoid;
+  }
+
+  h2,
+  h3,
+  h4 {
+    break-after: avoid;
+  }
+
+  .no-print-images .day-photo,
+  body:not(.print-images) .day-photo {
+    display: none;
+  }
+
+  a[href^="http"]::after {
+    content: " [" attr(data-source-id) "]";
+    color: #333;
+    font-size: 8pt;
+  }
+}
+</style>
+</head>
+<body class="print-images">
+  <!--
+  THESIS: Curated Route makes feasibility legible before decoration and refuses the generic metric-dashboard itinerary.
+  OWN-WORLD: Mineral paper, deep-teal document rules, maple warnings, brass uncertainty, moss readiness; editorial sections and precise native controls.
+  STORY: Readers identify the trip, judge route and blockers, compare days and backups, then verify preparation, budget, risks, and sources.
+  FIRST VIEWPORT: Large trip title and text route lead on warm paper; readiness, budget, blockers, and a small decorative stamp form the supporting rail.
+  FORM: Approved Curated Route direction; pinned design specification; seed approved-curated-route-2026-08-28.
+  FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
+  -->
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="icon-sprite">
+  <symbol id="icon-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+  <symbol id="icon-square" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="1"/></symbol>
+  <symbol id="icon-recheck" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 5v6h-6"/></symbol>
+  <symbol id="icon-conflict" viewBox="0 0 24 24"><path d="M7 7h12m0 0-4-4m4 4-4 4M17 17H5m0 0 4-4m-4 4 4 4"/></symbol>
+  <symbol id="icon-cloud" viewBox="0 0 24 24"><path d="M7 18h10a4 4 0 0 0 .5-8A6 6 0 0 0 6 9a4.5 4.5 0 0 0 1 9Z"/></symbol>
+  <symbol id="icon-stop" viewBox="0 0 24 24"><path d="M8 3h8l5 5v8l-5 5H8l-5-5V8Z"/><path d="M12 7v6m0 4h.01"/></symbol>
+  <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m16 16 4 4"/></symbol>
+  <symbol id="icon-route" viewBox="0 0 24 24"><circle cx="6" cy="18" r="2"/><circle cx="18" cy="6" r="2"/><path d="M8 18h3a3 3 0 0 0 3-3V9a3 3 0 0 1 3-3"/></symbol>
+  <symbol id="icon-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+  <symbol id="icon-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5"/></symbol>
+</svg>
+
+  <a class="skip-link" href="#main-content">Skip to itinerary</a>
+
+  <header class="trip-hero" id="trip-summary">
+    <div class="hero-copy">
+      <div class="status-line">
+        <span class="document-status document-status--final">Final</span>
+        <span>2026-11-02 — 2026-11-08</span>
+        <span>2 travellers</span>
+      </div>
+      <h1>Japan Autumn — Final Reference</h1>
+      <p class="trip-thesis">A fully checked reference route for validating the Final document state.</p>
+      <p class="route-ribbon"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg> Tokyo → Kyoto</p>
+      <div class="summary-counts">
+        <a href="#route-overview">Review all days</a>
+        <a href="#open-decisions">0 open decisions</a>
+      </div>
+    </div>
+    <aside class="hero-aside" aria-label="Trip readiness summary">
+      <div class="stamp" aria-hidden="true">
+        <svg viewBox="0 0 112 132" role="img">
+          <path d="M8 8h96v116H8z" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="3 4"/>
+          <path d="M57 24c-2 13-10 16-20 12 5 8 2 15-6 20 10 0 15 5 15 14 6-6 12-7 19-1-1-9 4-14 14-15-8-5-10-12-5-20-10 4-16 0-17-10Z" fill="none" stroke="currentColor" stroke-width="2.5"/>
+          <path d="M55 45v49M39 97h34" fill="none" stroke="currentColor" stroke-width="2"/>
+          <text x="56" y="113" text-anchor="middle" fill="currentColor" font-size="8" font-family="sans-serif">CURATED ROUTE</text>
+        </svg>
+      </div>
+      <div class="readiness-panel">
+        <span>Readiness</span>
+        <strong>3 of 3 confirmed</strong>
+        <a href="#preparation">Review preparation</a>
+      </div>
+      <div class="budget-panel">
+        <span>Known budget range</span>
+        <strong>
+240,000          —
+240,000 JPY        </strong>
+        <span>High confidence · 0 unknown</span>
+      </div>
+    </aside>
+  </header>
+
+  <div class="document-grid">
+    <nav aria-label="Itinerary contents">
+      <details class="contents" open>
+        <summary><svg class="icon" aria-hidden="true"><use href="#icon-menu"></use></svg> Contents</summary>
+        <ol>
+          <li><a href="#trip-summary">Trip summary</a></li>
+          <li><a href="#route-overview">Route and days</a></li>
+          <li><a href="#open-decisions">Open decisions</a></li>
+          <li><a href="#detailed-days">Detailed days</a></li>
+          <li>
+            <ol class="day-links">
+<li><a href="#day-1">Day 1 · Tokyo</a></li><li><a href="#day-2">Day 2 · Tokyo → Kyoto</a></li>            </ol>
+          </li>
+          <li><a href="#preparation">Preparation</a></li>
+          <li><a href="#budget">Budget</a></li>
+          <li><a href="#risks">Risks and backups</a></li>
+          <li><a href="#sources">Sources</a></li>
+        </ol>
+      </details>
+    </nav>
+
+    <main class="document-main" id="main-content">
+      <p class="enhancement-error" data-enhancement-error hidden>Interactive controls are unavailable. The complete itinerary remains below.</p>
+      <p class="screen-reader-live" aria-live="polite" aria-atomic="true" data-live-region></p>
+
+      <section class="document-section" id="route-overview" aria-labelledby="route-title">
+        <h2 id="route-title">Route and day overview</h2>
+        <ol class="route-sequence">
+          <li class="route-stop">
+            <strong>Tokyo</strong>
+            <span>2–5 Nov · 3 nights</span>
+          </li>
+          <li class="route-stop">
+            <strong>Kyoto</strong>
+            <span>5–8 Nov · 3 nights</span>
+<span>Rail transfer</span>          </li>
+        </ol>
+
+        <div class="interactive-controls" aria-label="Day search and filters">
+          <div class="search-row">
+            <label for="day-search">Search itinerary days</label>
+            <input id="day-search" type="search" placeholder="Search days, places, constraints" data-day-search>
+          </div>
+          <div class="filters" aria-label="Filter days">
+            <button type="button" class="filter-button" data-filter="all" aria-pressed="true">All days</button>
+            <button type="button" class="filter-button" data-filter="unresolved" aria-pressed="false">Unresolved</button>
+            <button type="button" class="filter-button" data-filter="weather" aria-pressed="false">Weather-sensitive</button>
+            <button type="button" class="filter-button" data-filter="transfer" aria-pressed="false">Transfers</button>
+            <button type="button" class="filter-button" data-filter="warning" aria-pressed="false">Warnings</button>
+          </div>
+          <div class="filter-feedback">
+            <p data-filter-results>2 days shown.</p>
+            <p class="filter-empty" data-filter-empty hidden>No matching days. <button type="button" data-reset-filters>Reset filters</button></p>
+          </div>
+        </div>
+
+        <ol class="day-overview">
+          <li data-day-overview="day-1"><a href="#day-1">
+            <strong>Day 1</strong>
+            <span>2026-11-02 · Monday</span>
+            <span>Tokyo — Arrive gently with the confirmed transfer and lodging plan.</span>
+            <small>Airport arrival · Light load · Confirmed</small>
+          </a></li>
+          <li data-day-overview="day-2"><a href="#day-2">
+            <strong>Day 2</strong>
+            <span>2026-11-05 · Thursday</span>
+            <span>Tokyo → Kyoto — Use the confirmed rail transfer and verified garden hours.</span>
+            <small>Intercity rail · Medium load · Confirmed</small>
+          </a></li>
+        </ol>
+      </section>
+
+      <section class="document-section" id="open-decisions" aria-labelledby="decisions-title">
+        <h2 id="decisions-title">Open decisions</h2>
+        <ul class="decision-list">
+<li>No open decisions.</li>        </ul>
+      </section>
+
+      <section class="document-section" id="detailed-days" aria-labelledby="days-title">
+        <h2 id="days-title">Detailed days</h2>
+        <article class="day-article" id="day-1" data-day data-weather="false" data-transfer="false" data-unresolved="false" data-warning="false" aria-labelledby="day-1-title">
+          <header class="day-heading">
+            <div>
+              <span class="day-number">Day 1</span>
+              <h3 id="day-1-title">2026-11-02 · Monday · Tokyo</h3>
+              <p class="day-thesis">Arrive gently with the confirmed transfer and lodging plan.</p>
+            </div>
+            <div class="day-meta">
+              <span class="status status--confirmed">confirmed</span>
+            </div>
+          </header>
+
+
+          <div class="day-layout">
+            <div class="day-primary">
+              <h4>Timeline</h4>
+              <ol class="timeline">
+                <li class="timeline-event">
+                  <span class="timeline-time">16:00</span>
+                  <div><strong>Confirmed arrival transfer</strong><p>Follow the booked transfer to the confirmed lodging.</p></div>
+                </li>
+              </ol>
+
+              <h4>Primary and backup scenarios</h4>
+              <div class="scenario-switch interactive-controls" data-scenario-switch aria-label="Scenario view for day 1">
+                <button type="button" data-show-scenario="primary" aria-pressed="true">Primary</button>
+                <button type="button" data-show-scenario="backup" aria-pressed="false">Backup</button>
+              </div>
+              <section class="scenario-panel" data-scenario="primary" aria-label="Primary scenario">
+                <span class="scenario-kind">primary</span>
+                <strong>Neighbourhood walk</strong>
+                <p>Take a short walk after check-in.</p>
+              </section>
+              <section class="scenario-panel" data-scenario="backup" aria-label="Backup scenario">
+                <span class="scenario-kind">backup</span>
+                <strong>Direct rest</strong>
+                <p>Rest at the lodging if arrival is delayed.</p>
+              </section>
+
+            </div>
+
+            <aside class="day-context" aria-label="Day 1 constraints and links">
+              <h4>Critical constraints</h4>
+              <ul class="constraint-list">
+<li>No critical constraints recorded.</li>              </ul>
+              <dl>
+                <dt>Overnight</dt><dd>Tokyo</dd>
+                <dt>Travel</dt><dd>Airport arrival</dd>
+                <dt>Load</dt><dd>Light</dd>
+                <dt>Last checked</dt><dd>2026-08-28T10:00:00+00:00</dd>
+              </dl>
+              <h4>Contextual actions</h4>
+              <ul class="link-list">
+                <li><a class="external-link" href="https://www.google.com/maps/search/?api=1&amp;query=Tokyo" data-source-id="external"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg>Google Maps</a><span class="network-label"><svg class="icon" aria-hidden="true"><use href="#icon-cloud"></use></svg> Internet required</span></li>
+              </ul>
+            </aside>
+          </div>
+
+          <nav class="day-nav" aria-label="Adjacent days">
+<span></span><a href="#day-2">Next day →</a>          </nav>
+        </article>
+        <article class="day-article" id="day-2" data-day data-weather="true" data-transfer="true" data-unresolved="false" data-warning="false" aria-labelledby="day-2-title">
+          <header class="day-heading">
+            <div>
+              <span class="day-number">Day 2</span>
+              <h3 id="day-2-title">2026-11-05 · Thursday · Tokyo → Kyoto</h3>
+              <p class="day-thesis">Use the confirmed rail transfer and verified garden hours.</p>
+            </div>
+            <div class="day-meta">
+              <span class="status status--confirmed">confirmed</span>
+<span class="status status--recheck">Weather-sensitive</span>            </div>
+          </header>
+
+
+          <div class="day-layout">
+            <div class="day-primary">
+              <h4>Timeline</h4>
+              <ol class="timeline">
+                <li class="timeline-event">
+                  <span class="timeline-time">09:00</span>
+                  <div><strong>Confirmed rail departure</strong><p>Use the booked seats and protected connection buffer.</p></div>
+                </li>
+                <li class="timeline-event">
+                  <span class="timeline-time">14:00</span>
+                  <div><strong>Garden visit</strong><p>Arrive within the verified operating hours.</p></div>
+                </li>
+              </ol>
+
+              <h4>Primary and backup scenarios</h4>
+              <div class="scenario-switch interactive-controls" data-scenario-switch aria-label="Scenario view for day 2">
+                <button type="button" data-show-scenario="primary" aria-pressed="true">Primary</button>
+                <button type="button" data-show-scenario="backup" aria-pressed="false">Backup</button>
+              </div>
+              <section class="scenario-panel" data-scenario="primary" aria-label="Primary scenario">
+                <span class="scenario-kind">primary</span>
+                <strong>Garden visit</strong>
+                <p>Follow the verified outdoor plan.</p>
+              </section>
+              <section class="scenario-panel" data-scenario="backup" aria-label="Backup scenario">
+                <span class="scenario-kind">backup</span>
+                <strong>Indoor cultural visit</strong>
+                <p>Keep the same city and lodging if weather changes.</p>
+              </section>
+
+            </div>
+
+            <aside class="day-context" aria-label="Day 2 constraints and links">
+              <h4>Critical constraints</h4>
+              <ul class="constraint-list">
+<li>No critical constraints recorded.</li>              </ul>
+              <dl>
+                <dt>Overnight</dt><dd>Kyoto</dd>
+                <dt>Travel</dt><dd>Intercity rail</dd>
+                <dt>Load</dt><dd>Medium</dd>
+                <dt>Last checked</dt><dd>2026-08-28T10:00:00+00:00</dd>
+              </dl>
+              <h4>Contextual actions</h4>
+              <ul class="link-list">
+                <li><a class="external-link" href="https://example.jp/garden" data-source-id="source-garden"><svg class="icon" aria-hidden="true"><use href="#icon-arrow"></use></svg>Official garden site</a><span class="network-label"><svg class="icon" aria-hidden="true"><use href="#icon-cloud"></use></svg> Internet required</span></li>
+              </ul>
+            </aside>
+          </div>
+
+          <nav class="day-nav" aria-label="Adjacent days">
+<a href="#day-1">← Previous day</a>          </nav>
+        </article>
+      </section>
+
+      <section class="document-section" id="preparation" aria-labelledby="preparation-title">
+        <h2 id="preparation-title">Bookings and readiness</h2>
+        <p>3 confirmed of 3. Blockers are shown separately and are not averaged into this count.</p>
+        <ul class="readiness-list">
+          <li class="readiness-item">
+            <p class="status-with-icon"><svg class="icon" aria-hidden="true"><use href="#icon-check"></use></svg><strong>Garden hours confirmed</strong></p>
+            <p><span class="status status--confirmed">confirmed</span> activities · Owner: traveler-2 · Next check: Unknown</p>
+          </li>
+          <li class="readiness-item">
+            <p class="status-with-icon"><svg class="icon" aria-hidden="true"><use href="#icon-check"></use></svg><strong>Lodging confirmed</strong></p>
+            <p><span class="status status--confirmed">confirmed</span> lodging · Owner: traveler-1 · Next check: Unknown</p>
+          </li>
+          <li class="readiness-item">
+            <p class="status-with-icon"><svg class="icon" aria-hidden="true"><use href="#icon-check"></use></svg><strong>Rail seats confirmed</strong></p>
+            <p><span class="status status--confirmed">confirmed</span> transport · Owner: traveler-1 · Next check: Unknown</p>
+          </li>
+        </ul>
+      </section>
+
+      <section class="document-section" id="budget" aria-labelledby="budget-title">
+        <h2 id="budget-title">Budget</h2>
+        <div class="budget-summary">
+          <div><span>Known minimum</span><strong>240,000 JPY</strong></div>
+          <div><span>Known maximum</span><strong>240,000 JPY</strong></div>
+          <div><span>Estimate quality</span><strong>High</strong><span>0 unknown amounts</span></div>
+        </div>
+        <table class="budget-table">
+          <thead><tr><th>Category</th><th>Range</th><th>Type</th><th>Confidence</th></tr></thead>
+          <tbody>
+            <tr>
+              <td data-label="Category">lodging</td>
+              <td data-label="Range">180,000 — 180,000 JPY</td>
+              <td data-label="Type">exact</td>
+              <td data-label="Confidence">high</td>
+            </tr>
+            <tr>
+              <td data-label="Category">transport</td>
+              <td data-label="Range">60,000 — 60,000 JPY</td>
+              <td data-label="Type">exact</td>
+              <td data-label="Confidence">high</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="document-section" id="risks" aria-labelledby="risks-title">
+        <h2 id="risks-title">Risks and backup plans</h2>
+        <ul class="risk-list">
+          <li class="risk-item risk-item--warning">
+            <p class="status-with-icon"><svg class="icon" aria-hidden="true"><use href="#icon-recheck"></use></svg><strong>BUD-004 · Warning</strong></p>
+            <p>Budget has no explicit contingency buffer.</p>
+            <p>Affects: japan-final-reference · Confidence: medium</p>
+          </li>
+        </ul>
+      </section>
+
+      <section class="document-section" id="sources" aria-labelledby="sources-title">
+        <h2 id="sources-title">Sources and document version</h2>
+        <ul class="source-list">
+          <li class="source-item">
+            <p><strong>source-garden · Example Garden</strong> <span class="status status--verified">verified</span> <span class="status status--fresh">fresh</span></p>
+            <div class="source-meta"><span>Type: official</span><span>Last checked: 2026-08-28T10:00:00+00:00</span><span>Retrieval: ok</span></div>
+            <a class="source-url external-link" href="https://example.jp/garden" data-source-id="source-garden">https://example.jp/garden</a> <span class="network-label">Internet required</span>
+          </li>
+        </ul>
+      </section>
+    </main>
+  </div>
+
+  <footer class="document-footer">
+    <strong>Japan Autumn — Final Reference</strong> · japan-final-reference · Final · Generated 2026-08-28T12:00:00+00:00 · Artefact v0.1
+  </footer>
+  <script>(() => {
+  "use strict";
+
+  const root = document.documentElement;
+  root.classList.add("js-enabled");
+
+  const liveRegion = document.querySelector("[data-live-region]");
+  const announce = (message) => {
+    if (liveRegion) liveRegion.textContent = message;
+  };
+
+  try {
+    const contents = document.querySelector("details.contents");
+    const compact = window.matchMedia("(max-width: 639px)");
+    const syncContents = () => {
+      if (!contents) return;
+      if (compact.matches) contents.removeAttribute("open");
+      else contents.setAttribute("open", "");
+    };
+    syncContents();
+    compact.addEventListener?.("change", syncContents);
+
+    const hero = document.querySelector(".trip-hero");
+    const syncCompactContentsVisibility = () => {
+      if (!contents) return;
+      const heroHasPassed = hero ? hero.getBoundingClientRect().bottom <= 0 : true;
+      contents.classList.toggle("contents--available", !compact.matches || heroHasPassed);
+    };
+    syncCompactContentsVisibility();
+    window.addEventListener("scroll", syncCompactContentsVisibility, { passive: true });
+    compact.addEventListener?.("change", syncCompactContentsVisibility);
+
+    const days = Array.from(document.querySelectorAll("[data-day]"));
+    const overviewByDay = new Map(
+      Array.from(document.querySelectorAll("[data-day-overview]")).map((overview) => [
+        overview.dataset.dayOverview,
+        overview,
+      ]),
+    );
+    const search = document.querySelector("[data-day-search]");
+    const filterButtons = Array.from(document.querySelectorAll("[data-filter]"));
+    const resultCount = document.querySelector("[data-filter-results]");
+    const emptyState = document.querySelector("[data-filter-empty]");
+    const resetFilters = document.querySelector("[data-reset-filters]");
+    let activeFilter = "all";
+
+    const matchesFilter = (day) => {
+      if (activeFilter === "all") return true;
+      return day.dataset[activeFilter] === "true";
+    };
+
+    const applyDayView = () => {
+      const query = search?.value.trim().toLocaleLowerCase() || "";
+      let visible = 0;
+      days.forEach((day) => {
+        const matchesSearch = !query || day.textContent.toLocaleLowerCase().includes(query);
+        const show = matchesSearch && matchesFilter(day);
+        day.hidden = !show;
+        const overview = overviewByDay.get(day.id);
+        if (overview) overview.hidden = !show;
+        if (show) visible += 1;
+      });
+      const message = `${visible} ${visible === 1 ? "day" : "days"} shown.`;
+      if (resultCount) resultCount.textContent = message;
+      if (emptyState) emptyState.hidden = visible !== 0;
+      announce(message);
+    };
+
+    search?.addEventListener("input", applyDayView);
+    filterButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        activeFilter = button.dataset.filter || "all";
+        filterButtons.forEach((candidate) => {
+          candidate.setAttribute("aria-pressed", String(candidate === button));
+        });
+        applyDayView();
+      });
+    });
+    resetFilters?.addEventListener("click", () => {
+      activeFilter = "all";
+      if (search) search.value = "";
+      filterButtons.forEach((candidate) => {
+        candidate.setAttribute("aria-pressed", String(candidate.dataset.filter === "all"));
+      });
+      applyDayView();
+      search?.focus();
+    });
+
+    document.querySelectorAll("[data-optional-media]").forEach((figure) => {
+      const photo = figure.querySelector("[data-media-image]");
+      const fallback = figure.querySelector("[data-media-fallback]");
+      const markLoaded = () => figure.classList.add("media-loaded");
+      const markUnavailable = () => {
+        figure.classList.add("media-unavailable");
+        if (fallback) fallback.hidden = false;
+      };
+      if (photo?.complete) {
+        if (photo.naturalWidth > 0) markLoaded();
+        else markUnavailable();
+      } else {
+        photo?.addEventListener("load", markLoaded, { once: true });
+        photo?.addEventListener("error", markUnavailable, { once: true });
+      }
+    });
+
+    document.querySelectorAll("[data-scenario-switch]").forEach((switcher) => {
+      const day = switcher.closest("[data-day]");
+      const panels = Array.from(day?.querySelectorAll("[data-scenario]") || []);
+      const buttons = Array.from(switcher.querySelectorAll("[data-show-scenario]"));
+      const selectScenario = (kind) => {
+        panels.forEach((panel) => {
+          panel.hidden = panel.dataset.scenario !== kind;
+        });
+        buttons.forEach((button) => {
+          button.setAttribute("aria-pressed", String(button.dataset.showScenario === kind));
+        });
+        announce(`${kind === "primary" ? "Primary" : "Backup"} scenario shown.`);
+      };
+      if (panels.some((panel) => panel.dataset.scenario === "primary")) {
+        selectScenario("primary");
+      }
+      buttons.forEach((button) => {
+        button.addEventListener("click", () => selectScenario(button.dataset.showScenario));
+      });
+    });
+
+    document.querySelectorAll(".contents a").forEach((link) => {
+      link.addEventListener("click", () => {
+        if (compact.matches) contents?.removeAttribute("open");
+      });
+    });
+  } catch (error) {
+    root.classList.add("enhancement-failed");
+    const notice = document.querySelector("[data-enhancement-error]");
+    if (notice) notice.hidden = false;
+    console.warn("Itinerary enhancements unavailable; core document remains readable.", error);
+  }
+})();
+</script>
+</body>
+</html>

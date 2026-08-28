@@ -20,9 +20,28 @@
     syncContents();
     compact.addEventListener?.("change", syncContents);
 
+    const hero = document.querySelector(".trip-hero");
+    const syncCompactContentsVisibility = () => {
+      if (!contents) return;
+      const heroHasPassed = hero ? hero.getBoundingClientRect().bottom <= 0 : true;
+      contents.classList.toggle("contents--available", !compact.matches || heroHasPassed);
+    };
+    syncCompactContentsVisibility();
+    window.addEventListener("scroll", syncCompactContentsVisibility, { passive: true });
+    compact.addEventListener?.("change", syncCompactContentsVisibility);
+
     const days = Array.from(document.querySelectorAll("[data-day]"));
+    const overviewByDay = new Map(
+      Array.from(document.querySelectorAll("[data-day-overview]")).map((overview) => [
+        overview.dataset.dayOverview,
+        overview,
+      ]),
+    );
     const search = document.querySelector("[data-day-search]");
     const filterButtons = Array.from(document.querySelectorAll("[data-filter]"));
+    const resultCount = document.querySelector("[data-filter-results]");
+    const emptyState = document.querySelector("[data-filter-empty]");
+    const resetFilters = document.querySelector("[data-reset-filters]");
     let activeFilter = "all";
 
     const matchesFilter = (day) => {
@@ -37,9 +56,14 @@
         const matchesSearch = !query || day.textContent.toLocaleLowerCase().includes(query);
         const show = matchesSearch && matchesFilter(day);
         day.hidden = !show;
+        const overview = overviewByDay.get(day.id);
+        if (overview) overview.hidden = !show;
         if (show) visible += 1;
       });
-      announce(`${visible} ${visible === 1 ? "day" : "days"} shown.`);
+      const message = `${visible} ${visible === 1 ? "day" : "days"} shown.`;
+      if (resultCount) resultCount.textContent = message;
+      if (emptyState) emptyState.hidden = visible !== 0;
+      announce(message);
     };
 
     search?.addEventListener("input", applyDayView);
@@ -51,6 +75,32 @@
         });
         applyDayView();
       });
+    });
+    resetFilters?.addEventListener("click", () => {
+      activeFilter = "all";
+      if (search) search.value = "";
+      filterButtons.forEach((candidate) => {
+        candidate.setAttribute("aria-pressed", String(candidate.dataset.filter === "all"));
+      });
+      applyDayView();
+      search?.focus();
+    });
+
+    document.querySelectorAll("[data-optional-media]").forEach((figure) => {
+      const photo = figure.querySelector("[data-media-image]");
+      const fallback = figure.querySelector("[data-media-fallback]");
+      const markLoaded = () => figure.classList.add("media-loaded");
+      const markUnavailable = () => {
+        figure.classList.add("media-unavailable");
+        if (fallback) fallback.hidden = false;
+      };
+      if (photo?.complete) {
+        if (photo.naturalWidth > 0) markLoaded();
+        else markUnavailable();
+      } else {
+        photo?.addEventListener("load", markLoaded, { once: true });
+        photo?.addEventListener("error", markUnavailable, { once: true });
+      }
     });
 
     document.querySelectorAll("[data-scenario-switch]").forEach((switcher) => {

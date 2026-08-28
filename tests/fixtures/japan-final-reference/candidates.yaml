@@ -1,0 +1,17 @@
+schema_version: 1
+trip_id: japan-final-reference
+sources:
+  - id: source-garden
+    url: https://example.jp/garden
+    source_type: official
+    publisher: Example Garden
+    retrieved_at: "2026-08-28T10:00:00+00:00"
+    retrieval_status: ok
+claims:
+  - id: claim-garden-hours
+    topic: operations
+    status: verified
+    freshness_status: fresh
+    source_ids: [source-garden]
+    applies_to: [day-2]
+items: []

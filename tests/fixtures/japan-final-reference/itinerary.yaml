@@ -1,0 +1,101 @@
+schema_version: 1
+trip_id: japan-final-reference
+route_state: frozen
+output_status: final
+alternatives: []
+selected_route_id: route-curated-final
+route_stops:
+  - id: stop-tokyo
+    name: Tokyo
+    dates: 2–5 Nov
+    nights: 3
+  - id: stop-kyoto
+    name: Kyoto
+    dates: 5–8 Nov
+    nights: 3
+    transfer_label: Rail transfer
+open_decisions: []
+days:
+  - id: day-1
+    number: 1
+    date: "2026-11-02"
+    region: Tokyo
+    overnight: Tokyo
+    thesis: Arrive gently with the confirmed transfer and lodging plan.
+    load: light
+    travel: Airport arrival
+    weather_sensitive: false
+    booking_state: confirmed
+    critical_constraints: []
+    timeline:
+      - time: "16:00"
+        title: Confirmed arrival transfer
+        detail: Follow the booked transfer to the confirmed lodging.
+    scenarios:
+      - kind: primary
+        title: Neighbourhood walk
+        description: Take a short walk after check-in.
+      - kind: backup
+        title: Direct rest
+        description: Rest at the lodging if arrival is delayed.
+    food: []
+    readiness_ids: [lodging-final]
+    links:
+      - label: Google Maps
+        url: https://www.google.com/maps/search/?api=1&query=Tokyo
+        kind: map
+        requires_internet: true
+    source_ids: []
+    last_checked: "2026-08-28T10:00:00+00:00"
+  - id: day-2
+    number: 2
+    date: "2026-11-05"
+    region: Tokyo → Kyoto
+    overnight: Kyoto
+    thesis: Use the confirmed rail transfer and verified garden hours.
+    load: medium
+    travel: Intercity rail
+    weather_sensitive: true
+    booking_state: confirmed
+    critical_constraints: []
+    timeline:
+      - time: "09:00"
+        title: Confirmed rail departure
+        detail: Use the booked seats and protected connection buffer.
+      - time: "14:00"
+        title: Garden visit
+        detail: Arrive within the verified operating hours.
+    scenarios:
+      - kind: primary
+        title: Garden visit
+        description: Follow the verified outdoor plan.
+      - kind: backup
+        title: Indoor cultural visit
+        description: Keep the same city and lodging if weather changes.
+    food: []
+    readiness_ids: [rail-final, garden-final]
+    links:
+      - label: Official garden site
+        url: https://example.jp/garden
+        kind: official
+        requires_internet: true
+    source_ids: [source-garden]
+    last_checked: "2026-08-28T10:00:00+00:00"
+budget_items:
+  - id: budget-lodging
+    category: lodging
+    amount_type: exact
+    amount_min: 180000
+    amount_max: 180000
+    currency: JPY
+    basis: per_group
+    confidence: high
+  - id: budget-transport
+    category: transport
+    amount_type: exact
+    amount_min: 60000
+    amount_max: 60000
+    currency: JPY
+    basis: per_group
+    confidence: high
+challenge_findings: []

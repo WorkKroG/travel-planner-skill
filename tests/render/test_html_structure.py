@@ -1,7 +1,9 @@
 import hashlib
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
+from travel_planner.challenge import run_challenge
 from travel_planner.cli import main
 from travel_planner.render.html import (
     DEFAULTS,
@@ -10,7 +12,8 @@ from travel_planner.render.html import (
     render_html,
     write_html,
 )
-from travel_planner.render.viewmodel import ItineraryView
+from travel_planner.render.viewmodel import ItineraryView, build_view
+from travel_planner.state import load_trip
 
 
 def test_html_contains_required_semantic_reading_order(japan_view: ItineraryView) -> None:
@@ -23,6 +26,19 @@ def test_html_contains_required_semantic_reading_order(japan_view: ItineraryView
     assert html.index('id="risks"') < html.index('id="sources"')
     assert '<a class="skip-link" href="#main-content">Skip to itinerary</a>' in html
     assert "<header" in html and "<nav" in html and "<main" in html and "<footer" in html
+
+
+def test_day_filters_expose_synced_overview_and_visible_empty_state(
+    japan_view: ItineraryView,
+) -> None:
+    """Catch filters hiding detailed articles while leaving the overview misleadingly unchanged."""
+    html = render_html(japan_view, media={}, options=DEFAULTS)
+
+    for day in japan_view.days:
+        assert f'data-day-overview="{day.day_id}"' in html
+    assert 'data-filter-results' in html
+    assert 'data-filter-empty' in html
+    assert 'data-reset-filters' in html
 
 
 def test_html_is_self_contained_but_keeps_labelled_external_actions(
@@ -71,6 +87,17 @@ def test_optional_media_requires_provenance(japan_view: ItineraryView) -> None:
         render_html(japan_view, media={"day-3": unlicensed}, options=HtmlOptions())
 
 
+def test_optional_media_has_a_visible_failure_fallback(japan_view: ItineraryView) -> None:
+    """Catch a failed embedded photo leaving a broken image with no useful explanation."""
+    media = MediaAsset(b"invalid-image", "image/jpeg", "Garden", "photo-1", "CC BY 4.0")
+
+    html = render_html(japan_view, media={"day-3": media}, options=DEFAULTS)
+
+    assert 'data-optional-media' in html
+    assert 'data-media-fallback' in html
+    assert "Photo unavailable; the day plan remains complete." in html
+
+
 def test_html_is_deterministic_and_write_helper_uses_exact_bytes(
     japan_view: ItineraryView, tmp_path: Path
 ) -> None:
@@ -92,6 +119,24 @@ def test_japan_reference_matches_reviewable_html_snapshot(japan_view: ItineraryV
     actual = hashlib.sha256(render_html(japan_view, media={}, options=DEFAULTS).encode()).hexdigest()
 
     assert actual == expected
+
+
+def test_final_ui_state_fixture_uses_the_canonical_renderer_and_has_no_blockers() -> None:
+    """Catch a visual Final state fabricated by relabelling a Draft document."""
+    repository = Path(__file__).parents[2]
+    fixture = repository / "tests" / "fixtures" / "japan-final-reference"
+    generated_at = datetime(2026, 8, 28, 12, tzinfo=UTC)
+    state = load_trip(fixture)
+    challenge = run_challenge(state, "detailed", generated_at)
+    view = build_view(state, challenge, generated_at)
+
+    assert view.status == "final"
+    assert view.summary.blockers == ()
+    assert view.summary.readiness_confirmed == view.summary.readiness_total
+    assert view.budget.unknown_count == 0
+    assert (repository / "tests" / "ui" / "state-fixtures" / "final.html").read_text(
+        encoding="utf-8"
+    ) == render_html(view, media={}, options=DEFAULTS)
 
 
 def test_render_cli_writes_html(japan_view: ItineraryView, tmp_path: Path) -> None:

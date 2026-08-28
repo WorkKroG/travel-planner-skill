@@ -1,0 +1,241 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-28T20:05:52+03:00",
+  "title": "Design System: Travel Planner — Curated Route",
+  "extensions": {
+    "colorMeta": {
+      "mineral": {
+        "role": "neutral",
+        "displayName": "Mineral Surround",
+        "canonical": "#edf1ec",
+        "tonalRamp": ["oklch(15% 0.02 150)", "oklch(27% 0.02 150)", "oklch(39% 0.02 150)", "oklch(51% 0.02 150)", "oklch(63% 0.02 150)", "oklch(75% 0.02 150)", "oklch(87% 0.02 150)", "oklch(95% 0.02 150)"]
+      },
+      "warm-paper": {
+        "role": "neutral",
+        "displayName": "Warm Paper",
+        "canonical": "#fffdf7",
+        "tonalRamp": ["oklch(15% 0.02 90)", "oklch(27% 0.02 90)", "oklch(39% 0.02 90)", "oklch(51% 0.02 90)", "oklch(63% 0.02 90)", "oklch(75% 0.02 90)", "oklch(87% 0.02 90)", "oklch(95% 0.02 90)"]
+      },
+      "deep-teal": {
+        "role": "primary",
+        "displayName": "Deep Teal Structure",
+        "canonical": "#173c44",
+        "tonalRamp": ["oklch(15% 0.06 195)", "oklch(27% 0.06 195)", "oklch(39% 0.06 195)", "oklch(51% 0.06 195)", "oklch(63% 0.06 195)", "oklch(75% 0.06 195)", "oklch(87% 0.06 195)", "oklch(95% 0.06 195)"]
+      },
+      "maple": {
+        "role": "secondary",
+        "displayName": "Maple Accent",
+        "canonical": "#bd4a36",
+        "tonalRamp": ["oklch(15% 0.13 32)", "oklch(27% 0.13 32)", "oklch(39% 0.13 32)", "oklch(51% 0.13 32)", "oklch(63% 0.13 32)", "oklch(75% 0.13 32)", "oklch(87% 0.13 32)", "oklch(95% 0.13 32)"]
+      },
+      "brass": {
+        "role": "secondary",
+        "displayName": "Muted Brass",
+        "canonical": "#d1a044",
+        "tonalRamp": ["oklch(15% 0.12 85)", "oklch(27% 0.12 85)", "oklch(39% 0.12 85)", "oklch(51% 0.12 85)", "oklch(63% 0.12 85)", "oklch(75% 0.12 85)", "oklch(87% 0.12 85)", "oklch(95% 0.12 85)"]
+      },
+      "moss": {
+        "role": "secondary",
+        "displayName": "Moss Readiness",
+        "canonical": "#496b58",
+        "tonalRamp": ["oklch(15% 0.07 145)", "oklch(27% 0.07 145)", "oklch(39% 0.07 145)", "oklch(51% 0.07 145)", "oklch(63% 0.07 145)", "oklch(75% 0.07 145)", "oklch(87% 0.07 145)", "oklch(95% 0.07 145)"]
+      },
+      "soft-ink": {
+        "role": "neutral",
+        "displayName": "Soft Ink",
+        "canonical": "#456068",
+        "tonalRamp": ["oklch(15% 0.04 200)", "oklch(27% 0.04 200)", "oklch(39% 0.04 200)", "oklch(51% 0.04 200)", "oklch(63% 0.04 200)", "oklch(75% 0.04 200)", "oklch(87% 0.04 200)", "oklch(95% 0.04 200)"]
+      },
+      "divider": {
+        "role": "neutral",
+        "displayName": "Quiet Divider",
+        "canonical": "#bdcac6",
+        "tonalRamp": ["oklch(15% 0.02 170)", "oklch(27% 0.02 170)", "oklch(39% 0.02 170)", "oklch(51% 0.02 170)", "oklch(63% 0.02 170)", "oklch(75% 0.02 170)", "oklch(87% 0.02 170)", "oklch(95% 0.02 170)"]
+      },
+      "focus-blue": {
+        "role": "primary",
+        "displayName": "Focus Blue",
+        "canonical": "#0b67b2",
+        "tonalRamp": ["oklch(15% 0.14 250)", "oklch(27% 0.14 250)", "oklch(39% 0.14 250)", "oklch(51% 0.14 250)", "oklch(63% 0.14 250)", "oklch(75% 0.14 250)", "oklch(87% 0.14 250)", "oklch(95% 0.14 250)"]
+      },
+      "critical-text": {
+        "role": "secondary",
+        "displayName": "Critical Oxide",
+        "canonical": "#8c2d20",
+        "tonalRamp": ["oklch(15% 0.13 32)", "oklch(27% 0.13 32)", "oklch(39% 0.13 32)", "oklch(51% 0.13 32)", "oklch(63% 0.13 32)", "oklch(75% 0.13 32)", "oklch(87% 0.13 32)", "oklch(95% 0.13 32)"]
+      },
+      "ready-text": {
+        "role": "secondary",
+        "displayName": "Ready Moss Ink",
+        "canonical": "#355442",
+        "tonalRamp": ["oklch(15% 0.06 145)", "oklch(27% 0.06 145)", "oklch(39% 0.06 145)", "oklch(51% 0.06 145)", "oklch(63% 0.06 145)", "oklch(75% 0.06 145)", "oklch(87% 0.06 145)", "oklch(95% 0.06 145)"]
+      },
+      "stale-text": {
+        "role": "secondary",
+        "displayName": "Stale Brass Ink",
+        "canonical": "#68501a",
+        "tonalRamp": ["oklch(15% 0.08 85)", "oklch(27% 0.08 85)", "oklch(39% 0.08 85)", "oklch(51% 0.08 85)", "oklch(63% 0.08 85)", "oklch(75% 0.08 85)", "oklch(87% 0.08 85)", "oklch(95% 0.08 85)"]
+      },
+      "critical-wash": {
+        "role": "secondary",
+        "displayName": "Critical Wash",
+        "canonical": "#fff1ec",
+        "tonalRamp": ["oklch(15% 0.02 32)", "oklch(27% 0.02 32)", "oklch(39% 0.02 32)", "oklch(51% 0.02 32)", "oklch(63% 0.02 32)", "oklch(75% 0.02 32)", "oklch(87% 0.02 32)", "oklch(95% 0.02 32)"]
+      },
+      "warning-wash": {
+        "role": "secondary",
+        "displayName": "Warning Wash",
+        "canonical": "#fff4ef",
+        "tonalRamp": ["oklch(15% 0.018 32)", "oklch(27% 0.018 32)", "oklch(39% 0.018 32)", "oklch(51% 0.018 32)", "oklch(63% 0.018 32)", "oklch(75% 0.018 32)", "oklch(87% 0.018 32)", "oklch(95% 0.018 32)"]
+      },
+      "ready-wash": {
+        "role": "secondary",
+        "displayName": "Ready Wash",
+        "canonical": "#edf5ed",
+        "tonalRamp": ["oklch(15% 0.02 145)", "oklch(27% 0.02 145)", "oklch(39% 0.02 145)", "oklch(51% 0.02 145)", "oklch(63% 0.02 145)", "oklch(75% 0.02 145)", "oklch(87% 0.02 145)", "oklch(95% 0.02 145)"]
+      },
+      "attention-wash": {
+        "role": "secondary",
+        "displayName": "Attention Wash",
+        "canonical": "#fff7db",
+        "tonalRamp": ["oklch(15% 0.03 85)", "oklch(27% 0.03 85)", "oklch(39% 0.03 85)", "oklch(51% 0.03 85)", "oklch(63% 0.03 85)", "oklch(75% 0.03 85)", "oklch(87% 0.03 85)", "oklch(95% 0.03 85)"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Trip Display", "purpose": "The single trip title in the first viewport." },
+      "headline": { "displayName": "Section Headline", "purpose": "Major document section openings." },
+      "title": { "displayName": "Day Title", "purpose": "Day headings and significant local sections." },
+      "thesis": { "displayName": "Editorial Thesis", "purpose": "Short route and day propositions." },
+      "body": { "displayName": "Evidence Body", "purpose": "Long-form itinerary, constraints, and source explanations." },
+      "label": { "displayName": "Operational Label", "purpose": "Statuses, controls, day numbers, scenario kinds, and table headings." }
+    },
+    "shadows": [
+      { "name": "summary-ambient-wide", "value": "0 0.8rem 2.4rem rgb(23 60 68 / 10%)", "purpose": "Low ambient lift for wide-screen readiness and budget panels." },
+      { "name": "summary-ambient-compact", "value": "0 0.6rem 1.8rem rgb(23 60 68 / 8%)", "purpose": "Tighter lift when summary panels join the compact reading flow." },
+      { "name": "contents-control", "value": "0 0.7rem 2rem rgb(23 60 68 / 24%)", "purpose": "Strongest lift for the fixed compact Contents control." },
+      { "name": "contents-menu", "value": "0 0.7rem 2rem rgb(23 60 68 / 18%)", "purpose": "Separates the open compact contents menu from the document." }
+    ],
+    "motion": [
+      { "name": "contents-reveal", "value": "transform 160ms ease, visibility 160ms", "purpose": "Reveals or dismisses the compact Contents control after the hero passes." },
+      { "name": "smooth-document-scroll", "value": "scroll-behavior: smooth", "purpose": "Makes anchor navigation legible without route animation." },
+      { "name": "reduced-motion-override", "value": "transition-duration: 0.01ms; animation-duration: 0.01ms", "purpose": "Removes non-essential motion when reduced motion is requested." }
+    ],
+    "breakpoints": [
+      { "name": "compact", "value": "max-width: 639px" },
+      { "name": "medium", "value": "640px–1023px" },
+      { "name": "wide", "value": "min-width: 1024px" },
+      { "name": "narrow-stress", "value": "320px viewport" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Default Button",
+      "kind": "button",
+      "refersTo": "button-default",
+      "description": "Paper-filled native control for filters and scenario choices at rest.",
+      "html": "<button class=\"ds-button\" type=\"button\">ALL DAYS</button>",
+      "css": ".ds-button { min-height: 2.75rem; padding: 0.55rem 0.9rem; border: 1px solid var(--teal, #173c44); border-radius: 8px; background: var(--paper, #fffdf7); color: var(--teal, #173c44); font: 700 0.9rem/1.2 Inter, ui-sans-serif, system-ui, sans-serif; cursor: pointer; } .ds-button:hover, .ds-button:active { background: var(--teal, #173c44); color: var(--paper, #fffdf7); } .ds-button:focus-visible { outline: 3px solid var(--focus, #0b67b2); outline-offset: 3px; }"
+    },
+    {
+      "name": "Selected Filter",
+      "kind": "button",
+      "refersTo": "button-selected",
+      "description": "Pressed filter or active scenario control with explicit ARIA state.",
+      "html": "<button class=\"ds-filter-selected\" type=\"button\" aria-pressed=\"true\">TRANSFERS</button>",
+      "css": ".ds-filter-selected { min-height: 2.75rem; padding: 0.55rem 0.9rem; border: 1px solid var(--teal, #173c44); border-radius: 8px; background: var(--teal, #173c44); color: var(--paper, #fffdf7); font: 750 0.78rem/1.2 Inter, ui-sans-serif, system-ui, sans-serif; letter-spacing: 0.06em; cursor: pointer; } .ds-filter-selected:hover { background: var(--paper, #fffdf7); color: var(--teal, #173c44); } .ds-filter-selected:focus-visible { outline: 3px solid var(--focus, #0b67b2); outline-offset: 3px; }"
+    },
+    {
+      "name": "Itinerary Search",
+      "kind": "input",
+      "refersTo": "search-field",
+      "description": "Native search field for filtering both day overview and detailed days.",
+      "html": "<label class=\"ds-search-label\" for=\"ds-search\">Search itinerary days</label><input class=\"ds-search\" id=\"ds-search\" type=\"search\" placeholder=\"Search days, places, constraints\">",
+      "css": ".ds-search-label { display: block; margin-bottom: 0.5rem; color: var(--teal, #173c44); font: 700 0.78rem/1.2 Inter, ui-sans-serif, system-ui, sans-serif; letter-spacing: 0.04em; text-transform: uppercase; } .ds-search { width: min(100%, 32rem); min-height: 2.75rem; padding: 0.65rem 0.9rem; border: 1px solid var(--teal, #173c44); border-radius: 8px; background: var(--paper, #fffdf7); color: var(--teal, #173c44); font: 400 1rem/1.65 Inter, ui-sans-serif, system-ui, sans-serif; } .ds-search:focus-visible { outline: 3px solid var(--focus, #0b67b2); outline-offset: 3px; }"
+    },
+    {
+      "name": "Draft Status",
+      "kind": "chip",
+      "refersTo": "status-draft",
+      "description": "Text-and-icon status for a document that is not ready to finalize.",
+      "html": "<span class=\"ds-status-draft\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 3 21 20H3L12 3Z M12 9v5 M12 17h.01\"/></svg>DRAFT</span>",
+      "css": ".ds-status-draft { display: inline-flex; min-height: 2rem; align-items: center; gap: 0.4rem; padding: 0.2rem 0.7rem; border: 1px solid currentColor; border-radius: 999px; background: #fff1ec; color: #8c2d20; font: 750 0.78rem/1.2 Inter, ui-sans-serif, system-ui, sans-serif; letter-spacing: 0.06em; text-transform: uppercase; } .ds-status-draft svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }"
+    },
+    {
+      "name": "Final Status",
+      "kind": "chip",
+      "refersTo": "status-final",
+      "description": "Text-and-icon status reserved for a fully finalized and validated document.",
+      "html": "<span class=\"ds-status-final\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"m5 12 4 4L19 6\"/></svg>FINAL</span>",
+      "css": ".ds-status-final { display: inline-flex; min-height: 2rem; align-items: center; gap: 0.4rem; padding: 0.2rem 0.7rem; border: 1px solid currentColor; border-radius: 999px; background: #edf5ed; color: #355442; font: 750 0.78rem/1.2 Inter, ui-sans-serif, system-ui, sans-serif; letter-spacing: 0.06em; text-transform: uppercase; } .ds-status-final svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }"
+    },
+    {
+      "name": "Readiness Summary Panel",
+      "kind": "card",
+      "refersTo": "summary-panel",
+      "description": "The rare floating panel used for one high-level readiness judgement.",
+      "html": "<section class=\"ds-summary\" aria-label=\"Trip readiness\"><span>Readiness</span><strong>7 of 9 confirmed</strong><a href=\"#preparation\">Review preparation</a></section>",
+      "css": ".ds-summary { max-width: 22rem; padding: 1.5rem; border-radius: 12px; background: var(--mineral, #edf1ec); color: var(--teal, #173c44); box-shadow: 0 0.8rem 2.4rem rgb(23 60 68 / 10%); font: 400 1rem/1.65 Inter, ui-sans-serif, system-ui, sans-serif; } .ds-summary strong { display: block; margin: 0.2rem 0; font: 600 1.5rem/1.2 \"Source Serif 4\", Georgia, serif; } .ds-summary a { display: inline-flex; min-height: 2.75rem; align-items: center; color: #8c2d20; text-underline-offset: 0.2em; } .ds-summary a:hover { color: var(--teal, #173c44); } .ds-summary a:focus-visible { outline: 3px solid var(--focus, #0b67b2); outline-offset: 3px; }"
+    },
+    {
+      "name": "Blocking Warning",
+      "kind": "card",
+      "refersTo": "warning-block",
+      "description": "Straight-edged critical field placed before or beside the content it governs.",
+      "html": "<aside class=\"ds-warning\"><p><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M8 3h8l5 5v8l-5 5H8l-5-5V8l5-5Z M12 7v6 M12 17h.01\"/></svg><strong>Blocking · EVID-001</strong></p><span>Recheck the official source before finalization.</span></aside>",
+      "css": ".ds-warning { padding: 1rem 1.5rem; border-left: 4px solid var(--maple, #bd4a36); border-radius: 0; background: #fff4ef; color: var(--teal, #173c44); font: 400 1rem/1.55 Inter, ui-sans-serif, system-ui, sans-serif; } .ds-warning p { display: flex; align-items: center; gap: 0.5rem; margin: 0 0 0.25rem; } .ds-warning svg { width: 1.15rem; height: 1.15rem; flex: 0 0 auto; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }"
+    },
+    {
+      "name": "Contents Navigation",
+      "kind": "nav",
+      "description": "Native disclosure and anchor index that becomes sticky or compact without replacing the links.",
+      "html": "<nav class=\"ds-contents\" aria-label=\"Itinerary contents\"><details open><summary>Contents</summary><ol><li><a href=\"#summary\">Trip summary</a></li><li><a href=\"#route\">Route and days</a></li><li><a href=\"#decisions\">Open decisions</a></li></ol></details></nav>",
+      "css": ".ds-contents { width: 16rem; border-top: 2px solid var(--teal, #173c44); color: var(--teal, #173c44); font: 400 0.9rem/1.4 Inter, ui-sans-serif, system-ui, sans-serif; } .ds-contents summary { min-height: 2.75rem; padding: 1rem 0; cursor: pointer; font-weight: 750; } .ds-contents ol { margin: 0; padding: 0; list-style: none; } .ds-contents a { display: flex; min-height: 2.75rem; align-items: center; border-top: 1px solid var(--line, #bdcac6); color: var(--teal, #173c44); text-decoration: none; } .ds-contents a:hover { color: var(--maple, #bd4a36); } .ds-contents a:focus-visible, .ds-contents summary:focus-visible { outline: 3px solid var(--focus, #0b67b2); outline-offset: 3px; }"
+    },
+    {
+      "name": "Route Sequence",
+      "kind": "custom",
+      "description": "Text-first route structure with strong rules and no claim of geographic accuracy.",
+      "html": "<ol class=\"ds-route\"><li><strong>Tokyo</strong><span>2–4 Nov · 2 nights</span></li><li><strong>Kanazawa</strong><span>5–7 Nov · 3 nights</span></li><li><strong>Kyoto</strong><span>8–13 Nov · 5 nights</span></li></ol>",
+      "css": ".ds-route { display: grid; grid-template-columns: repeat(3, minmax(8rem, 1fr)); margin: 0; padding: 0; list-style: none; color: var(--teal, #173c44); } .ds-route li { position: relative; min-height: 8rem; padding: 1rem 1.5rem 1rem 0; border-top: 3px solid var(--teal, #173c44); } .ds-route li:not(:last-child)::after { content: \"\"; position: absolute; top: -0.45rem; right: 0; width: 0.8rem; height: 0.8rem; border-top: 2px solid var(--teal, #173c44); border-right: 2px solid var(--teal, #173c44); transform: rotate(45deg); } .ds-route strong { display: block; font: 600 1.4rem/1.2 \"Source Serif 4\", Georgia, serif; } .ds-route span { display: block; margin-top: 0.25rem; color: var(--ink-soft, #456068); font: 400 0.9rem/1.4 Inter, ui-sans-serif, system-ui, sans-serif; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Curated Route",
+    "overview": "Curated Route makes feasibility legible before decoration. Its visual world combines the calm pacing of a contemporary museum guide with the evidentiary discipline of a planning dossier: warm paper holds the narrative, deep-teal rules establish order, and restrained autumn accents identify warnings, uncertainty, and readiness without turning the document into a metric dashboard.\n\nThe story begins with identity and judgement. In the first viewport, a large editorial trip title and a text route carry the main column; readiness, budget confidence, the highest-priority blockers, and a small destination-specific stamp form a supporting rail. From there the reader reviews all days and open decisions, compares primary and backup scenarios, then verifies preparation, budget, risks, provenance, and document version. Controls remain secondary to the reading flow and never imply that the derived HTML can mutate canonical trip data.\n\nThe world is calm, exact, and place-aware, but never themed. Evidence, uncertainty, offline truth, and print legibility outrank atmosphere. The baseline implementation is the authority for density and responsive transformations; the approved interactive-itinerary specification is the authority for intent.",
+    "keyCharacteristics": [
+      "Editorial hierarchy on warm paper, organised by deep-teal rules rather than card grids.",
+      "A route-first first viewport that answers identity, sequence, readiness, blockers, and next action quickly.",
+      "Restrained maple, brass, and moss accents paired with text, icons, and shape so state never depends on hue alone.",
+      "Progressive enhancement: the complete document survives missing JavaScript, media, and network access.",
+      "One information model expressed deliberately across wide, compact, and print compositions."
+    ],
+    "rules": [
+      { "name": "The Evidence Before Atmosphere Rule", "body": "Route, constraints, readiness, blockers, and provenance appear before decorative imagery or flourish.", "section": "overview" },
+      { "name": "The One Structural Voice Rule", "body": "Deep teal owns structure; accent colors identify meaning and never compete as equal navigation colors.", "section": "colors" },
+      { "name": "The Paired-State Rule", "body": "Draft, Final, stale, conflict, blocker, unknown, and offline states use text plus icon or shape in addition to color.", "section": "colors" },
+      { "name": "The Two-Voice Rule", "body": "Serif establishes narrative importance; sans-serif carries operation and evidence. Do not introduce a third decorative type voice.", "section": "typography" },
+      { "name": "The Transform, Don't Shrink Rule", "body": "At each breakpoint, route, overview, timeline, contents, and budget change composition; they do not become miniature desktop UI.", "section": "layout" },
+      { "name": "The Flat Document Rule", "body": "Major sections, route structures, tables, timelines, and list items stay flat; a shadow must correspond to actual floating behavior.", "section": "elevation" },
+      { "name": "The Radius Has Meaning Rule", "body": "Square means document structure, 8px means control, 12px means floating summary, and full pill means compact state.", "section": "shapes" },
+      { "name": "The Derived Artifact Rule", "body": "Search, filters, disclosure, and scenario switching change only the local view; no component authors booking, readiness, decision, budget, or Final status.", "section": "components" }
+    ],
+    "dos": [
+      "Do lead the first viewport with trip identity, text route, readiness, blockers, budget confidence, and clear next links.",
+      "Do use the 8px rhythm, 32–64px section separations, and rules to create editorial pacing.",
+      "Do keep body copy readable at 16px or larger on phones, secondary copy at 14px or larger, and controls at least 44×44 CSS px.",
+      "Do pair every state color with explicit wording and, where useful, the shared outline icon vocabulary.",
+      "Do preserve semantic landmarks, logical heading order, keyboard access, a 3px visible focus ring, 200% zoom, and reduced-motion behavior.",
+      "Do keep core content, navigation, primary and backup information, and print meaning available without JavaScript or network access.",
+      "Do place one representative image only when it supports a decision, with reserved dimensions, provenance, and appropriate alternative text."
+    ],
+    "donts": [
+      "Don't turn the itinerary into a generic dashboard, a grid of interchangeable rounded cards, or an AI-gradient interface.",
+      "Don't introduce an overview pseudo-map, horizontal route scrolling, decorative transport glyph clouds, mixed icon families, or emoji status markers.",
+      "Don't let photography, the stamp, readiness percentages, or atmosphere precede or conceal a blocker, cut-off, unresolved decision, or source conflict.",
+      "Don't use hover, color, switched scenario state, or an external link as the sole carrier of critical information.",
+      "Don't add runtime font, icon, media, CSS, script, or map dependencies to the self-contained artifact.",
+      "Don't persist view preferences as canonical data or imply that editing the HTML changes the trip workspace.",
+      "Don't add parallax, route animation, skeleton screens, generic error pages, or decorative motion; transitions remain functional, brief, and removable under reduced motion."
+    ]
+  }
+}

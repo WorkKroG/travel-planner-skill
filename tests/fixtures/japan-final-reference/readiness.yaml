@@ -1,0 +1,33 @@
+schema_version: 1
+trip_id: japan-final-reference
+items:
+  - id: lodging-final
+    category: lodging
+    status: confirmed
+    owner_id: traveler-1
+    due_at: null
+    next_check_at: null
+    source_ids: []
+    claim_ids: []
+    dependencies: []
+    title: Lodging confirmed
+  - id: rail-final
+    category: transport
+    status: confirmed
+    owner_id: traveler-1
+    due_at: null
+    next_check_at: null
+    source_ids: []
+    claim_ids: []
+    dependencies: []
+    title: Rail seats confirmed
+  - id: garden-final
+    category: activities
+    status: confirmed
+    owner_id: traveler-2
+    due_at: null
+    next_check_at: null
+    source_ids: [source-garden]
+    claim_ids: [claim-garden-hours]
+    dependencies: []
+    title: Garden hours confirmed

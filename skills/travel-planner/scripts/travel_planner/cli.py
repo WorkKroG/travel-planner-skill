@@ -19,6 +19,8 @@ from .migration import MigrationError, apply_migration, preview_migration
 from .render.html import DEFAULTS as HTML_DEFAULTS
 from .render.html import write_html
 from .render.markdown import render_markdown
+from .render.pdf import render_pdf
+from .render.qa import run_document_qa
 from .render.viewmodel import build_view
 from .state import load_trip, validate_trip
 from .workspace import PROJECT_REMINDER, WorkspaceError, initialize_trip
@@ -57,6 +59,16 @@ def _parser() -> argparse.ArgumentParser:
     render.add_argument("--format", choices=("markdown", "html"), required=True)
     render.add_argument("--output", type=Path, required=True)
     render.add_argument("--at", type=datetime.fromisoformat, required=True)
+    pdf = commands.add_parser("pdf", help="Create a PDF from a rendered HTML document")
+    pdf.add_argument("html", type=Path)
+    pdf.add_argument("--output", type=Path, required=True)
+    qa = commands.add_parser("qa", help="Run browser quality gates for a rendered HTML document")
+    qa.add_argument("html", type=Path)
+    qa.add_argument(
+        "--profiles",
+        default="phone,tablet,desktop,narrow",
+        help="Comma-separated browser profiles",
+    )
     return parser
 
 
@@ -141,5 +153,15 @@ def main(argv: Sequence[str] | None = None) -> int:
             args.output.write_text(document, encoding="utf-8")
         print(f"Rendered {args.format}: {args.output}")
         return 0
+    if args.command == "pdf":
+        result = render_pdf(args.html, args.output)
+        stream = sys.stdout if result.created else sys.stderr
+        print(f"{result.code}: {result.message}", file=stream)
+        return 0 if result.created else 4
+    if args.command == "qa":
+        profiles = tuple(value.strip() for value in args.profiles.split(",") if value.strip())
+        report = run_document_qa(args.html, profiles)
+        print(json.dumps(report.as_dict(), ensure_ascii=False, indent=2, sort_keys=True))
+        return 0 if report.final_allowed else 5
     _parser().print_help()
     return 2

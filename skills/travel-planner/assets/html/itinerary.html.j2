@@ -31,7 +31,7 @@
       <p class="route-ribbon"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg> {{ view.summary.route_text }}</p>
       <div class="summary-counts">
         <a href="#route-overview">Review all days</a>
-        <a href="#open-decisions">{{ view.open_decisions|length }} open decisions</a>
+        <a href="#open-decisions">{{ view.open_decisions|length }} open decision{% if view.open_decisions|length != 1 %}s{% endif %}</a>
       </div>
     </div>
     <aside class="hero-aside" aria-label="Trip readiness summary">
@@ -116,11 +116,15 @@
             <button type="button" class="filter-button" data-filter="transfer" aria-pressed="false">Transfers</button>
             <button type="button" class="filter-button" data-filter="warning" aria-pressed="false">Warnings</button>
           </div>
+          <div class="filter-feedback">
+            <p data-filter-results>{{ view.days|length }} {% if view.days|length == 1 %}day{% else %}days{% endif %} shown.</p>
+            <p class="filter-empty" data-filter-empty hidden>No matching days. <button type="button" data-reset-filters>Reset filters</button></p>
+          </div>
         </div>
 
         <ol class="day-overview">
           {% for day in view.days %}
-          <li><a href="#{{ day.day_id }}">
+          <li data-day-overview="{{ day.day_id }}"><a href="#{{ day.day_id }}">
             <strong>Day {{ day.number }}</strong>
             <span>{{ day.date }} · {{ day.weekday }}</span>
             <span>{{ day.region }} — {{ day.thesis }}</span>
@@ -166,8 +170,9 @@
 
           {% if media.get(day.day_id) %}
           {% set photo = media.get(day.day_id) %}
-          <figure class="day-photo">
-            <img src="{{ photo.data_url }}" alt="{{ photo.alt }}" width="1200" height="800" loading="lazy" decoding="async">
+          <figure class="day-photo" data-optional-media>
+            <img src="{{ photo.data_url }}" alt="{{ photo.alt }}" width="1200" height="800" loading="lazy" decoding="async" data-media-image>
+            <p class="media-fallback" data-media-fallback hidden>Photo unavailable; the day plan remains complete.</p>
             <figcaption>Source: {{ photo.source_id }} · Licence: {{ photo.license }}</figcaption>
           </figure>
           {% endif %}

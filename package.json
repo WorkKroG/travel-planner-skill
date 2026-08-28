@@ -1,0 +1,14 @@
+{
+  "name": "travel-planner-skill-qa",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "qa:ui": "node tests/ui/qa.mjs",
+    "test:ui-unit": "node --test tests/ui/*.test.mjs"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "playwright": "1.62.1"
+  }
+}

@@ -470,6 +470,28 @@ li {
   gap: var(--space-1);
 }
 
+.filter-feedback {
+  display: flex;
+  min-height: var(--control);
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+.filter-feedback p {
+  margin: var(--space-1) 0 var(--space-2);
+}
+
+.filter-empty {
+  color: #8c2d20;
+}
+
+.filter-empty button {
+  margin-left: var(--space-1);
+}
+
 button {
   min-height: var(--control);
   padding: 0.55rem 0.9rem;
@@ -479,6 +501,10 @@ button {
   color: var(--teal);
   font: 700 0.9rem/1.2 var(--sans);
   cursor: pointer;
+}
+
+.filter-button {
+  min-height: var(--control);
 }
 
 button:hover,
@@ -662,6 +688,29 @@ button[aria-pressed="true"] {
   background: var(--mineral);
 }
 
+.day-photo:not(.media-loaded, .media-unavailable) img {
+  opacity: 0.72;
+}
+
+.day-photo.media-unavailable img {
+  display: none;
+}
+
+.day-photo.media-unavailable {
+  margin-block: var(--space-2);
+}
+
+.media-fallback {
+  display: block;
+  min-height: 0;
+  margin: 0;
+  padding: 0.65rem 0.8rem;
+  border-left: 3px solid var(--brass);
+  background: var(--mineral);
+  color: var(--ink-soft);
+  font-size: 0.875rem;
+}
+
 .day-photo figcaption {
   margin-top: var(--space-1);
   color: var(--ink-soft);
@@ -746,6 +795,10 @@ button[aria-pressed="true"] {
   background: #fff7db;
 }
 
+.enhancement-failed .interactive-controls {
+  display: none !important;
+}
+
 @media (max-width: 1023px) {
   .trip-hero {
     grid-template-columns: minmax(0, 1.3fr) minmax(15rem, 0.7fr);
@@ -799,13 +852,47 @@ button[aria-pressed="true"] {
 
   .trip-hero {
     min-height: 0;
-    padding: var(--space-4) var(--space-2) var(--space-6);
+    padding: var(--space-2);
     grid-template-columns: 1fr;
-    gap: var(--space-4);
+    gap: 0.75rem;
+    align-items: start;
   }
 
   h1 {
-    font-size: clamp(2.8rem, 15vw, 4.4rem);
+    max-width: calc(100% - 3.5rem);
+    margin: 0.75rem 0 var(--space-1);
+    font-size: clamp(2.25rem, 11vw, 3rem);
+    line-height: 0.96;
+  }
+
+  .status-line {
+    max-width: calc(100% - 3.5rem);
+    gap: 0.25rem 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.35;
+  }
+
+  .trip-thesis {
+    margin: var(--space-1) 0 0.75rem;
+    font-size: 1rem;
+    line-height: 1.35;
+  }
+
+  .route-ribbon {
+    margin: 0.75rem 0;
+    padding-block: 0.7rem;
+    font-size: 1rem;
+  }
+
+  .summary-counts {
+    gap: var(--space-1);
+  }
+
+  .summary-counts a,
+  .readiness-panel a {
+    display: inline-flex;
+    min-block-size: var(--control);
+    align-items: center;
   }
 
   .hero-aside {
@@ -813,13 +900,31 @@ button[aria-pressed="true"] {
   }
 
   .stamp {
-    width: 5.5rem;
-    grid-row: 2;
+    position: absolute;
+    top: 0.8rem;
+    right: var(--space-2);
+    width: 3.25rem;
   }
 
   .readiness-panel,
   .budget-panel {
+    min-height: 0;
+    padding: 0.65rem 0.8rem;
+    border-radius: 8px;
     box-shadow: 0 0.6rem 1.8rem rgb(23 60 68 / 8%);
+  }
+
+  .readiness-panel strong,
+  .budget-panel strong {
+    font-size: 1.05rem;
+    line-height: 1.2;
+  }
+
+  .hero-aside .warning-block {
+    margin: 0;
+    padding: 0.55rem 0.8rem;
+    font-size: 0.875rem;
+    line-height: 1.4;
   }
 
   .document-grid {
@@ -832,6 +937,16 @@ button[aria-pressed="true"] {
     z-index: 50;
     border: 0;
     background: transparent;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(calc(100% + var(--space-2)));
+    transition: transform 160ms ease, visibility 160ms;
+  }
+
+  .js-enabled .contents.contents--available {
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0);
   }
 
   .js-enabled .contents summary {
@@ -889,6 +1004,34 @@ button[aria-pressed="true"] {
 
   .day-overview a {
     grid-template-columns: 3.2rem minmax(0, 1fr);
+  }
+
+  .document-status,
+  .status,
+  .filter-button,
+  .scenario-kind,
+  .day-number,
+  .network-label,
+  .day-photo figcaption,
+  .budget-table th,
+  .document-footer {
+    font-size: 0.875rem;
+  }
+
+  .readiness-panel a,
+  .source-url {
+    min-block-size: var(--control);
+    align-items: center;
+  }
+
+  .source-url {
+    display: flex;
+  }
+
+  .filter-feedback {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0;
   }
 
   .day-overview span:nth-child(3),
@@ -1020,10 +1163,17 @@ button[aria-pressed="true"] {
     display: block !important;
   }
 
-  .document-section,
+  .document-section {
+    padding: 8mm 0 0;
+  }
+
   .day-article {
     break-before: page;
     padding: 8mm 0 0;
+  }
+
+  .day-article:first-of-type {
+    break-before: auto;
   }
 
   .day-article,
