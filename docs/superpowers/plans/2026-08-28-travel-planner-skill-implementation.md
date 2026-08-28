@@ -733,7 +733,7 @@ git commit -m "feat: add safe partial rebuild planning"
 - Produces: `ItineraryView`, `SummaryView`, `RouteStopView`, `DecisionView`, `DayView`, `ReadinessView`, `BudgetView`, `SourceView`, `build_view(state, challenge, generated_at) -> ItineraryView`, `render_markdown(view) -> str`.
 - Consumes: validated state, findings, map links and readiness; HTML/PDF adapters consume only `ItineraryView`.
 
-- [ ] **Step 1: Write first-screen ordering and state-boundary tests**
+- [x] **Step 1: Write first-screen ordering and state-boundary tests**
 
 ```python
 def test_view_places_blockers_before_day_details(japan_state):
@@ -747,12 +747,12 @@ def test_view_does_not_mutate_canonical_state(japan_state):
     assert semantic_hash(japan_state) == before
 ```
 
-- [ ] **Step 2: Verify failure**
+- [x] **Step 2: Verify failure**
 
 Run: `uv run pytest tests/render/test_viewmodel.py tests/render/test_markdown.py -v`  
 Expected: FAIL because view/render modules are absent.
 
-- [ ] **Step 3: Implement immutable view dataclasses and deterministic Markdown**
+- [x] **Step 3: Implement immutable view dataclasses and deterministic Markdown**
 
 ```python
 @dataclass(frozen=True)
@@ -772,12 +772,12 @@ class ItineraryView:
 
 Order summary → route/day overview → decisions → days → readiness → budget → risks → sources. Print Draft/Final, stale/conflicting/unknown and last-checked text explicitly.
 
-- [ ] **Step 4: Verify deterministic snapshots**
+- [x] **Step 4: Verify deterministic snapshots**
 
 Run: `uv run pytest tests/render/test_viewmodel.py tests/render/test_markdown.py -v`  
 Expected: PASS; identical inputs and fixed clock produce byte-identical Markdown.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add skills/travel-planner/scripts/travel_planner/render skills/travel-planner/scripts/travel_planner/cli.py tests/render tests/fixtures/japan-reference
@@ -801,7 +801,7 @@ git commit -m "feat: add canonical itinerary render model"
 - Produces: `HtmlOptions`, `MediaAsset`, `render_html(view, media, options) -> str`, `write_html(view, target, options) -> Path`.
 - Consumes: `ItineraryView`; embeds CSS/JS/icons/media and emits no required network requests.
 
-- [ ] **Step 1: Write semantic structure and progressive-enhancement tests**
+- [x] **Step 1: Write semantic structure and progressive-enhancement tests**
 
 ```python
 def test_html_contains_required_reading_order(japan_view):
@@ -816,12 +816,12 @@ def test_primary_and_backup_exist_without_javascript(japan_view):
     assert 'data-scenario="backup"' in html
 ```
 
-- [ ] **Step 2: Verify failure**
+- [x] **Step 2: Verify failure**
 
 Run: `uv run pytest tests/render/test_html_structure.py tests/render/test_html_no_js.py -v`  
 Expected: FAIL because HTML renderer/assets are absent.
 
-- [ ] **Step 3: Implement the approved visual and interaction contract**
+- [x] **Step 3: Implement the approved visual and interaction contract**
 
 ```python
 @dataclass(frozen=True)
@@ -852,13 +852,13 @@ Use exact design tokens `#EDF1EC`, `#FFFDF7`, `#173C44`, `#BD4A36`, `#D1A044`, `
 
 Implement semantic landmarks, skip link, text route ribbon, day overview, sticky/flow contents, 44 px controls, a 52 px phone Contents control above the safe area, search, filters, disclosures, view-only scenario switch, map provider labels, status text+icons, optional stamp/photo collapse, `prefers-reduced-motion`, 320/640/1024 breakpoints and print CSS. Do not use `localStorage` in v0.1. `embed_media` rejects optional photographs without source/license provenance and collapses missing media. No pseudo-map, gallery, dark mode or canonical edits.
 
-- [ ] **Step 4: Verify structure, determinism and offline assets**
+- [x] **Step 4: Verify structure, determinism and offline assets**
 
 Run: `uv run pytest tests/render/test_html_structure.py tests/render/test_html_no_js.py -v`  
 Run: `uv run travel-planner render tests/fixtures/japan-reference --format html --output /tmp/japan.html --at 2026-08-28T12:00:00Z`  
 Expected: PASS; `/tmp/japan.html` opens through `file://` with all styles/scripts inline.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add skills/travel-planner/assets/html skills/travel-planner/scripts/travel_planner/render/html.py skills/travel-planner/scripts/travel_planner/cli.py tests/render
@@ -883,7 +883,7 @@ git commit -m "feat: render interactive curated route html"
 - Produces: `PdfAdapter`, `PdfResult`, `QaReport`, `render_pdf(html_path, pdf_path) -> PdfResult`, `run_document_qa(html_path, profiles) -> QaReport`; Node command `npm run qa:ui -- PATH`.
 - Consumes: self-contained HTML from Task 12; Playwright is optional for end users but required in release environment.
 
-- [ ] **Step 1: Write missing-adapter and QA hard-gate tests**
+- [x] **Step 1: Write missing-adapter and QA hard-gate tests**
 
 ```python
 def test_missing_pdf_adapter_returns_html_success_but_not_pdf_success(tmp_path, monkeypatch):
@@ -897,12 +897,12 @@ def test_serious_accessibility_finding_blocks_final_status():
     assert report.final_allowed is False
 ```
 
-- [ ] **Step 2: Verify failure**
+- [x] **Step 2: Verify failure**
 
 Run: `uv run pytest tests/render/test_pdf_adapter.py tests/render/test_qa_report.py -v`  
 Expected: FAIL because adapters and report do not exist.
 
-- [ ] **Step 3: Implement bounded browser QA and print adapter**
+- [x] **Step 3: Implement bounded browser QA and print adapter**
 
 ```javascript
 const sizes = [
@@ -919,13 +919,17 @@ Generate and commit the lockfile with `npm install --package-lock-only` before t
 
 - [ ] **Step 4: Run browser, PDF and print checks**
 
+Automated browser, accessibility, responsive, offline/no-JS, state-matrix, A4/Letter PDF,
+performance, touch-target and 30-day stress checks pass. The manual VoiceOver walkthrough remains
+an explicit release checkpoint because local UI control was unavailable in this session.
+
 Run: `npm ci`  
 Run: `npx playwright install chromium`  
 Run: `npm run qa:ui -- /tmp/japan.html`  
 Run: `uv run pytest tests/render/test_pdf_adapter.py tests/render/test_qa_report.py -v`  
 Expected: zero serious/critical a11y defects, no overflow, performance thresholds met, screenshots produced, A4/Letter PDFs without clipped content. Complete and record one manual VoiceOver walkthrough of summary, contents, one day, scenario switch and sources before accepting the release baseline.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add package.json package-lock.json tests/ui skills/travel-planner/scripts/travel_planner/render/pdf.py skills/travel-planner/scripts/travel_planner/render/qa.py skills/travel-planner/scripts/travel_planner/cli.py tests/render
