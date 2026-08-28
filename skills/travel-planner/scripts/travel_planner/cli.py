@@ -3,14 +3,17 @@
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from collections.abc import Sequence
+from datetime import datetime
 from pathlib import Path
 
 import yaml
 
 from . import __version__
-from .state import validate_trip
+from .challenge import run_challenge
+from .state import load_trip, validate_trip
 from .workspace import PROJECT_REMINDER, WorkspaceError, initialize_trip
 
 
@@ -25,6 +28,10 @@ def _parser() -> argparse.ArgumentParser:
     init.add_argument("--confirm-path", action="store_true")
     validate = commands.add_parser("validate", help="Validate a trip workspace")
     validate.add_argument("path", type=Path)
+    challenge = commands.add_parser("challenge", help="Run deterministic trip checks")
+    challenge.add_argument("path", type=Path)
+    challenge.add_argument("--stage", choices=("skeleton", "detailed"), required=True)
+    challenge.add_argument("--at", type=datetime.fromisoformat, required=True)
     return parser
 
 
@@ -58,5 +65,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         for issue in report.issues:
             print(f"{issue.path}: {issue.message}", file=sys.stderr)
         return 2
+    if args.command == "challenge":
+        report = run_challenge(load_trip(args.path), args.stage, args.at)
+        print(json.dumps(report.as_dict(), ensure_ascii=False, indent=2, sort_keys=True))
+        return 0 if report.hard_pass else 3
     _parser().print_help()
     return 2
