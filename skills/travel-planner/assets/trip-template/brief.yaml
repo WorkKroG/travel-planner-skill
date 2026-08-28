@@ -1,0 +1,14 @@
+schema_version: 1
+trip_id: ""
+updated_at: ""
+title: ""
+travel_dates:
+  start: null
+  end: null
+travelers: []
+priorities: []
+hard_constraints: []
+soft_preferences: []
+assumptions: []
+map_provider: auto
+
