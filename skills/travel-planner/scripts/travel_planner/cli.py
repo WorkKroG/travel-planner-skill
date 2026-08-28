@@ -13,7 +13,9 @@ import yaml
 
 from . import __version__
 from .challenge import run_challenge
+from .impact import analyze_change
 from .maps import MapPlace, build_place_url, load_map_policy, select_provider
+from .migration import MigrationError, apply_migration, preview_migration
 from .state import load_trip, validate_trip
 from .workspace import PROJECT_REMINDER, WorkspaceError, initialize_trip
 
@@ -39,6 +41,13 @@ def _parser() -> argparse.ArgumentParser:
     map_link.add_argument("--provider", choices=("auto", "yandex", "google"), default="auto")
     map_link.add_argument("--latitude", type=float)
     map_link.add_argument("--longitude", type=float)
+    impact = commands.add_parser("impact", help="Preview partial rebuild targets")
+    impact.add_argument("before", type=Path)
+    impact.add_argument("after", type=Path)
+    migrate = commands.add_parser("migrate", help="Preview or apply a state schema migration")
+    migrate.add_argument("path", type=Path)
+    migrate.add_argument("--target-version", type=int, required=True)
+    migrate.add_argument("--confirm", action="store_true")
     return parser
 
 
@@ -90,6 +99,21 @@ def main(argv: Sequence[str] | None = None) -> int:
             print(str(error), file=sys.stderr)
             return 2
         print(f"{provider.value.title()} Maps: {url}")
+        return 0
+    if args.command == "impact":
+        report = analyze_change(load_trip(args.before), load_trip(args.after))
+        print(json.dumps(report.as_dict(), ensure_ascii=False, indent=2, sort_keys=True))
+        return 0
+    if args.command == "migrate":
+        try:
+            plan = preview_migration(args.path, args.target_version)
+            print(json.dumps(plan.as_dict(), ensure_ascii=False, indent=2, sort_keys=True))
+            if args.confirm:
+                apply_migration(plan, confirmed=True)
+                print(f"Migration applied; backup: {plan.backup_root}")
+        except (MigrationError, OSError, TypeError, yaml.YAMLError) as error:
+            print(str(error), file=sys.stderr)
+            return 2
         return 0
     _parser().print_help()
     return 2
