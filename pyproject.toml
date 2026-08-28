@@ -35,6 +35,7 @@ where = ["skills/travel-planner/scripts"]
 "share/codex-travel-planner/schemas" = ["skills/travel-planner/schemas/*.json"]
 "share/codex-travel-planner/trip-template" = ["skills/travel-planner/assets/trip-template/*"]
 "share/codex-travel-planner/map-policy" = ["skills/travel-planner/assets/map-provider-policy.yaml"]
+"share/codex-travel-planner/html" = ["skills/travel-planner/assets/html/*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

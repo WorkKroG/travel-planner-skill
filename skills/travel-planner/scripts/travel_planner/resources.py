@@ -10,6 +10,7 @@ _SOURCE_SUBDIRECTORIES = {
     "schemas": Path("schemas"),
     "trip-template": Path("assets/trip-template"),
     "map-policy": Path("assets"),
+    "html": Path("assets/html"),
 }
 
 

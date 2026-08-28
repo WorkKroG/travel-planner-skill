@@ -4,6 +4,7 @@ from pathlib import Path
 import pytest
 from travel_planner.challenge import ChallengeReport
 from travel_planner.evidence import Finding
+from travel_planner.render.viewmodel import ItineraryView, build_view
 from travel_planner.state import TripState, load_trip
 
 
@@ -51,3 +52,10 @@ def japan_report() -> ChallengeReport:
         ),
         rule_versions=(("BOOK-001", 1), ("EVID-001", 1)),
     )
+
+
+@pytest.fixture
+def japan_view(japan_state: TripState, japan_report: ChallengeReport) -> ItineraryView:
+    from datetime import UTC, datetime
+
+    return build_view(japan_state, japan_report, datetime(2026, 8, 28, 12, tzinfo=UTC))

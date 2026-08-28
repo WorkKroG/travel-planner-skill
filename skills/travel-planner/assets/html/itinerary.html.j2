@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light">
+  <title>{{ view.title }} · {{ view.status|capitalize }} itinerary</title>
+  <style>{{ css }}</style>
+</head>
+<body class="{% if options.print_images %}print-images{% else %}no-print-images{% endif %}">
+  <!--
+  THESIS: Curated Route makes feasibility legible before decoration and refuses the generic metric-dashboard itinerary.
+  OWN-WORLD: Mineral paper, deep-teal document rules, maple warnings, brass uncertainty, moss readiness; editorial sections and precise native controls.
+  STORY: Readers identify the trip, judge route and blockers, compare days and backups, then verify preparation, budget, risks, and sources.
+  FIRST VIEWPORT: Large trip title and text route lead on warm paper; readiness, budget, blockers, and a small decorative stamp form the supporting rail.
+  FORM: Approved Curated Route direction; pinned design specification; seed approved-curated-route-2026-08-28.
+  FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
+  -->
+  {{ icons }}
+  <a class="skip-link" href="#main-content">Skip to itinerary</a>
+
+  <header class="trip-hero" id="trip-summary">
+    <div class="hero-copy">
+      <div class="status-line">
+        <span class="document-status document-status--{{ view.status }}">{{ view.status|capitalize }}</span>
+        <span>{{ view.summary.date_range }}</span>
+        <span>{{ view.summary.traveler_count }} travellers</span>
+      </div>
+      <h1>{{ view.title }}</h1>
+      <p class="trip-thesis">{{ view.summary.thesis }}</p>
+      <p class="route-ribbon"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg> {{ view.summary.route_text }}</p>
+      <div class="summary-counts">
+        <a href="#route-overview">Review all days</a>
+        <a href="#open-decisions">{{ view.open_decisions|length }} open decisions</a>
+      </div>
+    </div>
+    <aside class="hero-aside" aria-label="Trip readiness summary">
+      <div class="stamp" aria-hidden="true">
+        <svg viewBox="0 0 112 132" role="img">
+          <path d="M8 8h96v116H8z" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="3 4"/>
+          <path d="M57 24c-2 13-10 16-20 12 5 8 2 15-6 20 10 0 15 5 15 14 6-6 12-7 19-1-1-9 4-14 14-15-8-5-10-12-5-20-10 4-16 0-17-10Z" fill="none" stroke="currentColor" stroke-width="2.5"/>
+          <path d="M55 45v49M39 97h34" fill="none" stroke="currentColor" stroke-width="2"/>
+          <text x="56" y="113" text-anchor="middle" fill="currentColor" font-size="8" font-family="sans-serif">CURATED ROUTE</text>
+        </svg>
+      </div>
+      <div class="readiness-panel">
+        <span>Readiness</span>
+        <strong>{{ view.summary.readiness_confirmed }} of {{ view.summary.readiness_total }} confirmed</strong>
+        <a href="#preparation">Review preparation</a>
+      </div>
+      <div class="budget-panel">
+        <span>Known budget range</span>
+        <strong>
+          {% if view.budget.minimum is not none %}{{ "{:,.0f}".format(view.budget.minimum) }}{% else %}Unknown{% endif %}
+          —
+          {% if view.budget.maximum is not none %}{{ "{:,.0f}".format(view.budget.maximum) }} {{ view.budget.currency }}{% else %}Unknown{% endif %}
+        </strong>
+        <span>{{ view.budget.confidence|capitalize }} confidence · {{ view.budget.unknown_count }} unknown</span>
+      </div>
+      {% for finding in view.summary.blockers[:3] %}
+      <div class="warning-block">
+        <p class="status-with-icon"><svg class="icon" aria-hidden="true"><use href="#icon-stop"></use></svg><strong>Blocking · {{ finding.rule_id }}</strong></p>
+        <p>{{ finding.message }}</p>
+      </div>
+      {% endfor %}
+    </aside>
+  </header>
+
+  <div class="document-grid">
+    <nav aria-label="Itinerary contents">
+      <details class="contents" open>
+        <summary><svg class="icon" aria-hidden="true"><use href="#icon-menu"></use></svg> Contents</summary>
+        <ol>
+          <li><a href="#trip-summary">Trip summary</a></li>
+          <li><a href="#route-overview">Route and days</a></li>
+          <li><a href="#open-decisions">Open decisions</a></li>
+          <li><a href="#detailed-days">Detailed days</a></li>
+          <li>
+            <ol class="day-links">
+              {% for day in view.days %}<li><a href="#{{ day.day_id }}">Day {{ day.number }} · {{ day.region }}</a></li>{% endfor %}
+            </ol>
+          </li>
+          <li><a href="#preparation">Preparation</a></li>
+          <li><a href="#budget">Budget</a></li>
+          <li><a href="#risks">Risks and backups</a></li>
+          <li><a href="#sources">Sources</a></li>
+        </ol>
+      </details>
+    </nav>
+
+    <main class="document-main" id="main-content">
+      <p class="enhancement-error" data-enhancement-error hidden>Interactive controls are unavailable. The complete itinerary remains below.</p>
+      <p class="screen-reader-live" aria-live="polite" aria-atomic="true" data-live-region></p>
+
+      <section class="document-section" id="route-overview" aria-labelledby="route-title">
+        <h2 id="route-title">Route and day overview</h2>
+        <ol class="route-sequence">
+          {% for stop in view.route %}
+          <li class="route-stop">
+            <strong>{{ stop.name }}</strong>
+            <span>{{ stop.dates }}{% if stop.nights is not none %} · {{ stop.nights }} nights{% endif %}</span>
+            {% if stop.transfer_label %}<span>{{ stop.transfer_label }}</span>{% endif %}
+          </li>
+          {% else %}<li>Route not selected.</li>{% endfor %}
+        </ol>
+
+        <div class="interactive-controls" aria-label="Day search and filters">
+          <div class="search-row">
+            <label for="day-search">Search itinerary days</label>
+            <input id="day-search" type="search" placeholder="Search days, places, constraints" data-day-search>
+          </div>
+          <div class="filters" aria-label="Filter days">
+            <button type="button" class="filter-button" data-filter="all" aria-pressed="true">All days</button>
+            <button type="button" class="filter-button" data-filter="unresolved" aria-pressed="false">Unresolved</button>
+            <button type="button" class="filter-button" data-filter="weather" aria-pressed="false">Weather-sensitive</button>
+            <button type="button" class="filter-button" data-filter="transfer" aria-pressed="false">Transfers</button>
+            <button type="button" class="filter-button" data-filter="warning" aria-pressed="false">Warnings</button>
+          </div>
+        </div>
+
+        <ol class="day-overview">
+          {% for day in view.days %}
+          <li><a href="#{{ day.day_id }}">
+            <strong>Day {{ day.number }}</strong>
+            <span>{{ day.date }} · {{ day.weekday }}</span>
+            <span>{{ day.region }} — {{ day.thesis }}</span>
+            <small>{{ day.travel }} · {{ day.load|capitalize }} load · {{ day.booking_state|replace('_', ' ')|capitalize }}</small>
+          </a></li>
+          {% else %}<li>No detailed days recorded.</li>{% endfor %}
+        </ol>
+      </section>
+
+      <section class="document-section" id="open-decisions" aria-labelledby="decisions-title">
+        <h2 id="decisions-title">Open decisions</h2>
+        <ul class="decision-list">
+          {% for decision in view.open_decisions %}
+          <li class="decision-item">
+            <p class="status status--{{ decision.severity }}"><svg class="icon" aria-hidden="true"><use href="#icon-{% if decision.severity == 'blocking' %}stop{% else %}square{% endif %}"></use></svg>{{ decision.severity }}</p>
+            <p class="decision-question">{{ decision.question }}</p>
+            <p>{{ decision.why }}</p>
+            <div class="decision-details">
+              <span><strong>Affects:</strong> {{ decision.affected_ids|join(', ') or 'Unknown' }}</span>
+              <span><strong>Deadline:</strong> {{ decision.deadline }}</span>
+              <span><strong>Next action:</strong> {{ decision.next_action }}</span>
+            </div>
+          </li>
+          {% else %}<li>No open decisions.</li>{% endfor %}
+        </ul>
+      </section>
+
+      <section class="document-section" id="detailed-days" aria-labelledby="days-title">
+        <h2 id="days-title">Detailed days</h2>
+        {% for day in view.days %}
+        <article class="day-article" id="{{ day.day_id }}" data-day data-weather="{{ day.weather_sensitive|string|lower }}" data-transfer="{{ ('transfer' in day.travel|lower or 'rail' in day.travel|lower)|string|lower }}" data-unresolved="{{ (day.booking_state not in ['booked', 'confirmed'])|string|lower }}" data-warning="{{ (day.critical_constraints|length > 0)|string|lower }}" aria-labelledby="{{ day.day_id }}-title">
+          <header class="day-heading">
+            <div>
+              <span class="day-number">Day {{ day.number }}</span>
+              <h3 id="{{ day.day_id }}-title">{{ day.date }} · {{ day.weekday }} · {{ day.region }}</h3>
+              <p class="day-thesis">{{ day.thesis }}</p>
+            </div>
+            <div class="day-meta">
+              <span class="status status--{{ day.booking_state|replace('_', '-') }}">{{ day.booking_state|replace('_', ' ') }}</span>
+              {% if day.weather_sensitive %}<span class="status status--recheck">Weather-sensitive</span>{% endif %}
+            </div>
+          </header>
+
+          {% if media.get(day.day_id) %}
+          {% set photo = media.get(day.day_id) %}
+          <figure class="day-photo">
+            <img src="{{ photo.data_url }}" alt="{{ photo.alt }}" width="1200" height="800" loading="lazy" decoding="async">
+            <figcaption>Source: {{ photo.source_id }} · Licence: {{ photo.license }}</figcaption>
+          </figure>
+          {% endif %}
+
+          <div class="day-layout">
+            <div class="day-primary">
+              <h4>Timeline</h4>
+              <ol class="timeline">
+                {% for event in day.timeline %}
+                <li class="timeline-event">
+                  <span class="timeline-time">{{ event.time }}</span>
+                  <div><strong>{{ event.title }}</strong><p>{{ event.detail }}</p></div>
+                </li>
+                {% else %}<li>No timeline recorded.</li>{% endfor %}
+              </ol>
+
+              <h4>Primary and backup scenarios</h4>
+              {% if day.scenarios %}
+              <div class="scenario-switch interactive-controls" data-scenario-switch aria-label="Scenario view for day {{ day.number }}">
+                <button type="button" data-show-scenario="primary" aria-pressed="true">Primary</button>
+                <button type="button" data-show-scenario="backup" aria-pressed="false">Backup</button>
+              </div>
+              {% endif %}
+              {% for scenario in day.scenarios %}
+              <section class="scenario-panel" data-scenario="{{ scenario.kind }}" aria-label="{{ scenario.kind|capitalize }} scenario">
+                <span class="scenario-kind">{{ scenario.kind }}</span>
+                <strong>{{ scenario.title }}</strong>
+                <p>{{ scenario.description }}</p>
+              </section>
+              {% else %}<p>No scenarios recorded.</p>{% endfor %}
+
+              {% if day.food %}
+              <h4>Food in context</h4>
+              <ul class="food-list">
+                {% for food in day.food %}<li><strong>{{ food.name }}</strong><span>{{ food.status|capitalize }} · {{ food.note }}</span></li>{% endfor %}
+              </ul>
+              {% endif %}
+            </div>
+
+            <aside class="day-context" aria-label="Day {{ day.number }} constraints and links">
+              <h4>Critical constraints</h4>
+              <ul class="constraint-list">
+                {% for constraint in day.critical_constraints %}<li>{{ constraint }}</li>{% else %}<li>No critical constraints recorded.</li>{% endfor %}
+              </ul>
+              <dl>
+                <dt>Overnight</dt><dd>{{ day.overnight }}</dd>
+                <dt>Travel</dt><dd>{{ day.travel }}</dd>
+                <dt>Load</dt><dd>{{ day.load|capitalize }}</dd>
+                <dt>Last checked</dt><dd>{{ day.last_checked }}</dd>
+              </dl>
+              {% if day.links %}
+              <h4>Contextual actions</h4>
+              <ul class="link-list">
+                {% for link in day.links %}
+                <li><a class="external-link" href="{{ link.url }}" data-source-id="{{ day.source_ids|first|default('external') }}"><svg class="icon" aria-hidden="true"><use href="#icon-{% if link.kind == 'map' %}route{% else %}arrow{% endif %}"></use></svg>{{ link.label }}</a>{% if link.requires_internet %}<span class="network-label"><svg class="icon" aria-hidden="true"><use href="#icon-cloud"></use></svg> Internet required</span>{% endif %}</li>
+                {% endfor %}
+              </ul>
+              {% endif %}
+            </aside>
+          </div>
+
+          <nav class="day-nav" aria-label="Adjacent days">
+            {% if not loop.first %}<a href="#{{ view.days[loop.index0 - 1].day_id }}">← Previous day</a>{% else %}<span></span>{% endif %}
+            {% if not loop.last %}<a href="#{{ view.days[loop.index0 + 1].day_id }}">Next day →</a>{% endif %}
+          </nav>
+        </article>
+        {% endfor %}
+      </section>
+
+      <section class="document-section" id="preparation" aria-labelledby="preparation-title">
+        <h2 id="preparation-title">Bookings and readiness</h2>
+        <p>{{ view.summary.readiness_confirmed }} confirmed of {{ view.summary.readiness_total }}. Blockers are shown separately and are not averaged into this count.</p>
+        <ul class="readiness-list">
+          {% for item in view.readiness %}
+          <li class="readiness-item">
+            <p class="status-with-icon"><svg class="icon" aria-hidden="true"><use href="#icon-{% if item.status == 'confirmed' %}check{% elif item.status == 'recheck' %}recheck{% else %}square{% endif %}"></use></svg><strong>{{ item.title }}</strong></p>
+            <p><span class="status status--{{ item.status|replace('_', '-') }}">{{ item.status|replace('_', ' ') }}</span> {{ item.category }} · Owner: {{ item.owner_id }} · Next check: {{ item.next_check_at }}</p>
+          </li>
+          {% else %}<li>No readiness items recorded.</li>{% endfor %}
+        </ul>
+      </section>
+
+      <section class="document-section" id="budget" aria-labelledby="budget-title">
+        <h2 id="budget-title">Budget</h2>
+        <div class="budget-summary">
+          <div><span>Known minimum</span><strong>{% if view.budget.minimum is not none %}{{ "{:,.0f}".format(view.budget.minimum) }} {{ view.budget.currency }}{% else %}Unknown{% endif %}</strong></div>
+          <div><span>Known maximum</span><strong>{% if view.budget.maximum is not none %}{{ "{:,.0f}".format(view.budget.maximum) }} {{ view.budget.currency }}{% else %}Unknown{% endif %}</strong></div>
+          <div><span>Estimate quality</span><strong>{{ view.budget.confidence|capitalize }}</strong><span>{{ view.budget.unknown_count }} unknown amounts</span></div>
+        </div>
+        <table class="budget-table">
+          <thead><tr><th>Category</th><th>Range</th><th>Type</th><th>Confidence</th></tr></thead>
+          <tbody>
+            {% for category in view.budget.categories %}
+            <tr>
+              <td data-label="Category">{{ category.category }}</td>
+              <td data-label="Range">{% if category.minimum is not none %}{{ "{:,.0f}".format(category.minimum) }} — {{ "{:,.0f}".format(category.maximum) }} {{ category.currency }}{% else %}Unknown{% endif %}</td>
+              <td data-label="Type">{{ category.amount_type|replace('_', ' ') }}</td>
+              <td data-label="Confidence">{{ category.confidence }}</td>
+            </tr>
+            {% else %}<tr><td colspan="4">No budget items recorded.</td></tr>{% endfor %}
+          </tbody>
+        </table>
+      </section>
+
+      <section class="document-section" id="risks" aria-labelledby="risks-title">
+        <h2 id="risks-title">Risks and backup plans</h2>
+        <ul class="risk-list">
+          {% for finding in view.risks %}
+          <li class="risk-item risk-item--{{ finding.severity }}">
+            <p class="status-with-icon"><svg class="icon" aria-hidden="true"><use href="#icon-{% if finding.severity == 'blocking' %}stop{% else %}recheck{% endif %}"></use></svg><strong>{{ finding.rule_id }} · {{ finding.severity|capitalize }}</strong></p>
+            <p>{{ finding.message }}</p>
+            <p>Affects: {{ finding.affected_ids|join(', ') or 'Unknown' }} · Confidence: {{ finding.confidence }}</p>
+          </li>
+          {% else %}<li>No open findings.</li>{% endfor %}
+        </ul>
+      </section>
+
+      <section class="document-section" id="sources" aria-labelledby="sources-title">
+        <h2 id="sources-title">Sources and document version</h2>
+        <ul class="source-list">
+          {% for source in view.sources %}
+          <li class="source-item">
+            <p><strong>{{ source.source_id }} · {{ source.title }}</strong> <span class="status status--{{ source.claim_status|replace('_', '-') }}">{{ source.claim_status|replace('_', ' ') }}</span> <span class="status status--{{ source.freshness_status }}">{{ source.freshness_status }}</span></p>
+            <div class="source-meta"><span>Type: {{ source.source_type }}</span><span>Last checked: {{ source.last_checked }}</span><span>Retrieval: {{ source.retrieval_status }}</span></div>
+            <a class="source-url external-link" href="{{ source.url }}" data-source-id="{{ source.source_id }}">{{ source.url }}</a> <span class="network-label">Internet required</span>
+          </li>
+          {% else %}<li>No sources recorded.</li>{% endfor %}
+        </ul>
+      </section>
+    </main>
+  </div>
+
+  <footer class="document-footer">
+    <strong>{{ view.title }}</strong> · {{ view.trip_id }} · {{ view.status|capitalize }} · Generated {{ view.generated_at.isoformat() }} · Artefact v0.1
+  </footer>
+  <script>{{ js }}</script>
+</body>
+</html>
