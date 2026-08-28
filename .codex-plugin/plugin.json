@@ -1,0 +1,21 @@
+{
+  "name": "travel-planner",
+  "version": "0.1.0",
+  "description": "Evidence-aware, multi-stage travel planning for Codex.",
+  "author": {
+    "name": "Travel Planner Skill contributors"
+  },
+  "license": "MIT",
+  "keywords": ["travel", "itinerary", "planning"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Travel Planner",
+    "shortDescription": "Plan complex trips with evidence and clear decisions.",
+    "longDescription": "A structured Codex workflow for researching, challenging, refining, and exporting multi-stage travel itineraries.",
+    "developerName": "Travel Planner Skill contributors",
+    "category": "Productivity",
+    "capabilities": ["Research", "Write"],
+    "defaultPrompt": "Help me plan a new trip step by step."
+  }
+}
+
