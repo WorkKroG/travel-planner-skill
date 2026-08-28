@@ -13,6 +13,8 @@ from typing import Any
 import yaml
 from jsonschema import Draft202012Validator
 
+from .resources import resource_path
+
 STATE_SCHEMA_FILES = {
     "brief.yaml": "brief.schema.json",
     "candidates.yaml": "candidates.schema.json",
@@ -77,14 +79,13 @@ def _issue_path(file_name: str, parts: list[str | int]) -> str:
 def validate_trip(root: Path) -> ValidationReport:
     """Validate each state file and report stable, user-facing field paths."""
     trip_root = Path(root).expanduser().resolve(strict=False)
-    schema_root = Path(__file__).resolve().parents[2] / "schemas"
     issues: list[ValidationIssue] = []
     trip_ids: dict[str, Any] = {}
     for file_name, schema_name in STATE_SCHEMA_FILES.items():
         path = trip_root / file_name
         try:
             value = _load_yaml(path)
-            schema = json.loads((schema_root / schema_name).read_text(encoding="utf-8"))
+            schema = json.loads(resource_path("schemas", schema_name).read_text(encoding="utf-8"))
         except (OSError, TypeError, yaml.YAMLError, json.JSONDecodeError) as error:
             issues.append(ValidationIssue(file_name, file_name, str(error)))
             continue

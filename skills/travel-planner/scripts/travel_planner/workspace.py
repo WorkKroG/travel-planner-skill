@@ -12,6 +12,8 @@ from uuid import uuid4
 
 import yaml
 
+from .resources import resource_path
+
 STATE_FILES = (
     "brief.yaml",
     "candidates.yaml",
@@ -89,9 +91,8 @@ def _validate_target(root: Path) -> None:
 
 
 def _prepare_staging(staging: Path, title: str, trip_id: str) -> None:
-    template_root = Path(__file__).resolve().parents[2] / "assets" / "trip-template"
     for name in STATE_FILES:
-        source = template_root / name
+        source = resource_path("trip-template", name)
         target = staging / name
         if source.suffix == ".yaml":
             data = yaml.safe_load(source.read_text(encoding="utf-8"))
