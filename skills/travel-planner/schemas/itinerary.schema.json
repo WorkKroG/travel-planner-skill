@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "itinerary.schema.json",
+  "title": "Travel Planner itinerary v1",
+  "type": "object",
+  "required": ["schema_version", "trip_id", "route_state", "alternatives", "selected_route_id", "days", "budget_items", "challenge_findings"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "trip_id": {"$ref": "#/$defs/id"},
+    "route_state": {"enum": ["draft", "challenged", "selected", "frozen"]},
+    "alternatives": {"type": "array", "items": {"type": "object"}},
+    "selected_route_id": {"anyOf": [{"$ref": "#/$defs/id"}, {"type": "null"}]},
+    "days": {"type": "array", "items": {"type": "object"}},
+    "budget_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {"$ref": "#/$defs/id"},
+          "amount_type": {"enum": ["exact", "estimate", "range", "unknown"]},
+          "currency": {"type": "string", "pattern": "^[A-Z]{3}$"},
+          "basis": {"enum": ["per_person", "per_group"]}
+        },
+        "additionalProperties": true
+      }
+    },
+    "challenge_findings": {"type": "array", "items": {"type": "object"}}
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9](?:[a-z0-9-]{0,62}[a-z0-9])?$"}
+  }
+}
+

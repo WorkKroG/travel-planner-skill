@@ -1,0 +1,16 @@
+schema_version: 1
+trip_id: minimal-trip
+updated_at: "2026-08-28T12:00:00+00:00"
+title: Minimal Trip
+travel_dates:
+  start: "2026-11-02"
+  end: "2026-11-03"
+travelers:
+  - id: traveler-1
+    age_group: adult
+priorities: []
+hard_constraints: []
+soft_preferences: []
+assumptions: []
+map_provider: auto
+

@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "candidates.schema.json",
+  "title": "Travel Planner candidates v1",
+  "type": "object",
+  "required": ["schema_version", "trip_id", "sources", "items"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "trip_id": {"$ref": "#/$defs/id"},
+    "sources": {"type": "array", "items": {"$ref": "#/$defs/source"}},
+    "claims": {"type": "array", "items": {"$ref": "#/$defs/claim"}},
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "geography", "discovery_layers", "claims", "popularity_signals", "assessments", "verdict"],
+        "properties": {
+          "id": {"$ref": "#/$defs/id"},
+          "name": {"type": "string", "minLength": 1},
+          "geography": {"type": "object"},
+          "discovery_layers": {
+            "type": "array",
+            "items": {"enum": ["iconic", "viral", "cultural", "nature_active", "hidden_gem"]},
+            "uniqueItems": true
+          },
+          "claims": {"type": "array", "items": {"$ref": "#/$defs/claim"}},
+          "popularity_signals": {"type": "array", "items": {"type": "object"}},
+          "assessments": {"type": "array", "items": {"type": "object"}},
+          "verdict": {"type": "object"}
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9](?:[a-z0-9-]{0,62}[a-z0-9])?$"},
+    "source": {
+      "type": "object",
+      "required": ["id", "url", "source_type", "publisher", "retrieved_at"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "url": {"type": "string", "format": "uri"},
+        "source_type": {"enum": ["official", "primary", "editorial", "aggregator", "social", "community"]},
+        "publisher": {"type": "string"},
+        "published_at": {"type": ["string", "null"]},
+        "retrieved_at": {"type": "string", "format": "date-time"},
+        "retrieval_status": {"enum": ["ok", "unavailable", "blocked", "not_found"]}
+      },
+      "additionalProperties": true
+    },
+    "claim": {
+      "type": "object",
+      "required": ["id", "topic", "status", "source_ids"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "topic": {"type": "string"},
+        "status": {"enum": ["unverified", "reported", "verified", "conflicting", "not_released_yet"]},
+        "freshness_status": {"enum": ["fresh", "aging", "stale", "unknown"]},
+        "source_ids": {"type": "array", "items": {"$ref": "#/$defs/id"}, "uniqueItems": true},
+        "applies_to": {"type": "array", "items": {"type": "string"}},
+        "value": {}
+      },
+      "additionalProperties": true
+    }
+  }
+}
+

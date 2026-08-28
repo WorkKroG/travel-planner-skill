@@ -10,6 +10,7 @@ from pathlib import Path
 import yaml
 
 from . import __version__
+from .state import validate_trip
 from .workspace import PROJECT_REMINDER, WorkspaceError, initialize_trip
 
 
@@ -22,6 +23,8 @@ def _parser() -> argparse.ArgumentParser:
     init.add_argument("--title", required=True)
     init.add_argument("--trip-id")
     init.add_argument("--confirm-path", action="store_true")
+    validate = commands.add_parser("validate", help="Validate a trip workspace")
+    validate.add_argument("path", type=Path)
     return parser
 
 
@@ -47,5 +50,13 @@ def main(argv: Sequence[str] | None = None) -> int:
         trip_id = yaml.safe_load(paths.brief.read_text(encoding="utf-8"))["trip_id"]
         print(f"Initialized trip {trip_id} at {paths.root}")
         return 0
+    if args.command == "validate":
+        report = validate_trip(args.path)
+        if report.ok:
+            print(f"Trip state is valid: {args.path}")
+            return 0
+        for issue in report.issues:
+            print(f"{issue.path}: {issue.message}", file=sys.stderr)
+        return 2
     _parser().print_help()
     return 2

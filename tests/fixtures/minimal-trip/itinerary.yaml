@@ -1,0 +1,9 @@
+schema_version: 1
+trip_id: minimal-trip
+route_state: draft
+alternatives: []
+selected_route_id: null
+days: []
+budget_items: []
+challenge_findings: []
+

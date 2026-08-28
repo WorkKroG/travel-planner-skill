@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "brief.schema.json",
+  "title": "Travel Planner brief v1",
+  "type": "object",
+  "required": ["schema_version", "trip_id", "updated_at", "title", "travel_dates", "travelers", "map_provider"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "trip_id": {"$ref": "#/$defs/id"},
+    "updated_at": {"type": "string", "format": "date-time"},
+    "title": {"type": "string", "minLength": 1},
+    "travel_dates": {
+      "type": "object",
+      "required": ["start", "end"],
+      "properties": {
+        "start": {"type": ["string", "null"], "format": "date"},
+        "end": {"type": ["string", "null"], "format": "date"}
+      },
+      "additionalProperties": false
+    },
+    "travelers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^traveler-[a-z0-9](?:[a-z0-9-]{0,54}[a-z0-9])?$"},
+          "age_group": {"type": "string"},
+          "citizenship": {"type": "string"},
+          "residency": {"type": "string"},
+          "mobility": {"type": "object"},
+          "dietary": {"type": "array"},
+          "allergies": {"type": "array"},
+          "pace": {"type": "string"},
+          "luggage": {"type": "object"},
+          "driver_role": {"type": "boolean"},
+          "medication_check_required": {"type": "boolean"}
+        },
+        "additionalProperties": true
+      }
+    },
+    "priorities": {"type": "array"},
+    "hard_constraints": {"type": "array"},
+    "soft_preferences": {"type": "array"},
+    "assumptions": {"type": "array"},
+    "map_provider": {"enum": ["auto", "yandex", "google"]},
+    "budget": {"type": "object"}
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9](?:[a-z0-9-]{0,62}[a-z0-9])?$"}
+  }
+}
+
