@@ -427,7 +427,7 @@ git commit -m "feat: add controlled route lifecycle"
 - Produces: `ChallengeStage = Literal["skeleton", "detailed"]`, `ChallengeContext`, `ChallengeReport`, `Rule`, `run_challenge(state, stage, now) -> ChallengeReport`.
 - Consumes: `TripState` and `Finding`; later tasks register `CAL`, `OPS`, `LEG`, `LOAD`, `ACC`, `BOOK`, `BUD`, `RISK`, `EVID`, `STATE` rules.
 
-- [ ] **Step 1: Write framework ordering and macro-gate tests**
+- [x] **Step 1: Write framework ordering and macro-gate tests**
 
 ```python
 def test_report_is_stable_and_blocking_fails_macro_gate(state):
@@ -437,12 +437,12 @@ def test_report_is_stable_and_blocking_fails_macro_gate(state):
     assert report.hard_pass is False
 ```
 
-- [ ] **Step 2: Verify failure**
+- [x] **Step 2: Verify failure**
 
 Run: `uv run pytest tests/challenge/test_framework.py -v`  
 Expected: FAIL because challenge framework is absent.
 
-- [ ] **Step 3: Implement registry, versioned rules and report serialization**
+- [x] **Step 3: Implement registry, versioned rules and report serialization**
 
 ```python
 class Rule(Protocol):
@@ -454,12 +454,12 @@ class Rule(Protocol):
 
 Findings sort by severity, rule ID and affected entity. Add CLI `challenge PATH --stage skeleton|detailed --at ISO_DATETIME`; exit `3` when `hard_pass` is false.
 
-- [ ] **Step 4: Verify framework and CLI exit codes**
+- [x] **Step 4: Verify framework and CLI exit codes**
 
 Run: `uv run pytest tests/challenge/test_framework.py -v`  
 Expected: PASS and stable serialized output.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add skills/travel-planner/scripts/travel_planner/challenge skills/travel-planner/scripts/travel_planner/cli.py tests/challenge/test_framework.py
@@ -480,7 +480,7 @@ git commit -m "feat: add versioned challenge framework"
 - Produces: rules `CAL-001..004`, `OPS-001..004`, `LEG-001..006` operating on timezone-aware ISO timestamps.
 - Consumes: `ChallengeContext`; fixture world supplies deterministic hours, last admission, minimum connection, storage and schedule horizon.
 
-- [ ] **Step 1: Write DST, overnight and last-admission tests**
+- [x] **Step 1: Write DST, overnight and last-admission tests**
 
 ```python
 def test_last_admission_is_not_closing_time(ctx):
@@ -495,12 +495,12 @@ def test_overnight_leg_updates_local_date(ctx):
     assert report[0].affected_ids == ("day-5", "night-5")
 ```
 
-- [ ] **Step 2: Verify failures**
+- [x] **Step 2: Verify failures**
 
 Run: `uv run pytest tests/challenge/test_calendar.py tests/challenge/test_logistics.py -v`  
 Expected: FAIL because rules are absent.
 
-- [ ] **Step 3: Implement rules using `zoneinfo` and explicit fixture facts**
+- [x] **Step 3: Implement rules using `zoneinfo` and explicit fixture facts**
 
 ```python
 def local_dt(value: str, timezone: str) -> datetime:
@@ -512,12 +512,12 @@ def local_dt(value: str, timezone: str) -> datetime:
 
 Check weekday, holiday/operating date, DST, rollover, last service/admission, door-to-door components, border/security/check-in buffers, hotel check-in/out, luggage storage and `not_released_yet` without inventing times.
 
-- [ ] **Step 4: Verify logistics suite**
+- [x] **Step 4: Verify logistics suite**
 
 Run: `uv run pytest tests/challenge/test_calendar.py tests/challenge/test_logistics.py -v`  
 Expected: PASS for all deterministic edge cases.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add skills/travel-planner/scripts/travel_planner/challenge tests/challenge tests/fixtures/logistics-world.yaml
@@ -539,7 +539,7 @@ git commit -m "feat: validate timezone aware trip logistics"
 - Produces: normalized `MoneyAmount`, rules `BUD-*`, `BOOK-*`, `ACC-*`, `LOAD-*`.
 - Consumes: state budget/readiness/travelers and `ChallengeContext`.
 
-- [ ] **Step 1: Write basis-mismatch, booking-window and accessibility tests**
+- [x] **Step 1: Write basis-mismatch, booking-window and accessibility tests**
 
 ```python
 def test_per_person_and_group_prices_are_not_summed_without_normalization(ctx):
@@ -553,12 +553,12 @@ def test_unknown_wheelchair_transfer_creates_readiness_action(ctx):
     assert findings[0].proposed_patch["status"] == "action_needed"
 ```
 
-- [ ] **Step 2: Verify failures**
+- [x] **Step 2: Verify failures**
 
 Run: `uv run pytest tests/challenge/test_budget.py tests/challenge/test_readiness.py tests/challenge/test_load.py -v`  
 Expected: FAIL because rules are absent.
 
-- [ ] **Step 3: Implement explicit amount quality and readiness dependencies**
+- [x] **Step 3: Implement explicit amount quality and readiness dependencies**
 
 ```python
 @dataclass(frozen=True)
@@ -572,12 +572,12 @@ class MoneyAmount:
 
 Check FX source/date/rate, mandatory category coverage, contingency, release/due timezone, dependency cycles, capacity, cancellation summary, cumulative activity load and minimum v0.1 accessibility unknowns.
 
-- [ ] **Step 4: Verify all registered rules**
+- [x] **Step 4: Verify all registered rules**
 
 Run: `uv run pytest tests/challenge -v`  
 Expected: PASS; rule IDs remain unique and versioned.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add skills/travel-planner/scripts/travel_planner/challenge tests/challenge
@@ -597,7 +597,7 @@ git commit -m "feat: add budget readiness and load gates"
 - Produces: `MapProvider`, `select_provider(country_code, preference, policy) -> MapProvider`, `build_place_url(provider, place) -> str`, `build_route_urls(leg, preference, policy) -> tuple[MapLink, ...]`.
 - Consumes: country codes and `brief.map_provider` from state.
 
-- [ ] **Step 1: Write provider, override and cross-border tests**
+- [x] **Step 1: Write provider, override and cross-border tests**
 
 ```python
 @pytest.mark.parametrize(("country", "expected"), [
@@ -615,12 +615,12 @@ def test_cross_border_leg_can_return_labelled_alternative(policy):
     assert {link.provider.value for link in links} == {"yandex", "google"}
 ```
 
-- [ ] **Step 2: Verify failures**
+- [x] **Step 2: Verify failures**
 
 Run: `uv run pytest tests/maps -v`  
 Expected: FAIL because policy and builders are absent.
 
-- [ ] **Step 3: Implement versioned ISO-code policy and encoded URLs**
+- [x] **Step 3: Implement versioned ISO-code policy and encoded URLs**
 
 ```yaml
 policy_version: 1
@@ -647,13 +647,13 @@ class MapLink:
 
 Reject non-HTTPS schemes, encode user text with `urllib.parse`, prefer coordinates plus readable label, and expose fallback diagnostics instead of silently changing provider.
 
-- [ ] **Step 4: Verify URL safety and CLI output**
+- [x] **Step 4: Verify URL safety and CLI output**
 
 Run: `uv run pytest tests/maps -v`  
 Run: `uv run travel-planner map-link --country RU --query "Казанский кремль"`  
 Expected: PASS and a labelled Yandex URL.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add skills/travel-planner/assets/map-provider-policy.yaml skills/travel-planner/scripts/travel_planner/maps.py skills/travel-planner/scripts/travel_planner/cli.py tests/maps
@@ -674,7 +674,7 @@ git commit -m "feat: select maps by destination policy"
 - Produces: `ImpactTarget`, `semantic_hash(value) -> str`, `analyze_change(before, after) -> ImpactReport`, `select_rebuild_targets(report) -> tuple[ImpactTarget, ...]`, `preview_migration(root, target_version) -> MigrationPlan`, `apply_migration(plan, confirmed) -> None`.
 - Consumes: validated `TripState`; later renderers consume rebuild targets.
 
-- [ ] **Step 1: Write semantic preservation and preview tests**
+- [x] **Step 1: Write semantic preservation and preview tests**
 
 ```python
 def test_restaurant_change_does_not_touch_unrelated_days(before, after):
@@ -688,12 +688,12 @@ def test_migration_requires_preview_and_confirmation(trip_v1):
         apply_migration(plan, confirmed=False)
 ```
 
-- [ ] **Step 2: Verify failures**
+- [x] **Step 2: Verify failures**
 
 Run: `uv run pytest tests/impact tests/migration -v`  
 Expected: FAIL because graph/migration interfaces are absent.
 
-- [ ] **Step 3: Implement stable semantic hashes, dependency edges and recoverable backup**
+- [x] **Step 3: Implement stable semantic hashes, dependency edges and recoverable backup**
 
 ```python
 @dataclass(frozen=True, order=True)
@@ -704,12 +704,12 @@ class ImpactTarget:
 
 Ignore declared temporal metadata when hashing. Migration apply creates a timestamped sibling backup, validates migrated state, and restores on failure.
 
-- [ ] **Step 4: Run mutation and idempotence tests**
+- [x] **Step 4: Run mutation and idempotence tests**
 
 Run: `uv run pytest tests/impact tests/migration -v`  
 Expected: PASS; second rebuild has an empty semantic diff.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add skills/travel-planner/scripts/travel_planner/impact.py skills/travel-planner/scripts/travel_planner/migration.py skills/travel-planner/scripts/travel_planner/cli.py tests/impact tests/migration
