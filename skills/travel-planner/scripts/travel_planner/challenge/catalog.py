@@ -6,7 +6,9 @@ from dataclasses import dataclass
 
 from ..evidence import critical_evidence_findings
 from .base import ChallengeContext, ChallengeStage, Rule
+from .budget import BudgetBasisRule, BudgetCoverageRule, BudgetFxRule, ContingencyRule
 from .calendar import DstTransitionRule, OperatingDateRule, OvernightRolloverRule, WeekdayRule
+from .load import CumulativeLoadRule, DailyLoadRule, DrivingLoadRule, RecoveryRule
 from .logistics import (
     DoorToDoorRule,
     HotelWindowRule,
@@ -18,6 +20,14 @@ from .logistics import (
     OvernightAccommodationRule,
     RequiredBufferRule,
     ScheduleHorizonRule,
+)
+from .readiness import (
+    AccessibilityChainRule,
+    AccessibilityConflictRule,
+    BookingWindowRule,
+    CancellationRule,
+    CapacityRule,
+    DependencyCycleRule,
 )
 
 
@@ -34,6 +44,16 @@ class EvidenceGateRule:
 def registered_rules() -> tuple[Rule, ...]:
     """Return the stable built-in catalog in rule-ID order."""
     rules: tuple[Rule, ...] = (
+        AccessibilityChainRule(),
+        AccessibilityConflictRule(),
+        BookingWindowRule(),
+        DependencyCycleRule(),
+        CapacityRule(),
+        CancellationRule(),
+        BudgetFxRule(),
+        BudgetBasisRule(),
+        BudgetCoverageRule(),
+        ContingencyRule(),
         WeekdayRule(),
         OperatingDateRule(),
         DstTransitionRule(),
@@ -45,6 +65,10 @@ def registered_rules() -> tuple[Rule, ...]:
         HotelWindowRule(),
         LuggageStorageRule(),
         OvernightAccommodationRule(),
+        DailyLoadRule(),
+        CumulativeLoadRule(),
+        DrivingLoadRule(),
+        RecoveryRule(),
         ScheduleHorizonRule(),
         LastAdmissionRule(),
         LastServiceRule(),
