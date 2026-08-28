@@ -1,0 +1,14 @@
+venues:
+  museum-1:
+    timezone: Asia/Tokyo
+    opens_at: "09:00"
+    closes_at: "18:00"
+    last_admission: "16:30"
+connections:
+  station-transfer:
+    minimum_minutes: 25
+schedules:
+  future-ferry:
+    status: not_released_yet
+    next_check_at: "2026-09-15T09:00:00+09:00"
+
