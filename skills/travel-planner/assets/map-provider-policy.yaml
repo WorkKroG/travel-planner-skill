@@ -1,0 +1,14 @@
+policy_version: 1
+yandex_preferred_country_codes:
+  - AM
+  - AZ
+  - BY
+  - KZ
+  - KG
+  - MD
+  - RU
+  - TJ
+  - TM
+  - TR
+  - UZ
+default_provider: google

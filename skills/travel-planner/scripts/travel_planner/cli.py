@@ -13,6 +13,7 @@ import yaml
 
 from . import __version__
 from .challenge import run_challenge
+from .maps import MapPlace, build_place_url, load_map_policy, select_provider
 from .state import load_trip, validate_trip
 from .workspace import PROJECT_REMINDER, WorkspaceError, initialize_trip
 
@@ -32,6 +33,12 @@ def _parser() -> argparse.ArgumentParser:
     challenge.add_argument("path", type=Path)
     challenge.add_argument("--stage", choices=("skeleton", "detailed"), required=True)
     challenge.add_argument("--at", type=datetime.fromisoformat, required=True)
+    map_link = commands.add_parser("map-link", help="Build a destination-aware map link")
+    map_link.add_argument("--country", required=True)
+    map_link.add_argument("--query", required=True)
+    map_link.add_argument("--provider", choices=("auto", "yandex", "google"), default="auto")
+    map_link.add_argument("--latitude", type=float)
+    map_link.add_argument("--longitude", type=float)
     return parser
 
 
@@ -69,5 +76,20 @@ def main(argv: Sequence[str] | None = None) -> int:
         report = run_challenge(load_trip(args.path), args.stage, args.at)
         print(json.dumps(report.as_dict(), ensure_ascii=False, indent=2, sort_keys=True))
         return 0 if report.hard_pass else 3
+    if args.command == "map-link":
+        try:
+            place = MapPlace(
+                args.query,
+                args.country,
+                latitude=args.latitude,
+                longitude=args.longitude,
+            )
+            provider = select_provider(args.country, args.provider, load_map_policy())
+            url = build_place_url(provider, place)
+        except (FileNotFoundError, TypeError, ValueError) as error:
+            print(str(error), file=sys.stderr)
+            return 2
+        print(f"{provider.value.title()} Maps: {url}")
+        return 0
     _parser().print_help()
     return 2

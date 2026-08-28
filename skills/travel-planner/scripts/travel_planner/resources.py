@@ -9,6 +9,7 @@ from pathlib import Path
 _SOURCE_SUBDIRECTORIES = {
     "schemas": Path("schemas"),
     "trip-template": Path("assets/trip-template"),
+    "map-policy": Path("assets"),
 }
 
 
@@ -35,4 +36,3 @@ def resource_path(
             return candidate
     searched = ", ".join(str(root) for root in locations)
     raise FileNotFoundError(f"Resource {group}/{name} not found in: {searched}")
-
