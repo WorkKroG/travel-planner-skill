@@ -1,0 +1,24 @@
+schema_version: 1
+trip_id: japan-reference
+updated_at: "2026-08-28T12:00:00+00:00"
+title: Japan Autumn — Render Reference
+travel_dates:
+  start: "2026-11-02"
+  end: "2026-11-13"
+travelers:
+  - id: traveler-1
+    age_group: adult
+    pace: balanced
+  - id: traveler-2
+    age_group: adult
+    pace: balanced
+priorities:
+  - cultural
+hard_constraints: []
+soft_preferences: []
+assumptions:
+  - This is synthetic renderer test data, not a confirmed itinerary.
+map_provider: auto
+trip_thesis: A synthetic reference route for testing document hierarchy and uncertainty.
+budget:
+  currency: JPY

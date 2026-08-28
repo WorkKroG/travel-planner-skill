@@ -1,0 +1,33 @@
+schema_version: 1
+trip_id: japan-reference
+items:
+  - id: rail-release
+    category: transport
+    status: not_released_yet
+    owner_id: traveler-1
+    due_at: null
+    next_check_at: "2026-09-28T12:00:00+09:00"
+    source_ids: [source-rail]
+    claim_ids: [claim-rail-release]
+    dependencies: []
+    title: Recheck rail sales window
+  - id: garden-hours
+    category: activities
+    status: recheck
+    owner_id: traveler-2
+    due_at: null
+    next_check_at: "2026-10-25T12:00:00+09:00"
+    source_ids: [source-garden]
+    claim_ids: [claim-garden-hours]
+    dependencies: []
+    title: Resolve conflicting garden hours
+  - id: lodging-reference
+    category: lodging
+    status: confirmed
+    owner_id: traveler-1
+    due_at: null
+    next_check_at: null
+    source_ids: []
+    claim_ids: []
+    dependencies: []
+    title: Reference lodging placeholder

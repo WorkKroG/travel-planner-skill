@@ -1,0 +1,49 @@
+schema_version: 1
+trip_id: japan-reference
+sources:
+  - id: source-rail
+    url: https://example.jp/rail
+    source_type: official
+    publisher: Example Rail Operator
+    retrieved_at: "2026-08-28T10:00:00+00:00"
+    retrieval_status: ok
+  - id: source-garden
+    url: https://example.jp/garden
+    source_type: official
+    publisher: Example Garden
+    retrieved_at: "2026-07-01T10:00:00+00:00"
+    retrieval_status: ok
+claims:
+  - id: claim-rail-release
+    topic: transport_operations
+    status: not_released_yet
+    freshness_status: unknown
+    source_ids: [source-rail]
+    applies_to: [rail-release, day-2]
+  - id: claim-garden-hours
+    topic: operations
+    status: conflicting
+    freshness_status: stale
+    source_ids: [source-garden]
+    applies_to: [day-3]
+items:
+  - id: place-garden
+    name: Reference Garden
+    geography:
+      country_code: JP
+      locality: Kyoto
+    discovery_layers: [cultural, nature_active]
+    claims:
+      - id: claim-garden-season
+        topic: seasonality
+        status: reported
+        freshness_status: aging
+        source_ids: [source-garden]
+    popularity_signals: []
+    assessments:
+      - dimension: trip_value
+        value: high
+        rationale: Renderer fixture only.
+    verdict:
+      status: shortlist
+      rationale: Renderer fixture only.

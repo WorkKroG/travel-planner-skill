@@ -1,0 +1,145 @@
+schema_version: 1
+trip_id: japan-reference
+route_state: selected
+output_status: draft
+alternatives: []
+selected_route_id: route-curated
+route_stops:
+  - id: stop-tokyo
+    name: Tokyo
+    dates: 2–5 Nov
+    nights: 3
+  - id: stop-kanazawa
+    name: Kanazawa
+    dates: 5–7 Nov
+    nights: 2
+    transfer_label: Rail transfer
+  - id: stop-kyoto
+    name: Kyoto
+    dates: 7–13 Nov
+    nights: 6
+    transfer_label: Rail transfer
+open_decisions:
+  - id: decision-rail
+    severity: blocking
+    question: Which rail departure should be selected when sales open?
+    why: It determines the protected transfer buffer on day 2.
+    affected_ids: [day-2, rail-release]
+    deadline: Unknown — schedule not released
+    next_action: Recheck the official operator source.
+days:
+  - id: day-1
+    number: 1
+    date: "2026-11-02"
+    region: Tokyo
+    overnight: Tokyo
+    thesis: Arrive gently and keep the first evening flexible.
+    load: light
+    travel: Airport arrival
+    weather_sensitive: false
+    booking_state: selected
+    critical_constraints:
+      - Arrive at lodging before the stated check-in cutoff.
+    timeline:
+      - time: "16:00"
+        title: Arrival and transfer
+        detail: Exact timing remains dependent on the booked flight.
+    scenarios:
+      - kind: primary
+        title: Short neighbourhood walk
+        description: Keep the evening close to the lodging.
+      - kind: backup
+        title: Direct rest
+        description: Skip the walk if arrival is delayed.
+    food:
+      - name: Nearby dinner option
+        status: unknown
+        note: Choose after lodging is confirmed.
+    readiness_ids: []
+    links:
+      - label: Google Maps
+        url: https://www.google.com/maps/search/?api=1&query=Tokyo
+        kind: map
+        requires_internet: true
+    source_ids: []
+    last_checked: unknown
+  - id: day-2
+    number: 2
+    date: "2026-11-05"
+    region: Tokyo → Kanazawa
+    overnight: Kanazawa
+    thesis: Protect the transfer and avoid stacking major activities.
+    load: medium
+    travel: Intercity rail
+    weather_sensitive: false
+    booking_state: not_released_yet
+    critical_constraints:
+      - Departure time is not released yet; keep the day in Draft.
+    timeline:
+      - time: Unknown
+        title: Intercity rail transfer
+        detail: Confirm only from the operator schedule.
+    scenarios:
+      - kind: primary
+        title: Direct rail transfer
+        description: Use the selected departure after release.
+      - kind: backup
+        title: Later departure
+        description: Preserve a labelled fallback without changing the overnight city.
+    food: []
+    readiness_ids: [rail-release]
+    links:
+      - label: Official operator
+        url: https://example.jp/rail
+        kind: official
+        requires_internet: true
+    source_ids: [source-rail]
+    last_checked: "2026-08-28T10:00:00+00:00"
+  - id: day-3
+    number: 3
+    date: "2026-11-08"
+    region: Kyoto
+    overnight: Kyoto
+    thesis: Compare the garden visit with a weather-safe cultural alternative.
+    load: medium
+    travel: Local transit
+    weather_sensitive: true
+    booking_state: recheck
+    critical_constraints:
+      - Published hours conflict and must be resolved before Final.
+    timeline:
+      - time: Unknown
+        title: Reference Garden
+        detail: Opening time remains unresolved.
+    scenarios:
+      - kind: primary
+        title: Garden visit
+        description: Use only after hours are rechecked.
+      - kind: backup
+        title: Indoor cultural visit
+        description: Keep the same city and lodging.
+    food: []
+    readiness_ids: [garden-hours]
+    links:
+      - label: Official garden site
+        url: https://example.jp/garden
+        kind: official
+        requires_internet: true
+    source_ids: [source-garden]
+    last_checked: "2026-07-01T10:00:00+00:00"
+budget_items:
+  - id: budget-lodging
+    category: lodging
+    amount_type: range
+    amount_min: 180000
+    amount_max: 240000
+    currency: JPY
+    basis: per_group
+    confidence: low
+  - id: budget-food
+    category: dining
+    amount_type: unknown
+    currency: JPY
+    basis: per_group
+    confidence: low
+challenge_findings: []

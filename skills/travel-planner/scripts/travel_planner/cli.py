@@ -16,6 +16,8 @@ from .challenge import run_challenge
 from .impact import analyze_change
 from .maps import MapPlace, build_place_url, load_map_policy, select_provider
 from .migration import MigrationError, apply_migration, preview_migration
+from .render.markdown import render_markdown
+from .render.viewmodel import build_view
 from .state import load_trip, validate_trip
 from .workspace import PROJECT_REMINDER, WorkspaceError, initialize_trip
 
@@ -48,6 +50,11 @@ def _parser() -> argparse.ArgumentParser:
     migrate.add_argument("path", type=Path)
     migrate.add_argument("--target-version", type=int, required=True)
     migrate.add_argument("--confirm", action="store_true")
+    render = commands.add_parser("render", help="Render a derived itinerary document")
+    render.add_argument("path", type=Path)
+    render.add_argument("--format", choices=("markdown",), required=True)
+    render.add_argument("--output", type=Path, required=True)
+    render.add_argument("--at", type=datetime.fromisoformat, required=True)
     return parser
 
 
@@ -114,6 +121,19 @@ def main(argv: Sequence[str] | None = None) -> int:
         except (MigrationError, OSError, TypeError, yaml.YAMLError) as error:
             print(str(error), file=sys.stderr)
             return 2
+        return 0
+    if args.command == "render":
+        report = validate_trip(args.path)
+        if not report.ok:
+            for issue in report.issues:
+                print(f"{issue.path}: {issue.message}", file=sys.stderr)
+            return 2
+        state = load_trip(args.path)
+        challenge = run_challenge(state, "detailed", args.at)
+        document = render_markdown(build_view(state, challenge, args.at))
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        args.output.write_text(document, encoding="utf-8")
+        print(f"Rendered markdown: {args.output}")
         return 0
     _parser().print_help()
     return 2
