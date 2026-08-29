@@ -5,7 +5,7 @@ title: Museum last-admission mutation
 travel_dates: {start: "2026-11-05", end: "2026-11-05"}
 travelers: [{id: traveler-a, age_group: adult}]
 priorities: [museum]
-hard_constraints: [last admission]
+hard_constraints: [last admission, complete visit before venue closing]
 soft_preferences: []
 assumptions: []
 map_provider: auto

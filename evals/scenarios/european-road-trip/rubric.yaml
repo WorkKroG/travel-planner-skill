@@ -11,7 +11,7 @@ dimensions:
     anchors: {required: ["day-4-drive needs 360"], evidence: ["320 minutes"], forbidden: ["drive fits budget"]}
   - id: backup_usefulness
     max_score: 4
-    anchors: {required: ["retain local backups"], evidence: ["confirmed bases or lodging"], forbidden: ["no route backup"]}
+    anchors: {required: ["city-zone status=restricted", "park-and-ride"], evidence: ["vehicle=euro-5-diesel", "retain local backups"], forbidden: ["unrestricted city entry"]}
   - id: readability
     max_score: 4
     anchors: {required: ["apply each computed hard constraint"], evidence: ["without hidden route edits"], forbidden: ["unidentified"]}

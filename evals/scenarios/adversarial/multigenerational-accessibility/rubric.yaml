@@ -17,4 +17,4 @@ dimensions:
     anchors: {required: ["traveller traveler-elder-b"], evidence: ["station-transfer"], forbidden: ["unidentified"]}
   - id: calibrated_uncertainty
     max_score: 4
-    anchors: {required: ["official unknowns"], evidence: ["aggregator claims do not override"], forbidden: ["accessibility verified"]}
+    anchors: {required: ["do not override official unknowns"], evidence: ["aggregator claims do not override"], forbidden: ["accessibility verified"]}

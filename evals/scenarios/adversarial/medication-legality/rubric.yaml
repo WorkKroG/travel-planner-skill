@@ -14,7 +14,7 @@ dimensions:
     anchors: {required: ["secure external-reference action"], evidence: ["medicine-anon-a"], forbidden: ["upload prescription"]}
   - id: readability
     max_score: 4
-    anchors: {required: ["status requires_confirmation"], evidence: ["prescription details"], forbidden: ["unidentified"]}
+    anchors: {required: ["status requires_confirmation"], evidence: ["without storing diagnosis or prescription details"], forbidden: ["unidentified"]}
   - id: calibrated_uncertainty
     max_score: 4
     anchors: {required: ["not legal advice"], evidence: ["refused sensitive fields"], forbidden: ["legal guarantee"]}

@@ -15,6 +15,7 @@ from travel_planner.challenge.catalog import registered_rules
 from travel_planner.impact import semantic_hash
 from travel_planner.resources import resource_path
 
+from .adapters import SUPPORTED_RESPONSE_CLAIMS
 from .fixture_oracle import validate_contract
 
 SCENARIOS_ROOT = Path(__file__).resolve().parent / "scenarios"
@@ -87,8 +88,13 @@ def _validate_brief(brief: Mapping[str, Any], case_id: str) -> None:
 
 def _validate_rubric(path: Path) -> Mapping[str, Any]:
     rubric = _mapping(path, "rubric")
-    if set(rubric) != {"version", "dimensions"}:
-        raise ValueError(f"Scenario rubric requires exactly version and dimensions: {path}")
+    if set(rubric) not in (
+        {"version", "dimensions"},
+        {"version", "dimensions", "claims"},
+    ):
+        raise ValueError(
+            f"Scenario rubric requires version, dimensions, and optional claims: {path}"
+        )
     if rubric.get("version") != 1:
         raise ValueError(f"Scenario rubric must use version 1: {path}")
     dimensions = rubric.get("dimensions")
@@ -124,6 +130,32 @@ def _validate_rubric(path: Path) -> Mapping[str, Any]:
                 or not all(isinstance(value, str) and value.strip() for value in values)
             ):
                 raise ValueError(f"Scenario rubric {label} anchors must be non-empty: {path}")
+    claims = rubric.get("claims", [])
+    if not isinstance(claims, list):
+        raise TypeError(f"Scenario rubric claims must be a list: {path}")
+    seen_claims: set[str] = set()
+    for claim in claims:
+        if not isinstance(claim, Mapping) or set(claim) != {
+            "id",
+            "expected",
+            "dimensions",
+        }:
+            raise ValueError(f"Scenario rubric claim contract is invalid: {path}")
+        claim_id = claim.get("id")
+        affected = claim.get("dimensions")
+        if (
+            not isinstance(claim_id, str)
+            or claim_id not in SUPPORTED_RESPONSE_CLAIMS
+            or claim_id in seen_claims
+            or not isinstance(claim.get("expected"), bool)
+            or not isinstance(affected, list)
+            or not affected
+            or not all(isinstance(item, str) for item in affected)
+            or len(set(affected)) != len(affected)
+            or not all(item in RUBRIC_DIMENSIONS for item in affected)
+        ):
+            raise ValueError(f"Scenario rubric claim contract is invalid: {path}")
+        seen_claims.add(claim_id)
     return rubric
 
 

@@ -11,6 +11,13 @@ required_findings:
   - day-4
   path: checks.OPS-002.status
   equals: identified
+- rule_id: EVAL-ADMISSION-001
+  severity: warning
+  affected_ids:
+  - activity-museum
+  - day-4
+  path: checks.EVAL-ADMISSION-001.status
+  equals: identified
 forbidden_behaviors:
 - behavior: invent_later_admission
   path: effects.forbidden.invent_later_admission

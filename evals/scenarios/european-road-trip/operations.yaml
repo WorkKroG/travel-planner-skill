@@ -1,5 +1,5 @@
 prompt_version: scenario-v1
-prompt: Challenge the road-trip route with computed drive components and authority closure dates.
+prompt: Challenge the road-trip route with computed drive components, authority closure dates, and the city access restriction.
 oracle:
   version: 1
   kind: e2e.composite
@@ -13,3 +13,7 @@ oracle:
         leg_id: day-4-drive
         components_minutes: {driving: 280, parking: 35, rest: 45}
         allocated_minutes: 320
+      - kind: city-access
+        source_id: city-access-authority
+        trap_id: unrestricted-city-entry
+        travel_at: "2026-10-08"

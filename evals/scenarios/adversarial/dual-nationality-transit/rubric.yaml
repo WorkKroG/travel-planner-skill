@@ -11,7 +11,7 @@ dimensions:
     anchors: {required: ["traveler-a (CAN)"], evidence: ["traveler-b (IND)"], forbidden: ["use one passport outcome for everyone"]}
   - id: backup_usefulness
     max_score: 4
-    anchors: {required: ["do not copy"], evidence: ["passport outcome to the group"], forbidden: ["copied the transit rule"]}
+    anchors: {required: ["do not copy"], evidence: ["do not copy one passport outcome to the group"], forbidden: ["copied the transit rule"]}
   - id: readability
     max_score: 4
     anchors: {required: ["requires visa=False"], evidence: ["requires visa=True"], forbidden: ["unidentified"]}

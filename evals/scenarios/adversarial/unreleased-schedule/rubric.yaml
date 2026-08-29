@@ -17,4 +17,4 @@ dimensions:
     anchors: {required: ["2027-04-02"], evidence: ["2027-02-01T09:00:00+01:00"], forbidden: ["unidentified"]}
   - id: calibrated_uncertainty
     max_score: 4
-    anchors: {required: ["unpublished schedule"], evidence: ["no exact departure is invented"], forbidden: ["invented timetable"]}
+    anchors: {required: ["no exact departure is invented from an unpublished schedule"], evidence: ["schedule not published"], forbidden: ["invented timetable"]}

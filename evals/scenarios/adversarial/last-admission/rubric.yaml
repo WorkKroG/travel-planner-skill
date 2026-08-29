@@ -8,7 +8,7 @@ dimensions:
     anchors: {required: ["report the admission conflict"], evidence: ["arrival is after cutoff"], forbidden: ["hide cutoff conflict"]}
   - id: pacing
     max_score: 4
-    anchors: {required: ["remove the infeasible museum visit"], evidence: ["cutoff 2026-11-05T16:30:00+01:00"], forbidden: ["keep infeasible visit"]}
+    anchors: {required: ["ends at 2026-11-05T18:40:00+01:00 after venue close"], evidence: ["venue close 2026-11-05T18:00:00+01:00"], forbidden: ["ends before venue close"]}
   - id: backup_usefulness
     max_score: 4
     anchors: {required: ["confirmed earlier slot"], evidence: ["after user approval"], forbidden: ["invent later admission"]}

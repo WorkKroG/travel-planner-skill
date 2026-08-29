@@ -8,3 +8,12 @@ sources:
       closure_start: "2026-10-01"
       closure_end: "2027-05-01"
       alternative_road_id: valley-detour
+  - id: city-access-authority
+    type: official
+    data:
+      zone_id: city-zone
+      status: restricted
+      restriction_start: "2026-01-01"
+      restriction_end: "2026-12-31"
+      allowed_vehicle_classes: [zero-emission, local-permit]
+      alternative_access_id: park-and-ride
