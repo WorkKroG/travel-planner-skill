@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import copy
 import json
+import math
 from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
@@ -11,6 +12,7 @@ from typing import Any
 
 import yaml
 from jsonschema import Draft202012Validator
+from travel_planner.challenge.catalog import registered_rules
 from travel_planner.impact import analyze_change, semantic_hash
 from travel_planner.resources import resource_path
 from travel_planner.route import FrozenRouteError, RouteChange, transition_route
@@ -84,15 +86,16 @@ def _validate_brief(brief: Mapping[str, Any], case_id: str) -> None:
         raise ValueError(f"Scenario {case_id} brief is not valid v1 state: {issues[0].message}")
 
 
-def _validate_rubric(path: Path) -> None:
+def _validate_rubric(path: Path) -> Mapping[str, Any]:
     rubric = _mapping(path, "rubric")
     dimensions = rubric.get("dimensions")
     if not isinstance(dimensions, list) or len(dimensions) != len(RUBRIC_DIMENSIONS):
         raise ValueError(f"Scenario rubric must declare six dimensions: {path}")
     if tuple(item.get("id") for item in dimensions if isinstance(item, Mapping)) != RUBRIC_DIMENSIONS:
         raise ValueError(f"Scenario rubric has invalid dimensions: {path}")
-    if any(not isinstance(item.get("max_score"), (int, float)) or isinstance(item.get("max_score"), bool) for item in dimensions if isinstance(item, Mapping)):
+    if any(not isinstance(item.get("max_score"), (int, float)) or isinstance(item.get("max_score"), bool) or not math.isfinite(item["max_score"]) or item["max_score"] <= 0 for item in dimensions if isinstance(item, Mapping)):
         raise ValueError(f"Scenario rubric has invalid thresholds: {path}")
+    return rubric
 
 
 def _validate_sources_traps(sources: Mapping[str, Any], traps: Mapping[str, Any], case_id: str) -> None:
@@ -135,6 +138,38 @@ def _hard_checks(expected: Mapping[str, Any], operations: Mapping[str, Any]) -> 
     return checks
 
 
+def _validate_rule_ids(expected: Mapping[str, Any]) -> None:
+    production = {rule.rule_id for rule in registered_rules()}
+    for finding in expected["required_findings"]:
+        rule_id = finding["rule_id"]
+        if rule_id not in production and not rule_id.startswith("EVAL-"):
+            raise ValueError(f"Unknown scenario rule ID: {rule_id}")
+
+
+def _validate_evidence(operations: Mapping[str, Any], sources: Mapping[str, Any], traps: Mapping[str, Any], case_id: str) -> None:
+    evidence = operations.get("evidence")
+    if not isinstance(evidence, Mapping) or not isinstance(evidence.get("sources"), Mapping) or not isinstance(evidence.get("traps"), Mapping):
+        raise TypeError(f"Scenario {case_id} requires operation evidence for sources and traps")
+    source_evidence = {item["id"]: item["facts"] for item in sources["sources"]}
+    trap_evidence = {item["id"]: item["required_behavior"] for item in traps["injected"]}
+    if dict(evidence["sources"]) != source_evidence or dict(evidence["traps"]) != trap_evidence:
+        raise ValueError(f"Scenario {case_id} operation evidence contradicts frozen inputs or traps")
+
+
+def _validate_judge(judge: Mapping[str, Any], rubric: Mapping[str, Any], case_id: str, response: str) -> None:
+    scores, evidence = judge.get("scores"), judge.get("evidence")
+    if not isinstance(scores, Mapping) or set(scores) != set(RUBRIC_DIMENSIONS) or not isinstance(evidence, Mapping) or set(evidence) != set(RUBRIC_DIMENSIONS):
+        raise ValueError(f"Scenario {case_id} requires declared scores and evidence for all rubric dimensions")
+    maximum = {item["id"]: item["max_score"] for item in rubric["dimensions"]}
+    for dimension, score in scores.items():
+        if isinstance(score, bool) or not isinstance(score, (int, float)) or not math.isfinite(score) or score < 0 or score > maximum[dimension]:
+            raise ValueError(f"Scenario {case_id} has out-of-range fixture judge score: {dimension}")
+        if not isinstance(evidence[dimension], str) or not evidence[dimension].strip():
+            raise ValueError(f"Scenario {case_id} has missing fixture judge evidence: {dimension}")
+    if judge.get("response_hash") != semantic_hash(response):
+        raise ValueError(f"Scenario {case_id} fixture judge evidence does not match response")
+
+
 def load_scenario_case(case_id: str, root: Path = SCENARIOS_ROOT) -> ScenarioCase:
     paths = _case_paths(Path(root))
     if case_id not in paths:
@@ -148,7 +183,7 @@ def load_scenario_case(case_id: str, root: Path = SCENARIOS_ROOT) -> ScenarioCas
     brief, sources, traps = _mapping(path / "brief.yaml", "brief"), _mapping(path / "sources.yaml", "sources"), _mapping(path / "traps.yaml", "traps")
     _validate_brief(brief, case_id)
     _validate_sources_traps(sources, traps, case_id)
-    _validate_rubric(path / "rubric.yaml")
+    rubric = _validate_rubric(path / "rubric.yaml")
     expected, data = _mapping(path / "expected-hard.yaml", "expected hard expectations"), _mapping(path / "operations.yaml", "operations")
     if expected.get("scenario_id") != case_id or not isinstance(expected.get("expected_macro_pass"), bool):
         raise ValueError(f"Scenario {case_id} has invalid expected-hard metadata")
@@ -156,13 +191,13 @@ def load_scenario_case(case_id: str, root: Path = SCENARIOS_ROOT) -> ScenarioCas
     if not isinstance(operations, Mapping) or not all(isinstance(value, str) and value for value in (prompt, version, response)):
         raise ValueError("operations.yaml requires operations, prompt, prompt_version, and response")
     operations = copy.deepcopy(dict(operations))
-    operations.setdefault("effects", {"forbidden_behaviors": []})
-    if not isinstance(operations["effects"], Mapping):
-        raise TypeError("operations effects must be a mapping")
-    judge = judge if isinstance(judge, Mapping) else {"scores": {dimension: 3 + ((len(case_id) + index) % 2) for index, dimension in enumerate(RUBRIC_DIMENSIONS)}}
-    scores = judge.get("scores")
-    if not isinstance(scores, Mapping) or set(scores) != set(RUBRIC_DIMENSIONS):
-        raise ValueError("operations.yaml requires six-dimension fixture_judge scores")
+    if not isinstance(operations.get("effects"), Mapping):
+        raise TypeError("operations.yaml requires explicit observable effects")
+    _validate_evidence(operations, sources, traps, case_id)
+    if not isinstance(judge, Mapping):
+        raise TypeError("operations.yaml requires explicit fixture_judge")
+    _validate_judge(judge, rubric, case_id, response)
+    _validate_rule_ids(expected)
     fixture_input = {"brief": copy.deepcopy(dict(brief)), "sources": copy.deepcopy(dict(sources)), "traps": copy.deepcopy(dict(traps))}
     input_hash = semantic_hash(fixture_input)
     scenario = {"id": case_id, "prompt_version": version, "prompt": f"{prompt}\n\nSCENARIO_INPUT:\n{json.dumps(fixture_input, ensure_ascii=False, sort_keys=True)}", "fixture_input": fixture_input, "fixture_input_hash": input_hash, "hard_checks": _hard_checks(expected, operations), "fixture_response": {"text": response, "operations": copy.deepcopy(dict(operations)) | {"fixture_input_hash": input_hash}}, "fixture_judge": copy.deepcopy(dict(judge)), "expected_macro_pass": expected["expected_macro_pass"], "expected_failed_findings": expected.get("expected_failed_findings", []), "rubric_path": path / "rubric.yaml"}

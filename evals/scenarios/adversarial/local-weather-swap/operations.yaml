@@ -2,6 +2,37 @@ prompt_version: adversarial-v1
 prompt: Swap only day 4 to its indoor fallback, preserving unrelated day 5 exactly.
 response: The rainy day is changed locally and day 5 remains semantically unchanged.
 operations:
-  checks: {EVAL-IMPACT-001: {status: identified}}
-  effects: {forbidden_behaviors: []}
-  mutation: {kind: weather_swap, replacement_activity: museum}
+  checks:
+    EVAL-IMPACT-001:
+      status: identified
+  effects:
+    forbidden_behaviors: []
+    forbidden:
+      rewrite_day-5: false
+  mutation:
+    kind: weather_swap
+    replacement_activity: museum
+  evidence:
+    sources:
+      weather-fixture:
+      - day-4 rain
+    traps:
+      broad-rebuild: modify only intended day
+fixture_judge:
+  scores:
+    skeleton_distinctness: 4
+    tradeoffs: 4
+    pacing: 4
+    backup_usefulness: 4
+    readability: 4
+    calibrated_uncertainty: 4
+  evidence:
+    skeleton_distinctness: Response and frozen inputs support skeleton distinctness
+      for local-weather-swap.
+    tradeoffs: Response and frozen inputs support tradeoffs for local-weather-swap.
+    pacing: Response and frozen inputs support pacing for local-weather-swap.
+    backup_usefulness: Response and frozen inputs support backup usefulness for local-weather-swap.
+    readability: Response and frozen inputs support readability for local-weather-swap.
+    calibrated_uncertainty: Response and frozen inputs support calibrated uncertainty
+      for local-weather-swap.
+  response_hash: 3b61f6895b24ba4e65243a6fc44dbaf0c2173521daa4bc210e88dc1f79125903

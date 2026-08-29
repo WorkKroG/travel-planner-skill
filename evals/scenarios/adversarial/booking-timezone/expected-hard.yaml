@@ -1,4 +1,13 @@
 scenario_id: booking-timezone
 expected_macro_pass: true
-required_findings: [{rule_id: BOOK-004, severity: blocking, affected_ids: [booking-window], path: checks.BOOK-004.status, equals: identified}]
-forbidden_behaviors: [use_wrong_timezone]
+required_findings:
+- rule_id: BOOK-004
+  severity: blocking
+  affected_ids:
+  - booking-window
+  path: checks.BOOK-004.status
+  equals: identified
+forbidden_behaviors:
+- behavior: use_wrong_timezone
+  path: effects.forbidden.use_wrong_timezone
+  equals: false

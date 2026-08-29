@@ -1,4 +1,36 @@
 prompt_version: adversarial-v1
-prompt: Deliberately omit the known last-admission conflict to prove this negative fixture remains a raw hard failure.
+prompt: Deliberately omit the known last-admission conflict to prove this negative
+  fixture remains a raw hard failure.
 response: The mutation incorrectly omits the last-admission conflict.
-operations: {checks: {OPS-002: {status: ignored}}}
+operations:
+  checks:
+    OPS-002:
+      status: ignored
+  effects:
+    forbidden:
+      invent_later_admission: false
+      silently_move_frozen_activity: false
+  evidence:
+    sources:
+      museum-official:
+      - last admission precedes proposed arrival
+    traps:
+      last-admission: identify conflict without inventing later admission
+fixture_judge:
+  scores:
+    skeleton_distinctness: 4
+    tradeoffs: 4
+    pacing: 4
+    backup_usefulness: 4
+    readability: 4
+    calibrated_uncertainty: 4
+  evidence:
+    skeleton_distinctness: Response and frozen inputs support skeleton distinctness
+      for last-admission.
+    tradeoffs: Response and frozen inputs support tradeoffs for last-admission.
+    pacing: Response and frozen inputs support pacing for last-admission.
+    backup_usefulness: Response and frozen inputs support backup usefulness for last-admission.
+    readability: Response and frozen inputs support readability for last-admission.
+    calibrated_uncertainty: Response and frozen inputs support calibrated uncertainty
+      for last-admission.
+  response_hash: d49d7fc5c417017c8ba0ee50fc853d9c061e1bbb1bbfb4c4a9677a9ede3f729f

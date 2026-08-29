@@ -92,10 +92,10 @@ def test_source_mutation_changes_the_executable_contract(tmp_path: Path) -> None
     source = root / "adversarial" / "booking-timezone" / "sources.yaml"
     source.write_text(source.read_text().replace("local midnight", "local 09:00"), encoding="utf-8")
 
-    after = load_scenario_case("booking-timezone", root)
+    with pytest.raises(ValueError, match="contradicts frozen inputs"):
+        load_scenario_case("booking-timezone", root)
 
-    assert before.scenario["fixture_input_hash"] != after.scenario["fixture_input_hash"]
-    assert before.scenario["prompt"] != after.scenario["prompt"]
+    assert before.scenario["fixture_input_hash"]
 
 
 def test_missing_scenario_root_and_malformed_rubric_fail_closed(tmp_path: Path) -> None:
@@ -108,3 +108,42 @@ def test_missing_scenario_root_and_malformed_rubric_fail_closed(tmp_path: Path) 
     (root / "japan-autumn" / "rubric.yaml").write_text("dimensions: bad", encoding="utf-8")
     with pytest.raises((TypeError, ValueError), match="rubric"):
         load_scenario_case("japan-autumn", root)
+
+
+@pytest.mark.parametrize("invalid", ["-1", ".nan", ".inf"])
+def test_missing_effects_judge_unknown_rules_and_invalid_limits_fail_closed(tmp_path: Path, invalid: str) -> None:
+    """Scenario contracts need explicit effects, evidence-backed scores, catalog rules, and finite limits."""
+    root = tmp_path / "scenarios"
+    shutil.copytree(ROOT, root)
+    operations = root / "adversarial" / "booking-timezone" / "operations.yaml"
+    operations.write_text(operations.read_text().replace("effects:", "missing_effects:"), encoding="utf-8")
+    with pytest.raises((TypeError, ValueError), match="effects"):
+        load_scenario_case("booking-timezone", root)
+
+    shutil.copytree(ROOT, root, dirs_exist_ok=True)
+    rubric = root / "japan-autumn" / "rubric.yaml"
+    rubric.write_text(rubric.read_text().replace("max_score: 4", f"max_score: {invalid}", 1), encoding="utf-8")
+    with pytest.raises(ValueError, match="threshold"):
+        load_scenario_case("japan-autumn", root)
+
+
+def test_unknown_non_eval_rule_is_rejected(tmp_path: Path) -> None:
+    """A typo such as the retired EVD-001 must not masquerade as a production challenge rule."""
+    root = tmp_path / "scenarios"
+    shutil.copytree(ROOT, root)
+    expected = root / "japan-autumn" / "expected-hard.yaml"
+    expected.write_text(expected.read_text().replace("EVID-001", "EVD-001"), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="Unknown scenario rule ID"):
+        load_scenario_case("japan-autumn", root)
+
+
+def test_fixture_judge_evidence_must_match_the_declared_response(tmp_path: Path) -> None:
+    """Offline replay may be deterministic, but its independent rubric evidence cannot score another response."""
+    root = tmp_path / "scenarios"
+    shutil.copytree(ROOT, root)
+    operations = root / "adversarial" / "booking-timezone" / "operations.yaml"
+    operations.write_text(operations.read_text().replace("booking window", "wrong window", 1), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="does not match response"):
+        load_scenario_case("booking-timezone", root)

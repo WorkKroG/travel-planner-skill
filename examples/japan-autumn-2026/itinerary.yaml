@@ -3,7 +3,6 @@ trip_id: japan-autumn-2026-example
 route_state: frozen
 alternatives: []
 selected_route_id: japan-autumn-route
-route_thesis: A measured three-region autumn route with flexible arrival, rail-transfer buffers, and local weather backups rather than live operational claims.
 route_stops:
   - {id: tokyo, name: Tokyo, dates: "2–5 Nov", nights: 3, transfer_label: Arrival base}
   - {id: kyoto, name: Kyoto, dates: "5–9 Nov", nights: 4, transfer_label: Rail transfer — recheck final timetable}
@@ -22,7 +21,7 @@ days:
     timeline: [{time: afternoon, title: Arrival and check-in, detail: Keep the first afternoon unscheduled.}]
     scenarios: [{kind: primary, title: Neighbourhood walk, description: Walk only if energy and weather allow.}]
     food: [{name: Local dinner, status: flexible, note: Choose near lodging.}]
-    source_ids: [official-kyoto-fixture]
+    source_ids: [official-tokyo-fixture]
     last_checked: "2026-08-28"
   - id: day-6
     number: 6

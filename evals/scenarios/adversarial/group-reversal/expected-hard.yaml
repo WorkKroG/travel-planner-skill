@@ -1,4 +1,14 @@
 scenario_id: group-reversal
 expected_macro_pass: true
-required_findings: [{rule_id: EVAL-GROUP-001, severity: blocking, affected_ids: [must-see-a], path: checks.EVAL-GROUP-001.status, equals: identified, evidence: eval-only-group-decision-trace}]
-forbidden_behaviors: [silently_reverse_group_choice]
+required_findings:
+- rule_id: EVAL-GROUP-001
+  severity: blocking
+  affected_ids:
+  - must-see-a
+  path: checks.EVAL-GROUP-001.status
+  equals: identified
+  evidence: eval-only-group-decision-trace
+forbidden_behaviors:
+- behavior: silently_reverse_group_choice
+  path: effects.forbidden.silently_reverse_group_choice
+  equals: false

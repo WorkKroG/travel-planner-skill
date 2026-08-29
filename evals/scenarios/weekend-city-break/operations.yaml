@@ -1,11 +1,51 @@
 prompt_version: scenario-v1
-prompt: Keep this simple city weekend compact, legible and free of artificial route alternatives.
-response: The compact plan is retained, including one practical fallback without unnecessary process.
+prompt: Keep this simple city weekend compact, legible and free of artificial route
+  alternatives.
+response: The compact plan is retained, including one practical fallback without unnecessary
+  process.
 operations:
   checks:
-    UX-001: {status: identified}
-    OPS-002: {status: identified}
-  route: {state: selected, alternatives: 0}
+    EVAL-UX-001:
+      status: identified
+    OPS-002:
+      status: identified
+  route:
+    state: selected
+    alternatives: 0
+  effects:
+    forbidden:
+      invent_route_variants: false
+      claim_unchecked_hours: false
+  evidence:
+    sources:
+      museum-fixture:
+      - last admission captured
+    traps:
+      artificial-complexity: explain why alternatives do not add value
 preservation:
-  - before: {day-2: {id: day-2, pace: slow}}
-    after: {day-2: {id: day-2, pace: slow}}
+- before:
+    day-2:
+      id: day-2
+      pace: slow
+  after:
+    day-2:
+      id: day-2
+      pace: slow
+fixture_judge:
+  scores:
+    skeleton_distinctness: 4
+    tradeoffs: 4
+    pacing: 4
+    backup_usefulness: 4
+    readability: 4
+    calibrated_uncertainty: 4
+  evidence:
+    skeleton_distinctness: Response and frozen inputs support skeleton distinctness
+      for weekend-city-break.
+    tradeoffs: Response and frozen inputs support tradeoffs for weekend-city-break.
+    pacing: Response and frozen inputs support pacing for weekend-city-break.
+    backup_usefulness: Response and frozen inputs support backup usefulness for weekend-city-break.
+    readability: Response and frozen inputs support readability for weekend-city-break.
+    calibrated_uncertainty: Response and frozen inputs support calibrated uncertainty
+      for weekend-city-break.
+  response_hash: 6b0f5c8d10977f89bfd94bf715e0ee403c010a16fe6d4213973e65a0d43f5c91

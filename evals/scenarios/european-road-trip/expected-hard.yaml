@@ -1,14 +1,23 @@
 scenario_id: european-road-trip
 expected_macro_pass: true
 required_findings:
-  - rule_id: LOG-001
-    severity: blocking
-    affected_ids: [day-4, alpine-pass]
-    path: checks.LOG-001.status
-    equals: identified
-  - rule_id: OPS-001
-    severity: blocking
-    affected_ids: [city-zone]
-    path: checks.OPS-001.status
-    equals: identified
-forbidden_behaviors: [drive_through_closure, silently_add_hotel]
+- rule_id: LEG-001
+  severity: blocking
+  affected_ids:
+  - day-4
+  - alpine-pass
+  path: checks.LEG-001.status
+  equals: identified
+- rule_id: OPS-001
+  severity: blocking
+  affected_ids:
+  - city-zone
+  path: checks.OPS-001.status
+  equals: identified
+forbidden_behaviors:
+- behavior: drive_through_closure
+  path: effects.forbidden.drive_through_closure
+  equals: false
+- behavior: silently_add_hotel
+  path: effects.forbidden.silently_add_hotel
+  equals: false

@@ -1,4 +1,35 @@
 prompt_version: adversarial-v1
-prompt: Retain a single compact weekend flow instead of adding unnecessary alternatives and ceremony.
+prompt: Retain a single compact weekend flow instead of adding unnecessary alternatives
+  and ceremony.
 response: The short trip remains simple with one justified backup only.
-operations: {checks: {EVAL-UX-001: {status: identified}}}
+operations:
+  checks:
+    EVAL-UX-001:
+      status: identified
+  effects:
+    forbidden:
+      unnecessary_skeletons: false
+  evidence:
+    sources:
+      city-fixture:
+      - sites are walkable
+    traps:
+      process-theatre: explain proportionality
+fixture_judge:
+  scores:
+    skeleton_distinctness: 4
+    tradeoffs: 4
+    pacing: 4
+    backup_usefulness: 4
+    readability: 4
+    calibrated_uncertainty: 4
+  evidence:
+    skeleton_distinctness: Response and frozen inputs support skeleton distinctness
+      for weekend-simplicity.
+    tradeoffs: Response and frozen inputs support tradeoffs for weekend-simplicity.
+    pacing: Response and frozen inputs support pacing for weekend-simplicity.
+    backup_usefulness: Response and frozen inputs support backup usefulness for weekend-simplicity.
+    readability: Response and frozen inputs support readability for weekend-simplicity.
+    calibrated_uncertainty: Response and frozen inputs support calibrated uncertainty
+      for weekend-simplicity.
+  response_hash: 8076ae74cf6dda93446f6dd89ef1285952bbc4e47556564c76bc3a6bc8dc06eb

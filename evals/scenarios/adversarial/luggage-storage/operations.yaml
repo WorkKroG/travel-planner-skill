@@ -1,4 +1,34 @@
 prompt_version: adversarial-v1
 prompt: Validate the luggage chain from hotel checkout to station departure.
 response: The storage handoff risk is identified before the rail departure.
-operations: {checks: {LEG-001: {status: identified}}}
+operations:
+  checks:
+    LEG-001:
+      status: identified
+  effects:
+    forbidden:
+      assume_storage: false
+  evidence:
+    sources:
+      hotel-fixture:
+      - storage hours limited
+    traps:
+      storage-gap: identify a feasible handoff
+fixture_judge:
+  scores:
+    skeleton_distinctness: 4
+    tradeoffs: 4
+    pacing: 4
+    backup_usefulness: 4
+    readability: 4
+    calibrated_uncertainty: 4
+  evidence:
+    skeleton_distinctness: Response and frozen inputs support skeleton distinctness
+      for luggage-storage.
+    tradeoffs: Response and frozen inputs support tradeoffs for luggage-storage.
+    pacing: Response and frozen inputs support pacing for luggage-storage.
+    backup_usefulness: Response and frozen inputs support backup usefulness for luggage-storage.
+    readability: Response and frozen inputs support readability for luggage-storage.
+    calibrated_uncertainty: Response and frozen inputs support calibrated uncertainty
+      for luggage-storage.
+  response_hash: 7ce47bb807c458122ade72a9364520c046f3bc25b6fc0dc189bc0bf8f5fd6982

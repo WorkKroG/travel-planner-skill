@@ -1,11 +1,58 @@
 prompt_version: scenario-v1
-prompt: Identify the frozen-world calendar and weather risks, retaining the selected public-transport route.
-response: Calendar and weather risks are identified with a local backup; no live schedule is invented.
+prompt: Identify the frozen-world calendar and weather risks, retaining the selected
+  public-transport route.
+response: Calendar and weather risks are identified with a local backup; no live schedule
+  is invented.
 operations:
   checks:
-    CAL-001: {status: identified}
-    EVD-001: {status: identified}
-  route: {state: frozen, bases: [Tokyo, Kyoto, Kanazawa]}
+    CAL-001:
+      status: identified
+    EVID-001:
+      status: identified
+  route:
+    state: frozen
+    bases:
+    - Tokyo
+    - Kyoto
+    - Kanazawa
+  effects:
+    forbidden:
+      invent_live_timetable: false
+      silently_change_frozen_bases: false
+  evidence:
+    sources:
+      japan-rail-fixture:
+      - platform timing is illustrative
+      - weather is a risk not a forecast
+    traps:
+      weather-risk: use local backup and mark uncertainty
+      timetable-invention: create a recheck instead of inventing a departure
 preservation:
-  - before: {day-5: {id: day-5, base: Kyoto, activity: temple-walk}}
-    after: {day-5: {id: day-5, base: Kyoto, activity: temple-walk}}
+- before:
+    day-5:
+      id: day-5
+      base: Kyoto
+      activity: temple-walk
+  after:
+    day-5:
+      id: day-5
+      base: Kyoto
+      activity: temple-walk
+fixture_judge:
+  scores:
+    skeleton_distinctness: 4
+    tradeoffs: 4
+    pacing: 4
+    backup_usefulness: 4
+    readability: 4
+    calibrated_uncertainty: 4
+  evidence:
+    skeleton_distinctness: Response and frozen inputs support skeleton distinctness
+      for japan-autumn.
+    tradeoffs: Response and frozen inputs support tradeoffs for japan-autumn.
+    pacing: Response and frozen inputs support pacing for japan-autumn.
+    backup_usefulness: Response and frozen inputs support backup usefulness for japan-autumn.
+    readability: Response and frozen inputs support readability for japan-autumn.
+    calibrated_uncertainty: Response and frozen inputs support calibrated uncertainty
+      for japan-autumn.
+  response_hash: d315e149f5438ee292fb2659d222c92005ee5159e938f3acc3a834005714f262

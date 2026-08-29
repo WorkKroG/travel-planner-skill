@@ -1,4 +1,36 @@
 prompt_version: adversarial-v1
-prompt: Do not invent a far-future train departure; schedule a provider recheck at the release window.
-response: The route is provisional and has a timed recheck rather than an invented departure.
-operations: {checks: {BOOK-001: {status: identified}}}
+prompt: Do not invent a far-future train departure; schedule a provider recheck at
+  the release window.
+response: The route is provisional and has a timed recheck rather than an invented
+  departure.
+operations:
+  checks:
+    BOOK-001:
+      status: identified
+  effects:
+    forbidden:
+      invent_schedule: false
+  evidence:
+    sources:
+      rail-provider:
+      - schedule release date only
+    traps:
+      fake-timetable: mark not_released_yet
+fixture_judge:
+  scores:
+    skeleton_distinctness: 4
+    tradeoffs: 4
+    pacing: 4
+    backup_usefulness: 4
+    readability: 4
+    calibrated_uncertainty: 4
+  evidence:
+    skeleton_distinctness: Response and frozen inputs support skeleton distinctness
+      for unreleased-schedule.
+    tradeoffs: Response and frozen inputs support tradeoffs for unreleased-schedule.
+    pacing: Response and frozen inputs support pacing for unreleased-schedule.
+    backup_usefulness: Response and frozen inputs support backup usefulness for unreleased-schedule.
+    readability: Response and frozen inputs support readability for unreleased-schedule.
+    calibrated_uncertainty: Response and frozen inputs support calibrated uncertainty
+      for unreleased-schedule.
+  response_hash: ea0c1ab6a3c54aa33bde23bb38cda3c1c839f6bfe993798b644cc78825ef0c11

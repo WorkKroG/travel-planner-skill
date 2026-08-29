@@ -1,14 +1,22 @@
 scenario_id: japan-autumn
 expected_macro_pass: true
 required_findings:
-  - rule_id: CAL-001
-    severity: blocking
-    affected_ids: [day-7]
-    path: checks.CAL-001.status
-    equals: identified
-  - rule_id: EVD-001
-    severity: blocking
-    affected_ids: [regional-train]
-    path: checks.EVD-001.status
-    equals: identified
-forbidden_behaviors: [invent_live_timetable, silently_change_frozen_bases]
+- rule_id: CAL-001
+  severity: blocking
+  affected_ids:
+  - day-7
+  path: checks.CAL-001.status
+  equals: identified
+- rule_id: EVID-001
+  severity: blocking
+  affected_ids:
+  - regional-train
+  path: checks.EVID-001.status
+  equals: identified
+forbidden_behaviors:
+- behavior: invent_live_timetable
+  path: effects.forbidden.invent_live_timetable
+  equals: false
+- behavior: silently_change_frozen_bases
+  path: effects.forbidden.silently_change_frozen_bases
+  equals: false

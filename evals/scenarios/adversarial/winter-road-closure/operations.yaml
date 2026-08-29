@@ -1,4 +1,36 @@
 prompt_version: adversarial-v1
-prompt: Identify the seasonal road closure and retain a transparent alternative rather than driving through it.
-response: The winter closure is identified and the original road is not represented as feasible.
-operations: {checks: {OPS-001: {status: identified}}}
+prompt: Identify the seasonal road closure and retain a transparent alternative rather
+  than driving through it.
+response: The winter closure is identified and the original road is not represented
+  as feasible.
+operations:
+  checks:
+    OPS-001:
+      status: identified
+  effects:
+    forbidden:
+      route_through_closed_road: false
+  evidence:
+    sources:
+      road-authority:
+      - mountain road closed in winter
+    traps:
+      summer-route: block unavailable road
+fixture_judge:
+  scores:
+    skeleton_distinctness: 4
+    tradeoffs: 4
+    pacing: 4
+    backup_usefulness: 4
+    readability: 4
+    calibrated_uncertainty: 4
+  evidence:
+    skeleton_distinctness: Response and frozen inputs support skeleton distinctness
+      for winter-road-closure.
+    tradeoffs: Response and frozen inputs support tradeoffs for winter-road-closure.
+    pacing: Response and frozen inputs support pacing for winter-road-closure.
+    backup_usefulness: Response and frozen inputs support backup usefulness for winter-road-closure.
+    readability: Response and frozen inputs support readability for winter-road-closure.
+    calibrated_uncertainty: Response and frozen inputs support calibrated uncertainty
+      for winter-road-closure.
+  response_hash: ef0074211da1f4abe608221356c705f0cadafe2f984d8539fc1929056a1a69f6

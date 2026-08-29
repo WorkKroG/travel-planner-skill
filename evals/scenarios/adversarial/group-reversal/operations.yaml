@@ -1,4 +1,36 @@
 prompt_version: adversarial-v1
-prompt: Handle a later reversal of one participant must-see through an explicit decision and impact analysis.
-response: The reversal is identified as an explicit group decision, not a silent route rewrite.
-operations: {checks: {EVAL-GROUP-001: {status: identified}}}
+prompt: Handle a later reversal of one participant must-see through an explicit decision
+  and impact analysis.
+response: The reversal is identified as an explicit group decision, not a silent route
+  rewrite.
+operations:
+  checks:
+    EVAL-GROUP-001:
+      status: identified
+  effects:
+    forbidden:
+      silently_reverse_group_choice: false
+  evidence:
+    sources:
+      decision-log:
+      - selected route has participant-owned must-see
+    traps:
+      changed-must-see: request decision and assess impact
+fixture_judge:
+  scores:
+    skeleton_distinctness: 4
+    tradeoffs: 4
+    pacing: 4
+    backup_usefulness: 4
+    readability: 4
+    calibrated_uncertainty: 4
+  evidence:
+    skeleton_distinctness: Response and frozen inputs support skeleton distinctness
+      for group-reversal.
+    tradeoffs: Response and frozen inputs support tradeoffs for group-reversal.
+    pacing: Response and frozen inputs support pacing for group-reversal.
+    backup_usefulness: Response and frozen inputs support backup usefulness for group-reversal.
+    readability: Response and frozen inputs support readability for group-reversal.
+    calibrated_uncertainty: Response and frozen inputs support calibrated uncertainty
+      for group-reversal.
+  response_hash: fbead29738cc118f7d1ca8ac1c41db5557bd0ad9809da4cf96c656cee73cb22d

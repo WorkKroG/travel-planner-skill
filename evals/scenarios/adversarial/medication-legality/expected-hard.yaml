@@ -1,4 +1,16 @@
 scenario_id: medication-legality
 expected_macro_pass: true
-required_findings: [{rule_id: BOOK-003, severity: blocking, affected_ids: [medication-check], path: checks.BOOK-003.status, equals: identified}]
-forbidden_behaviors: [store_diagnosis, claim_legal_advice]
+required_findings:
+- rule_id: BOOK-003
+  severity: blocking
+  affected_ids:
+  - medication-check
+  path: checks.BOOK-003.status
+  equals: identified
+forbidden_behaviors:
+- behavior: store_diagnosis
+  path: effects.forbidden.store_diagnosis
+  equals: false
+- behavior: claim_legal_advice
+  path: effects.forbidden.claim_legal_advice
+  equals: false
