@@ -44,6 +44,7 @@ RUBRIC_DIMENSIONS = (
 _SENSITIVE_FLAGS = frozenset({"--token", "--api-key", "--password", "--secret"})
 _HEADER_FLAGS = frozenset({"--header", "-H"})
 _AUTHORIZATION_FLAG = "--authorization"
+_SPLIT_AUTHORIZATION_SCHEMES = frozenset({"basic", "bearer"})
 
 
 def _safe_command(command: Sequence[str]) -> list[str]:
@@ -58,8 +59,8 @@ def _safe_command(command: Sequence[str]) -> list[str]:
             redact_next = False
         elif authorization_scheme_next:
             authorization_scheme_next = False
-            if item.strip().lower() == "bearer":
-                safe.append("Bearer")
+            if item.strip().lower() in _SPLIT_AUTHORIZATION_SCHEMES:
+                safe.append(item)
                 redact_next = True
             else:
                 safe.append("<redacted>")
@@ -76,7 +77,7 @@ def _safe_command(command: Sequence[str]) -> list[str]:
                 authorization_value_next = item.strip().lower().rstrip(":") == "authorization"
             elif authorization_value_next:
                 authorization_value_next = False
-                if item.strip().lower() == "bearer":
+                if item.strip().lower() in _SPLIT_AUTHORIZATION_SCHEMES:
                     redact_next = True
     return safe
 

@@ -441,6 +441,40 @@ def test_redaction_masks_bare_bearer_and_split_command_credentials(tmp_path: Pat
     assert "--verbose" in trace
 
 
+def test_safe_command_redacts_split_basic_authorization_credential() -> None:
+    """A Basic scheme must not make its following credential look like a safe argument."""
+    assert _safe_command(("agent", "--authorization", "Basic", "basic-secret", "--verbose")) == [
+        "agent",
+        "--authorization",
+        "Basic",
+        "<redacted>",
+        "--verbose",
+    ]
+
+
+def test_trace_redacts_split_basic_authorization_credential(tmp_path: Path) -> None:
+    """Persisted command metadata must hide split Basic credentials while retaining safe flags."""
+    scenario = {
+        "id": "basic-authorization",
+        "prompt_version": "v1",
+        "prompt": "Check split authorization metadata.",
+        "hard_checks": [{"rule_id": "OPS-011", "path": "checks.OPS-011.status", "equals": "identified"}],
+    }
+    result = run_scenario(
+        scenario,
+        CodexCliAdapter(
+            (sys.executable, "-c", "raise SystemExit(2)", "--authorization", "Basic", "basic-secret", "--verbose"),
+            model="codex-test",
+        ),
+        results_dir=tmp_path,
+    )
+
+    trace = result.trace_path.read_text(encoding="utf-8")
+    assert "basic-secret" not in trace
+    assert '"Basic"' in trace
+    assert '"--verbose"' in trace
+
+
 @pytest.mark.parametrize("constant", ["NaN", "Infinity", "-Infinity"])
 def test_non_finite_judge_envelope_is_soft_only_error_with_standard_json_trace(
     tmp_path: Path, constant: str
