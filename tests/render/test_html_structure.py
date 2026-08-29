@@ -1,5 +1,6 @@
 import hashlib
 import json
+import re
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -223,3 +224,50 @@ def test_finalize_cli_publishes_only_the_html_bytes_approved_by_qa(
     receipt = json.loads(Path(f"{output}.qa.json").read_text(encoding="utf-8"))
     assert ">Final</span>" in html.decode("utf-8")
     assert receipt["sha256"] == hashlib.sha256(html).hexdigest()
+
+
+def test_finalize_receipt_write_failure_leaves_no_visible_unattested_final(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Catch a receipt publication failure exposing a Final document without its receipt."""
+    output = tmp_path / "japan-final.html"
+    fixture = Path(__file__).parents[1] / "fixtures" / "japan-final-reference"
+    report = QaReport(
+        first_useful_ms=120,
+        cumulative_layout_shift=0.01,
+        interaction_ms=20,
+        focus_visible=True,
+        no_js_core=True,
+        offline_core=True,
+        zoom_200_core=True,
+        reduced_motion_core=True,
+        filter_sync=True,
+        mobile_priority_visible=True,
+        state_matrix_complete=True,
+    )
+    monkeypatch.setattr("travel_planner.cli.run_document_qa", lambda *args, **kwargs: report)
+
+    def fail_receipt(*args: object, **kwargs: object) -> None:
+        del args, kwargs
+        raise OSError("disk full")
+
+    monkeypatch.setattr("travel_planner.cli.write_attestation", fail_receipt)
+    try:
+        exit_code = main(
+            [
+                "finalize",
+                str(fixture),
+                "--output",
+                str(output),
+                "--at",
+                "2026-08-28T12:00:00+00:00",
+            ]
+        )
+    except OSError:
+        exit_code = 0
+
+    assert exit_code == 5
+    assert not output.exists() or not re.search(
+        r'class="[^"]*\bdocument-status--final\b', output.read_text(encoding="utf-8")
+    )
+    assert not Path(f"{output}.qa.json").exists()

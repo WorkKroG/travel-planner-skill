@@ -220,14 +220,16 @@ def attest_document(html_path: Path, report: QaReport) -> QaAttestation:
     return QaAttestation(hashlib.sha256(content).hexdigest(), len(content), report)
 
 
-def write_attestation(html_path: Path, receipt: QaAttestation) -> Path:
+def write_attestation(
+    html_path: Path, receipt: QaAttestation, *, destination: Path | None = None
+) -> Path:
     """Atomically persist a receipt only when it matches the published HTML exactly."""
     source = Path(html_path)
     if not receipt.matches(source):
         raise ValueError("QA attestation does not match the HTML artifact.")
-    destination = attestation_path(source)
+    target = destination or attestation_path(source)
     descriptor, temporary_name = tempfile.mkstemp(
-        prefix=f".{destination.name}.", suffix=".tmp", dir=destination.parent
+        prefix=f".{target.name}.", suffix=".tmp", dir=target.parent
     )
     temporary = Path(temporary_name)
     try:
@@ -236,11 +238,11 @@ def write_attestation(html_path: Path, receipt: QaAttestation) -> Path:
             stream.write("\n")
             stream.flush()
             os.fsync(stream.fileno())
-        temporary.replace(destination)
+        temporary.replace(target)
     except Exception:
         temporary.unlink(missing_ok=True)
         raise
-    return destination
+    return target
 
 
 def load_attestation(html_path: Path) -> QaAttestation | None:

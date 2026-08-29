@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import sys
 import tempfile
 from collections.abc import Sequence
@@ -32,6 +33,11 @@ from .render.qa import (
 from .render.viewmodel import build_view
 from .state import load_trip, validate_trip
 from .workspace import PROJECT_REMINDER, WorkspaceError, initialize_trip
+
+_FINAL_STATUS_CLASS = re.compile(
+    r"<[^>]*\bclass\s*=\s*(['\"])[^'\"]*\bdocument-status--final\b[^'\"]*\1",
+    re.IGNORECASE,
+)
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -98,6 +104,86 @@ def _write_draft_html(state, challenge, generated_at: datetime, output: Path) ->
     attestation_path(output).unlink(missing_ok=True)
 
 
+def _staging_path(destination: Path, suffix: str) -> Path:
+    descriptor, temporary_name = tempfile.mkstemp(
+        prefix=f".{destination.name}.", suffix=suffix, dir=destination.parent
+    )
+    os.close(descriptor)
+    path = Path(temporary_name)
+    path.unlink(missing_ok=True)
+    return path
+
+
+def _fsync_file(path: Path) -> None:
+    with path.open("rb") as stream:
+        os.fsync(stream.fileno())
+
+
+def _has_final_status(html_path: Path) -> bool:
+    try:
+        return bool(_FINAL_STATUS_CLASS.search(Path(html_path).read_text(encoding="utf-8")))
+    except OSError:
+        return False
+
+
+def _publish_final(candidate: Path, receipt, output: Path) -> bool:
+    """Publish matching Final HTML and receipt, restoring only safe prior artifacts on failure."""
+    receipt_output = attestation_path(output)
+    receipt_stage = _staging_path(receipt_output, ".json")
+    output_backup = _staging_path(output, ".backup")
+    receipt_backup = _staging_path(receipt_output, ".backup")
+    had_output = output.is_file()
+    had_receipt = receipt_output.is_file()
+    moved_output = False
+    moved_receipt = False
+    published_receipt = False
+    published_output = False
+    try:
+        _fsync_file(candidate)
+        write_attestation(candidate, receipt, destination=receipt_stage)
+        if had_output:
+            output.replace(output_backup)
+            moved_output = True
+        if had_receipt:
+            receipt_output.replace(receipt_backup)
+            moved_receipt = True
+        receipt_stage.replace(receipt_output)
+        published_receipt = True
+        candidate.replace(output)
+        published_output = True
+        return True
+    except (OSError, ValueError):
+        if published_output:
+            output.unlink(missing_ok=True)
+        if published_receipt:
+            receipt_output.unlink(missing_ok=True)
+        if moved_receipt:
+            try:
+                receipt_backup.replace(receipt_output)
+            except OSError:
+                receipt_output.unlink(missing_ok=True)
+        if moved_output and not _has_final_status(output_backup):
+            try:
+                output_backup.replace(output)
+            except OSError:
+                output.unlink(missing_ok=True)
+        return False
+    finally:
+        receipt_stage.unlink(missing_ok=True)
+        output_backup.unlink(missing_ok=True)
+        receipt_backup.unlink(missing_ok=True)
+
+
+def _publish_draft_after_failure(state, challenge, generated_at: datetime, output: Path) -> None:
+    """Prefer a current Draft after a failed Final publication; never leave an unreceipted Final."""
+    try:
+        _write_draft_html(state, challenge, generated_at, output)
+    except OSError:
+        if _has_final_status(output):
+            output.unlink(missing_ok=True)
+        attestation_path(output).unlink(missing_ok=True)
+
+
 def _finalize_html(path: Path, output: Path, generated_at: datetime, profiles: tuple[str, ...]) -> int:
     report = validate_trip(path)
     if not report.ok:
@@ -113,12 +199,7 @@ def _finalize_html(path: Path, output: Path, generated_at: datetime, profiles: t
         return 5
 
     output.parent.mkdir(parents=True, exist_ok=True)
-    descriptor, temporary_name = tempfile.mkstemp(
-        prefix=f".{output.name}.", suffix=".html", dir=output.parent
-    )
-    os.close(descriptor)
-    Path(temporary_name).unlink(missing_ok=True)
-    candidate_path = Path(temporary_name)
+    candidate_path = _staging_path(output, ".html")
     try:
         write_html(candidate, candidate_path, HTML_DEFAULTS)
         qa_report = run_document_qa(candidate_path, profiles)
@@ -127,8 +208,14 @@ def _finalize_html(path: Path, output: Path, generated_at: datetime, profiles: t
             print(json.dumps(qa_report.as_dict(), ensure_ascii=False, indent=2, sort_keys=True), file=sys.stderr)
             return 5
         receipt = attest_document(candidate_path, qa_report)
-        candidate_path.replace(output)
-        write_attestation(output, receipt)
+        if not _publish_final(candidate_path, receipt, output):
+            _publish_draft_after_failure(state, challenge, generated_at, output)
+            print("Final publication failed; no unreceipted Final artifact was published.", file=sys.stderr)
+            return 5
+    except (OSError, ValueError) as error:
+        _publish_draft_after_failure(state, challenge, generated_at, output)
+        print(f"Final publication failed: {error}", file=sys.stderr)
+        return 5
     finally:
         candidate_path.unlink(missing_ok=True)
     print(f"Finalized HTML: {output}")
@@ -219,8 +306,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.command == "finalize":
         return _finalize_html(args.path, args.output, args.at, _profiles(args.profiles))
     if args.command == "pdf":
-        source_text = args.html.read_text(encoding="utf-8") if args.html.is_file() else ""
-        if '<span class="document-status">Final</span>' in source_text:
+        if _has_final_status(args.html):
             receipt = load_attestation(args.html)
             if receipt is None or not receipt.matches(args.html):
                 print("Final HTML requires a matching successful QA attestation before PDF export.", file=sys.stderr)
