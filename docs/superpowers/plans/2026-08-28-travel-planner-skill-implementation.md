@@ -1021,7 +1021,7 @@ git commit -m "feat: define collaborative travel planning workflow"
 - Produces: `AgentAdapter`, `FixtureAdapter`, `CodexCliAdapter`, `run_scenario(scenario, adapter) -> EvalResult`, `grade_hard_invariants(...) -> GradeReport`, `grade_soft_rubric(...) -> RubricReport`.
 - Consumes: trip CLI and fixture facts; outputs versioned traces under ignored `evals/results/`.
 
-- [ ] **Step 1: Write macro-gate and trace tests**
+- [x] **Step 1: Write macro-gate and trace tests**
 
 ```python
 def test_one_hard_failure_fails_whole_scenario():
@@ -1035,12 +1035,12 @@ def test_trace_records_model_prompt_and_schema_versions(tmp_path):
     assert {"adapter", "prompt_version", "started_at"} <= trace.keys()
 ```
 
-- [ ] **Step 2: Verify failures**
+- [x] **Step 2: Verify failures**
 
 Run: `uv run pytest tests/evals/test_runner.py tests/evals/test_graders.py -v`  
 Expected: FAIL because harness is absent.
 
-- [ ] **Step 3: Implement offline and real-agent adapters with separated grading**
+- [x] **Step 3: Implement offline and real-agent adapters with separated grading**
 
 ```python
 class AgentAdapter(Protocol):
@@ -1057,13 +1057,13 @@ class EvalResult:
 
 Offline CI uses `FixtureAdapter` to prove harness/graders. Release runs use `CodexCliAdapter` with explicit command, model metadata and no hidden fallback. LLM judge grades only distinct skeletons, trade-off quality, pacing, backup usefulness, readability and calibrated uncertainty.
 
-- [ ] **Step 4: Verify harness and deliberate failure fixture**
+- [x] **Step 4: Verify harness and deliberate failure fixture**
 
 Run: `uv run pytest tests/evals -v`  
 Run: `uv run python evals/run.py --adapter fixture --scenario harness-smoke`  
 Expected: PASS; deliberate `last-admission` mutation produces macro FAIL and non-zero exit.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add evals/run.py evals/adapters.py evals/graders.py evals/types.py evals/rubrics evals/fixture-world tests/evals
