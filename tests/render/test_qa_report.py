@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from travel_planner.render.qa import QaReport, run_document_qa
+from travel_planner.render.qa import QaReport, attest_document, run_document_qa
 
 
 def test_serious_accessibility_finding_blocks_final_status() -> None:
@@ -93,3 +93,28 @@ def test_run_document_qa_parses_real_runner_output(tmp_path: Path) -> None:
 
     assert report.final_allowed is True
     assert json.loads(json.dumps(report.as_dict()))["first_useful_ms"] == 120
+
+
+def test_qa_attestation_rejects_changed_html_bytes(tmp_path: Path) -> None:
+    """Catch a successful QA result being reused after its approved HTML changes."""
+    html = tmp_path / "trip.html"
+    html.write_text("<!doctype html><title>Checked trip</title>", encoding="utf-8")
+    report = QaReport(
+        first_useful_ms=120,
+        cumulative_layout_shift=0.01,
+        interaction_ms=20,
+        focus_visible=True,
+        no_js_core=True,
+        offline_core=True,
+        zoom_200_core=True,
+        reduced_motion_core=True,
+        filter_sync=True,
+        mobile_priority_visible=True,
+        state_matrix_complete=True,
+    )
+    receipt = attest_document(html, report)
+    assert receipt.matches(html) is True
+
+    html.write_text("<!doctype html><title>Changed trip</title>", encoding="utf-8")
+
+    assert receipt.matches(html) is False

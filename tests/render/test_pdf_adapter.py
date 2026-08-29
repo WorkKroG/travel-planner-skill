@@ -1,7 +1,8 @@
 from pathlib import Path
 
+import pytest
 from travel_planner.cli import main
-from travel_planner.render.pdf import PdfAdapter, render_pdf
+from travel_planner.render.pdf import PdfAdapter, PdfResult, render_pdf
 
 
 def test_missing_pdf_adapter_returns_html_success_but_not_pdf_success(
@@ -71,3 +72,22 @@ def test_pdf_adapter_reports_success_only_after_real_file_write(tmp_path: Path) 
     assert result.code == "PDF_CREATED"
     assert result.pdf_path == pdf
     assert pdf.stat().st_size > 0
+
+
+def test_pdf_cli_rejects_unattested_final_html(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Catch PDF output inheriting a Final label from HTML that was never QA-approved."""
+    html = tmp_path / "trip.html"
+    html.write_text(
+        '<!doctype html><span class="document-status">Final</span>', encoding="utf-8"
+    )
+    monkeypatch.setattr(
+        "travel_planner.cli.render_pdf",
+        lambda *args, **kwargs: PdfResult(True, "PDF_CREATED", "synthetic success"),
+    )
+
+    exit_code = main(["pdf", str(html), "--output", str(tmp_path / "trip.pdf")])
+
+    assert exit_code == 4
+    assert "QA attestation" in capsys.readouterr().err

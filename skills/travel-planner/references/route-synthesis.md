@@ -5,8 +5,10 @@ Build up to three genuinely different route skeletons when choices exist: differ
 Before asking for a choice, run the skeleton challenge against the explicit workspace:
 
 ```bash
-travel-planner challenge PATH --stage skeleton --at 2026-08-28T12:00:00+00:00
+travel-planner challenge PATH --stage skeleton --at <evaluation-time-iso8601-with-offset>
 ```
+
+Replace `<evaluation-time-iso8601-with-offset>` with the current evaluation instant; use a fixed fixture time only when the fixture explicitly requires it.
 
 Show the user the alternatives, hard failures, trade-offs, and recommendation. After their choice, record selected/rejected options and reasons in `decisions.md`, then move the route through `draft → challenged → selected → frozen`. Selection and freeze are separate confirmations.
 

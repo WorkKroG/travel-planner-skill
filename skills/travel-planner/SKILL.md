@@ -5,7 +5,7 @@ description: Use when planning, revising, or finalizing a complete trip or пу�
 
 # Travel Planner
 
-Plan collaboratively in the user's language. The default is one meaningful question at a time; make a quick draft only when the user explicitly asks for one, and label every assumption, gap, and unverified detail. A chat and any HTML/PDF are not the source of truth: keep the selected trip's canonical state in `brief.yaml`, `candidates.yaml`, `itinerary.yaml`, `readiness.yaml`, `decisions.md`, and `sources.md`; outputs are derived and rebuilt from it.
+Plan collaboratively in the user's language. The default is one meaningful question at a time; make a quick draft only when the user explicitly asks for one, and label every assumption, gap, and unverified detail. A chat and any HTML/PDF are not the source of truth: the four YAML files (`brief.yaml`, `candidates.yaml`, `itinerary.yaml`, and `readiness.yaml`) are canonical machine state; `decisions.md` is decision history; `sources.md` is a regenerable, read-only source projection. Update facts and freshness in their owning YAML records, then regenerate outputs.
 
 Before work, identify the explicit trip workspace. Never choose among multiple trips by recency: ask for a path or `trip_id`. Load only the state relevant to the current stage and affected regions/IDs. Explain the impact before a material change, obtain consent for a frozen-route structural change, record the reason, and never silently rewrite a user decision.
 

@@ -16,4 +16,4 @@ For continuation, a valid `brief.yaml` and its stable `trip_id` identify a works
 travel-planner validate PATH
 ```
 
-HTML and PDF are derived views, never a substitute for state. Resume from the affected files and explain any scoped rebuild that a later change will require.
+The four YAML files are canonical machine state. `decisions.md` preserves decision history; `sources.md` is a regenerable, read-only projection from the YAML source records. Update source facts and freshness in their owning YAML records, then regenerate `sources.md` and derived HTML/PDF. Resume from affected state and explain any scoped rebuild that a later change will require.

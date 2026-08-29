@@ -46,7 +46,7 @@ def test_final_requires_explicit_final_state_and_no_blockers(
 
     blocked_view = build_view(final_state, japan_report, GENERATED_AT)
     clear_report = ChallengeReport("detailed", GENERATED_AT, (), ())
-    final_view = build_view(final_state, clear_report, GENERATED_AT)
+    final_view = build_view(final_state, clear_report, GENERATED_AT, qa_attested=True)
 
     assert blocked_view.status == "draft"
     assert final_view.status == "final"

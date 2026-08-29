@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
+import tempfile
 from collections.abc import Sequence
 from datetime import datetime
 from pathlib import Path
@@ -20,7 +22,13 @@ from .render.html import DEFAULTS as HTML_DEFAULTS
 from .render.html import write_html
 from .render.markdown import render_markdown
 from .render.pdf import render_pdf
-from .render.qa import run_document_qa
+from .render.qa import (
+    attest_document,
+    attestation_path,
+    load_attestation,
+    run_document_qa,
+    write_attestation,
+)
 from .render.viewmodel import build_view
 from .state import load_trip, validate_trip
 from .workspace import PROJECT_REMINDER, WorkspaceError, initialize_trip
@@ -59,6 +67,15 @@ def _parser() -> argparse.ArgumentParser:
     render.add_argument("--format", choices=("markdown", "html"), required=True)
     render.add_argument("--output", type=Path, required=True)
     render.add_argument("--at", type=datetime.fromisoformat, required=True)
+    finalize = commands.add_parser("finalize", help="QA and publish an exact Final HTML artifact")
+    finalize.add_argument("path", type=Path)
+    finalize.add_argument("--output", type=Path, required=True)
+    finalize.add_argument("--at", type=datetime.fromisoformat, required=True)
+    finalize.add_argument(
+        "--profiles",
+        default="phone,tablet,desktop,narrow",
+        help="Comma-separated browser profiles",
+    )
     pdf = commands.add_parser("pdf", help="Create a PDF from a rendered HTML document")
     pdf.add_argument("html", type=Path)
     pdf.add_argument("--output", type=Path, required=True)
@@ -70,6 +87,52 @@ def _parser() -> argparse.ArgumentParser:
         help="Comma-separated browser profiles",
     )
     return parser
+
+
+def _profiles(value: str) -> tuple[str, ...]:
+    return tuple(item.strip() for item in value.split(",") if item.strip())
+
+
+def _write_draft_html(state, challenge, generated_at: datetime, output: Path) -> None:
+    write_html(build_view(state, challenge, generated_at), output, HTML_DEFAULTS)
+    attestation_path(output).unlink(missing_ok=True)
+
+
+def _finalize_html(path: Path, output: Path, generated_at: datetime, profiles: tuple[str, ...]) -> int:
+    report = validate_trip(path)
+    if not report.ok:
+        for issue in report.issues:
+            print(f"{issue.path}: {issue.message}", file=sys.stderr)
+        return 2
+    state = load_trip(path)
+    challenge = run_challenge(state, "detailed", generated_at)
+    candidate = build_view(state, challenge, generated_at, qa_attested=True)
+    if candidate.status != "final":
+        _write_draft_html(state, challenge, generated_at, output)
+        print("Final status requires requested final state, a frozen route, and a passing challenge.", file=sys.stderr)
+        return 5
+
+    output.parent.mkdir(parents=True, exist_ok=True)
+    descriptor, temporary_name = tempfile.mkstemp(
+        prefix=f".{output.name}.", suffix=".html", dir=output.parent
+    )
+    os.close(descriptor)
+    Path(temporary_name).unlink(missing_ok=True)
+    candidate_path = Path(temporary_name)
+    try:
+        write_html(candidate, candidate_path, HTML_DEFAULTS)
+        qa_report = run_document_qa(candidate_path, profiles)
+        if not qa_report.final_allowed:
+            _write_draft_html(state, challenge, generated_at, output)
+            print(json.dumps(qa_report.as_dict(), ensure_ascii=False, indent=2, sort_keys=True), file=sys.stderr)
+            return 5
+        receipt = attest_document(candidate_path, qa_report)
+        candidate_path.replace(output)
+        write_attestation(output, receipt)
+    finally:
+        candidate_path.unlink(missing_ok=True)
+    print(f"Finalized HTML: {output}")
+    return 0
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -153,14 +216,21 @@ def main(argv: Sequence[str] | None = None) -> int:
             args.output.write_text(document, encoding="utf-8")
         print(f"Rendered {args.format}: {args.output}")
         return 0
+    if args.command == "finalize":
+        return _finalize_html(args.path, args.output, args.at, _profiles(args.profiles))
     if args.command == "pdf":
+        source_text = args.html.read_text(encoding="utf-8") if args.html.is_file() else ""
+        if '<span class="document-status">Final</span>' in source_text:
+            receipt = load_attestation(args.html)
+            if receipt is None or not receipt.matches(args.html):
+                print("Final HTML requires a matching successful QA attestation before PDF export.", file=sys.stderr)
+                return 4
         result = render_pdf(args.html, args.output)
         stream = sys.stdout if result.created else sys.stderr
         print(f"{result.code}: {result.message}", file=stream)
         return 0 if result.created else 4
     if args.command == "qa":
-        profiles = tuple(value.strip() for value in args.profiles.split(",") if value.strip())
-        report = run_document_qa(args.html, profiles)
+        report = run_document_qa(args.html, _profiles(args.profiles))
         print(json.dumps(report.as_dict(), ensure_ascii=False, indent=2, sort_keys=True))
         return 0 if report.final_allowed else 5
     _parser().print_help()

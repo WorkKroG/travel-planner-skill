@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
+import os
 import subprocess
+import tempfile
 from collections.abc import Mapping, Sequence
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -158,3 +161,92 @@ def run_document_qa(
     if not isinstance(payload, Mapping):
         return QaReport(errors=("Browser QA JSON report must be an object.",))
     return QaReport.from_mapping(payload)
+
+
+@dataclass(frozen=True)
+class QaAttestation:
+    """A successful browser-QA receipt bound to one exact HTML artifact."""
+
+    sha256: str
+    byte_count: int
+    report: QaReport
+
+    def matches(self, html_path: Path) -> bool:
+        """Return whether this receipt still approves the exact file on disk."""
+        source = Path(html_path)
+        if not source.is_file():
+            return False
+        content = source.read_bytes()
+        return len(content) == self.byte_count and hashlib.sha256(content).hexdigest() == self.sha256
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "schema_version": 1,
+            "sha256": self.sha256,
+            "byte_count": self.byte_count,
+            "final_allowed": self.report.final_allowed,
+            "qa_report": self.report.as_dict(),
+        }
+
+    @classmethod
+    def from_mapping(cls, value: Mapping[str, Any]) -> QaAttestation:
+        report_value = value.get("qa_report")
+        if value.get("schema_version") != 1 or not isinstance(report_value, Mapping):
+            raise ValueError("Invalid QA attestation.")
+        receipt = cls(
+            sha256=str(value["sha256"]),
+            byte_count=int(value["byte_count"]),
+            report=QaReport.from_mapping(report_value),
+        )
+        if not receipt.report.final_allowed:
+            raise ValueError("QA attestation does not allow Final status.")
+        return receipt
+
+
+def attestation_path(html_path: Path) -> Path:
+    """Return the auditable sidecar path for an HTML artifact."""
+    source = Path(html_path)
+    return source.with_name(f"{source.name}.qa.json")
+
+
+def attest_document(html_path: Path, report: QaReport) -> QaAttestation:
+    """Create a Final-only receipt after a successful QA run for the artifact."""
+    source = Path(html_path)
+    if not source.is_file():
+        raise FileNotFoundError(f"HTML input does not exist: {source}")
+    if not report.final_allowed:
+        raise ValueError("QA report does not allow Final status.")
+    content = source.read_bytes()
+    return QaAttestation(hashlib.sha256(content).hexdigest(), len(content), report)
+
+
+def write_attestation(html_path: Path, receipt: QaAttestation) -> Path:
+    """Atomically persist a receipt only when it matches the published HTML exactly."""
+    source = Path(html_path)
+    if not receipt.matches(source):
+        raise ValueError("QA attestation does not match the HTML artifact.")
+    destination = attestation_path(source)
+    descriptor, temporary_name = tempfile.mkstemp(
+        prefix=f".{destination.name}.", suffix=".tmp", dir=destination.parent
+    )
+    temporary = Path(temporary_name)
+    try:
+        with os.fdopen(descriptor, "w", encoding="utf-8") as stream:
+            json.dump(receipt.as_dict(), stream, ensure_ascii=False, indent=2, sort_keys=True)
+            stream.write("\n")
+            stream.flush()
+            os.fsync(stream.fileno())
+        temporary.replace(destination)
+    except Exception:
+        temporary.unlink(missing_ok=True)
+        raise
+    return destination
+
+
+def load_attestation(html_path: Path) -> QaAttestation | None:
+    """Load a valid sidecar receipt, treating malformed or stale data as absent."""
+    try:
+        value = json.loads(attestation_path(html_path).read_text(encoding="utf-8"))
+        return QaAttestation.from_mapping(value) if isinstance(value, Mapping) else None
+    except (FileNotFoundError, OSError, TypeError, ValueError, json.JSONDecodeError, KeyError):
+        return None

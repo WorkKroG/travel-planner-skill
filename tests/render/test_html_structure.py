@@ -1,4 +1,5 @@
 import hashlib
+import json
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -12,6 +13,7 @@ from travel_planner.render.html import (
     render_html,
     write_html,
 )
+from travel_planner.render.qa import QaReport
 from travel_planner.render.viewmodel import ItineraryView, build_view
 from travel_planner.state import load_trip
 
@@ -128,7 +130,7 @@ def test_final_ui_state_fixture_uses_the_canonical_renderer_and_has_no_blockers(
     generated_at = datetime(2026, 8, 28, 12, tzinfo=UTC)
     state = load_trip(fixture)
     challenge = run_challenge(state, "detailed", generated_at)
-    view = build_view(state, challenge, generated_at)
+    view = build_view(state, challenge, generated_at, qa_attested=True)
 
     assert view.status == "final"
     assert view.summary.blockers == ()
@@ -160,3 +162,64 @@ def test_render_cli_writes_html(japan_view: ItineraryView, tmp_path: Path) -> No
 
     assert exit_code == 0
     assert output.read_text(encoding="utf-8").startswith("<!doctype html>")
+
+
+def test_render_cli_downgrades_an_unattested_final_html_to_draft(tmp_path: Path) -> None:
+    """Catch a Final label being published before QA approves these exact HTML bytes."""
+    output = tmp_path / "japan-final.html"
+    fixture = Path(__file__).parents[1] / "fixtures" / "japan-final-reference"
+
+    exit_code = main(
+        [
+            "render",
+            str(fixture),
+            "--format",
+            "html",
+            "--output",
+            str(output),
+            "--at",
+            "2026-08-28T12:00:00+00:00",
+        ]
+    )
+
+    assert exit_code == 0
+    assert ">Draft</span>" in output.read_text(encoding="utf-8")
+
+
+def test_finalize_cli_publishes_only_the_html_bytes_approved_by_qa(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Catch finalization publishing different bytes from the HTML that passed QA."""
+    output = tmp_path / "japan-final.html"
+    fixture = Path(__file__).parents[1] / "fixtures" / "japan-final-reference"
+    report = QaReport(
+        first_useful_ms=120,
+        cumulative_layout_shift=0.01,
+        interaction_ms=20,
+        focus_visible=True,
+        no_js_core=True,
+        offline_core=True,
+        zoom_200_core=True,
+        reduced_motion_core=True,
+        filter_sync=True,
+        mobile_priority_visible=True,
+        state_matrix_complete=True,
+    )
+    monkeypatch.setattr("travel_planner.cli.run_document_qa", lambda *args, **kwargs: report)
+
+    exit_code = main(
+        [
+            "finalize",
+            str(fixture),
+            "--output",
+            str(output),
+            "--at",
+            "2026-08-28T12:00:00+00:00",
+        ]
+    )
+
+    assert exit_code == 0
+    html = output.read_bytes()
+    receipt = json.loads(Path(f"{output}.qa.json").read_text(encoding="utf-8"))
+    assert ">Final</span>" in html.decode("utf-8")
+    assert receipt["sha256"] == hashlib.sha256(html).hexdigest()

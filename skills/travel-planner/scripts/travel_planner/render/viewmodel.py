@@ -425,7 +425,11 @@ def _sources(state: TripState) -> tuple[SourceView, ...]:
 
 
 def build_view(
-    state: TripState, challenge: ChallengeReport, generated_at: datetime
+    state: TripState,
+    challenge: ChallengeReport,
+    generated_at: datetime,
+    *,
+    qa_attested: bool = False,
 ) -> ItineraryView:
     """Project canonical state into an immutable, deterministic document view."""
     route = _route(state)
@@ -436,7 +440,7 @@ def build_view(
     requested_final = state.itinerary.get("output_status") == "final"
     route_frozen = state.itinerary.get("route_state") == "frozen"
     status: Literal["draft", "final"] = (
-        "final" if requested_final and route_frozen and challenge.hard_pass else "draft"
+        "final" if requested_final and route_frozen and challenge.hard_pass and qa_attested else "draft"
     )
     dates = state.brief.get("travel_dates", {})
     summary = SummaryView(
