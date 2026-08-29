@@ -1,0 +1,11 @@
+prompt_version: scenario-v1
+prompt: Keep this simple city weekend compact, legible and free of artificial route alternatives.
+response: The compact plan is retained, including one practical fallback without unnecessary process.
+operations:
+  checks:
+    UX-001: {status: identified}
+    OPS-002: {status: identified}
+  route: {state: selected, alternatives: 0}
+preservation:
+  - before: {day-2: {id: day-2, pace: slow}}
+    after: {day-2: {id: day-2, pace: slow}}

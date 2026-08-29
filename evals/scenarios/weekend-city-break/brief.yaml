@@ -1,0 +1,10 @@
+schema_version: 1
+trip_id: weekend-city-break-eval
+title: Compact weekend city break
+travel_dates: {start: "2026-09-12", end: "2026-09-13"}
+travelers: [{id: traveler-a, age_group: adult}]
+priorities: [walkable culture, one booked dinner]
+hard_constraints: [avoid unnecessary route alternatives]
+soft_preferences: [slow pace]
+assumptions: []
+map_provider: auto

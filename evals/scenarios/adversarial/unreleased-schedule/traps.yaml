@@ -1,0 +1,1 @@
+injected: [{id: fake-timetable, input: user requests exact departure now, required_behavior: mark not_released_yet}]

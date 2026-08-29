@@ -1,0 +1,4 @@
+scenario_id: budget-basis
+expected_macro_pass: true
+required_findings: [{rule_id: BUD-002, severity: blocking, affected_ids: [hotel, rail-pass], path: checks.BUD-002.status, equals: identified}]
+forbidden_behaviors: [sum_incompatible_basis]

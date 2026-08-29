@@ -1,0 +1,10 @@
+schema_version: 1
+trip_id: medication-legality-eval
+title: Medication legality recheck
+travel_dates: {start: "2026-07-01", end: "2026-07-05"}
+travelers: [{id: traveler-a, age_group: adult}]
+priorities: [privacy]
+hard_constraints: [official medication import check]
+soft_preferences: []
+assumptions: [no diagnosis retained]
+map_provider: auto

@@ -1,0 +1,2 @@
+mode: offline-frozen
+sources: [{id: place-a, type: official-fixture, facts: [Museum Aurora, City A]}, {id: place-b, type: official-fixture, facts: [Museum Aurora, City B]}]

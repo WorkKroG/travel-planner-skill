@@ -1,0 +1,2 @@
+mode: offline-frozen
+sources: [{id: lodging-fixture, type: provider-fixture, facts: [alternate hotel available]}]

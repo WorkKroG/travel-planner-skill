@@ -1,0 +1,10 @@
+schema_version: 1
+trip_id: last-admission-eval
+title: Museum last-admission mutation
+travel_dates: {start: "2026-11-05", end: "2026-11-05"}
+travelers: [{id: traveler-a, age_group: adult}]
+priorities: [museum]
+hard_constraints: [last admission]
+soft_preferences: []
+assumptions: []
+map_provider: auto

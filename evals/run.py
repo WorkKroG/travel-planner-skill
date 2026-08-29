@@ -34,6 +34,7 @@ TRACE_SCHEMA_VERSION = 1
 _ROOT = Path(__file__).resolve().parent
 DEFAULT_WORLD = _ROOT / "fixture-world" / "base.yaml"
 DEFAULT_RUBRIC = _ROOT / "rubrics" / "quality.yaml"
+DEFAULT_SCENARIOS_ROOT = _ROOT / "scenarios"
 _SAFE_SCENARIO_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$")
 _MISSING = object()
 
@@ -58,6 +59,21 @@ def load_fixture_world(path: Path = DEFAULT_WORLD) -> Mapping[str, Any]:
     if not isinstance(world.get("scenarios"), Mapping):
         raise TypeError("Fixture world requires a scenarios mapping.")
     return world
+
+
+def load_executable_fixture_world(
+    path: Path = DEFAULT_WORLD, scenarios_root: Path = DEFAULT_SCENARIOS_ROOT
+) -> Mapping[str, Any]:
+    """Merge legacy base cases with self-contained scenario-directory cases."""
+    from evals.scenarios import load_scenario_world
+
+    world = load_fixture_world(path)
+    scenarios = dict(world["scenarios"])
+    for case_id, scenario in load_scenario_world(scenarios_root)["scenarios"].items():
+        if case_id in scenarios:
+            raise ValueError(f"Scenario id collides with base fixture world: {case_id}")
+        scenarios[case_id] = scenario
+    return dict(world) | {"scenarios": scenarios}
 
 
 def _scenario_id(scenario: Mapping[str, Any]) -> str:
@@ -272,7 +288,9 @@ def run_scenario(
         "errors": errors,
     }
     trace_path = _write_trace(results_dir, scenario_id, started_at, trace)
-    return EvalResult(scenario_id, hard, soft, trace_path)
+    raw_hashes = scenario.get("scenario_semantic_hashes", {})
+    semantic_hashes = dict(raw_hashes) if isinstance(raw_hashes, Mapping) else {}
+    return EvalResult(scenario_id, hard, soft, trace_path, semantic_hashes)
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -283,6 +301,7 @@ def _parser() -> argparse.ArgumentParser:
     requested.add_argument("--all", action="store_true")
     parser.add_argument("--results-dir", type=Path, default=_ROOT / "results")
     parser.add_argument("--fixture-world", type=Path, default=DEFAULT_WORLD)
+    parser.add_argument("--scenarios-root", type=Path, default=DEFAULT_SCENARIOS_ROOT)
     parser.add_argument("--rubric", type=Path, default=DEFAULT_RUBRIC)
     parser.add_argument("--codex-command", help="Quoted explicit command for the agent adapter.")
     parser.add_argument("--model")
@@ -294,7 +313,7 @@ def _parser() -> argparse.ArgumentParser:
 def main(argv: Sequence[str] | None = None) -> int:
     args = _parser().parse_args(argv)
     try:
-        world = load_fixture_world(args.fixture_world)
+        world = load_executable_fixture_world(args.fixture_world, args.scenarios_root)
         scenarios = world["scenarios"]
         assert isinstance(scenarios, Mapping)
         if args.all:
@@ -315,15 +334,34 @@ def main(argv: Sequence[str] | None = None) -> int:
 
             judge = CodexCliJudge(shlex.split(args.judge_command), model=args.judge_model)
         results = [
-            run_scenario(scenario, adapter, results_dir=args.results_dir, rubric_path=args.rubric, judge=judge)
+            run_scenario(
+                scenario,
+                adapter,
+                results_dir=args.results_dir,
+                rubric_path=Path(scenario.get("rubric_path", args.rubric)),
+                judge=judge,
+            )
             for scenario in selected
         ]
     except (EvalSetupError, TypeError, ValueError) as error:
         print(f"eval error: {error}", file=sys.stderr)
         return 2
     for result in results:
+        expected = next(item for item in selected if _scenario_id(item) == result.scenario_id).get(
+            "expected_macro_pass", True
+        )
         status = "PASS" if result.hard.macro_pass else "FAIL"
-        print(f"{result.scenario_id}: macro {status} ({result.trace_path})")
+        if args.all:
+            outcome = "EXPECTED" if result.hard.macro_pass == expected else "UNEXPECTED"
+            print(f"{result.scenario_id}: {outcome} {status} ({result.trace_path})")
+        else:
+            print(f"{result.scenario_id}: macro {status} ({result.trace_path})")
+    if args.all:
+        return 0 if all(
+            result.hard.macro_pass
+            == next(item for item in selected if _scenario_id(item) == result.scenario_id).get("expected_macro_pass", True)
+            for result in results
+        ) else 1
     return 0 if all(result.hard.macro_pass for result in results) else 1
 
 

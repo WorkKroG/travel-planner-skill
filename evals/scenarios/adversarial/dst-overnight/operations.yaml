@@ -1,0 +1,4 @@
+prompt_version: adversarial-v1
+prompt: Evaluate the overnight connection in local time through the DST transition.
+response: The overnight time-zone and date boundary is identified before confirming the connection.
+operations: {checks: {CAL-004: {status: identified}}}

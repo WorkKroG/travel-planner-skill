@@ -1,0 +1,4 @@
+prompt_version: adversarial-v1
+prompt: Retain a single compact weekend flow instead of adding unnecessary alternatives and ceremony.
+response: The short trip remains simple with one justified backup only.
+operations: {checks: {EVAL-UX-001: {status: identified}}}

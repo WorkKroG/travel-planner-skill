@@ -1,0 +1,4 @@
+prompt_version: adversarial-v1
+prompt: Check transit eligibility per anonymized traveller; do not generalize one nationality to the group.
+response: Separate transit checks are required for each anonymized traveller.
+operations: {checks: {BOOK-001: {status: identified}}}

@@ -1,0 +1,10 @@
+schema_version: 1
+trip_id: place-collision-eval
+title: Place-name collision
+travel_dates: {start: "2026-06-01", end: "2026-06-02"}
+travelers: [{id: traveler-a, age_group: adult}]
+priorities: [correct locality]
+hard_constraints: [same place name in two cities]
+soft_preferences: []
+assumptions: []
+map_provider: auto

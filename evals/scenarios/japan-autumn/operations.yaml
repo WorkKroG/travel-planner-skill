@@ -1,0 +1,11 @@
+prompt_version: scenario-v1
+prompt: Identify the frozen-world calendar and weather risks, retaining the selected public-transport route.
+response: Calendar and weather risks are identified with a local backup; no live schedule is invented.
+operations:
+  checks:
+    CAL-001: {status: identified}
+    EVD-001: {status: identified}
+  route: {state: frozen, bases: [Tokyo, Kyoto, Kanazawa]}
+preservation:
+  - before: {day-5: {id: day-5, base: Kyoto, activity: temple-walk}}
+    after: {day-5: {id: day-5, base: Kyoto, activity: temple-walk}}

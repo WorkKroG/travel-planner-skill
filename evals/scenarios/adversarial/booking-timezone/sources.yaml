@@ -1,0 +1,2 @@
+mode: offline-frozen
+sources: [{id: provider-window, type: official-fixture, facts: [booking opens at local midnight]}]

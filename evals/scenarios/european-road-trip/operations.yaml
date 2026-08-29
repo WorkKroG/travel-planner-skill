@@ -1,0 +1,11 @@
+prompt_version: scenario-v1
+prompt: Challenge the frozen road-trip plan for driving time, parking, tolls and restricted-city access.
+response: The road restriction is identified and the route keeps the confirmed lodging sequence.
+operations:
+  checks:
+    LOG-001: {status: identified}
+    OPS-001: {status: identified}
+  route: {state: frozen, transport: car}
+preservation:
+  - before: {day-6: {id: day-6, lodging: Lake-base}}
+    after: {day-6: {id: day-6, lodging: Lake-base}}

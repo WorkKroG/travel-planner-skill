@@ -1,0 +1,7 @@
+injected:
+  - id: weather-risk
+    input: rain makes one mountain day conditional
+    required_behavior: use local backup and mark uncertainty
+  - id: timetable-invention
+    input: a source has no released regional schedule
+    required_behavior: create a recheck instead of inventing a departure

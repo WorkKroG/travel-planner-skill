@@ -1,0 +1,4 @@
+prompt_version: adversarial-v1
+prompt: Disambiguate identically named places with locality and provider identity before constructing an itinerary link.
+response: The two Museum Aurora entries remain distinct by locality and source identity.
+operations: {checks: {EVID-001: {status: identified}}}

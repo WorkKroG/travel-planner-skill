@@ -1,0 +1,2 @@
+mode: offline-frozen
+sources: [{id: road-authority-fixture, type: official-fixture, facts: [mountain road closure, low-emission zone]}]

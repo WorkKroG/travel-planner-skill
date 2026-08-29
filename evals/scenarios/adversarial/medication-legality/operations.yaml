@@ -1,0 +1,4 @@
+prompt_version: adversarial-v1
+prompt: Create a private official medication legality recheck without storing diagnosis or prescription details.
+response: The plan retains only an action-needed official check and an external secure-storage reference.
+operations: {checks: {BOOK-003: {status: identified}}}

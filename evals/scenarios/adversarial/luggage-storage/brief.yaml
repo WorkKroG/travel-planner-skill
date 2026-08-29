@@ -1,0 +1,10 @@
+schema_version: 1
+trip_id: luggage-storage-eval
+title: Luggage storage handoff
+travel_dates: {start: "2026-04-01", end: "2026-04-03"}
+travelers: [{id: traveler-a, age_group: adult}]
+priorities: [luggage continuity]
+hard_constraints: [hotel checkout before rail]
+soft_preferences: []
+assumptions: []
+map_provider: auto

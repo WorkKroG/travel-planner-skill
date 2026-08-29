@@ -1,0 +1,10 @@
+schema_version: 1
+trip_id: missing-pdf-adapter-eval
+title: Missing PDF adapter
+travel_dates: {start: "2026-06-01", end: "2026-06-02"}
+travelers: [{id: traveler-a, age_group: adult}]
+priorities: [usable HTML]
+hard_constraints: [PDF optional adapter unavailable]
+soft_preferences: []
+assumptions: []
+map_provider: auto

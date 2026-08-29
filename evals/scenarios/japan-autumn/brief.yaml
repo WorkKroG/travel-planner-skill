@@ -1,0 +1,10 @@
+schema_version: 1
+trip_id: japan-autumn-2026-eval
+title: Anonymized Japan autumn route
+travel_dates: {start: "2026-11-02", end: "2026-11-13"}
+travelers: [{id: traveler-a, age_group: adult}, {id: traveler-b, age_group: adult}]
+priorities: [autumn foliage, public transport, hiking]
+hard_constraints: [no invented timetable, preserve frozen bases]
+soft_preferences: [popular sites early, weather backup]
+assumptions: [regional foliage timing requires recheck]
+map_provider: auto

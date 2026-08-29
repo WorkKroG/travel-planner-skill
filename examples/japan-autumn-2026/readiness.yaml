@@ -1,0 +1,17 @@
+schema_version: 1
+trip_id: japan-autumn-2026-example
+items:
+  - id: seasonal-recheck
+    title: Check Kyoto garden seasonal and access information
+    category: activities
+    status: recheck
+    owner_id: traveler-a
+    next_check_at: "2026-10-31T09:00:00+09:00"
+    source_ids: [official-kyoto-fixture]
+  - id: rail-timetable-recheck
+    title: Confirm final regional rail schedule from provider
+    category: transport
+    status: recheck
+    owner_id: traveler-b
+    next_check_at: "2026-10-15T09:00:00+09:00"
+    source_ids: [official-kyoto-fixture]

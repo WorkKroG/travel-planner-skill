@@ -1,0 +1,4 @@
+injected:
+  - id: alpine-closure
+    input: selected pass is closed seasonally
+    required_behavior: identify the closure and propose a confirmed alternative

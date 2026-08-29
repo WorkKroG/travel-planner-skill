@@ -1,0 +1,10 @@
+schema_version: 1
+trip_id: multigenerational-accessibility-eval
+title: Multigenerational accessibility route
+travel_dates: {start: "2026-05-10", end: "2026-05-14"}
+travelers: [{id: adult-a, age_group: adult}, {id: elder-b, age_group: senior}, {id: child-c, age_group: child}]
+priorities: [accessible transfer]
+hard_constraints: [unknown step-free transfer]
+soft_preferences: [shared activity]
+assumptions: []
+map_provider: auto

@@ -1,0 +1,22 @@
+schema_version: 1
+trip_id: japan-autumn-2026-example
+sources:
+  - id: official-kyoto-fixture
+    url: https://example.invalid/kyoto-official
+    source_type: official
+    publisher: Frozen official fixture
+    retrieved_at: "2026-08-28T12:00:00+00:00"
+items:
+  - id: kyoto-garden
+    name: Kyoto garden
+    geography: {country_code: JP, locality: Kyoto}
+    discovery_layers: [cultural, nature_active]
+    claims:
+      - id: garden-season
+        topic: seasonal conditions
+        status: reported
+        freshness_status: aging
+        source_ids: [official-kyoto-fixture]
+    popularity_signals: [{platform: fixture, observed_at: "2026-08-28", signal: known seasonal interest}]
+    assessments: [{dimension: trip_value, value: high, rationale: fits the autumn route}] 
+    verdict: {status: shortlisted, rationale: weather-sensitive primary with indoor backup}

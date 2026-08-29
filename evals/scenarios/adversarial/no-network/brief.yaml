@@ -1,0 +1,10 @@
+schema_version: 1
+trip_id: no-network-eval
+title: No-network degraded planning
+travel_dates: {start: "2026-06-01", end: "2026-06-02"}
+travelers: [{id: traveler-a, age_group: adult}]
+priorities: [honest offline mode]
+hard_constraints: [no network]
+soft_preferences: []
+assumptions: []
+map_provider: auto

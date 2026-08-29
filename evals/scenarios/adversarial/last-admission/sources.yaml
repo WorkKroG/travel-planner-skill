@@ -1,0 +1,2 @@
+mode: offline-frozen
+sources: [{id: museum-official, type: official-fixture, facts: [last admission precedes proposed arrival]}]

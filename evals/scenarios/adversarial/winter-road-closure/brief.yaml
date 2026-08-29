@@ -1,0 +1,10 @@
+schema_version: 1
+trip_id: winter-road-closure-eval
+title: Winter road closure
+travel_dates: {start: "2026-12-01", end: "2026-12-03"}
+travelers: [{id: driver-a, age_group: adult}]
+priorities: [safe road route]
+hard_constraints: [seasonal closure]
+soft_preferences: []
+assumptions: []
+map_provider: auto

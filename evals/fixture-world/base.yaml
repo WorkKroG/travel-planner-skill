@@ -31,6 +31,7 @@ scenarios:
         calibrated_uncertainty: 4
   last-admission-mutation:
     id: last-admission-mutation
+    expected_macro_pass: false
     prompt_version: fixture-v1
     prompt: Deliberately omit the known last-admission conflict to prove the macro gate fails.
     hard_checks:

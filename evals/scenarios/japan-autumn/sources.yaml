@@ -1,0 +1,6 @@
+mode: offline-frozen
+sources:
+  - id: japan-rail-fixture
+    type: official-fixture
+    retrieved_at: "2026-08-28T12:00:00Z"
+    facts: [platform timing is illustrative, weather is a risk not a forecast]

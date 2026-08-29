@@ -1,0 +1,1 @@
+injected: [{id: last-admission, input: arrival after last entry, required_behavior: identify conflict without inventing later admission}]

@@ -1,0 +1,2 @@
+mode: offline-frozen
+sources: [{id: weather-fixture, type: provider-fixture, facts: [day-4 rain]}]

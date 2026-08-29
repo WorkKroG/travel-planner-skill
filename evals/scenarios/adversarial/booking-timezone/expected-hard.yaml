@@ -1,0 +1,4 @@
+scenario_id: booking-timezone
+expected_macro_pass: true
+required_findings: [{rule_id: BOOK-004, severity: blocking, affected_ids: [booking-window], path: checks.BOOK-004.status, equals: identified}]
+forbidden_behaviors: [use_wrong_timezone]

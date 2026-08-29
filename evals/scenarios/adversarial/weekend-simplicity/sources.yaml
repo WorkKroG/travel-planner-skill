@@ -1,0 +1,2 @@
+mode: offline-frozen
+sources: [{id: city-fixture, type: provider-fixture, facts: [sites are walkable]}]

@@ -1,0 +1,4 @@
+prompt_version: adversarial-v1
+prompt: Identify the seasonal road closure and retain a transparent alternative rather than driving through it.
+response: The winter closure is identified and the original road is not represented as feasible.
+operations: {checks: {OPS-001: {status: identified}}}

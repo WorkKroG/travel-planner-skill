@@ -1,0 +1,10 @@
+schema_version: 1
+trip_id: european-road-trip-eval
+title: European road-trip feasibility
+travel_dates: {start: "2026-10-04", end: "2026-10-11"}
+travelers: [{id: driver-a, age_group: adult}, {id: passenger-b, age_group: adult}]
+priorities: [scenic roads, manageable driving]
+hard_constraints: [road closure, city access restriction]
+soft_preferences: [fewer hotel changes]
+assumptions: [toll price needs direct confirmation]
+map_provider: auto

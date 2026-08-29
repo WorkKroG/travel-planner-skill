@@ -1,0 +1,4 @@
+prompt_version: adversarial-v1
+prompt: Handle a later reversal of one participant must-see through an explicit decision and impact analysis.
+response: The reversal is identified as an explicit group decision, not a silent route rewrite.
+operations: {checks: {EVAL-GROUP-001: {status: identified}}}

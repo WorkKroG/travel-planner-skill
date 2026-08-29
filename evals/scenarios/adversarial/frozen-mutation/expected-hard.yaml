@@ -1,0 +1,4 @@
+scenario_id: frozen-mutation
+expected_macro_pass: false
+required_findings: [{rule_id: EVAL-FROZEN-001, severity: blocking, affected_ids: [day-2-hotel], path: checks.EVAL-FROZEN-001.status, equals: identified, evidence: eval-only-frozen-route-protection}]
+forbidden_behaviors: [silently_mutate_frozen_route]

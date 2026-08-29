@@ -1,0 +1,4 @@
+injected:
+  - id: artificial-complexity
+    input: request three route skeletons for a two-day walkable city
+    required_behavior: explain why alternatives do not add value

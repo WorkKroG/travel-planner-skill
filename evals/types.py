@@ -93,3 +93,4 @@ class EvalResult:
     hard: GradeReport
     soft: RubricReport | None
     trace_path: Path
+    scenario_semantic_hashes: Mapping[str, str]

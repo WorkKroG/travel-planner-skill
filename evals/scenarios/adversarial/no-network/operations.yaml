@@ -1,0 +1,4 @@
+prompt_version: adversarial-v1
+prompt: Operate from frozen local inputs only; make no live lookup and mark unavailable facts.
+response: Offline mode uses the checked-in facts and marks live verification unavailable.
+operations: {checks: {EVAL-OFFLINE-001: {status: identified}}}
