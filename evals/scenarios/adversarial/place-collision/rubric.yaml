@@ -1,20 +1,21 @@
 version: 1
+review_mode: online-required
 dimensions:
   - id: skeleton_distinctness
     max_score: 4
-    anchors: {required: ["scenario place-collision"], evidence: ["same-name place collision"], forbidden: ["places are identical"]}
+    criterion: Alternatives are meaningfully distinct when the trip warrants alternatives.
   - id: tradeoffs
     max_score: 4
-    anchors: {required: ["Museum Aurora in Helsinki"], evidence: ["Museum Aurora in Turku"], forbidden: ["choose first result"]}
+    criterion: Meaningful route tradeoffs are identified and explained.
   - id: pacing
     max_score: 4
-    anchors: {required: ["request the city"], evidence: ["before choosing a map identity"], forbidden: ["map without clarification"]}
+    criterion: The itinerary has realistic pacing and daily load.
   - id: backup_usefulness
     max_score: 4
-    anchors: {required: ["keep both candidates separate"], evidence: ["until locality is known"], forbidden: ["merge candidates"]}
+    criterion: Backups are useful, local, and preserve the route where possible.
   - id: readability
     max_score: 4
-    anchors: {required: ["60.1699,24.9384"], evidence: ["60.4518,22.2666"], forbidden: ["unidentified"]}
+    criterion: The result is clear, structured, and usable during the trip.
   - id: calibrated_uncertainty
     max_score: 4
-    anchors: {required: ["frozen identity evidence"], evidence: ["not inferred locality"], forbidden: ["locality inferred"]}
+    criterion: Assumptions and unverified facts are labeled honestly.

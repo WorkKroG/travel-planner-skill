@@ -1,6 +1,6 @@
 prompt_version: adversarial-v1
 prompt: Resolve the structured claim conflict using declared source authority.
-oracle:
+reference_evaluator:
   version: 1
   kind: evidence.source-conflict
   parameters:

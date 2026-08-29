@@ -1,20 +1,21 @@
 version: 1
+review_mode: online-required
 dimensions:
   - id: skeleton_distinctness
     max_score: 4
-    anchors: {required: ["scenario multigenerational-accessibility"], evidence: ["step-free provider-chain gap"], forbidden: ["route is accessible"]}
+    criterion: Alternatives are meaningfully distinct when the trip warrants alternatives.
   - id: tradeoffs
     max_score: 4
-    anchors: {required: ["station-transfer status=unknown"], evidence: ["chain_complete=False"], forbidden: ["aggregator overrides official"]}
+    criterion: Meaningful route tradeoffs are identified and explained.
   - id: pacing
     max_score: 4
-    anchors: {required: ["assign provider confirmation"], evidence: ["affected traveller"], forbidden: ["finalize unknown transfer"]}
+    criterion: The itinerary has realistic pacing and daily load.
   - id: backup_usefulness
     max_score: 4
-    anchors: {required: ["confirmed step-free transfer"], evidence: ["before finalization"], forbidden: ["no accessible backup"]}
+    criterion: Backups are useful, local, and preserve the route where possible.
   - id: readability
     max_score: 4
-    anchors: {required: ["traveller traveler-elder-b"], evidence: ["station-transfer"], forbidden: ["unidentified"]}
+    criterion: The result is clear, structured, and usable during the trip.
   - id: calibrated_uncertainty
     max_score: 4
-    anchors: {required: ["do not override official unknowns"], evidence: ["aggregator claims do not override"], forbidden: ["accessibility verified"]}
+    criterion: Assumptions and unverified facts are labeled honestly.

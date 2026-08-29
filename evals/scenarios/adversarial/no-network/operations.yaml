@@ -1,6 +1,6 @@
 prompt_version: adversarial-v1
 prompt: Evaluate the requested live lookup against the concrete network capability and cached facts.
-oracle:
+reference_evaluator:
   version: 1
   kind: availability.offline
   parameters:

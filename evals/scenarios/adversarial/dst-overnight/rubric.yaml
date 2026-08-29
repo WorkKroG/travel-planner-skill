@@ -1,20 +1,21 @@
 version: 1
+review_mode: online-required
 dimensions:
   - id: skeleton_distinctness
     max_score: 4
-    anchors: {required: ["scenario dst-overnight"], evidence: ["DST overnight rollover"], forbidden: ["ordinary local chronology"]}
+    criterion: Alternatives are meaningfully distinct when the trip warrants alternatives.
   - id: tradeoffs
     max_score: 4
-    anchors: {required: ["timezone-aware chronology"], evidence: ["local date boundary"], forbidden: ["ignored DST"]}
+    criterion: Meaningful route tradeoffs are identified and explained.
   - id: pacing
     max_score: 4
-    anchors: {required: ["300 real minutes"], evidence: ["240 wall-clock minutes"], forbidden: ["duration is 240 minutes"]}
+    criterion: The itinerary has realistic pacing and daily load.
   - id: backup_usefulness
     max_score: 4
-    anchors: {required: ["scheduled-duration check"], evidence: ["confirming the connection"], forbidden: ["confirm without recheck"]}
+    criterion: Backups are useful, local, and preserve the route where possible.
   - id: readability
     max_score: 4
-    anchors: {required: ["2026-10-24T23:30:00+01:00"], evidence: ["2026-10-25T03:30:00+00:00"], forbidden: ["unidentified"]}
+    criterion: The result is clear, structured, and usable during the trip.
   - id: calibrated_uncertainty
     max_score: 4
-    anchors: {required: ["IANA zones Europe/London"], evidence: ["frozen duration 300 minutes"], forbidden: ["timezone unknown"]}
+    criterion: Assumptions and unverified facts are labeled honestly.

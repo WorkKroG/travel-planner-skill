@@ -1,6 +1,6 @@
 prompt_version: adversarial-v1
 prompt: Treat the unknown step-free transfer as an action-needed accessibility dependency.
-oracle:
+reference_evaluator:
   version: 1
   kind: logistics.accessibility
   parameters:

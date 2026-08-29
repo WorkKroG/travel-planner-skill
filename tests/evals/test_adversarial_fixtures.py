@@ -6,7 +6,7 @@ import json
 import sys
 from pathlib import Path
 
-from evals.adapters import FixtureAdapter, FixtureJudge
+from evals.adapters import FixtureAdapter
 from evals.run import main, run_scenario
 from evals.scenarios import load_scenario_case, load_scenario_world
 
@@ -21,7 +21,6 @@ def _run_case(case_id: str, tmp_path: Path):
         FixtureAdapter(world),
         results_dir=tmp_path,
         rubric_path=case.rubric_path,
-        judge=FixtureJudge(world),
     )
 
 
@@ -50,7 +49,7 @@ def test_frozen_mutation_preserves_frozen_route_and_is_an_expected_negative(tmp_
     assert trace["grading"]["hard"]["macro_pass"] is False
 
 
-def test_oracle_operations_are_production_impact_and_freeze_evidence(tmp_path: Path) -> None:
+def test_reference_evaluator_operations_are_production_impact_and_freeze_evidence(tmp_path: Path) -> None:
     """The adapter trace must expose executed production boundaries, not authored snapshots."""
     weather = json.loads(
         _run_case("local-weather-swap", tmp_path / "weather").trace_path.read_text(

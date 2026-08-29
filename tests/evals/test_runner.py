@@ -14,7 +14,6 @@ from evals.adapters import (
     CodexCliAdapter,
     CodexCliJudge,
     FixtureAdapter,
-    FixtureJudge,
     _safe_command,
 )
 from evals.redaction import redact_text
@@ -35,7 +34,6 @@ def test_trace_records_versions_prompt_operations_and_grading(tmp_path: Path) ->
         FixtureAdapter(world),
         results_dir=tmp_path,
         rubric_path=RUBRIC,
-        judge=FixtureJudge(world),
     )
     trace = json.loads(result.trace_path.read_text(encoding="utf-8"))
 
@@ -47,7 +45,8 @@ def test_trace_records_versions_prompt_operations_and_grading(tmp_path: Path) ->
     assert trace["adapter"] == "fixture"
     assert trace["degraded"] == []
     assert trace["grading"]["hard"]["macro_pass"] is True
-    assert trace["grading"]["soft"]["score"] == 20
+    assert trace["grading"]["soft"] is None
+    assert trace["soft_review"]["status"] == "requires_online_review"
 
 
 def test_last_admission_mutation_fails_the_macro_gate_and_cli(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
@@ -129,13 +128,30 @@ def test_codex_adapter_requires_non_empty_model_and_cli_rejects_it(tmp_path: Pat
 
 def test_missing_rubric_is_recorded_in_a_trace_instead_of_disappearing(tmp_path: Path) -> None:
     """A bad rubric path must leave an inspectable failed run, not raise before tracing."""
+    class StaticJudge:
+        name = "static-online-judge"
+
+        def judge(self, prompt: str, response: str, workspace: Path) -> JudgeRun:
+            del prompt, response, workspace
+            return JudgeRun(
+                {
+                    "skeleton_distinctness": 4,
+                    "tradeoffs": 4,
+                    "pacing": 4,
+                    "backup_usefulness": 4,
+                    "readability": 4,
+                    "calibrated_uncertainty": 4,
+                },
+                {},
+            )
+
     world = load_fixture_world(FIXTURE_WORLD)
     result = run_scenario(
         world["scenarios"]["harness-smoke"],
         FixtureAdapter(world),
         results_dir=tmp_path,
         rubric_path=tmp_path / "missing-rubric.yaml",
-        judge=FixtureJudge(world),
+        judge=StaticJudge(),
     )
 
     trace = json.loads(result.trace_path.read_text(encoding="utf-8"))

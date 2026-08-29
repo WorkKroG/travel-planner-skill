@@ -1,6 +1,6 @@
 prompt_version: adversarial-v1
 prompt: Detect that group and per-person costs cannot be summed before normalization.
-oracle:
+reference_evaluator:
   version: 1
   kind: budget.mixed-basis
   parameters:

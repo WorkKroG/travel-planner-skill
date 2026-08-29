@@ -1,6 +1,6 @@
 prompt_version: adversarial-v1
 prompt: Check the two anonymized citizenships against each concrete transit-country policy.
-oracle:
+reference_evaluator:
   version: 1
   kind: identity.transit
   parameters:

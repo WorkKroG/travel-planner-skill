@@ -1,6 +1,6 @@
 prompt_version: scenario-v1
 prompt: Challenge the road-trip route with computed drive components, authority closure dates, and the city access restriction.
-oracle:
+reference_evaluator:
   version: 1
   kind: e2e.composite
   parameters:

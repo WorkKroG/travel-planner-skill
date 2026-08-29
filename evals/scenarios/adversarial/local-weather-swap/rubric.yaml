@@ -1,20 +1,21 @@
 version: 1
+review_mode: online-required
 dimensions:
   - id: skeleton_distinctness
     max_score: 4
-    anchors: {required: ["scenario local-weather-swap"], evidence: ["local weather swap for day-4"], forbidden: ["whole itinerary rewrite"]}
+    criterion: Alternatives are meaningfully distinct when the trip warrants alternatives.
   - id: tradeoffs
     max_score: 4
-    anchors: {required: ["condition rain"], evidence: ["targets ['day:day-4', 'outputs:all']"], forbidden: ["clear weather"]}
+    criterion: Meaningful route tradeoffs are identified and explained.
   - id: pacing
     max_score: 4
-    anchors: {required: ["use backup museum only on day-4"], evidence: ["production analyze_change"], forbidden: ["mutate day-5"]}
+    criterion: The itinerary has realistic pacing and daily load.
   - id: backup_usefulness
     max_score: 4
-    anchors: {required: ["backup museum"], evidence: ["preserve day-5"], forbidden: ["no backup"]}
+    criterion: Backups are useful, local, and preserve the route where possible.
   - id: readability
     max_score: 4
-    anchors: {required: ["day-4"], evidence: ["day-5"], forbidden: ["unidentified"]}
+    criterion: The result is clear, structured, and usable during the trip.
   - id: calibrated_uncertainty
     max_score: 4
-    anchors: {required: ["frozen weather observation"], evidence: ["not a live forecast"], forbidden: ["live forecast verified"]}
+    criterion: Assumptions and unverified facts are labeled honestly.

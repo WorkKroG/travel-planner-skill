@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-import math
 from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
@@ -15,8 +14,7 @@ from travel_planner.challenge.catalog import registered_rules
 from travel_planner.impact import semantic_hash
 from travel_planner.resources import resource_path
 
-from .adapters import SUPPORTED_RESPONSE_CLAIMS
-from .fixture_oracle import validate_contract
+from .reference_evaluator import validate_contract
 
 SCENARIOS_ROOT = Path(__file__).resolve().parent / "scenarios"
 REQUIRED_FILES = frozenset({"brief.yaml", "sources.yaml", "operations.yaml", "traps.yaml", "expected-hard.yaml", "rubric.yaml", "README.md"})
@@ -34,7 +32,7 @@ class ScenarioCase:
     path: Path
     brief: Mapping[str, Any]
     sources: Mapping[str, Any]
-    oracle: Mapping[str, Any]
+    reference_evaluator: Mapping[str, Any]
     traps: Mapping[str, Any]
     expected_hard: Mapping[str, Any]
     rubric_path: Path
@@ -88,15 +86,12 @@ def _validate_brief(brief: Mapping[str, Any], case_id: str) -> None:
 
 def _validate_rubric(path: Path) -> Mapping[str, Any]:
     rubric = _mapping(path, "rubric")
-    if set(rubric) not in (
-        {"version", "dimensions"},
-        {"version", "dimensions", "claims"},
-    ):
-        raise ValueError(
-            f"Scenario rubric requires version, dimensions, and optional claims: {path}"
-        )
+    if set(rubric) != {"version", "review_mode", "dimensions"}:
+        raise ValueError(f"Scenario rubric requires version, review_mode, and dimensions: {path}")
     if rubric.get("version") != 1:
         raise ValueError(f"Scenario rubric must use version 1: {path}")
+    if rubric.get("review_mode") != "online-required":
+        raise ValueError(f"Scenario rubric review_mode must be online-required: {path}")
     dimensions = rubric.get("dimensions")
     if not isinstance(dimensions, list) or len(dimensions) != len(RUBRIC_DIMENSIONS):
         raise ValueError(f"Scenario rubric must declare six dimensions: {path}")
@@ -105,57 +100,14 @@ def _validate_rubric(path: Path) -> Mapping[str, Any]:
     for item in dimensions:
         if not isinstance(item, Mapping):
             raise TypeError(f"Scenario rubric has invalid dimensions: {path}")
-        if set(item) != {"id", "max_score", "anchors"}:
+        if set(item) != {"id", "max_score", "criterion"}:
             raise ValueError(f"Scenario rubric dimension has unexpected fields: {path}")
         maximum = item.get("max_score")
-        if (
-            not isinstance(maximum, (int, float))
-            or isinstance(maximum, bool)
-            or not math.isfinite(maximum)
-            or maximum != 4
-        ):
+        if isinstance(maximum, bool) or maximum != 4:
             raise ValueError(f"Scenario rubric has invalid thresholds: {path}")
-        anchors = item.get("anchors")
-        if not isinstance(anchors, Mapping) or set(anchors) != {
-            "required",
-            "evidence",
-            "forbidden",
-        }:
-            raise ValueError(f"Scenario rubric dimension requires exact anchors: {path}")
-        for label in ("required", "evidence", "forbidden"):
-            values = anchors[label]
-            if (
-                not isinstance(values, list)
-                or not values
-                or not all(isinstance(value, str) and value.strip() for value in values)
-            ):
-                raise ValueError(f"Scenario rubric {label} anchors must be non-empty: {path}")
-    claims = rubric.get("claims", [])
-    if not isinstance(claims, list):
-        raise TypeError(f"Scenario rubric claims must be a list: {path}")
-    seen_claims: set[str] = set()
-    for claim in claims:
-        if not isinstance(claim, Mapping) or set(claim) != {
-            "id",
-            "expected",
-            "dimensions",
-        }:
-            raise ValueError(f"Scenario rubric claim contract is invalid: {path}")
-        claim_id = claim.get("id")
-        affected = claim.get("dimensions")
-        if (
-            not isinstance(claim_id, str)
-            or claim_id not in SUPPORTED_RESPONSE_CLAIMS
-            or claim_id in seen_claims
-            or not isinstance(claim.get("expected"), bool)
-            or not isinstance(affected, list)
-            or not affected
-            or not all(isinstance(item, str) for item in affected)
-            or len(set(affected)) != len(affected)
-            or not all(item in RUBRIC_DIMENSIONS for item in affected)
-        ):
-            raise ValueError(f"Scenario rubric claim contract is invalid: {path}")
-        seen_claims.add(claim_id)
+        criterion = item.get("criterion")
+        if not isinstance(criterion, str) or not criterion.strip():
+            raise ValueError(f"Scenario rubric criterion must be non-empty: {path}")
     return rubric
 
 
@@ -234,31 +186,31 @@ def load_scenario_case(case_id: str, root: Path = SCENARIOS_ROOT) -> ScenarioCas
     _validate_sources_traps(sources, traps, case_id)
     rubric = _validate_rubric(path / "rubric.yaml")
     expected, data = _mapping(path / "expected-hard.yaml", "expected hard expectations"), _mapping(path / "operations.yaml", "operations")
-    if set(data) != {"prompt", "prompt_version", "oracle"}:
-        raise ValueError("operations.yaml requires exactly prompt, prompt_version, and oracle")
+    if set(data) != {"prompt", "prompt_version", "reference_evaluator"}:
+        raise ValueError("operations.yaml requires exactly prompt, prompt_version, and reference evaluator")
     if expected.get("scenario_id") != case_id or not isinstance(expected.get("expected_macro_pass"), bool):
         raise ValueError(f"Scenario {case_id} has invalid expected-hard metadata")
-    prompt, version, oracle = (data.get(key) for key in ("prompt", "prompt_version", "oracle"))
+    prompt, version, reference_evaluator = (data.get(key) for key in ("prompt", "prompt_version", "reference_evaluator"))
     if not all(isinstance(value, str) and value for value in (prompt, version)):
         raise ValueError("operations.yaml requires prompt and prompt_version")
-    if not isinstance(oracle, Mapping):
-        raise TypeError("operations.yaml requires an oracle mapping")
+    if not isinstance(reference_evaluator, Mapping):
+        raise TypeError("operations.yaml requires a reference evaluator mapping")
     if "response" in data or "operations" in data:
         raise ValueError("operations.yaml must not contain authored response or outcome operations")
-    if set(oracle) != {"version", "kind", "parameters"}:
-        raise ValueError("oracle requires exactly version, kind, and parameters")
+    if set(reference_evaluator) != {"version", "kind", "parameters"}:
+        raise ValueError("reference evaluator requires exactly version, kind, and parameters")
     _validate_rule_ids(expected)
     fixture_input = {
         "brief": json.loads(json.dumps(brief)),
         "sources": json.loads(json.dumps(sources)),
         "traps": json.loads(json.dumps(traps)),
     }
-    oracle_contract = {
-        "version": oracle["version"],
-        "kind": oracle["kind"],
-        "parameters": json.loads(json.dumps(oracle["parameters"])),
+    evaluator_contract = {
+        "version": reference_evaluator["version"],
+        "kind": reference_evaluator["kind"],
+        "parameters": json.loads(json.dumps(reference_evaluator["parameters"])),
     }
-    validate_contract(case_id, fixture_input, oracle_contract)
+    validate_contract(case_id, fixture_input, evaluator_contract)
     input_hash = semantic_hash(fixture_input)
     scenario = {
         "id": case_id,
@@ -267,13 +219,13 @@ def load_scenario_case(case_id: str, root: Path = SCENARIOS_ROOT) -> ScenarioCas
         "fixture_input": fixture_input,
         "fixture_input_hash": input_hash,
         "hard_checks": _hard_checks(expected),
-        "fixture_oracle": {
-            "version": oracle_contract["version"],
-            "kind": oracle_contract["kind"],
+        "reference_evaluator": {
+            "version": evaluator_contract["version"],
+            "kind": evaluator_contract["kind"],
             "fixture_input": fixture_input,
-            "parameters": oracle_contract["parameters"],
+            "parameters": evaluator_contract["parameters"],
         },
-        "fixture_rubric": json.loads(json.dumps(rubric)),
+        "online_review_required": rubric["review_mode"] == "online-required",
         "expected_macro_pass": expected["expected_macro_pass"],
         "expected_failed_findings": expected.get("expected_failed_findings", []),
         "rubric_path": path / "rubric.yaml",
@@ -283,7 +235,7 @@ def load_scenario_case(case_id: str, root: Path = SCENARIOS_ROOT) -> ScenarioCas
         path,
         brief,
         sources,
-        oracle_contract,
+        evaluator_contract,
         traps,
         expected,
         path / "rubric.yaml",

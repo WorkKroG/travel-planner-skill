@@ -1,6 +1,6 @@
 prompt_version: adversarial-v1
 prompt: Evaluate publication availability before answering the exact departure request.
-oracle:
+reference_evaluator:
   version: 1
   kind: availability.schedule
   parameters:

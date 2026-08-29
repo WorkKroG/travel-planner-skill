@@ -21,14 +21,6 @@ scenarios:
             status: identified
           OPS-011:
             status: identified
-    fixture_judge:
-      scores:
-        skeleton_distinctness: 3
-        tradeoffs: 3
-        pacing: 3
-        backup_usefulness: 3
-        readability: 4
-        calibrated_uncertainty: 4
   last-admission-mutation:
     id: last-admission-mutation
     expected_macro_pass: false
@@ -48,11 +40,3 @@ scenarios:
         checks:
           OPS-011:
             status: ignored
-    fixture_judge:
-      scores:
-        skeleton_distinctness: 4
-        tradeoffs: 4
-        pacing: 4
-        backup_usefulness: 4
-        readability: 4
-        calibrated_uncertainty: 4

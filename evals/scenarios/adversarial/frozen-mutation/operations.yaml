@@ -1,6 +1,6 @@
 prompt_version: adversarial-v1
 prompt: Execute the unconfirmed hotel change through the frozen-route guard and expose the planted reporting omission.
-oracle:
+reference_evaluator:
   version: 1
   kind: route.frozen-change
   parameters:

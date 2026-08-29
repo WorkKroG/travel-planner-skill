@@ -1,6 +1,6 @@
 prompt_version: scenario-v1
 prompt: Challenge the two-day city plan for proportional complexity and the concrete museum cutoff.
-oracle:
+reference_evaluator:
   version: 1
   kind: e2e.composite
   parameters:

@@ -1,20 +1,21 @@
 version: 1
+review_mode: online-required
 dimensions:
   - id: skeleton_distinctness
     max_score: 4
-    anchors: {required: ["scenario japan-autumn"], evidence: ["composite travel-plan challenge"], forbidden: ["all constraints clear"]}
+    criterion: Alternatives are meaningfully distinct when the trip warrants alternatives.
   - id: tradeoffs
     max_score: 4
-    anchors: {required: ["day-7-event expected Friday"], evidence: ["is Saturday"], forbidden: ["weekday matches"]}
+    criterion: Meaningful route tradeoffs are identified and explained.
   - id: pacing
     max_score: 4
-    anchors: {required: ["regional schedule published=False"], evidence: ["2026-11-08"], forbidden: ["schedule published=True"]}
+    criterion: The itinerary has realistic pacing and daily load.
   - id: backup_usefulness
     max_score: 4
-    anchors: {required: ["weather rain swaps day-7"], evidence: ["kanazawa-museum"], forbidden: ["outdoor backup"]}
+    criterion: Backups are useful, local, and preserve the route where possible.
   - id: readability
     max_score: 4
-    anchors: {required: ["apply each computed hard constraint"], evidence: ["without hidden route edits"], forbidden: ["unidentified"]}
+    criterion: The result is clear, structured, and usable during the trip.
   - id: calibrated_uncertainty
     max_score: 4
-    anchors: {required: ["frozen fixture evidence"], evidence: ["timings, authority states, and availability"], forbidden: ["live facts verified"]}
+    criterion: Assumptions and unverified facts are labeled honestly.

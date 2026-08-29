@@ -1,6 +1,6 @@
 prompt_version: adversarial-v1
 prompt: Disambiguate the requested place using concrete city and coordinate identities.
-oracle:
+reference_evaluator:
   version: 1
   kind: identity.place
   parameters:

@@ -1,20 +1,21 @@
 version: 1
+review_mode: online-required
 dimensions:
   - id: skeleton_distinctness
     max_score: 4
-    anchors: {required: ["scenario source-conflict"], evidence: ["official versus aggregator conflict"], forbidden: ["sources agree"]}
+    criterion: Alternatives are meaningfully distinct when the trip warrants alternatives.
   - id: tradeoffs
     max_score: 4
-    anchors: {required: ["official='closed'"], evidence: ["aggregator='open'"], forbidden: ["aggregator wins"]}
+    criterion: Meaningful route tradeoffs are identified and explained.
   - id: pacing
     max_score: 4
-    anchors: {required: ["prefer the direct official claim"], evidence: ["retain the conflict"], forbidden: ["discard conflict"]}
+    criterion: The itinerary has realistic pacing and daily load.
   - id: backup_usefulness
     max_score: 4
-    anchors: {required: ["official recheck"], evidence: ["before finalization"], forbidden: ["no recheck"]}
+    criterion: Backups are useful, local, and preserve the route where possible.
   - id: readability
     max_score: 4
-    anchors: {required: ["opening_status"], evidence: ["official"], forbidden: ["unidentified"]}
+    criterion: The result is clear, structured, and usable during the trip.
   - id: calibrated_uncertainty
     max_score: 4
-    anchors: {required: ["never labeled verified authority"], evidence: ["aggregator evidence"], forbidden: ["aggregator verified"]}
+    criterion: Assumptions and unverified facts are labeled honestly.

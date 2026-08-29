@@ -58,7 +58,7 @@ def test_required_scenarios_and_exact_adversarial_cases_are_executable() -> None
         case = load_scenario_case(case_id, ROOT)
         assert case.path.is_dir()
         assert {path.name for path in case.path.iterdir()} >= REQUIRED_CASE_FILES
-        assert case.scenario["fixture_oracle"]["fixture_input"]["brief"] == case.brief
+        assert case.scenario["reference_evaluator"]["fixture_input"]["brief"] == case.brief
         assert case.scenario["rubric_path"] == case.rubric_path
 
 
@@ -69,8 +69,8 @@ def test_loader_reads_fixture_operations_instead_of_only_documenting_them() -> N
     assert case.brief["trip_id"] == "japan-autumn-2026-eval"
     assert case.sources["mode"] == "offline-frozen"
     assert case.traps["injected"][0]["id"] == "weather-risk"
-    assert case.oracle["kind"] == "e2e.composite"
-    assert [item["kind"] for item in case.oracle["parameters"]["components"]] == [
+    assert case.reference_evaluator["kind"] == "e2e.composite"
+    assert [item["kind"] for item in case.reference_evaluator["parameters"]["components"]] == [
         "weekday",
         "schedule-evidence",
         "weather-swap",
@@ -103,7 +103,7 @@ def test_source_mutation_changes_the_executable_contract(tmp_path: Path) -> None
     after = load_scenario_case("booking-timezone", root)
 
     assert before.scenario["fixture_input_hash"] != after.scenario["fixture_input_hash"]
-    assert before.scenario["fixture_oracle"] != after.scenario["fixture_oracle"]
+    assert before.scenario["reference_evaluator"] != after.scenario["reference_evaluator"]
 
 
 def test_missing_scenario_root_and_malformed_rubric_fail_closed(tmp_path: Path) -> None:
@@ -119,10 +119,10 @@ def test_missing_scenario_root_and_malformed_rubric_fail_closed(tmp_path: Path) 
 
 
 @pytest.mark.parametrize("invalid", ["-1", ".nan", ".inf"])
-def test_missing_oracle_and_invalid_rubric_limits_fail_closed(
+def test_missing_reference_evaluator_and_invalid_rubric_limits_fail_closed(
     tmp_path: Path, invalid: str
 ) -> None:
-    """Scenario contracts need an explicit oracle and finite per-dimension limits."""
+    """Scenario contracts need an explicit reference evaluator and finite per-dimension limits."""
     root = tmp_path / "scenarios"
     shutil.copytree(ROOT, root)
     operations = root / "adversarial" / "booking-timezone" / "operations.yaml"
@@ -133,7 +133,7 @@ def test_missing_oracle_and_invalid_rubric_limits_fail_closed(
         ),
         encoding="utf-8",
     )
-    with pytest.raises((TypeError, ValueError), match="oracle"):
+    with pytest.raises((TypeError, ValueError), match="reference evaluator"):
         load_scenario_case("booking-timezone", root)
 
     shutil.copytree(ROOT, root, dirs_exist_ok=True)
@@ -152,18 +152,3 @@ def test_unknown_non_eval_rule_is_rejected(tmp_path: Path) -> None:
 
     with pytest.raises(ValueError, match="Unknown scenario rule ID"):
         load_scenario_case("japan-autumn", root)
-
-
-def test_fixture_judge_scores_a_contradictory_response_lower_than_oracle_output(tmp_path: Path) -> None:
-    """Fixture scoring inspects the actual response instead of replaying authored perfect scores."""
-    from evals.adapters import FixtureAdapter, FixtureJudge
-    from evals.scenarios import load_scenario_world
-
-    world = load_scenario_world(ROOT)
-    judge = FixtureJudge(world)
-    prompt = "SCENARIO_ID: booking-timezone"
-    response = FixtureAdapter(world).run(prompt, tmp_path).response
-    good = judge.judge(prompt, response, tmp_path)
-    bad = judge.judge("SCENARIO_ID: booking-timezone", "contradictory response", tmp_path)
-
-    assert sum(good.scores.values()) > sum(bad.scores.values())

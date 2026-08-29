@@ -1,20 +1,21 @@
 version: 1
+review_mode: online-required
 dimensions:
   - id: skeleton_distinctness
     max_score: 4
-    anchors: {required: ["scenario booking-timezone"], evidence: ["booking timezone mismatch"], forbidden: ["booking timezone aligned"]}
+    criterion: Alternatives are meaningfully distinct when the trip warrants alternatives.
   - id: tradeoffs
     max_score: 4
-    anchors: {required: ["provider clock"], evidence: ["traveller proposal"], forbidden: ["used the wrong timezone"]}
+    criterion: Meaningful route tradeoffs are identified and explained.
   - id: pacing
     max_score: 4
-    anchors: {required: ["release instant"], evidence: ["2026-11-30T15:00:00+00:00"], forbidden: ["traveller clock controls"]}
+    criterion: The itinerary has realistic pacing and daily load.
   - id: backup_usefulness
     max_score: 4
-    anchors: {required: ["booking reminder"], evidence: ["2026-11-30T15:00:00+00:00"], forbidden: ["no reminder"]}
+    criterion: Backups are useful, local, and preserve the route where possible.
   - id: readability
     max_score: 4
-    anchors: {required: ["provider-local"], evidence: ["Asia/Tokyo"], forbidden: ["unidentified"]}
+    criterion: The result is clear, structured, and usable during the trip.
   - id: calibrated_uncertainty
     max_score: 4
-    anchors: {required: ["frozen official release timestamp"], evidence: ["no live availability claim"], forbidden: ["invented live availability"]}
+    criterion: Assumptions and unverified facts are labeled honestly.

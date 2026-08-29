@@ -1,20 +1,21 @@
 version: 1
+review_mode: online-required
 dimensions:
   - id: skeleton_distinctness
     max_score: 4
-    anchors: {required: ["scenario group-reversal"], evidence: ["participant-owned required-place reversal"], forbidden: ["non-required route edit"]}
+    criterion: Alternatives are meaningfully distinct when the trip warrants alternatives.
   - id: tradeoffs
     max_score: 4
-    anchors: {required: ["group decision"], evidence: ["assess route impact"], forbidden: ["silently rewrote the route"]}
+    criterion: Meaningful route tradeoffs are identified and explained.
   - id: pacing
     max_score: 4
-    anchors: {required: ["requested removal"], evidence: ["must-see-a"], forbidden: ["removed immediately"]}
+    criterion: The itinerary has realistic pacing and daily load.
   - id: backup_usefulness
     max_score: 4
-    anchors: {required: ["keep the selected required place"], evidence: ["until the decision is confirmed"], forbidden: ["drop the required place"]}
+    criterion: Backups are useful, local, and preserve the route where possible.
   - id: readability
     max_score: 4
-    anchors: {required: ["owner=traveler-a"], evidence: ["traveler-a requested"], forbidden: ["owner unknown"]}
+    criterion: The result is clear, structured, and usable during the trip.
   - id: calibrated_uncertainty
     max_score: 4
-    anchors: {required: ["anonymized ownership"], evidence: ["selected-route state only"], forbidden: ["personal identity stored"]}
+    criterion: Assumptions and unverified facts are labeled honestly.

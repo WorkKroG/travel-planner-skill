@@ -1,20 +1,21 @@
 version: 1
+review_mode: online-required
 dimensions:
   - id: skeleton_distinctness
     max_score: 4
-    anchors: {required: ["scenario last-admission"], evidence: ["planted last-admission omission"], forbidden: ["admission is feasible"]}
+    criterion: Alternatives are meaningfully distinct when the trip warrants alternatives.
   - id: tradeoffs
     max_score: 4
-    anchors: {required: ["report the admission conflict"], evidence: ["arrival is after cutoff"], forbidden: ["hide cutoff conflict"]}
+    criterion: Meaningful route tradeoffs are identified and explained.
   - id: pacing
     max_score: 4
-    anchors: {required: ["ends at 2026-11-05T18:40:00+01:00 after venue close"], evidence: ["venue close 2026-11-05T18:00:00+01:00"], forbidden: ["ends before venue close"]}
+    criterion: The itinerary has realistic pacing and daily load.
   - id: backup_usefulness
     max_score: 4
-    anchors: {required: ["confirmed earlier slot"], evidence: ["after user approval"], forbidden: ["invent later admission"]}
+    criterion: Backups are useful, local, and preserve the route where possible.
   - id: readability
     max_score: 4
-    anchors: {required: ["arrival 2026-11-05T17:10:00+01:00"], evidence: ["activity-museum"], forbidden: ["unidentified"]}
+    criterion: The result is clear, structured, and usable during the trip.
   - id: calibrated_uncertainty
     max_score: 4
-    anchors: {required: ["official frozen cutoff"], evidence: ["no later admission is invented"], forbidden: ["later admission confirmed"]}
+    criterion: Assumptions and unverified facts are labeled honestly.

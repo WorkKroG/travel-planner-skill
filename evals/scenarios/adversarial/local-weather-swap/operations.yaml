@@ -1,6 +1,6 @@
 prompt_version: adversarial-v1
 prompt: Swap only day 4 to its indoor fallback, preserving unrelated day 5 exactly.
-oracle:
+reference_evaluator:
   version: 1
   kind: impact.weather-swap
   parameters:

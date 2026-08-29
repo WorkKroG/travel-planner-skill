@@ -1,6 +1,6 @@
 prompt_version: adversarial-v1
 prompt: Evaluate the structured required-place reversal against selected-route ownership.
-oracle:
+reference_evaluator:
   version: 1
   kind: route.group-reversal
   parameters:

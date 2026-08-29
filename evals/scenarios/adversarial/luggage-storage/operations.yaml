@@ -1,6 +1,6 @@
 prompt_version: adversarial-v1
 prompt: Validate the luggage chain from hotel checkout to station departure.
-oracle:
+reference_evaluator:
   version: 1
   kind: logistics.luggage-storage
   parameters:

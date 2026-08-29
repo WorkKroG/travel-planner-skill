@@ -1,20 +1,21 @@
 version: 1
+review_mode: online-required
 dimensions:
   - id: skeleton_distinctness
     max_score: 4
-    anchors: {required: ["scenario winter-road-closure"], evidence: ["seasonal road closure"], forbidden: ["road is open"]}
+    criterion: Alternatives are meaningfully distinct when the trip warrants alternatives.
   - id: tradeoffs
     max_score: 4
-    anchors: {required: ["mountain-road status=seasonal_closed"], evidence: ["2026-12-01"], forbidden: ["use mountain-road"]}
+    criterion: Meaningful route tradeoffs are identified and explained.
   - id: pacing
     max_score: 4
-    anchors: {required: ["closure 2026-11-15 to 2027-04-15"], evidence: ["route via valley-road"], forbidden: ["ignore closure window"]}
+    criterion: The itinerary has realistic pacing and daily load.
   - id: backup_usefulness
     max_score: 4
-    anchors: {required: ["keep the closed road out"], evidence: ["feasible routing"], forbidden: ["closed road feasible"]}
+    criterion: Backups are useful, local, and preserve the route where possible.
   - id: readability
     max_score: 4
-    anchors: {required: ["mountain-road"], evidence: ["valley-road"], forbidden: ["unidentified"]}
+    criterion: The result is clear, structured, and usable during the trip.
   - id: calibrated_uncertainty
     max_score: 4
-    anchors: {required: ["frozen road-authority status"], evidence: ["recheck before departure"], forbidden: ["live road status"]}
+    criterion: Assumptions and unverified facts are labeled honestly.

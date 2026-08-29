@@ -19,10 +19,10 @@ if __package__ in {None, ""}:  # Support `python evals/run.py` from a checkout.
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from evals.adapters import (
+    RUBRIC_DIMENSIONS,
     AgentAdapter,
     CodexCliAdapter,
     FixtureAdapter,
-    FixtureJudge,
     JudgeAdapter,
     normalize_judge_run,
 )
@@ -37,6 +37,11 @@ DEFAULT_RUBRIC = _ROOT / "rubrics" / "quality.yaml"
 DEFAULT_SCENARIOS_ROOT = _ROOT / "scenarios"
 _SAFE_SCENARIO_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$")
 _MISSING = object()
+_OFFLINE_SOFT_REVIEW = {
+    "status": "requires_online_review",
+    "reason": "Soft qualities are not evaluated in offline fixture mode.",
+    "dimensions": list(RUBRIC_DIMENSIONS),
+}
 
 
 class EvalSetupError(RuntimeError):
@@ -246,8 +251,10 @@ def run_scenario(
     checks.extend(_error_findings(errors, missing_rules))
     soft: RubricReport | None = None
     judge_trace: Mapping[str, Any] | None = None
+    offline_hard_only = adapter.name == "fixture" and judge is None
     if judge is None:
-        degraded.append("no independent judge configured")
+        if not offline_hard_only:
+            degraded.append("no independent judge configured")
     else:
         try:
             judge_run = judge.judge(prompt, agent_run.response, workspace or Path.cwd())
@@ -284,6 +291,7 @@ def run_scenario(
         "operations": dict(agent_run.operations),
         "grading": {"hard": hard.as_dict(), "soft": soft.as_dict() if soft else None},
         "judge": judge_trace,
+        "soft_review": _OFFLINE_SOFT_REVIEW if offline_hard_only else None,
         "degraded": degraded,
         "errors": errors,
     }
@@ -343,7 +351,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             selected = [scenario]
         if args.adapter == "fixture":
             adapter: AgentAdapter = FixtureAdapter(world)
-            judge: JudgeAdapter | None = FixtureJudge(world)
+            judge: JudgeAdapter | None = None
         else:
             adapter = CodexCliAdapter(shlex.split(args.codex_command or ""), model=args.model)
             if not args.judge_command or not args.judge_model:
@@ -371,6 +379,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             print(f"{result.scenario_id}: {outcome} {status} ({result.trace_path})")
         else:
             print(f"{result.scenario_id}: macro {status} ({result.trace_path})")
+    if args.adapter == "fixture":
+        print("Soft review: NOT RUN offline; run the online Codex judge")
     if args.all:
         return 0 if all(
             _matches_declared_outcome(result, next(item for item in selected if _scenario_id(item) == result.scenario_id))

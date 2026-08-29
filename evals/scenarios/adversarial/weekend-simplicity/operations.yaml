@@ -1,6 +1,6 @@
 prompt_version: adversarial-v1
 prompt: Compare the two-day walkable trip complexity with the requested alternative count.
-oracle:
+reference_evaluator:
   version: 1
   kind: simplicity.weekend
   parameters:
