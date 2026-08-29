@@ -14,7 +14,7 @@ scenarios:
         equals: identified
         evidence: fixture-last-admission
     fixture_response:
-      text: The calendar and last-admission conflicts are identified from fixture facts.
+      text: Offline fixture computed deterministic hard evidence only; soft qualities require online Codex review.
       operations:
         checks:
           CAL-001:
@@ -35,7 +35,7 @@ scenarios:
         equals: identified
         evidence: fixture-last-admission-mutation
     fixture_response:
-      text: The deliberate mutation does not report the last-admission conflict.
+      text: Offline fixture computed deterministic hard evidence only; soft qualities require online Codex review.
       operations:
         checks:
           OPS-011:

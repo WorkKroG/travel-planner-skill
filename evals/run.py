@@ -251,33 +251,39 @@ def run_scenario(
     checks.extend(_error_findings(errors, missing_rules))
     soft: RubricReport | None = None
     judge_trace: Mapping[str, Any] | None = None
-    offline_hard_only = adapter.name == "fixture" and judge is None
-    if judge is None:
-        if not offline_hard_only:
-            degraded.append("no independent judge configured")
-    else:
+    offline_hard_only = adapter.name == "fixture"
+    if not offline_hard_only and judge is None:
+        degraded.append("no independent judge configured")
+    elif not offline_hard_only:
+        assert judge is not None
         try:
-            judge_run = judge.judge(prompt, agent_run.response, workspace or Path.cwd())
-        except Exception as error:  # noqa: BLE001 - third-party judge adapters may raise arbitrary exceptions.
-            judge_run = JudgeRun({}, {"judge": judge.name}, errors=(f"judge error: {type(error).__name__}: {error}",))
-        judge_run = normalize_judge_run(judge_run)
-        judge_trace = {
-            "name": judge.name,
-            "metadata": dict(judge_run.metadata),
-            "scores": dict(judge_run.scores),
-            "degraded": list(judge_run.degraded),
-            "errors": list(judge_run.errors),
-        }
-        degraded.extend(judge_run.degraded)
-        if judge_run.errors:
-            degraded.append("independent judge did not produce a valid score envelope")
+            rubric = _load_yaml_mapping(rubric_path, "rubric")
+        except (TypeError, ValueError) as error:
+            degraded.append(f"rubric unavailable: {error}")
+            judge_trace = {"name": judge.name, "rubric_error": str(error)}
         else:
             try:
-                rubric = _load_yaml_mapping(rubric_path, "rubric")
+                judge_run = judge.judge(
+                    prompt,
+                    agent_run.response,
+                    workspace or Path.cwd(),
+                    rubric,
+                )
+            except Exception as error:  # noqa: BLE001 - third-party judge adapters may raise arbitrary exceptions.
+                judge_run = JudgeRun({}, {"judge": judge.name}, errors=(f"judge error: {type(error).__name__}: {error}",))
+            judge_run = normalize_judge_run(judge_run)
+            judge_trace = {
+                "name": judge.name,
+                "metadata": dict(judge_run.metadata),
+                "scores": dict(judge_run.scores),
+                "degraded": list(judge_run.degraded),
+                "errors": list(judge_run.errors),
+            }
+            degraded.extend(judge_run.degraded)
+            if judge_run.errors:
+                degraded.append("independent judge did not produce a valid score envelope")
+            else:
                 soft = grade_soft_rubric(judge_run, rubric)
-            except (TypeError, ValueError) as error:
-                degraded.append(f"rubric unavailable: {error}")
-                judge_trace = dict(judge_trace) | {"rubric_error": str(error)}
     hard = grade_hard_invariants(checks)
     trace = {
         "schema_version": TRACE_SCHEMA_VERSION,

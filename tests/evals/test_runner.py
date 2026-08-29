@@ -24,6 +24,27 @@ FIXTURE_WORLD = Path(__file__).parents[2] / "evals" / "fixture-world" / "base.ya
 RUBRIC = Path(__file__).parents[2] / "evals" / "rubrics" / "quality.yaml"
 
 
+def _passing_command_adapter() -> CodexCliAdapter:
+    envelope = json.dumps(
+        {
+            "schema_version": 1,
+            "response": "online agent response",
+            "operations": {
+                "checks": {
+                    "CAL-001": {"status": "identified"},
+                    "OPS-011": {"status": "identified"},
+                }
+            },
+            "degraded": [],
+            "errors": [],
+        }
+    )
+    return CodexCliAdapter(
+        (sys.executable, "-c", f"print({envelope!r})"),
+        model="agent-test",
+    )
+
+
 def test_trace_records_versions_prompt_operations_and_grading(tmp_path: Path) -> None:
     """A trace missing audit material must fail this contract check."""
     world = load_fixture_world(FIXTURE_WORLD)
@@ -131,8 +152,10 @@ def test_missing_rubric_is_recorded_in_a_trace_instead_of_disappearing(tmp_path:
     class StaticJudge:
         name = "static-online-judge"
 
-        def judge(self, prompt: str, response: str, workspace: Path) -> JudgeRun:
-            del prompt, response, workspace
+        def judge(
+            self, prompt: str, response: str, workspace: Path, rubric: object
+        ) -> JudgeRun:
+            del prompt, response, workspace, rubric
             return JudgeRun(
                 {
                     "skeleton_distinctness": 4,
@@ -145,10 +168,9 @@ def test_missing_rubric_is_recorded_in_a_trace_instead_of_disappearing(tmp_path:
                 {},
             )
 
-    world = load_fixture_world(FIXTURE_WORLD)
     result = run_scenario(
-        world["scenarios"]["harness-smoke"],
-        FixtureAdapter(world),
+        load_fixture_world(FIXTURE_WORLD)["scenarios"]["harness-smoke"],
+        _passing_command_adapter(),
         results_dir=tmp_path,
         rubric_path=tmp_path / "missing-rubric.yaml",
         judge=StaticJudge(),
@@ -358,8 +380,10 @@ def test_trace_recursively_redacts_secrets_and_subprocess_diagnostics(tmp_path: 
     class SensitiveJudge:
         name = "sensitive-judge"
 
-        def judge(self, prompt: str, response: str, workspace: Path) -> JudgeRun:
-            del prompt, response, workspace
+        def judge(
+            self, prompt: str, response: str, workspace: Path, rubric: object
+        ) -> JudgeRun:
+            del prompt, response, workspace, rubric
             return JudgeRun(
                 {},
                 {"Authorization": "Bearer judge-secret", "passport": "AB1234567"},
@@ -565,18 +589,18 @@ def test_custom_judge_invalid_scores_become_soft_only_traceable_errors(
     tmp_path: Path, scores: dict[str, float]
 ) -> None:
     """Every judge adapter must be normalized before invalid scores can reach a trace."""
-    world = load_fixture_world(FIXTURE_WORLD)
-
     class InvalidJudge:
         name = "invalid-custom-judge"
 
-        def judge(self, prompt: str, response: str, workspace: Path) -> JudgeRun:
-            del prompt, response, workspace
+        def judge(
+            self, prompt: str, response: str, workspace: Path, rubric: object
+        ) -> JudgeRun:
+            del prompt, response, workspace, rubric
             return JudgeRun(scores, {"judge": "custom"})
 
     result = run_scenario(
-        world["scenarios"]["harness-smoke"],
-        FixtureAdapter(world),
+        load_fixture_world(FIXTURE_WORLD)["scenarios"]["harness-smoke"],
+        _passing_command_adapter(),
         results_dir=tmp_path,
         judge=InvalidJudge(),
     )

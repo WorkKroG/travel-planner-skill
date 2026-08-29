@@ -24,7 +24,13 @@ class AgentAdapter(Protocol):
 class JudgeAdapter(Protocol):
     name: str
 
-    def judge(self, prompt: str, response: str, workspace: Path) -> JudgeRun: ...
+    def judge(
+        self,
+        prompt: str,
+        response: str,
+        workspace: Path,
+        rubric: Mapping[str, Any],
+    ) -> JudgeRun: ...
 
 
 class AdapterError(RuntimeError):
@@ -281,9 +287,23 @@ class CodexCliJudge:
         self._command = tuple(command)
         self._model = model
 
-    def judge(self, prompt: str, response: str, workspace: Path) -> JudgeRun:
+    def judge(
+        self,
+        prompt: str,
+        response: str,
+        workspace: Path,
+        rubric: Mapping[str, Any],
+    ) -> JudgeRun:
         metadata = {"command": _safe_command(self._command), "model": self._model}
-        payload = json.dumps({"schema_version": 1, "prompt": prompt, "response": response}, allow_nan=False)
+        payload = json.dumps(
+            {
+                "schema_version": 1,
+                "prompt": prompt,
+                "response": response,
+                "rubric": copy.deepcopy(dict(rubric)),
+            },
+            allow_nan=False,
+        )
         try:
             completed = subprocess.run(
                 self._command,

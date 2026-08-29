@@ -4,11 +4,13 @@ from __future__ import annotations
 
 import json
 import shutil
+import sys
 from pathlib import Path
 
 import yaml
 
-from evals.run import main
+from evals.adapters import CodexCliAdapter, CodexCliJudge, FixtureAdapter
+from evals.run import load_fixture_world, main, run_scenario
 from evals.scenarios import load_scenario_case
 
 ROOT = Path(__file__).parents[2] / "evals" / "scenarios"
@@ -20,6 +22,8 @@ DIMENSIONS = (
     "readability",
     "calibrated_uncertainty",
 )
+FIXTURE_WORLD = Path(__file__).parents[2] / "evals" / "fixture-world" / "base.yaml"
+RUBRIC = Path(__file__).parents[2] / "evals" / "rubrics" / "quality.yaml"
 
 
 def test_fixture_cli_records_hard_only_result_and_online_review_receipt(
@@ -83,3 +87,107 @@ def test_scenario_rubric_is_online_criteria_not_offline_phrase_matching(
     assert case.scenario["online_review_required"] is True
     assert "fixture_rubric" not in case.scenario
 
+
+def test_fixture_adapter_never_invokes_a_soft_judge_even_when_one_is_passed(
+    tmp_path: Path,
+) -> None:
+    """The public runner must preserve the hard-only fixture boundary."""
+    class ExplodingJudge:
+        name = "must-not-run"
+
+        def judge(self, prompt: str, response: str, workspace: Path):
+            del prompt, response, workspace
+            raise AssertionError("fixture mode invoked a semantic judge")
+
+    world = load_fixture_world(FIXTURE_WORLD)
+    result = run_scenario(
+        world["scenarios"]["harness-smoke"],
+        FixtureAdapter(world),
+        results_dir=tmp_path,
+        judge=ExplodingJudge(),
+    )
+
+    trace = json.loads(result.trace_path.read_text(encoding="utf-8"))
+    assert result.soft is None
+    assert trace["judge"] is None
+    assert trace["soft_review"]["status"] == "requires_online_review"
+
+
+def test_online_codex_judge_receives_the_validated_rubric_criteria(
+    tmp_path: Path,
+) -> None:
+    """Online criteria must affect the judge input rather than only cap its output."""
+    agent_envelope = json.dumps(
+        {
+            "schema_version": 1,
+            "response": "route response",
+            "operations": {"checks": {"OPS-011": {"status": "identified"}}},
+            "degraded": [],
+            "errors": [],
+        }
+    )
+    judge_code = (
+        "import json,sys; p=json.load(sys.stdin); "
+        "ok=p['rubric']['review_mode']=='online-required' and "
+        "all(d.get('criterion') for d in p['rubric']['dimensions']); "
+        f"dims={list(DIMENSIONS)!r}; score=4 if ok else 0; "
+        "print(json.dumps({'schema_version':1,'scores':{d:score for d in dims},"
+        "'degraded':[],'errors':[]}))"
+    )
+    scenario = {
+        "id": "online-rubric",
+        "prompt_version": "v1",
+        "prompt": "Review the route.",
+        "hard_checks": [
+            {
+                "rule_id": "OPS-011",
+                "path": "checks.OPS-011.status",
+                "equals": "identified",
+            }
+        ],
+    }
+
+    result = run_scenario(
+        scenario,
+        CodexCliAdapter(
+            (sys.executable, "-c", f"print({agent_envelope!r})"),
+            model="agent-test",
+        ),
+        results_dir=tmp_path,
+        rubric_path=RUBRIC,
+        judge=CodexCliJudge(
+            (sys.executable, "-c", judge_code),
+            model="judge-test",
+        ),
+    )
+
+    assert result.soft is not None
+    assert result.soft.score == result.soft.max_score == 24
+
+
+def test_reference_evaluator_emits_only_a_neutral_offline_diagnostic(
+    tmp_path: Path,
+) -> None:
+    """Offline evidence may be structured, but must not imitate a model-written answer."""
+    exit_code = main(
+        [
+            "--adapter",
+            "fixture",
+            "--scenario",
+            "booking-timezone",
+            "--results-dir",
+            str(tmp_path),
+        ]
+    )
+
+    assert exit_code == 0
+    trace_path = next(tmp_path.glob("booking-timezone-*.json"))
+    trace = json.loads(trace_path.read_text(encoding="utf-8"))
+    assert trace["response"] == (
+        "Offline fixture computed deterministic hard evidence only; "
+        "soft qualities require online Codex review."
+    )
+    assert all(
+        label not in trace["response"]
+        for label in ("Finding:", "Evidence:", "Action:", "Backup:", "Uncertainty:")
+    )

@@ -139,7 +139,6 @@ def test_each_reference_evaluator_case_changes_a_graded_result_for_one_relevant_
     assert _lookup(changed_trace["operations"], operation_path) == changed_value
     assert baseline.hard.macro_pass is baseline_macro
     assert changed.hard.macro_pass is changed_macro
-    assert baseline_trace["response"] != changed_trace["response"]
 
 
 def test_reference_evaluator_contract_never_receives_expected_hard_truth() -> None:
@@ -316,10 +315,10 @@ def test_reference_evaluator_validates_unknown_discriminator_before_unused_refer
         validate_contract(case.case_id, mutated, contract)
 
 
-def test_last_admission_visit_end_relation_drives_response_and_hard_status(
+def test_last_admission_visit_end_relation_drives_structured_hard_status(
     tmp_path: Path,
 ) -> None:
-    """Visit completion is described as before/after close from the actual comparison."""
+    """Visit completion is recorded as before/after close in structured hard evidence."""
     root = tmp_path / "scenarios"
     shutil.copytree(ROOT, root)
     source_path = root / "adversarial" / "last-admission" / "sources.yaml"
@@ -332,10 +331,12 @@ def test_last_admission_visit_end_relation_drives_response_and_hard_status(
     after_trace = json.loads(after_close.trace_path.read_text(encoding="utf-8"))
     before_trace = json.loads(before_close.trace_path.read_text(encoding="utf-8"))
 
-    assert "18:40:00+01:00 after venue close 2026-11-05T18:00:00+01:00" in after_trace["response"]
+    assert after_trace["operations"]["admission"]["visit_ends_at"].endswith("18:40:00+01:00")
+    assert after_trace["operations"]["admission"]["closes_at"].endswith("18:00:00+01:00")
     assert after_trace["operations"]["admission"]["visit_end_relation"] == "after"
     assert after_trace["operations"]["checks"]["EVAL-ADMISSION-001"]["status"] == "identified"
-    assert "17:40:00+01:00 before venue close 2026-11-05T18:00:00+01:00" in before_trace["response"]
+    assert before_trace["operations"]["admission"]["visit_ends_at"].endswith("17:40:00+01:00")
+    assert before_trace["operations"]["admission"]["closes_at"].endswith("18:00:00+01:00")
     assert before_trace["operations"]["admission"]["visit_end_relation"] == "before"
     assert before_trace["operations"]["checks"]["EVAL-ADMISSION-001"]["status"] == "clear"
 
@@ -367,7 +368,6 @@ def test_european_city_access_is_an_independent_typed_composite_constraint(
     assert open_checks["EVAL-CITY-001"]["status"] == "clear"
     assert restricted_checks["EVAL-ROAD-001"] == open_checks["EVAL-ROAD-001"]
     assert restricted_checks["LEG-001"] == open_checks["LEG-001"]
-    assert restricted_trace["response"] != open_trace["response"]
     assert restricted.hard.macro_pass is True
     assert open_access.hard.macro_pass is False
 
