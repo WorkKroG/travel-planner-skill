@@ -9,7 +9,14 @@ from pathlib import Path
 import pytest
 import yaml
 
-from evals.adapters import CodexCliAdapter, CodexCliJudge, FixtureAdapter, FixtureJudge
+from evals.adapters import (
+    CodexCliAdapter,
+    CodexCliJudge,
+    FixtureAdapter,
+    FixtureJudge,
+    _safe_command,
+)
+from evals.redaction import redact_text
 from evals.run import load_fixture_world, main, run_scenario
 from evals.types import JudgeRun
 
@@ -362,3 +369,119 @@ def test_trace_recursively_redacts_secrets_and_subprocess_diagnostics(tmp_path: 
     ):
         assert secret not in trace_text
     assert "<redacted>" in trace_text
+
+
+def test_redaction_masks_bare_bearer_and_split_command_credentials(tmp_path: Path) -> None:
+    """Separate command arguments must retain safe flags while hiding adjacent credentials."""
+    command = (
+        "codex",
+        "--token",
+        "split-token",
+        "--api-key",
+        "split-key",
+        "--password",
+        "split-password",
+        "--header",
+        "Authorization:",
+        "Bearer",
+        "split-header-secret",
+        "--verbose",
+    )
+
+    safe = _safe_command(command)
+
+    assert safe == [
+        "codex",
+        "--token",
+        "<redacted>",
+        "--api-key",
+        "<redacted>",
+        "--password",
+        "<redacted>",
+        "--header",
+        "Authorization:",
+        "Bearer",
+        "<redacted>",
+        "--verbose",
+    ]
+    assert redact_text("Bearer bare-secret") == "Bearer <redacted>"
+
+    scenario = {
+        "id": "bare-bearer",
+        "prompt_version": "v1",
+        "prompt": "Bearer prompt-bearer-secret",
+        "hard_checks": [{"rule_id": "OPS-011", "path": "checks.OPS-011.status", "equals": "identified"}],
+    }
+    result = run_scenario(
+        scenario,
+        CodexCliAdapter(
+            (sys.executable, "-c", "import sys; sys.stderr.write('Bearer error-bearer-secret'); sys.exit(2)", *command[1:]),
+            model="codex-test",
+        ),
+        results_dir=tmp_path,
+    )
+    trace = result.trace_path.read_text(encoding="utf-8")
+    for secret in ("prompt-bearer-secret", "error-bearer-secret", "split-token", "split-key", "split-password", "split-header-secret"):
+        assert secret not in trace
+    assert "--verbose" in trace
+
+
+@pytest.mark.parametrize("constant", ["NaN", "Infinity", "-Infinity"])
+def test_non_finite_judge_envelope_is_soft_only_error_with_standard_json_trace(
+    tmp_path: Path, constant: str
+) -> None:
+    """A non-finite judge value degrades soft scoring without changing a valid macro result."""
+    agent_envelope = json.dumps(
+        {
+            "schema_version": 1,
+            "response": "identified",
+            "operations": {"checks": {"OPS-011": {"status": "identified"}}},
+            "degraded": [],
+            "errors": [],
+        }
+    )
+    scores = ", ".join(
+        f'"{name}": {constant if name == "readability" else "1"}'
+        for name in (
+            "skeleton_distinctness",
+            "tradeoffs",
+            "pacing",
+            "backup_usefulness",
+            "readability",
+            "calibrated_uncertainty",
+        )
+    )
+    judge_envelope = f'{{"schema_version": 1, "scores": {{{scores}}}, "degraded": [], "errors": []}}'
+    scenario = {
+        "id": f"nonfinite-{constant.lower().replace('-', 'minus-')}",
+        "prompt_version": "v1",
+        "prompt": "check this",
+        "hard_checks": [{"rule_id": "OPS-011", "path": "checks.OPS-011.status", "equals": "identified"}],
+    }
+    result = run_scenario(
+        scenario,
+        CodexCliAdapter((sys.executable, "-c", f"print({agent_envelope!r})"), model="codex-test"),
+        results_dir=tmp_path,
+        judge=CodexCliJudge((sys.executable, "-c", f"print({judge_envelope!r})"), model="judge-test"),
+    )
+
+    trace_text = result.trace_path.read_text(encoding="utf-8")
+    assert result.hard.macro_pass is True
+    assert result.soft is None
+    assert "independent judge did not produce a valid score envelope" in json.loads(trace_text)["degraded"]
+    json.loads(trace_text, parse_constant=lambda value: (_ for _ in ()).throw(ValueError("non-standard")))
+
+
+def test_file_results_dir_is_a_concise_cli_setup_error(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """Trace setup errors must use the eval CLI diagnostic path rather than a traceback."""
+    results_file = tmp_path / "results-file"
+    results_file.write_text("not a directory", encoding="utf-8")
+
+    exit_code = main(
+        ["--adapter", "fixture", "--scenario", "harness-smoke", "--results-dir", str(results_file)]
+    )
+
+    captured = capsys.readouterr()
+    assert exit_code == 2
+    assert captured.err.startswith("eval error: Cannot create results directory:")
+    assert "Traceback" not in captured.err

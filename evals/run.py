@@ -31,6 +31,10 @@ _SAFE_SCENARIO_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$")
 _MISSING = object()
 
 
+class EvalSetupError(RuntimeError):
+    """A deterministic, user-facing failure to allocate or write an eval trace."""
+
+
 def _load_yaml_mapping(path: Path, label: str) -> Mapping[str, Any]:
     try:
         loaded = yaml.safe_load(path.read_text(encoding="utf-8"))
@@ -143,7 +147,12 @@ def _error_findings(errors: Sequence[str], missing_rules: Sequence[str]) -> list
 
 def _trace_root(results_dir: Path) -> Path:
     root = Path(results_dir).resolve()
-    root.mkdir(parents=True, exist_ok=True)
+    try:
+        root.mkdir(parents=True, exist_ok=True)
+    except OSError as error:
+        raise EvalSetupError(f"Cannot create results directory: {root}") from error
+    if not root.is_dir():
+        raise EvalSetupError(f"Cannot create results directory: {root}")
     return root
 
 
@@ -158,16 +167,25 @@ def _write_trace(
         destination = root / f"{scenario_id}-{timestamp}-{run_id}.json"
         if not destination.resolve().is_relative_to(root):
             raise ValueError("Resolved trace path escapes results_dir.")
-        serialized = json.dumps(
-            redact_value(dict(trace) | {"run_id": run_id}), ensure_ascii=False, indent=2, sort_keys=True
-        ) + "\n"
+        try:
+            serialized = json.dumps(
+                redact_value(dict(trace) | {"run_id": run_id}),
+                ensure_ascii=False,
+                indent=2,
+                sort_keys=True,
+                allow_nan=False,
+            ) + "\n"
+        except (TypeError, ValueError) as error:
+            raise EvalSetupError("Cannot serialize a standard JSON trace.") from error
         try:
             with destination.open("x", encoding="utf-8") as stream:
                 stream.write(serialized)
         except FileExistsError:
             continue
+        except OSError as error:
+            raise EvalSetupError(f"Cannot write trace: {destination}") from error
         return destination
-    raise RuntimeError("Could not allocate a unique trace path after 16 attempts.")
+    raise EvalSetupError("Could not allocate a unique trace path after 16 attempts.")
 
 
 def run_scenario(
@@ -191,7 +209,7 @@ def run_scenario(
     degraded = list(agent_run.degraded)
     try:
         checks, missing_rules = _hard_checks(scenario, agent_run.operations)
-    except (TypeError, ValueError) as error:
+    except (EvalSetupError, TypeError, ValueError) as error:
         checks = [
             HardCheck(
                 "EVAL-001",
@@ -292,7 +310,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             run_scenario(scenario, adapter, results_dir=args.results_dir, rubric_path=args.rubric, judge=judge)
             for scenario in selected
         ]
-    except (TypeError, ValueError) as error:
+    except (EvalSetupError, TypeError, ValueError) as error:
         print(f"eval error: {error}", file=sys.stderr)
         return 2
     for result in results:

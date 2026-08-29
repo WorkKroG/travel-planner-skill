@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import copy
 import json
+import math
 import re
 import subprocess
 from collections.abc import Mapping, Sequence
@@ -40,10 +41,48 @@ RUBRIC_DIMENSIONS = (
     "readability",
     "calibrated_uncertainty",
 )
+_SENSITIVE_FLAGS = frozenset({"--token", "--api-key", "--password", "--secret", "--authorization"})
+_HEADER_FLAGS = frozenset({"--header", "-H"})
 
 
 def _safe_command(command: Sequence[str]) -> list[str]:
-    return [redact_text(item) for item in command]
+    safe: list[str] = []
+    redact_next = False
+    header_value_next = False
+    authorization_value_next = False
+    for item in command:
+        if redact_next:
+            safe.append("<redacted>")
+            redact_next = False
+        else:
+            safe.append(redact_text(item))
+            if item in _SENSITIVE_FLAGS:
+                redact_next = True
+            elif item in _HEADER_FLAGS:
+                header_value_next = True
+            elif header_value_next:
+                header_value_next = False
+                authorization_value_next = item.strip().lower().rstrip(":") == "authorization"
+            elif authorization_value_next:
+                authorization_value_next = False
+                if item.strip().lower() == "bearer":
+                    redact_next = True
+    return safe
+
+
+def _non_standard_constant(value: str) -> None:
+    raise ValueError(f"non-standard JSON constant: {value}")
+
+
+def _finite_float(value: str) -> float:
+    parsed = float(value)
+    if not math.isfinite(parsed):
+        raise ValueError(f"non-finite JSON number: {value}")
+    return parsed
+
+
+def _strict_json_loads(value: str) -> Any:
+    return json.loads(value, parse_constant=_non_standard_constant, parse_float=_finite_float)
 
 
 def _string_list(value: Any, field: str) -> tuple[str, ...]:
@@ -54,7 +93,7 @@ def _string_list(value: Any, field: str) -> tuple[str, ...]:
 
 def _agent_from_stdout(stdout: str, metadata: Mapping[str, Any]) -> AgentRun:
     try:
-        envelope = json.loads(stdout)
+        envelope = _strict_json_loads(stdout)
         if not isinstance(envelope, Mapping):
             raise TypeError("result envelope must be a JSON object")
         if envelope.get("schema_version") != RESULT_ENVELOPE_VERSION:
@@ -81,7 +120,7 @@ def _agent_from_stdout(stdout: str, metadata: Mapping[str, Any]) -> AgentRun:
 
 def _judge_from_stdout(stdout: str, metadata: Mapping[str, Any]) -> JudgeRun:
     try:
-        envelope = json.loads(stdout)
+        envelope = _strict_json_loads(stdout)
         if not isinstance(envelope, Mapping):
             raise TypeError("judge envelope must be a JSON object")
         if envelope.get("schema_version") != RESULT_ENVELOPE_VERSION:
@@ -89,8 +128,13 @@ def _judge_from_stdout(stdout: str, metadata: Mapping[str, Any]) -> JudgeRun:
         scores = envelope.get("scores")
         if not isinstance(scores, Mapping) or set(scores) != set(RUBRIC_DIMENSIONS):
             raise ValueError("judge scores must contain exactly the six rubric dimensions")
-        if any(isinstance(value, bool) or not isinstance(value, (int, float)) for value in scores.values()):
-            raise ValueError("judge scores must be numeric")
+        if any(
+            isinstance(value, bool)
+            or not isinstance(value, (int, float))
+            or not math.isfinite(value)
+            for value in scores.values()
+        ):
+            raise ValueError("judge scores must be finite numbers")
         return JudgeRun(
             scores=copy.deepcopy(dict(scores)),
             metadata=dict(metadata) | {"judge_schema_version": RESULT_ENVELOPE_VERSION},
@@ -222,7 +266,7 @@ class CodexCliJudge:
 
     def judge(self, prompt: str, response: str, workspace: Path) -> JudgeRun:
         metadata = {"command": _safe_command(self._command), "model": self._model}
-        payload = json.dumps({"schema_version": 1, "prompt": prompt, "response": response})
+        payload = json.dumps({"schema_version": 1, "prompt": prompt, "response": response}, allow_nan=False)
         try:
             completed = subprocess.run(
                 self._command,

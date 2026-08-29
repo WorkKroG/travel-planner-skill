@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+import math
+
+import pytest
+
 from evals.graders import grade_hard_invariants, grade_soft_rubric
 from evals.types import HardCheck, JudgeRun
 
@@ -49,3 +53,18 @@ def test_malformed_rubric_value_becomes_a_deterministic_zero() -> None:
 
     assert report.score == 0
     assert report.items[0].status == "invalid"
+
+
+@pytest.mark.parametrize("non_finite", [math.nan, math.inf, -math.inf])
+def test_non_finite_judge_scores_and_rubric_limits_are_rejected(non_finite: float) -> None:
+    """NaN and infinities are invalid JSON values, never soft-rubric inputs."""
+    with pytest.raises(ValueError, match="finite"):
+        grade_soft_rubric(
+            JudgeRun({"clarity": non_finite}, {"judge": "fixture"}),
+            {"version": 1, "dimensions": [{"id": "clarity", "max_score": 4}]},
+        )
+    with pytest.raises(ValueError, match="finite"):
+        grade_soft_rubric(
+            JudgeRun({"clarity": 1}, {"judge": "fixture"}),
+            {"version": 1, "dimensions": [{"id": "clarity", "max_score": non_finite}]},
+        )

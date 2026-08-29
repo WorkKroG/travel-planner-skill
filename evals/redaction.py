@@ -13,6 +13,7 @@ _AUTHORIZATION = re.compile(
 _ASSIGNMENT = re.compile(
     r"((?:api[_-]?key|token|secret|password)\s*[:=]\s*['\"]?)[^\s,;'\"]+", re.IGNORECASE
 )
+_BEARER = re.compile(r"(bearer\s+)['\"]?[^\s,;'\"]+", re.IGNORECASE)
 _PASSPORT = re.compile(r"\b[A-Z]{1,2}\d{6,9}\b")
 _CARD = re.compile(r"\b(?:\d[ -]?){12,18}\d\b")
 
@@ -21,6 +22,7 @@ def redact_text(value: str) -> str:
     """Remove common credentials and sensitive fixture identifiers from human-readable text."""
     result = _AUTHORIZATION.sub(r"\1<redacted>", value)
     result = _ASSIGNMENT.sub(r"\1<redacted>", result)
+    result = _BEARER.sub(r"\1<redacted>", result)
     result = _PASSPORT.sub("<redacted>", result)
     return _CARD.sub("<redacted>", result)
 

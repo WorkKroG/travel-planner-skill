@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
@@ -38,6 +39,8 @@ def _rubric_mapping(rubric: Mapping[str, Any] | Path) -> Mapping[str, Any]:
 def _number(value: Any) -> int | float | None:
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         return None
+    if not math.isfinite(value):
+        raise ValueError("Rubric scores and limits must be finite.")
     return value
 
 
