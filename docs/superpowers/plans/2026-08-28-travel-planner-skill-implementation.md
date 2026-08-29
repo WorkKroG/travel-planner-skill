@@ -961,7 +961,7 @@ git commit -m "test: add browser and pdf quality gates"
 - Produces: installable `travel-planner` skill with explicit/implicit triggers and stage routing; references invoke stable CLI commands from Tasks 2–13.
 - Consumes: all state, challenge, map and rendering interfaces already defined.
 
-- [ ] **Step 1: Write frontmatter, trigger and routing tests**
+- [x] **Step 1: Write frontmatter, trigger and routing tests**
 
 ```python
 def test_skill_frontmatter_is_minimal_and_specific():
@@ -976,12 +976,12 @@ def test_every_workflow_stage_has_one_owned_reference():
     assert routes["finalize"] == "references/render-and-qa.md"
 ```
 
-- [ ] **Step 2: Verify the placeholder dispatcher fails behaviour tests**
+- [x] **Step 2: Verify the placeholder dispatcher fails behaviour tests**
 
 Run: `uv run pytest tests/skill -v`  
 Expected: FAIL because references and complete dispatcher are absent.
 
-- [ ] **Step 3: Write concise dispatcher and focused references**
+- [x] **Step 3: Write concise dispatcher and focused references**
 
 ```markdown
 ---
@@ -992,13 +992,13 @@ description: Plan, review, or update a multi-stage trip with evidence, route alt
 
 Dispatcher must: match the user's language; detect/create explicit trip workspace; ask one meaningful question at a time; support quick draft only by request; load scoped state; distinguish facts/popularity/assessment/verdict; require selection/freeze; run skeleton then detailed challenge; never silently change; call deterministic scripts; render only after validation; explain degraded/offline states.
 
-- [ ] **Step 4: Run contract tests and a manual skill read-through**
+- [x] **Step 4: Run contract tests and a manual skill read-through**
 
 Run: `uv run pytest tests/skill -v`  
 Run: `uv run travel-planner validate tests/fixtures/japan-reference`  
 Expected: PASS; every referenced path and CLI command exists.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add skills/travel-planner/SKILL.md skills/travel-planner/references tests/skill
