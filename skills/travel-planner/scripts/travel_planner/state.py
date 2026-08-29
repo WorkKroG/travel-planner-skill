@@ -25,7 +25,7 @@ STATE_SCHEMA_FILES = {
 
 @dataclass
 class TripState:
-    """Mutable in-memory representation of one trip's source-of-truth files."""
+    """Mutable in-memory representation of one trip's structured canonical files."""
 
     root: Path
     brief: dict[str, Any]
@@ -76,8 +76,7 @@ def _issue_path(file_name: str, parts: list[str | int]) -> str:
     return result
 
 
-def validate_trip(root: Path) -> ValidationReport:
-    """Validate each state file and report stable, user-facing field paths."""
+def _validate_structure(root: Path) -> tuple[list[ValidationIssue], dict[str, Any]]:
     trip_root = Path(root).expanduser().resolve(strict=False)
     issues: list[ValidationIssue] = []
     trip_ids: dict[str, Any] = {}
@@ -99,6 +98,18 @@ def validate_trip(root: Path) -> ValidationReport:
                     message=error.message,
                 )
             )
+    return issues, trip_ids
+
+
+def validate_structure(root: Path) -> ValidationReport:
+    """Validate each structured YAML file against its own schema only."""
+    issues, _ = _validate_structure(root)
+    return ValidationReport(tuple(issues))
+
+
+def validate_trip(root: Path) -> ValidationReport:
+    """Validate file structure and the temporary cross-file trip_id check."""
+    issues, trip_ids = _validate_structure(root)
     expected_trip_id = trip_ids.get("brief.yaml")
     for file_name, value in trip_ids.items():
         if expected_trip_id is not None and value != expected_trip_id:

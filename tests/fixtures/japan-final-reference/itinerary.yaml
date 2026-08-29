@@ -1,5 +1,9 @@
 schema_version: 1
 trip_id: japan-final-reference
+document_status: final
+verification_level: codex_validated
+finalization_basis: codex_validated
+accepted_blockers: []
 route_state: frozen
 output_status: final
 alternatives: []

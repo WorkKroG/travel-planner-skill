@@ -1,5 +1,9 @@
 schema_version: 1
 trip_id: japan-autumn-2026-example
+document_status: draft
+verification_level: none
+finalization_basis: null
+accepted_blockers: []
 route_state: frozen
 alternatives: []
 selected_route_id: japan-autumn-route
