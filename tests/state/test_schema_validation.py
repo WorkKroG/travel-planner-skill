@@ -168,6 +168,28 @@ def test_accepted_blocker_requires_an_explicit_auditable_record(
     assert f"'{missing_field}' is a required property" in issue.message
 
 
+def test_accepted_blocker_rejects_invalid_accepted_at_timestamp(
+    minimal_trip: Path,
+) -> None:
+    """Catch an unauditable acceptance timestamp passing structural validation."""
+    _write_lifecycle(
+        minimal_trip,
+        accepted_blockers=[
+            {
+                "blocker_id": "blocker-rail",
+                "accepted_by_user": True,
+                "accepted_at": "definitely-not-a-timestamp",
+                "rationale": "The user accepts the remaining timetable uncertainty.",
+            }
+        ],
+    )
+
+    report = validate_trip(minimal_trip)
+
+    assert report.ok is False
+    assert report.issues[0].path == "itinerary.yaml.accepted_blockers[0].accepted_at"
+
+
 @pytest.mark.parametrize(
     ("field", "invalid"),
     [("accepted_by_user", False), ("rationale", "   ")],

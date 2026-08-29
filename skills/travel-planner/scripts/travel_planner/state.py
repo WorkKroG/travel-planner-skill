@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any
 
 import yaml
-from jsonschema import Draft202012Validator
+from jsonschema import Draft202012Validator, FormatChecker
 
 from .resources import resource_path
 
@@ -89,7 +89,7 @@ def _validate_structure(root: Path) -> tuple[list[ValidationIssue], dict[str, An
             issues.append(ValidationIssue(file_name, file_name, str(error)))
             continue
         trip_ids[file_name] = value.get("trip_id")
-        validator = Draft202012Validator(schema)
+        validator = Draft202012Validator(schema, format_checker=FormatChecker())
         for error in sorted(validator.iter_errors(value), key=lambda item: list(item.absolute_path)):
             issues.append(
                 ValidationIssue(
