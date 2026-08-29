@@ -1,2 +1,20 @@
 version: 1
-dimensions: [{id: skeleton_distinctness, max_score: 4}, {id: tradeoffs, max_score: 4}, {id: pacing, max_score: 4}, {id: backup_usefulness, max_score: 4}, {id: readability, max_score: 4}, {id: calibrated_uncertainty, max_score: 4}]
+dimensions:
+  - id: skeleton_distinctness
+    max_score: 4
+    anchors: {required: ["scenario place-collision"], evidence: ["same-name place collision"], forbidden: ["places are identical"]}
+  - id: tradeoffs
+    max_score: 4
+    anchors: {required: ["Museum Aurora in Helsinki"], evidence: ["Museum Aurora in Turku"], forbidden: ["choose first result"]}
+  - id: pacing
+    max_score: 4
+    anchors: {required: ["request the city"], evidence: ["before choosing a map identity"], forbidden: ["map without clarification"]}
+  - id: backup_usefulness
+    max_score: 4
+    anchors: {required: ["keep both candidates separate"], evidence: ["until locality is known"], forbidden: ["merge candidates"]}
+  - id: readability
+    max_score: 4
+    anchors: {required: ["60.1699,24.9384"], evidence: ["60.4518,22.2666"], forbidden: ["unidentified"]}
+  - id: calibrated_uncertainty
+    max_score: 4
+    anchors: {required: ["frozen identity evidence"], evidence: ["not inferred locality"], forbidden: ["locality inferred"]}

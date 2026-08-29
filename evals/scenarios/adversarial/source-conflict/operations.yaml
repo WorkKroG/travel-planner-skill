@@ -1,20 +1,9 @@
 prompt_version: adversarial-v1
-prompt: Resolve the frozen official versus aggregator conflict without representing
-  the aggregator as verified.
-response: The conflict is identified and the official source governs the operating
-  claim.
-operations:
-  checks:
-    EVID-001:
-      status: identified
-  effects:
-    forbidden:
-      claim_aggregator_verified: false
-  evidence:
-    sources:
-      official:
-      - closed
-      aggregator:
-      - open
-    traps:
-      conflicting-hours: mark conflict and prefer primary evidence
+prompt: Resolve the structured claim conflict using declared source authority.
+oracle:
+  version: 1
+  kind: evidence.source-conflict
+  parameters:
+    primary_source_id: official
+    secondary_source_id: aggregator
+    trap_id: conflicting-hours

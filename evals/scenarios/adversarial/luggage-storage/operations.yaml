@@ -1,16 +1,10 @@
 prompt_version: adversarial-v1
 prompt: Validate the luggage chain from hotel checkout to station departure.
-response: The storage handoff risk is identified before the rail departure.
-operations:
-  checks:
-    LEG-001:
-      status: identified
-  effects:
-    forbidden:
-      assume_storage: false
-  evidence:
-    sources:
-      hotel-fixture:
-      - storage hours limited
-    traps:
-      storage-gap: identify a feasible handoff
+oracle:
+  version: 1
+  kind: logistics.luggage-storage
+  parameters:
+    hotel_source_id: hotel-fixture
+    station_source_id: station-fixture
+    trap_id: storage-gap
+    transfer_minutes: 45

@@ -1,2 +1,9 @@
 mode: offline-frozen
-sources: [{id: station-provider, type: official-fixture, facts: [transfer accessibility unknown]}]
+sources:
+  - id: station-provider
+    type: official
+    data:
+      segments:
+        - id: station-transfer
+          status: unknown
+          provider_chain_complete: false

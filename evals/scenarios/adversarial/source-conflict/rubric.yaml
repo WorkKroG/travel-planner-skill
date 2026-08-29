@@ -1,2 +1,20 @@
 version: 1
-dimensions: [{id: skeleton_distinctness, max_score: 4}, {id: tradeoffs, max_score: 4}, {id: pacing, max_score: 4}, {id: backup_usefulness, max_score: 4}, {id: readability, max_score: 4}, {id: calibrated_uncertainty, max_score: 4}]
+dimensions:
+  - id: skeleton_distinctness
+    max_score: 4
+    anchors: {required: ["scenario source-conflict"], evidence: ["official versus aggregator conflict"], forbidden: ["sources agree"]}
+  - id: tradeoffs
+    max_score: 4
+    anchors: {required: ["official='closed'"], evidence: ["aggregator='open'"], forbidden: ["aggregator wins"]}
+  - id: pacing
+    max_score: 4
+    anchors: {required: ["prefer the direct official claim"], evidence: ["retain the conflict"], forbidden: ["discard conflict"]}
+  - id: backup_usefulness
+    max_score: 4
+    anchors: {required: ["official recheck"], evidence: ["before finalization"], forbidden: ["no recheck"]}
+  - id: readability
+    max_score: 4
+    anchors: {required: ["opening_status"], evidence: ["official"], forbidden: ["unidentified"]}
+  - id: calibrated_uncertainty
+    max_score: 4
+    anchors: {required: ["never labeled verified authority"], evidence: ["aggregator evidence"], forbidden: ["aggregator verified"]}

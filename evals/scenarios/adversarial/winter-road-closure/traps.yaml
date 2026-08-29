@@ -1,1 +1,4 @@
-injected: [{id: summer-route, input: map route ignores winter closure, required_behavior: block unavailable road}]
+injected:
+  - id: summer-route
+    kind: stale-map-route
+    data: {selected_road_id: mountain-road}

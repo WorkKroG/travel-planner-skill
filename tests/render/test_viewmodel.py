@@ -23,6 +23,21 @@ def test_view_places_blockers_before_day_details(
     assert view.open_decisions[0].severity == "blocking"
 
 
+def test_view_orders_days_by_number_independent_of_yaml_sequence(
+    japan_state: TripState, japan_report: ChallengeReport
+) -> None:
+    """Keep all render adapters chronological when canonical day records are reordered."""
+    reordered = deepcopy(japan_state)
+    reordered.itinerary["days"] = list(reversed(reordered.itinerary["days"]))
+    expected = sorted(
+        (day["number"], day["id"]) for day in japan_state.itinerary["days"]
+    )
+
+    view = build_view(reordered, japan_report, GENERATED_AT)
+
+    assert [(day.number, day.day_id) for day in view.days] == expected
+
+
 def test_view_does_not_mutate_canonical_state(
     japan_state: TripState, japan_report: ChallengeReport
 ) -> None:

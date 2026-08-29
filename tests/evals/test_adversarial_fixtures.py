@@ -8,7 +8,7 @@ from pathlib import Path
 
 from evals.adapters import FixtureAdapter, FixtureJudge
 from evals.run import main, run_scenario
-from evals.scenarios import execute_case, load_scenario_case, load_scenario_world
+from evals.scenarios import load_scenario_case, load_scenario_world
 
 ROOT = Path(__file__).parents[2] / "evals" / "scenarios"
 
@@ -28,33 +28,45 @@ def _run_case(case_id: str, tmp_path: Path):
 def test_weather_swap_preserves_unrelated_days_and_changes_only_target_day(tmp_path: Path) -> None:
     """A local weather fallback must not rewrite the neighbouring day during a partial rebuild."""
     result = _run_case("local-weather-swap", tmp_path)
-    mutation = result.case_mutation
+    trace = json.loads(result.trace_path.read_text(encoding="utf-8"))
+    mutation = trace["operations"]["weather_change"]
+    hashes = mutation["semantic_hashes"]
 
     assert result.hard.macro_pass is True
-    assert mutation["day-5-before"] == mutation["day-5-after"]
-    assert mutation["day-4-before"] != mutation["day-4-after"]
+    assert hashes["day-5-before"] == hashes["day-5-after"]
+    assert hashes["day-4-before"] != hashes["day-4-after"]
+    assert mutation["impact_targets"] == ["day:day-4", "outputs:all"]
 
 
 def test_frozen_mutation_preserves_frozen_route_and_is_an_expected_negative(tmp_path: Path) -> None:
     """A silent hotel mutation must stay a raw macro failure without corrupting frozen route state."""
     result = _run_case("frozen-mutation", tmp_path)
     trace = json.loads(result.trace_path.read_text(encoding="utf-8"))
+    transition = trace["operations"]["route_transition"]
 
     assert result.hard.macro_pass is False
-    assert result.case_mutation["rejected"] is True
-    assert result.case_mutation["route-before"] == result.case_mutation["route-after"]
+    assert transition["rejected"] is True
+    assert transition["route_before"] == transition["route_after"]
     assert trace["grading"]["hard"]["macro_pass"] is False
 
 
-def test_case_mutations_execute_production_impact_and_freeze_guards() -> None:
-    """Preservation evidence must come from real production state transitions, not authored snapshots."""
-    weather = execute_case(load_scenario_case("local-weather-swap", ROOT))
-    frozen = execute_case(load_scenario_case("frozen-mutation", ROOT))
+def test_oracle_operations_are_production_impact_and_freeze_evidence(tmp_path: Path) -> None:
+    """The adapter trace must expose executed production boundaries, not authored snapshots."""
+    weather = json.loads(
+        _run_case("local-weather-swap", tmp_path / "weather").trace_path.read_text(
+            encoding="utf-8"
+        )
+    )["operations"]["weather_change"]
+    frozen = json.loads(
+        _run_case("frozen-mutation", tmp_path / "frozen").trace_path.read_text(
+            encoding="utf-8"
+        )
+    )["operations"]["route_transition"]
 
+    assert weather["impact"]["changed_ids"] == ["day-4"]
     assert weather["impact_targets"] == ["day:day-4", "outputs:all"]
-    assert weather["day-4-before"] != weather["day-4-after"]
     assert frozen["rejected"] is True
-    assert frozen["route-before"] == frozen["route-after"]
+    assert frozen["route_before"] == frozen["route_after"]
 
 
 def test_all_accepts_declared_negative_outcomes_without_overriding_raw_hard_gate(

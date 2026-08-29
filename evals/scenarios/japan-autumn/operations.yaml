@@ -1,40 +1,17 @@
 prompt_version: scenario-v1
-prompt: Identify the frozen-world calendar and weather risks, retaining the selected
-  public-transport route.
-response: Calendar and weather risks are identified with a local backup; no live schedule
-  is invented.
-operations:
-  checks:
-    CAL-001:
-      status: identified
-    EVID-001:
-      status: identified
-  route:
-    state: frozen
-    bases:
-    - Tokyo
-    - Kyoto
-    - Kanazawa
-  effects:
-    forbidden:
-      invent_live_timetable: false
-      silently_change_frozen_bases: false
-  evidence:
-    sources:
-      japan-rail-fixture:
-      - platform timing is illustrative
-      - weather is a risk not a forecast
-    traps:
-      weather-risk: use local backup and mark uncertainty
-      timetable-invention: create a recheck instead of inventing a departure
-preservation:
-- before:
-    day-5:
-      id: day-5
-      base: Kyoto
-      activity: temple-walk
-  after:
-    day-5:
-      id: day-5
-      base: Kyoto
-      activity: temple-walk
+prompt: Challenge the frozen Japan route across calendar, schedule-evidence, and local weather components.
+oracle:
+  version: 1
+  kind: e2e.composite
+  parameters:
+    components:
+      - {kind: weekday, source_id: autumn-event}
+      - {kind: schedule-evidence, source_id: regional-rail, trap_id: timetable-invention}
+      - kind: weather-swap
+        source_id: mountain-weather
+        trap_id: weather-risk
+        wet_conditions: [rain, storm]
+        days:
+          - {id: day-6, activity: market, base: Kanazawa}
+          - {id: day-7, activity: mountain-hike, base: Kanazawa}
+          - {id: day-8, activity: rail-transfer, base: Kyoto}

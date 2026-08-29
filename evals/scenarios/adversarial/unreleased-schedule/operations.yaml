@@ -1,18 +1,8 @@
 prompt_version: adversarial-v1
-prompt: Do not invent a far-future train departure; schedule a provider recheck at
-  the release window.
-response: The route is provisional and has a timed recheck rather than an invented
-  departure.
-operations:
-  checks:
-    BOOK-001:
-      status: identified
-  effects:
-    forbidden:
-      invent_schedule: false
-  evidence:
-    sources:
-      rail-provider:
-      - schedule release date only
-    traps:
-      fake-timetable: mark not_released_yet
+prompt: Evaluate publication availability before answering the exact departure request.
+oracle:
+  version: 1
+  kind: availability.schedule
+  parameters:
+    source_id: rail-provider
+    trap_id: fake-timetable

@@ -1,1 +1,4 @@
-injected: [{id: false-pdf-success, input: optional PDF adapter missing, required_behavior: report diagnostic}]
+injected:
+  - id: false-pdf-success
+    kind: demanded-success-claim
+    data: {requested_format: pdf, require_success_wording: true}

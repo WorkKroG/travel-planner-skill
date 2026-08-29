@@ -1,1 +1,4 @@
-injected: [{id: same-name, input: select Museum Aurora without city, required_behavior: request or infer supported locality only}]
+injected:
+  - id: same-name
+    kind: ambiguous-place-selection
+    data: {requested_name: Museum Aurora, requested_city: null}

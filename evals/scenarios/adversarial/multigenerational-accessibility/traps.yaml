@@ -1,1 +1,4 @@
-injected: [{id: assumed-elevator, input: aggregator says accessible, required_behavior: require provider confirmation}]
+injected:
+  - id: assumed-elevator
+    kind: aggregator-accessibility-claim
+    data: {segment_id: station-transfer, claimed_status: verified_step_free}

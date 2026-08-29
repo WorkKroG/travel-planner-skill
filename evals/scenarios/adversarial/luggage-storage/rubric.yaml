@@ -1,2 +1,20 @@
 version: 1
-dimensions: [{id: skeleton_distinctness, max_score: 4}, {id: tradeoffs, max_score: 4}, {id: pacing, max_score: 4}, {id: backup_usefulness, max_score: 4}, {id: readability, max_score: 4}, {id: calibrated_uncertainty, max_score: 4}]
+dimensions:
+  - id: skeleton_distinctness
+    max_score: 4
+    anchors: {required: ["scenario luggage-storage"], evidence: ["luggage storage gap"], forbidden: ["storage continuity confirmed"]}
+  - id: tradeoffs
+    max_score: 4
+    anchors: {required: ["hotel checkout"], evidence: ["storage ends"], forbidden: ["ignore checkout"]}
+  - id: pacing
+    max_score: 4
+    anchors: {required: ["departure 2026-04-03T18:00:00+02:00"], evidence: ["station storage available=False"], forbidden: ["luggage unattended"]}
+  - id: backup_usefulness
+    max_score: 4
+    anchors: {required: ["confirmed station storage"], evidence: ["extend hotel holding"], forbidden: ["assume station storage"]}
+  - id: readability
+    max_score: 4
+    anchors: {required: ["provider confirmation action"], evidence: ["2026-04-03T12:00:00+02:00"], forbidden: ["unidentified"]}
+  - id: calibrated_uncertainty
+    max_score: 4
+    anchors: {required: ["frozen provider evidence"], evidence: ["storage availability"], forbidden: ["live availability verified"]}

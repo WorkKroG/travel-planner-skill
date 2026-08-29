@@ -1,8 +1,20 @@
 version: 1
 dimensions:
-  - {id: skeleton_distinctness, max_score: 4}
-  - {id: tradeoffs, max_score: 4}
-  - {id: pacing, max_score: 4}
-  - {id: backup_usefulness, max_score: 4}
-  - {id: readability, max_score: 4}
-  - {id: calibrated_uncertainty, max_score: 4}
+  - id: skeleton_distinctness
+    max_score: 4
+    anchors: {required: ["scenario european-road-trip"], evidence: ["composite travel-plan challenge"], forbidden: ["all constraints clear"]}
+  - id: tradeoffs
+    max_score: 4
+    anchors: {required: ["alpine-pass status=seasonal_closed"], evidence: ["2026-10-07"], forbidden: ["alpine pass open"]}
+  - id: pacing
+    max_score: 4
+    anchors: {required: ["day-4-drive needs 360"], evidence: ["320 minutes"], forbidden: ["drive fits budget"]}
+  - id: backup_usefulness
+    max_score: 4
+    anchors: {required: ["retain local backups"], evidence: ["confirmed bases or lodging"], forbidden: ["no route backup"]}
+  - id: readability
+    max_score: 4
+    anchors: {required: ["apply each computed hard constraint"], evidence: ["without hidden route edits"], forbidden: ["unidentified"]}
+  - id: calibrated_uncertainty
+    max_score: 4
+    anchors: {required: ["frozen fixture evidence"], evidence: ["timings, authority states, and availability"], forbidden: ["live status verified"]}

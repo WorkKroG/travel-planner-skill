@@ -1,2 +1,10 @@
 mode: offline-frozen
-sources: [{id: road-authority-fixture, type: official-fixture, facts: [mountain road closure, low-emission zone]}]
+sources:
+  - id: road-authority-fixture
+    type: official
+    data:
+      road_id: alpine-pass
+      status: seasonal_closed
+      closure_start: "2026-10-01"
+      closure_end: "2027-05-01"
+      alternative_road_id: valley-detour

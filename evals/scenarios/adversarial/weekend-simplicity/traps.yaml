@@ -1,1 +1,4 @@
-injected: [{id: process-theatre, input: request multiple skeletons for simple route, required_behavior: explain proportionality}]
+injected:
+  - id: process-theatre
+    kind: excessive-alternatives-request
+    data: {requested_skeleton_count: 3}

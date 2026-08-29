@@ -1,1 +1,4 @@
-injected: [{id: naive-clock-addition, input: add duration without DST, required_behavior: use timezone-aware chronology}]
+injected:
+  - id: naive-clock-addition
+    kind: naive-duration
+    data: {claimed_duration_minutes: 240}

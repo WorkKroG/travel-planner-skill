@@ -1,2 +1,20 @@
 version: 1
-dimensions: [{id: skeleton_distinctness, max_score: 4}, {id: tradeoffs, max_score: 4}, {id: pacing, max_score: 4}, {id: backup_usefulness, max_score: 4}, {id: readability, max_score: 4}, {id: calibrated_uncertainty, max_score: 4}]
+dimensions:
+  - id: skeleton_distinctness
+    max_score: 4
+    anchors: {required: ["scenario medication-legality"], evidence: ["medication legality verification required"], forbidden: ["medication is legal"]}
+  - id: tradeoffs
+    max_score: 4
+    anchors: {required: ["official JPN record"], evidence: ["requires_confirmation"], forbidden: ["aggregator approval"]}
+  - id: pacing
+    max_score: 4
+    anchors: {required: ["official recheck"], evidence: ["without storing diagnosis"], forbidden: ["store diagnosis"]}
+  - id: backup_usefulness
+    max_score: 4
+    anchors: {required: ["secure external-reference action"], evidence: ["medicine-anon-a"], forbidden: ["upload prescription"]}
+  - id: readability
+    max_score: 4
+    anchors: {required: ["status requires_confirmation"], evidence: ["prescription details"], forbidden: ["unidentified"]}
+  - id: calibrated_uncertainty
+    max_score: 4
+    anchors: {required: ["not legal advice"], evidence: ["refused sensitive fields"], forbidden: ["legal guarantee"]}

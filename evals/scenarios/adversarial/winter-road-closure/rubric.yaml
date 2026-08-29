@@ -1,2 +1,20 @@
 version: 1
-dimensions: [{id: skeleton_distinctness, max_score: 4}, {id: tradeoffs, max_score: 4}, {id: pacing, max_score: 4}, {id: backup_usefulness, max_score: 4}, {id: readability, max_score: 4}, {id: calibrated_uncertainty, max_score: 4}]
+dimensions:
+  - id: skeleton_distinctness
+    max_score: 4
+    anchors: {required: ["scenario winter-road-closure"], evidence: ["seasonal road closure"], forbidden: ["road is open"]}
+  - id: tradeoffs
+    max_score: 4
+    anchors: {required: ["mountain-road status=seasonal_closed"], evidence: ["2026-12-01"], forbidden: ["use mountain-road"]}
+  - id: pacing
+    max_score: 4
+    anchors: {required: ["closure 2026-11-15 to 2027-04-15"], evidence: ["route via valley-road"], forbidden: ["ignore closure window"]}
+  - id: backup_usefulness
+    max_score: 4
+    anchors: {required: ["keep the closed road out"], evidence: ["feasible routing"], forbidden: ["closed road feasible"]}
+  - id: readability
+    max_score: 4
+    anchors: {required: ["mountain-road"], evidence: ["valley-road"], forbidden: ["unidentified"]}
+  - id: calibrated_uncertainty
+    max_score: 4
+    anchors: {required: ["frozen road-authority status"], evidence: ["recheck before departure"], forbidden: ["live road status"]}

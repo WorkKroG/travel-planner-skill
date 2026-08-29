@@ -1,2 +1,14 @@
 mode: offline-frozen
-sources: [{id: place-a, type: official-fixture, facts: [Museum Aurora, City A]}, {id: place-b, type: official-fixture, facts: [Museum Aurora, City B]}]
+sources:
+  - id: place-a
+    type: official
+    data:
+      name: Museum Aurora
+      city: Helsinki
+      coordinates: {latitude: 60.1699, longitude: 24.9384}
+  - id: place-b
+    type: official
+    data:
+      name: Museum Aurora
+      city: Turku
+      coordinates: {latitude: 60.4518, longitude: 22.2666}

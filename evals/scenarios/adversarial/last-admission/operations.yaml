@@ -1,18 +1,8 @@
 prompt_version: adversarial-v1
-prompt: Deliberately omit the known last-admission conflict to prove this negative
-  fixture remains a raw hard failure.
-response: The mutation incorrectly omits the last-admission conflict.
-operations:
-  checks:
-    OPS-002:
-      status: ignored
-  effects:
-    forbidden:
-      invent_later_admission: false
-      silently_move_frozen_activity: false
-  evidence:
-    sources:
-      museum-official:
-      - last admission precedes proposed arrival
-    traps:
-      last-admission: identify conflict without inventing later admission
+prompt: Compute the official cutoff conflict and expose the planted omission without inventing or moving anything.
+oracle:
+  version: 1
+  kind: chronology.last-admission
+  parameters:
+    source_id: museum-official
+    trap_id: last-admission

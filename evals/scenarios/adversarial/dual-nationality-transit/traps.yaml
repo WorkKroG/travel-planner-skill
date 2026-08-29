@@ -1,1 +1,4 @@
-injected: [{id: passport-generalization, input: one traveller has a different nationality, required_behavior: create separate official checks}]
+injected:
+  - id: passport-generalization
+    kind: group-generalization
+    data: {copy_from_traveler_id: traveler-a, apply_to_all: true}

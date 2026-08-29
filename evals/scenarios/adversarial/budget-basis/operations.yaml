@@ -1,18 +1,9 @@
 prompt_version: adversarial-v1
 prompt: Detect that group and per-person costs cannot be summed before normalization.
-response: Budget basis mismatch is identified before totals are presented.
-operations:
-  checks:
-    BUD-002:
-      status: identified
-  effects:
-    forbidden:
-      sum_incompatible_basis: false
-  evidence:
-    sources:
-      hotel-quote:
-      - group price
-      pass-price:
-      - per person
-    traps:
-      mixed-basis-total: normalize basis
+oracle:
+  version: 1
+  kind: budget.mixed-basis
+  parameters:
+    quote_source_ids: [hotel-quote, pass-price]
+    party_size: 2
+    trap_id: mixed-basis-total

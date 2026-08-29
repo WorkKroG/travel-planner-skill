@@ -1,2 +1,10 @@
 mode: offline-frozen
-sources: [{id: museum-official, type: official-fixture, facts: [last admission precedes proposed arrival]}]
+sources:
+  - id: museum-official
+    type: official
+    data:
+      venue_id: activity-museum
+      timezone: Europe/Paris
+      last_admission: "16:30"
+      closes_at: "18:00"
+      visit_duration_minutes: 90

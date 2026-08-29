@@ -1,2 +1,20 @@
 version: 1
-dimensions: [{id: skeleton_distinctness, max_score: 4}, {id: tradeoffs, max_score: 4}, {id: pacing, max_score: 4}, {id: backup_usefulness, max_score: 4}, {id: readability, max_score: 4}, {id: calibrated_uncertainty, max_score: 4}]
+dimensions:
+  - id: skeleton_distinctness
+    max_score: 4
+    anchors: {required: ["scenario unreleased-schedule"], evidence: ["schedule not published"], forbidden: ["schedule published"]}
+  - id: tradeoffs
+    max_score: 4
+    anchors: {required: ["target 2027-04-02"], evidence: ["published=False"], forbidden: ["exact departure confirmed"]}
+  - id: pacing
+    max_score: 4
+    anchors: {required: ["timed provider recheck"], evidence: ["instead of a departure"], forbidden: ["invent departure"]}
+  - id: backup_usefulness
+    max_score: 4
+    anchors: {required: ["recheck at 2027-02-01T09:00:00+01:00"], evidence: ["publication window"], forbidden: ["never recheck"]}
+  - id: readability
+    max_score: 4
+    anchors: {required: ["2027-04-02"], evidence: ["2027-02-01T09:00:00+01:00"], forbidden: ["unidentified"]}
+  - id: calibrated_uncertainty
+    max_score: 4
+    anchors: {required: ["unpublished schedule"], evidence: ["no exact departure is invented"], forbidden: ["invented timetable"]}

@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import copy
 import json
 import math
 from collections.abc import Mapping
@@ -13,10 +12,10 @@ from typing import Any
 import yaml
 from jsonschema import Draft202012Validator
 from travel_planner.challenge.catalog import registered_rules
-from travel_planner.impact import analyze_change, semantic_hash
+from travel_planner.impact import semantic_hash
 from travel_planner.resources import resource_path
-from travel_planner.route import FrozenRouteError, RouteChange, transition_route
-from travel_planner.state import TripState
+
+from .fixture_oracle import validate_contract
 
 SCENARIOS_ROOT = Path(__file__).resolve().parent / "scenarios"
 REQUIRED_FILES = frozenset({"brief.yaml", "sources.yaml", "operations.yaml", "traps.yaml", "expected-hard.yaml", "rubric.yaml", "README.md"})
@@ -34,7 +33,7 @@ class ScenarioCase:
     path: Path
     brief: Mapping[str, Any]
     sources: Mapping[str, Any]
-    operations: Mapping[str, Any]
+    oracle: Mapping[str, Any]
     traps: Mapping[str, Any]
     expected_hard: Mapping[str, Any]
     rubric_path: Path
@@ -88,6 +87,8 @@ def _validate_brief(brief: Mapping[str, Any], case_id: str) -> None:
 
 def _validate_rubric(path: Path) -> Mapping[str, Any]:
     rubric = _mapping(path, "rubric")
+    if set(rubric) != {"version", "dimensions"}:
+        raise ValueError(f"Scenario rubric requires exactly version and dimensions: {path}")
     if rubric.get("version") != 1:
         raise ValueError(f"Scenario rubric must use version 1: {path}")
     dimensions = rubric.get("dimensions")
@@ -95,8 +96,34 @@ def _validate_rubric(path: Path) -> Mapping[str, Any]:
         raise ValueError(f"Scenario rubric must declare six dimensions: {path}")
     if tuple(item.get("id") for item in dimensions if isinstance(item, Mapping)) != RUBRIC_DIMENSIONS:
         raise ValueError(f"Scenario rubric has invalid dimensions: {path}")
-    if any(not isinstance(item.get("max_score"), (int, float)) or isinstance(item.get("max_score"), bool) or not math.isfinite(item["max_score"]) or item["max_score"] != 4 for item in dimensions if isinstance(item, Mapping)):
-        raise ValueError(f"Scenario rubric has invalid thresholds: {path}")
+    for item in dimensions:
+        if not isinstance(item, Mapping):
+            raise TypeError(f"Scenario rubric has invalid dimensions: {path}")
+        if set(item) != {"id", "max_score", "anchors"}:
+            raise ValueError(f"Scenario rubric dimension has unexpected fields: {path}")
+        maximum = item.get("max_score")
+        if (
+            not isinstance(maximum, (int, float))
+            or isinstance(maximum, bool)
+            or not math.isfinite(maximum)
+            or maximum != 4
+        ):
+            raise ValueError(f"Scenario rubric has invalid thresholds: {path}")
+        anchors = item.get("anchors")
+        if not isinstance(anchors, Mapping) or set(anchors) != {
+            "required",
+            "evidence",
+            "forbidden",
+        }:
+            raise ValueError(f"Scenario rubric dimension requires exact anchors: {path}")
+        for label in ("required", "evidence", "forbidden"):
+            values = anchors[label]
+            if (
+                not isinstance(values, list)
+                or not values
+                or not all(isinstance(value, str) and value.strip() for value in values)
+            ):
+                raise ValueError(f"Scenario rubric {label} anchors must be non-empty: {path}")
     return rubric
 
 
@@ -107,14 +134,30 @@ def _validate_sources_traps(sources: Mapping[str, Any], traps: Mapping[str, Any]
     if not isinstance(trap_items, list) or not trap_items:
         raise ValueError(f"Scenario {case_id} traps must contain injected cases")
     for source in source_items:
-        if not isinstance(source, Mapping) or not isinstance(source.get("id"), str) or not isinstance(source.get("type"), str) or not isinstance(source.get("facts"), list) or not source["facts"]:
-            raise ValueError(f"Scenario {case_id} source requires id, type, and concrete facts")
+        if (
+            not isinstance(source, Mapping)
+            or not isinstance(source.get("id"), str)
+            or not source["id"]
+            or not isinstance(source.get("type"), str)
+            or not source["type"]
+            or not isinstance(source.get("data"), Mapping)
+            or not source["data"]
+        ):
+            raise ValueError(f"Scenario {case_id} source requires id, type, and structured data")
     for trap in trap_items:
-        if not isinstance(trap, Mapping) or not all(isinstance(trap.get(key), str) and trap[key] for key in ("id", "input", "required_behavior")):
-            raise ValueError(f"Scenario {case_id} trap requires id, input, and required_behavior")
+        if (
+            not isinstance(trap, Mapping)
+            or not isinstance(trap.get("id"), str)
+            or not trap["id"]
+            or not isinstance(trap.get("kind"), str)
+            or not trap["kind"]
+            or not isinstance(trap.get("data"), Mapping)
+            or not trap["data"]
+        ):
+            raise ValueError(f"Scenario {case_id} trap requires id, kind, and structured data")
 
 
-def _hard_checks(expected: Mapping[str, Any], operations: Mapping[str, Any]) -> list[dict[str, Any]]:
+def _hard_checks(expected: Mapping[str, Any]) -> list[dict[str, Any]]:
     findings = expected.get("required_findings")
     if not isinstance(findings, list) or not findings:
         raise ValueError("expected-hard.yaml requires a non-empty required_findings list")
@@ -126,14 +169,10 @@ def _hard_checks(expected: Mapping[str, Any], operations: Mapping[str, Any]) -> 
         if not isinstance(rule, str) or not isinstance(path, str) or not path or severity not in {"blocking", "warning"} or not isinstance(affected, list) or not affected or "equals" not in finding:
             raise ValueError("required findings need rule_id, path, severity, affected_ids, and equals")
         checks.append({"rule_id": rule, "path": path, "equals": finding["equals"], "evidence": dict(finding)})
-    effects = operations.get("effects")
     forbidden = expected.get("forbidden_behaviors")
-    if not isinstance(effects, Mapping) or not isinstance(forbidden, list) or not forbidden:
-        raise ValueError("scenario requires observable effects and forbidden behavior declarations")
+    if not isinstance(forbidden, list) or not forbidden:
+        raise ValueError("scenario requires forbidden behavior declarations")
     for behavior in forbidden:
-        if isinstance(behavior, str):
-            checks.append({"rule_id": f"EVAL-FORBID-{behavior}", "path": "effects.forbidden_behaviors", "equals": [], "evidence": {"behavior": behavior}})
-            continue
         if not isinstance(behavior, Mapping) or not isinstance(behavior.get("behavior"), str) or not isinstance(behavior.get("path"), str) or not behavior["path"].startswith("effects."):
             raise ValueError("forbidden behavior requires behavior and effects path")
         checks.append({"rule_id": f"EVAL-FORBID-{behavior['behavior']}", "path": behavior["path"], "equals": behavior.get("equals", False), "evidence": {"behavior": behavior["behavior"]}})
@@ -146,16 +185,6 @@ def _validate_rule_ids(expected: Mapping[str, Any]) -> None:
         rule_id = finding["rule_id"]
         if rule_id not in production and not rule_id.startswith("EVAL-"):
             raise ValueError(f"Unknown scenario rule ID: {rule_id}")
-
-
-def _validate_evidence(operations: Mapping[str, Any], sources: Mapping[str, Any], traps: Mapping[str, Any], case_id: str) -> None:
-    evidence = operations.get("evidence")
-    if not isinstance(evidence, Mapping) or not isinstance(evidence.get("sources"), Mapping) or not isinstance(evidence.get("traps"), Mapping):
-        raise TypeError(f"Scenario {case_id} requires operation evidence for sources and traps")
-    source_evidence = {item["id"]: item["facts"] for item in sources["sources"]}
-    trap_evidence = {item["id"]: item["required_behavior"] for item in traps["injected"]}
-    if dict(evidence["sources"]) != source_evidence or dict(evidence["traps"]) != trap_evidence:
-        raise ValueError(f"Scenario {case_id} operation evidence contradicts frozen inputs or traps")
 
 
 def load_scenario_case(case_id: str, root: Path = SCENARIOS_ROOT) -> ScenarioCase:
@@ -171,19 +200,33 @@ def load_scenario_case(case_id: str, root: Path = SCENARIOS_ROOT) -> ScenarioCas
     brief, sources, traps = _mapping(path / "brief.yaml", "brief"), _mapping(path / "sources.yaml", "sources"), _mapping(path / "traps.yaml", "traps")
     _validate_brief(brief, case_id)
     _validate_sources_traps(sources, traps, case_id)
-    _validate_rubric(path / "rubric.yaml")
+    rubric = _validate_rubric(path / "rubric.yaml")
     expected, data = _mapping(path / "expected-hard.yaml", "expected hard expectations"), _mapping(path / "operations.yaml", "operations")
+    if set(data) != {"prompt", "prompt_version", "oracle"}:
+        raise ValueError("operations.yaml requires exactly prompt, prompt_version, and oracle")
     if expected.get("scenario_id") != case_id or not isinstance(expected.get("expected_macro_pass"), bool):
         raise ValueError(f"Scenario {case_id} has invalid expected-hard metadata")
-    operations, prompt, version, response = (data.get(key) for key in ("operations", "prompt", "prompt_version", "response"))
-    if not isinstance(operations, Mapping) or not all(isinstance(value, str) and value for value in (prompt, version, response)):
-        raise ValueError("operations.yaml requires operations, prompt, prompt_version, and response")
-    operations = copy.deepcopy(dict(operations))
-    if not isinstance(operations.get("effects"), Mapping):
-        raise TypeError("operations.yaml requires explicit observable effects")
-    _validate_evidence(operations, sources, traps, case_id)
+    prompt, version, oracle = (data.get(key) for key in ("prompt", "prompt_version", "oracle"))
+    if not all(isinstance(value, str) and value for value in (prompt, version)):
+        raise ValueError("operations.yaml requires prompt and prompt_version")
+    if not isinstance(oracle, Mapping):
+        raise TypeError("operations.yaml requires an oracle mapping")
+    if "response" in data or "operations" in data:
+        raise ValueError("operations.yaml must not contain authored response or outcome operations")
+    if set(oracle) != {"version", "kind", "parameters"}:
+        raise ValueError("oracle requires exactly version, kind, and parameters")
     _validate_rule_ids(expected)
-    fixture_input = {"brief": copy.deepcopy(dict(brief)), "sources": copy.deepcopy(dict(sources)), "traps": copy.deepcopy(dict(traps))}
+    fixture_input = {
+        "brief": json.loads(json.dumps(brief)),
+        "sources": json.loads(json.dumps(sources)),
+        "traps": json.loads(json.dumps(traps)),
+    }
+    oracle_contract = {
+        "version": oracle["version"],
+        "kind": oracle["kind"],
+        "parameters": json.loads(json.dumps(oracle["parameters"])),
+    }
+    validate_contract(case_id, fixture_input, oracle_contract)
     input_hash = semantic_hash(fixture_input)
     scenario = {
         "id": case_id,
@@ -191,21 +234,29 @@ def load_scenario_case(case_id: str, root: Path = SCENARIOS_ROOT) -> ScenarioCas
         "prompt": f"{prompt}\n\nSCENARIO_INPUT:\n{json.dumps(fixture_input, ensure_ascii=False, sort_keys=True)}",
         "fixture_input": fixture_input,
         "fixture_input_hash": input_hash,
-        "hard_checks": _hard_checks(expected, operations),
+        "hard_checks": _hard_checks(expected),
         "fixture_oracle": {
+            "version": oracle_contract["version"],
+            "kind": oracle_contract["kind"],
             "fixture_input": fixture_input,
-            "config": {
-                "rules": [item["rule_id"] for item in expected["required_findings"]],
-                "forbidden": [item["behavior"] for item in expected["forbidden_behaviors"]],
-            },
+            "parameters": oracle_contract["parameters"],
         },
+        "fixture_rubric": json.loads(json.dumps(rubric)),
         "expected_macro_pass": expected["expected_macro_pass"],
         "expected_failed_findings": expected.get("expected_failed_findings", []),
         "rubric_path": path / "rubric.yaml",
     }
-    case = ScenarioCase(case_id, path, brief, sources, copy.deepcopy(dict(operations)), traps, expected, path / "rubric.yaml", scenario)
-    scenario["case_mutation"] = execute_case(case)
-    return case
+    return ScenarioCase(
+        case_id,
+        path,
+        brief,
+        sources,
+        oracle_contract,
+        traps,
+        expected,
+        path / "rubric.yaml",
+        scenario,
+    )
 
 
 def validate_scenario_catalog(root: Path = SCENARIOS_ROOT) -> ScenarioCatalog:
@@ -218,28 +269,3 @@ def validate_scenario_catalog(root: Path = SCENARIOS_ROOT) -> ScenarioCatalog:
 def load_scenario_world(root: Path = SCENARIOS_ROOT) -> Mapping[str, Any]:
     catalog = validate_scenario_catalog(root)
     return {"version": 2, "scenarios": {case_id: load_scenario_case(case_id, root).scenario for case_id in sorted(catalog.case_ids)}}
-
-
-def _mutation_state(case: ScenarioCase) -> TripState:
-    route_state = "frozen" if case.case_id == "frozen-mutation" else "selected"
-    return TripState(Path("."), {"schema_version": 1, "trip_id": "fixture-mutation", "updated_at": "2026-08-28T12:00:00+00:00", "title": "Fixture", "travel_dates": {"start": "2026-11-04", "end": "2026-11-05"}, "travelers": [{"id": "traveler-a"}], "map_provider": "auto"}, {"schema_version": 1, "trip_id": "fixture-mutation", "sources": [], "items": []}, {"schema_version": 1, "trip_id": "fixture-mutation", "route_state": route_state, "alternatives": [], "selected_route_id": "route-a", "days": [{"id": "day-4", "activity": "garden-walk"}, {"id": "day-5", "activity": "market"}], "budget_items": [], "challenge_findings": []}, {"schema_version": 1, "trip_id": "fixture-mutation", "items": []})
-
-
-def execute_case(case: ScenarioCase) -> Mapping[str, Any]:
-    mutation = case.operations.get("mutation")
-    if not isinstance(mutation, Mapping):
-        return {}
-    before = _mutation_state(case)
-    if mutation.get("kind") == "weather_swap":
-        after = copy.deepcopy(before)
-        after.itinerary["days"][0]["activity"] = str(mutation["replacement_activity"])
-        report = analyze_change(before, after)
-        return {"day-4-before": semantic_hash(before.itinerary["days"][0]), "day-4-after": semantic_hash(after.itinerary["days"][0]), "day-5-before": semantic_hash(before.itinerary["days"][1]), "day-5-after": semantic_hash(after.itinerary["days"][1]), "impact_targets": [f"{item.kind}:{item.entity_id}" for item in report.targets]}
-    if mutation.get("kind") == "frozen_hotel":
-        route_before = semantic_hash(before.itinerary)
-        try:
-            transition_route(before, "frozen", RouteChange("hotel", (str(mutation["affected_id"]),)))
-        except FrozenRouteError:
-            return {"rejected": True, "route-before": route_before, "route-after": semantic_hash(before.itinerary)}
-        return {"rejected": False, "route-before": route_before, "route-after": semantic_hash(before.itinerary)}
-    raise ValueError(f"Unknown fixture mutation kind: {mutation.get('kind')!r}")

@@ -1,2 +1,20 @@
 version: 1
-dimensions: [{id: skeleton_distinctness, max_score: 4}, {id: tradeoffs, max_score: 4}, {id: pacing, max_score: 4}, {id: backup_usefulness, max_score: 4}, {id: readability, max_score: 4}, {id: calibrated_uncertainty, max_score: 4}]
+dimensions:
+  - id: skeleton_distinctness
+    max_score: 4
+    anchors: {required: ["scenario weekend-simplicity"], evidence: ["unnecessary weekend skeletons"], forbidden: ["three skeletons required"]}
+  - id: tradeoffs
+    max_score: 4
+    anchors: {required: ["duration 2 days"], evidence: ["complexity low"], forbidden: ["high complexity"]}
+  - id: pacing
+    max_score: 4
+    anchors: {required: ["use 1 compact flow"], evidence: ["walk 25 minutes"], forbidden: ["use 3 flows"]}
+  - id: backup_usefulness
+    max_score: 4
+    anchors: {required: ["one practical local backup"], evidence: ["Backup:"], forbidden: ["many speculative backups"]}
+  - id: readability
+    max_score: 4
+    anchors: {required: ["requested skeletons 3"], evidence: ["1 compact flow"], forbidden: ["unidentified"]}
+  - id: calibrated_uncertainty
+    max_score: 4
+    anchors: {required: ["planning depth stays proportional"], evidence: ["trip complexity"], forbidden: ["unbounded planning depth"]}

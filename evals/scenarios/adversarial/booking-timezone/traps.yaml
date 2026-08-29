@@ -1,1 +1,6 @@
-injected: [{id: traveller-timezone, input: client clock differs from provider, required_behavior: preserve local release time}]
+injected:
+  - id: traveller-timezone
+    kind: clock-override
+    data:
+      proposed_at: "2026-12-01T00:00:00"
+      proposed_timezone: Europe/Moscow

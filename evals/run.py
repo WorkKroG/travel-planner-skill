@@ -288,11 +288,7 @@ def run_scenario(
         "errors": errors,
     }
     trace_path = _write_trace(results_dir, scenario_id, started_at, trace)
-    raw_hashes = scenario.get("scenario_semantic_hashes", {})
-    semantic_hashes = dict(raw_hashes) if isinstance(raw_hashes, Mapping) else {}
-    raw_mutation = scenario.get("case_mutation", {})
-    case_mutation = dict(raw_mutation) if isinstance(raw_mutation, Mapping) else {}
-    return EvalResult(scenario_id, hard, soft, trace_path, semantic_hashes, case_mutation)
+    return EvalResult(scenario_id, hard, soft, trace_path)
 
 
 def _parser() -> argparse.ArgumentParser:

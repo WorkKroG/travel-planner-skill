@@ -1,2 +1,20 @@
 version: 1
-dimensions: [{id: skeleton_distinctness, max_score: 4}, {id: tradeoffs, max_score: 4}, {id: pacing, max_score: 4}, {id: backup_usefulness, max_score: 4}, {id: readability, max_score: 4}, {id: calibrated_uncertainty, max_score: 4}]
+dimensions:
+  - id: skeleton_distinctness
+    max_score: 4
+    anchors: {required: ["scenario dual-nationality-transit"], evidence: ["traveller-specific transit outcomes"], forbidden: ["shared transit outcome"]}
+  - id: tradeoffs
+    max_score: 4
+    anchors: {required: ["separate official checks"], evidence: ["transit through GBR"], forbidden: ["generalized to the group"]}
+  - id: pacing
+    max_score: 4
+    anchors: {required: ["traveler-a (CAN)"], evidence: ["traveler-b (IND)"], forbidden: ["use one passport outcome for everyone"]}
+  - id: backup_usefulness
+    max_score: 4
+    anchors: {required: ["do not copy"], evidence: ["passport outcome to the group"], forbidden: ["copied the transit rule"]}
+  - id: readability
+    max_score: 4
+    anchors: {required: ["requires visa=False"], evidence: ["requires visa=True"], forbidden: ["unidentified"]}
+  - id: calibrated_uncertainty
+    max_score: 4
+    anchors: {required: ["minimal fixture attributes"], evidence: ["no passport numbers are stored"], forbidden: ["passport numbers stored"]}

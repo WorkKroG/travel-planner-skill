@@ -1,17 +1,9 @@
 prompt_version: adversarial-v1
-prompt: Retain a single compact weekend flow instead of adding unnecessary alternatives
-  and ceremony.
-response: The short trip remains simple with one justified backup only.
-operations:
-  checks:
-    EVAL-UX-001:
-      status: identified
-  effects:
-    forbidden:
-      unnecessary_skeletons: false
-  evidence:
-    sources:
-      city-fixture:
-      - sites are walkable
-    traps:
-      process-theatre: explain proportionality
+prompt: Compare the two-day walkable trip complexity with the requested alternative count.
+oracle:
+  version: 1
+  kind: simplicity.weekend
+  parameters:
+    source_id: city-fixture
+    trap_id: process-theatre
+    complexity: low

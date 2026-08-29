@@ -1,17 +1,8 @@
 prompt_version: adversarial-v1
 prompt: Evaluate the overnight connection in local time through the DST transition.
-response: The overnight time-zone and date boundary is identified before confirming
-  the connection.
-operations:
-  checks:
-    CAL-004:
-      status: identified
-  effects:
-    forbidden:
-      ignore_dst: false
-  evidence:
-    sources:
-      rail-clock-fixture:
-      - DST clock change crosses date
-    traps:
-      naive-clock-addition: use timezone-aware chronology
+oracle:
+  version: 1
+  kind: chronology.dst-overnight
+  parameters:
+    source_id: rail-clock-fixture
+    trap_id: naive-clock-addition

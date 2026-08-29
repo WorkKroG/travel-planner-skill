@@ -1,1 +1,4 @@
-injected: [{id: storage-gap, input: storage closes before departure, required_behavior: identify a feasible handoff}]
+injected:
+  - id: storage-gap
+    kind: assume-unverified-storage
+    data: {assume_station_storage: true}

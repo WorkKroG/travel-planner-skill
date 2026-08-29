@@ -1,7 +1,7 @@
 injected:
   - id: weather-risk
-    input: rain makes one mountain day conditional
-    required_behavior: use local backup and mark uncertainty
+    kind: local-weather-change
+    data: {requested_day_ids: [day-7], suggested_scope: target-day}
   - id: timetable-invention
-    input: a source has no released regional schedule
-    required_behavior: create a recheck instead of inventing a departure
+    kind: exact-unpublished-departure-request
+    data: {exact_departure_requested: true}

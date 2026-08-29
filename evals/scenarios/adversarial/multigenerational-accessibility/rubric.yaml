@@ -1,2 +1,20 @@
 version: 1
-dimensions: [{id: skeleton_distinctness, max_score: 4}, {id: tradeoffs, max_score: 4}, {id: pacing, max_score: 4}, {id: backup_usefulness, max_score: 4}, {id: readability, max_score: 4}, {id: calibrated_uncertainty, max_score: 4}]
+dimensions:
+  - id: skeleton_distinctness
+    max_score: 4
+    anchors: {required: ["scenario multigenerational-accessibility"], evidence: ["step-free provider-chain gap"], forbidden: ["route is accessible"]}
+  - id: tradeoffs
+    max_score: 4
+    anchors: {required: ["station-transfer status=unknown"], evidence: ["chain_complete=False"], forbidden: ["aggregator overrides official"]}
+  - id: pacing
+    max_score: 4
+    anchors: {required: ["assign provider confirmation"], evidence: ["affected traveller"], forbidden: ["finalize unknown transfer"]}
+  - id: backup_usefulness
+    max_score: 4
+    anchors: {required: ["confirmed step-free transfer"], evidence: ["before finalization"], forbidden: ["no accessible backup"]}
+  - id: readability
+    max_score: 4
+    anchors: {required: ["traveller traveler-elder-b"], evidence: ["station-transfer"], forbidden: ["unidentified"]}
+  - id: calibrated_uncertainty
+    max_score: 4
+    anchors: {required: ["official unknowns"], evidence: ["aggregator claims do not override"], forbidden: ["accessibility verified"]}

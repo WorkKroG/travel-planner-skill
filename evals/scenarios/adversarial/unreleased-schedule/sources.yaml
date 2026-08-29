@@ -1,2 +1,9 @@
 mode: offline-frozen
-sources: [{id: rail-provider, type: official-fixture, facts: [schedule release date only]}]
+sources:
+  - id: rail-provider
+    type: official
+    data:
+      target_date: "2027-04-02"
+      published: false
+      publication_at: "2027-02-01T09:00:00+01:00"
+      departures: []

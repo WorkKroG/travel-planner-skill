@@ -1,2 +1,20 @@
 version: 1
-dimensions: [{id: skeleton_distinctness, max_score: 4}, {id: tradeoffs, max_score: 4}, {id: pacing, max_score: 4}, {id: backup_usefulness, max_score: 4}, {id: readability, max_score: 4}, {id: calibrated_uncertainty, max_score: 4}]
+dimensions:
+  - id: skeleton_distinctness
+    max_score: 4
+    anchors: {required: ["scenario last-admission"], evidence: ["planted last-admission omission"], forbidden: ["admission is feasible"]}
+  - id: tradeoffs
+    max_score: 4
+    anchors: {required: ["report the admission conflict"], evidence: ["arrival is after cutoff"], forbidden: ["hide cutoff conflict"]}
+  - id: pacing
+    max_score: 4
+    anchors: {required: ["remove the infeasible museum visit"], evidence: ["cutoff 2026-11-05T16:30:00+01:00"], forbidden: ["keep infeasible visit"]}
+  - id: backup_usefulness
+    max_score: 4
+    anchors: {required: ["confirmed earlier slot"], evidence: ["after user approval"], forbidden: ["invent later admission"]}
+  - id: readability
+    max_score: 4
+    anchors: {required: ["arrival 2026-11-05T17:10:00+01:00"], evidence: ["activity-museum"], forbidden: ["unidentified"]}
+  - id: calibrated_uncertainty
+    max_score: 4
+    anchors: {required: ["official frozen cutoff"], evidence: ["no later admission is invented"], forbidden: ["later admission confirmed"]}

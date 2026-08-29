@@ -1,18 +1,9 @@
 prompt_version: adversarial-v1
-prompt: Identify the seasonal road closure and retain a transparent alternative rather
-  than driving through it.
-response: The winter closure is identified and the original road is not represented
-  as feasible.
-operations:
-  checks:
-    OPS-001:
-      status: identified
-  effects:
-    forbidden:
-      route_through_closed_road: false
-  evidence:
-    sources:
-      road-authority:
-      - mountain road closed in winter
-    traps:
-      summer-route: block unavailable road
+prompt: Evaluate the selected road against the authority closure interval and travel date.
+oracle:
+  version: 1
+  kind: route.road-closure
+  parameters:
+    source_id: road-authority
+    trap_id: summer-route
+    travel_at: "2026-12-01"

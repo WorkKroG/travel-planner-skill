@@ -1,2 +1,13 @@
 mode: offline-frozen
-sources: [{id: museum-fixture, type: official-fixture, facts: [last admission captured]}]
+sources:
+  - id: museum-fixture
+    type: official
+    data:
+      venue_id: museum
+      timezone: Europe/Paris
+      last_admission: "16:00"
+      closes_at: "18:00"
+      visit_duration_minutes: 60
+  - id: city-cluster
+    type: provider
+    data: {city_count: 1, max_walking_minutes: 20, transit_changes: 0}

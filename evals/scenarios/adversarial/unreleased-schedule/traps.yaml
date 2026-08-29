@@ -1,1 +1,4 @@
-injected: [{id: fake-timetable, input: user requests exact departure now, required_behavior: mark not_released_yet}]
+injected:
+  - id: fake-timetable
+    kind: exact-unpublished-departure-request
+    data: {exact_departure_requested: true}

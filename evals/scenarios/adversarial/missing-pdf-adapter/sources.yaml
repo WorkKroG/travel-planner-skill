@@ -1,2 +1,7 @@
 mode: offline-frozen
-sources: [{id: render-environment, type: fixture, facts: [pdf adapter missing, html available]}]
+sources:
+  - id: render-environment
+    type: environment
+    data:
+      pdf_adapter_available: false
+      html_renderer_available: true

@@ -1,1 +1,4 @@
-injected: [{id: mixed-basis-total, input: add hotel group quote to per person pass, required_behavior: normalize basis}]
+injected:
+  - id: mixed-basis-total
+    kind: direct-sum-request
+    data: {requested_method: add_raw_amounts, requested_currency: EUR}

@@ -1,2 +1,20 @@
 version: 1
-dimensions: [{id: skeleton_distinctness, max_score: 4}, {id: tradeoffs, max_score: 4}, {id: pacing, max_score: 4}, {id: backup_usefulness, max_score: 4}, {id: readability, max_score: 4}, {id: calibrated_uncertainty, max_score: 4}]
+dimensions:
+  - id: skeleton_distinctness
+    max_score: 4
+    anchors: {required: ["scenario no-network"], evidence: ["offline degraded mode"], forbidden: ["online mode"]}
+  - id: tradeoffs
+    max_score: 4
+    anchors: {required: ["network_available=False"], evidence: ["cached facts"], forbidden: ["live provider status"]}
+  - id: pacing
+    max_score: 4
+    anchors: {required: ["make no live request"], evidence: ["verification unavailable"], forbidden: ["network request completed"]}
+  - id: backup_usefulness
+    max_score: 4
+    anchors: {required: ["frozen local inputs"], evidence: ["saved route geometry"], forbidden: ["stop without fallback"]}
+  - id: readability
+    max_score: 4
+    anchors: {required: ["saved opening hours"], evidence: ["provider-status-page"], forbidden: ["unidentified"]}
+  - id: calibrated_uncertainty
+    max_score: 4
+    anchors: {required: ["no invented live fact"], evidence: ["offline"], forbidden: ["invented live facts"]}

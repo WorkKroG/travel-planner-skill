@@ -1,2 +1,9 @@
 mode: offline-frozen
-sources: [{id: decision-log, type: fixture, facts: [selected route has participant-owned must-see]}]
+sources:
+  - id: decision-log
+    type: fixture
+    data:
+      route_state: selected
+      required_places:
+        - {id: must-see-a, owner_id: traveler-a}
+      optional_places: [optional-cafe]

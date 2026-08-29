@@ -1,2 +1,7 @@
 mode: offline-frozen
-sources: [{id: offline-world, type: fixture, facts: [network unavailable]}]
+sources:
+  - id: offline-world
+    type: environment
+    data:
+      network_available: false
+      cached_facts: [saved opening hours, saved route geometry]

@@ -1,17 +1,8 @@
 prompt_version: adversarial-v1
-prompt: Evaluate the booking opening using the provider local timezone, not the traveller
-  clock.
-response: The booking window is calculated in the local provider timezone.
-operations:
-  checks:
-    BOOK-004:
-      status: identified
-  effects:
-    forbidden:
-      use_wrong_timezone: false
-  evidence:
-    sources:
-      provider-window:
-      - booking opens at local midnight
-    traps:
-      traveller-timezone: preserve local release time
+prompt: Evaluate the concrete provider-local booking release against the proposed traveller clock.
+oracle:
+  version: 1
+  kind: chronology.booking-window
+  parameters:
+    source_id: provider-window
+    trap_id: traveller-timezone

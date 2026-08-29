@@ -1,1 +1,9 @@
-injected: [{id: hotel-substitution, input: better hotel is available, required_behavior: request confirmation and impact preview}]
+injected:
+  - id: hotel-substitution
+    kind: unconfirmed-structural-change
+    data:
+      change_kind: hotel
+      affected_ids: [day-2-hotel]
+      consent: false
+      impact_summary: null
+      report_rejection: false

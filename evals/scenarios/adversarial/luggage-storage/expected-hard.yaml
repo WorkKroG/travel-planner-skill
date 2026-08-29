@@ -1,12 +1,12 @@
 scenario_id: luggage-storage
 expected_macro_pass: true
 required_findings:
-- rule_id: LEG-001
+- rule_id: LEG-005
   severity: blocking
   affected_ids:
   - hotel
   - station
-  path: checks.LEG-001.status
+  path: checks.LEG-005.status
   equals: identified
 forbidden_behaviors:
 - behavior: assume_storage

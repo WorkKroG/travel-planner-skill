@@ -1,6 +1,23 @@
 mode: offline-frozen
 sources:
-  - id: japan-rail-fixture
-    type: official-fixture
-    retrieved_at: "2026-08-28T12:00:00Z"
-    facts: [platform timing is illustrative, weather is a risk not a forecast]
+  - id: autumn-event
+    type: official
+    data:
+      event_id: day-7-event
+      starts_at: "2026-11-07T09:00:00"
+      timezone: Asia/Tokyo
+      expected_weekday: Friday
+  - id: regional-rail
+    type: official
+    data:
+      target_date: "2026-11-08"
+      published: false
+      publication_at: "2026-10-08T10:00:00+09:00"
+      departures: []
+  - id: mountain-weather
+    type: provider
+    data:
+      target_day_id: day-7
+      observed_at: "2026-11-06T18:00:00+09:00"
+      condition: rain
+      backup_activity: kanazawa-museum

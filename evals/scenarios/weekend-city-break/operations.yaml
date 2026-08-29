@@ -1,33 +1,14 @@
 prompt_version: scenario-v1
-prompt: Keep this simple city weekend compact, legible and free of artificial route
-  alternatives.
-response: The compact plan is retained, including one practical fallback without unnecessary
-  process.
-operations:
-  checks:
-    EVAL-UX-001:
-      status: identified
-    OPS-002:
-      status: identified
-  route:
-    state: selected
-    alternatives: 0
-  effects:
-    forbidden:
-      invent_route_variants: false
-      claim_unchecked_hours: false
-  evidence:
-    sources:
-      museum-fixture:
-      - last admission captured
-    traps:
-      artificial-complexity: explain why alternatives do not add value
-preservation:
-- before:
-    day-2:
-      id: day-2
-      pace: slow
-  after:
-    day-2:
-      id: day-2
-      pace: slow
+prompt: Challenge the two-day city plan for proportional complexity and the concrete museum cutoff.
+oracle:
+  version: 1
+  kind: e2e.composite
+  parameters:
+    components:
+      - kind: weekend-simplicity
+        source_id: city-cluster
+        trap_id: artificial-complexity
+        complexity: low
+      - kind: last-admission
+        source_id: museum-fixture
+        arrival_at: "2026-09-12T16:30:00"

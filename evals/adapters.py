@@ -45,6 +45,35 @@ _SENSITIVE_FLAGS = frozenset({"--token", "--api-key", "--password", "--secret"})
 _HEADER_FLAGS = frozenset({"--header", "-H"})
 _AUTHORIZATION_FLAG = "--authorization"
 _SPLIT_AUTHORIZATION_SCHEMES = frozenset({"basic", "bearer"})
+_NEGATION_PREFIXES = (
+    "not ",
+    "no ",
+    "never ",
+    "without ",
+    "did not ",
+    "do not ",
+    "does not ",
+    "is not ",
+    "are not ",
+    "was not ",
+    "were not ",
+)
+
+
+def _anchor_is_asserted(normalized_response: str, anchor: str) -> bool:
+    """Match a whole phrase only when the response asserts rather than negates it."""
+    normalized_anchor = " ".join(anchor.casefold().split())
+    if not normalized_anchor:
+        return False
+    anchor_is_explicitly_negative = normalized_anchor.startswith(_NEGATION_PREFIXES)
+    pattern = re.compile(
+        rf"(?<!\w){re.escape(normalized_anchor)}(?!\w)",
+    )
+    for match in pattern.finditer(normalized_response):
+        prefix = normalized_response[max(0, match.start() - 32) : match.start()]
+        if anchor_is_explicitly_negative or not prefix.endswith(_NEGATION_PREFIXES):
+            return True
+    return False
 
 
 def _safe_command(command: Sequence[str]) -> list[str]:
@@ -208,7 +237,12 @@ class FixtureAdapter:
         if isinstance(oracle, Mapping):
             from .fixture_oracle import evaluate
 
-            return evaluate(scenario_id, oracle["fixture_input"], oracle["config"])
+            contract = {
+                "version": oracle.get("version"),
+                "kind": oracle.get("kind"),
+                "parameters": oracle.get("parameters"),
+            }
+            return evaluate(scenario_id, oracle["fixture_input"], contract)
         response = scenario.get("fixture_response")
         if not isinstance(response, Mapping):
             raise AdapterError(f"Fixture scenario {scenario_id} has no fixture_response mapping.")
@@ -265,7 +299,7 @@ class CodexCliAdapter:
 
 
 class FixtureJudge:
-    """Deterministic offline judge whose scores live separately from fixture agent operations."""
+    """Deterministically apply per-scenario semantic anchors to the actual response."""
 
     name = "fixture-judge"
 
@@ -288,11 +322,75 @@ class FixtureJudge:
             if not isinstance(scores, Mapping):
                 return JudgeRun({}, {"mode": "offline", "scenario_id": scenario_id}, errors=("fixture judge scores missing",))
             return JudgeRun(copy.deepcopy(dict(scores)), {"mode": "offline", "fixture_world_version": self._world.get("version", 1), "scenario_id": scenario_id})
-        response_matches = "identified" in response.lower()
-        scores = {dimension: 4 if response_matches else 0 for dimension in RUBRIC_DIMENSIONS}
+        rubric = scenario.get("fixture_rubric")
+        dimensions = rubric.get("dimensions") if isinstance(rubric, Mapping) else None
+        if not isinstance(dimensions, list):
+            return JudgeRun(
+                {},
+                {"mode": "offline", "scenario_id": scenario_id},
+                errors=("fixture rubric anchors missing",),
+            )
+        normalized = " ".join(response.casefold().split())
+        scores: dict[str, int] = {}
+        evidence: dict[str, Any] = {}
+        for dimension in dimensions:
+            if not isinstance(dimension, Mapping):
+                return JudgeRun(
+                    {},
+                    {"mode": "offline", "scenario_id": scenario_id},
+                    errors=("fixture rubric dimension is invalid",),
+                )
+            dimension_id = dimension.get("id")
+            anchors = dimension.get("anchors")
+            if not isinstance(dimension_id, str) or not isinstance(anchors, Mapping):
+                return JudgeRun(
+                    {},
+                    {"mode": "offline", "scenario_id": scenario_id},
+                    errors=("fixture rubric anchors are invalid",),
+                )
+            required = anchors.get("required")
+            evidence_tokens = anchors.get("evidence")
+            forbidden = anchors.get("forbidden")
+            if not all(
+                isinstance(values, list)
+                and values
+                and all(isinstance(value, str) and value for value in values)
+                for values in (required, evidence_tokens, forbidden)
+            ):
+                return JudgeRun(
+                    {},
+                    {"mode": "offline", "scenario_id": scenario_id},
+                    errors=("fixture rubric anchor lists are invalid",),
+                )
+            required_hits = [
+                value for value in required if _anchor_is_asserted(normalized, value)
+            ]
+            evidence_hits = [
+                value
+                for value in evidence_tokens
+                if _anchor_is_asserted(normalized, value)
+            ]
+            forbidden_hits = [
+                value for value in forbidden if _anchor_is_asserted(normalized, value)
+            ]
+            score = round(2 * len(required_hits) / len(required))
+            score += round(2 * len(evidence_hits) / len(evidence_tokens))
+            if forbidden_hits:
+                score = min(score, 1)
+            scores[dimension_id] = score
+            evidence[dimension_id] = {
+                "required_hits": required_hits,
+                "evidence_hits": evidence_hits,
+                "forbidden_hits": forbidden_hits,
+            }
         return JudgeRun(
             scores,
-            {"mode": "offline", "fixture_world_version": self._world.get("version", 1), "scenario_id": scenario_id, "response_matches_anchor": response_matches},
+            {
+                "mode": "offline",
+                "fixture_world_version": self._world.get("version", 1),
+                "scenario_id": scenario_id,
+                "dimension_evidence": evidence,
+            },
         )
 
 

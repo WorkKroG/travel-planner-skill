@@ -1,2 +1,20 @@
 version: 1
-dimensions: [{id: skeleton_distinctness, max_score: 4}, {id: tradeoffs, max_score: 4}, {id: pacing, max_score: 4}, {id: backup_usefulness, max_score: 4}, {id: readability, max_score: 4}, {id: calibrated_uncertainty, max_score: 4}]
+dimensions:
+  - id: skeleton_distinctness
+    max_score: 4
+    anchors: {required: ["scenario group-reversal"], evidence: ["participant-owned required-place reversal"], forbidden: ["non-required route edit"]}
+  - id: tradeoffs
+    max_score: 4
+    anchors: {required: ["group decision"], evidence: ["assess route impact"], forbidden: ["silently rewrote the route"]}
+  - id: pacing
+    max_score: 4
+    anchors: {required: ["requested removal"], evidence: ["must-see-a"], forbidden: ["removed immediately"]}
+  - id: backup_usefulness
+    max_score: 4
+    anchors: {required: ["keep the selected required place"], evidence: ["until the decision is confirmed"], forbidden: ["drop the required place"]}
+  - id: readability
+    max_score: 4
+    anchors: {required: ["owner=traveler-a"], evidence: ["traveler-a requested"], forbidden: ["owner unknown"]}
+  - id: calibrated_uncertainty
+    max_score: 4
+    anchors: {required: ["anonymized ownership"], evidence: ["selected-route state only"], forbidden: ["personal identity stored"]}

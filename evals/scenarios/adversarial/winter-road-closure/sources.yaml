@@ -1,2 +1,10 @@
 mode: offline-frozen
-sources: [{id: road-authority, type: official-fixture, facts: [mountain road closed in winter]}]
+sources:
+  - id: road-authority
+    type: official
+    data:
+      road_id: mountain-road
+      status: seasonal_closed
+      closure_start: "2026-11-15"
+      closure_end: "2027-04-15"
+      alternative_road_id: valley-road
