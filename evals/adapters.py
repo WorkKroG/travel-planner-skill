@@ -41,8 +41,9 @@ RUBRIC_DIMENSIONS = (
     "readability",
     "calibrated_uncertainty",
 )
-_SENSITIVE_FLAGS = frozenset({"--token", "--api-key", "--password", "--secret", "--authorization"})
+_SENSITIVE_FLAGS = frozenset({"--token", "--api-key", "--password", "--secret"})
 _HEADER_FLAGS = frozenset({"--header", "-H"})
+_AUTHORIZATION_FLAG = "--authorization"
 
 
 def _safe_command(command: Sequence[str]) -> list[str]:
@@ -50,14 +51,24 @@ def _safe_command(command: Sequence[str]) -> list[str]:
     redact_next = False
     header_value_next = False
     authorization_value_next = False
+    authorization_scheme_next = False
     for item in command:
         if redact_next:
             safe.append("<redacted>")
             redact_next = False
+        elif authorization_scheme_next:
+            authorization_scheme_next = False
+            if item.strip().lower() == "bearer":
+                safe.append("Bearer")
+                redact_next = True
+            else:
+                safe.append("<redacted>")
         else:
             safe.append(redact_text(item))
             if item in _SENSITIVE_FLAGS:
                 redact_next = True
+            elif item == _AUTHORIZATION_FLAG:
+                authorization_scheme_next = True
             elif item in _HEADER_FLAGS:
                 header_value_next = True
             elif header_value_next:
@@ -143,6 +154,28 @@ def _judge_from_stdout(stdout: str, metadata: Mapping[str, Any]) -> JudgeRun:
         )
     except (TypeError, ValueError, json.JSONDecodeError) as error:
         return JudgeRun({}, dict(metadata), errors=(f"judge envelope error: {redact_text(str(error))}",))
+
+
+def normalize_judge_run(judge_run: JudgeRun) -> JudgeRun:
+    """Make every judge adapter obey the same finite six-dimension score boundary."""
+    errors = list(judge_run.errors)
+    scores = judge_run.scores
+    if not errors:
+        if not isinstance(scores, Mapping) or set(scores) != set(RUBRIC_DIMENSIONS):
+            errors.append("judge result error: scores must contain exactly the six rubric dimensions")
+        elif any(
+            isinstance(value, bool)
+            or not isinstance(value, (int, float))
+            or not math.isfinite(value)
+            for value in scores.values()
+        ):
+            errors.append("judge result error: scores must be finite numbers")
+    return JudgeRun(
+        scores=copy.deepcopy(dict(scores)) if not errors else {},
+        metadata=copy.deepcopy(dict(judge_run.metadata)),
+        degraded=tuple(judge_run.degraded),
+        errors=tuple(errors),
+    )
 
 
 def _scenario_id_from_prompt(prompt: str) -> str:

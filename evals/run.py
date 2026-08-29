@@ -18,7 +18,14 @@ import yaml
 if __package__ in {None, ""}:  # Support `python evals/run.py` from a checkout.
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from evals.adapters import AgentAdapter, CodexCliAdapter, FixtureAdapter, FixtureJudge, JudgeAdapter
+from evals.adapters import (
+    AgentAdapter,
+    CodexCliAdapter,
+    FixtureAdapter,
+    FixtureJudge,
+    JudgeAdapter,
+    normalize_judge_run,
+)
 from evals.graders import grade_hard_invariants, grade_soft_rubric
 from evals.redaction import redact_value
 from evals.types import AgentRun, EvalResult, HardCheck, JudgeRun, RubricReport
@@ -230,6 +237,7 @@ def run_scenario(
             judge_run = judge.judge(prompt, agent_run.response, workspace or Path.cwd())
         except Exception as error:  # noqa: BLE001 - third-party judge adapters may raise arbitrary exceptions.
             judge_run = JudgeRun({}, {"judge": judge.name}, errors=(f"judge error: {type(error).__name__}: {error}",))
+        judge_run = normalize_judge_run(judge_run)
         judge_trace = {
             "name": judge.name,
             "metadata": dict(judge_run.metadata),

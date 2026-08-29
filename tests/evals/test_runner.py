@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib
 import json
+import math
 import sys
 from datetime import UTC, datetime
 from pathlib import Path
@@ -385,6 +386,9 @@ def test_redaction_masks_bare_bearer_and_split_command_credentials(tmp_path: Pat
         "Authorization:",
         "Bearer",
         "split-header-secret",
+        "--authorization",
+        "Bearer",
+        "split-authorization-secret",
         "--verbose",
     )
 
@@ -400,6 +404,9 @@ def test_redaction_masks_bare_bearer_and_split_command_credentials(tmp_path: Pat
         "<redacted>",
         "--header",
         "Authorization:",
+        "Bearer",
+        "<redacted>",
+        "--authorization",
         "Bearer",
         "<redacted>",
         "--verbose",
@@ -421,7 +428,15 @@ def test_redaction_masks_bare_bearer_and_split_command_credentials(tmp_path: Pat
         results_dir=tmp_path,
     )
     trace = result.trace_path.read_text(encoding="utf-8")
-    for secret in ("prompt-bearer-secret", "error-bearer-secret", "split-token", "split-key", "split-password", "split-header-secret"):
+    for secret in (
+        "prompt-bearer-secret",
+        "error-bearer-secret",
+        "split-token",
+        "split-key",
+        "split-password",
+        "split-header-secret",
+        "split-authorization-secret",
+    ):
         assert secret not in trace
     assert "--verbose" in trace
 
@@ -485,3 +500,41 @@ def test_file_results_dir_is_a_concise_cli_setup_error(tmp_path: Path, capsys: p
     assert exit_code == 2
     assert captured.err.startswith("eval error: Cannot create results directory:")
     assert "Traceback" not in captured.err
+
+
+@pytest.mark.parametrize(
+    "scores",
+    [
+        {"readability": math.nan},
+        {"readability": math.inf},
+        {"readability": -math.inf},
+        {"readability": 1},
+    ],
+)
+def test_custom_judge_invalid_scores_become_soft_only_traceable_errors(
+    tmp_path: Path, scores: dict[str, float]
+) -> None:
+    """Every judge adapter must be normalized before invalid scores can reach a trace."""
+    world = load_fixture_world(FIXTURE_WORLD)
+
+    class InvalidJudge:
+        name = "invalid-custom-judge"
+
+        def judge(self, prompt: str, response: str, workspace: Path) -> JudgeRun:
+            del prompt, response, workspace
+            return JudgeRun(scores, {"judge": "custom"})
+
+    result = run_scenario(
+        world["scenarios"]["harness-smoke"],
+        FixtureAdapter(world),
+        results_dir=tmp_path,
+        judge=InvalidJudge(),
+    )
+
+    trace_text = result.trace_path.read_text(encoding="utf-8")
+    trace = json.loads(trace_text, parse_constant=lambda value: (_ for _ in ()).throw(ValueError(value)))
+    assert result.hard.macro_pass is True
+    assert result.soft is None
+    assert trace["judge"]["scores"] == {}
+    assert trace["judge"]["errors"][0].startswith("judge result error:")
+    assert "independent judge did not produce a valid score envelope" in trace["degraded"]
