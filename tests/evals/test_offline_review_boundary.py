@@ -191,3 +191,68 @@ def test_reference_evaluator_emits_only_a_neutral_offline_diagnostic(
         label not in trace["response"]
         for label in ("Finding:", "Evidence:", "Action:", "Backup:", "Uncertainty:")
     )
+
+
+def test_invalid_online_rubric_is_rejected_before_the_judge_runs(
+    tmp_path: Path,
+) -> None:
+    """The public runner must enforce the same online rubric contract as scenarios."""
+    invalid_rubric = tmp_path / "invalid-rubric.yaml"
+    invalid_rubric.write_text(
+        "version: 1\ndimensions:\n  - id: readability\n    max_score: 4\n",
+        encoding="utf-8",
+    )
+    agent_envelope = json.dumps(
+        {
+            "schema_version": 1,
+            "response": "route response",
+            "operations": {"checks": {"OPS-011": {"status": "identified"}}},
+            "degraded": [],
+            "errors": [],
+        }
+    )
+    calls: list[str] = []
+
+    class ProbeJudge:
+        name = "probe-judge"
+
+        def judge(
+            self,
+            prompt: str,
+            response: str,
+            workspace: Path,
+            rubric: object,
+        ):
+            del prompt, response, workspace, rubric
+            calls.append("called")
+            raise AssertionError("invalid rubric reached judge")
+
+    scenario = {
+        "id": "invalid-online-rubric",
+        "prompt_version": "v1",
+        "prompt": "Review the route.",
+        "hard_checks": [
+            {
+                "rule_id": "OPS-011",
+                "path": "checks.OPS-011.status",
+                "equals": "identified",
+            }
+        ],
+    }
+    result = run_scenario(
+        scenario,
+        CodexCliAdapter(
+            (sys.executable, "-c", f"print({agent_envelope!r})"),
+            model="agent-test",
+        ),
+        results_dir=tmp_path / "results",
+        rubric_path=invalid_rubric,
+        judge=ProbeJudge(),
+    )
+
+    trace = json.loads(result.trace_path.read_text(encoding="utf-8"))
+    assert calls == []
+    assert result.soft is None
+    assert trace["judge"]["name"] == "probe-judge"
+    assert "rubric_error" in trace["judge"]
+    assert trace["degraded"][-1].startswith("rubric unavailable:")

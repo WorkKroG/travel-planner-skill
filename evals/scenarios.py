@@ -15,10 +15,10 @@ from travel_planner.impact import semantic_hash
 from travel_planner.resources import resource_path
 
 from .reference_evaluator import validate_contract
+from .rubric import validate_online_rubric
 
 SCENARIOS_ROOT = Path(__file__).resolve().parent / "scenarios"
 REQUIRED_FILES = frozenset({"brief.yaml", "sources.yaml", "operations.yaml", "traps.yaml", "expected-hard.yaml", "rubric.yaml", "README.md"})
-RUBRIC_DIMENSIONS = ("skeleton_distinctness", "tradeoffs", "pacing", "backup_usefulness", "readability", "calibrated_uncertainty")
 
 
 @dataclass(frozen=True)
@@ -85,30 +85,9 @@ def _validate_brief(brief: Mapping[str, Any], case_id: str) -> None:
 
 
 def _validate_rubric(path: Path) -> Mapping[str, Any]:
-    rubric = _mapping(path, "rubric")
-    if set(rubric) != {"version", "review_mode", "dimensions"}:
-        raise ValueError(f"Scenario rubric requires version, review_mode, and dimensions: {path}")
-    if rubric.get("version") != 1:
-        raise ValueError(f"Scenario rubric must use version 1: {path}")
-    if rubric.get("review_mode") != "online-required":
-        raise ValueError(f"Scenario rubric review_mode must be online-required: {path}")
-    dimensions = rubric.get("dimensions")
-    if not isinstance(dimensions, list) or len(dimensions) != len(RUBRIC_DIMENSIONS):
-        raise ValueError(f"Scenario rubric must declare six dimensions: {path}")
-    if tuple(item.get("id") for item in dimensions if isinstance(item, Mapping)) != RUBRIC_DIMENSIONS:
-        raise ValueError(f"Scenario rubric has invalid dimensions: {path}")
-    for item in dimensions:
-        if not isinstance(item, Mapping):
-            raise TypeError(f"Scenario rubric has invalid dimensions: {path}")
-        if set(item) != {"id", "max_score", "criterion"}:
-            raise ValueError(f"Scenario rubric dimension has unexpected fields: {path}")
-        maximum = item.get("max_score")
-        if isinstance(maximum, bool) or maximum != 4:
-            raise ValueError(f"Scenario rubric has invalid thresholds: {path}")
-        criterion = item.get("criterion")
-        if not isinstance(criterion, str) or not criterion.strip():
-            raise ValueError(f"Scenario rubric criterion must be non-empty: {path}")
-    return rubric
+    return validate_online_rubric(
+        _mapping(path, "rubric"), label=f"Scenario rubric {path}"
+    )
 
 
 def _validate_sources_traps(sources: Mapping[str, Any], traps: Mapping[str, Any], case_id: str) -> None:

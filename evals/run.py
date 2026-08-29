@@ -28,6 +28,7 @@ from evals.adapters import (
 )
 from evals.graders import grade_hard_invariants, grade_soft_rubric
 from evals.redaction import redact_value
+from evals.rubric import validate_online_rubric
 from evals.types import AgentRun, EvalResult, HardCheck, JudgeRun, RubricReport
 
 TRACE_SCHEMA_VERSION = 1
@@ -257,7 +258,10 @@ def run_scenario(
     elif not offline_hard_only:
         assert judge is not None
         try:
-            rubric = _load_yaml_mapping(rubric_path, "rubric")
+            rubric = validate_online_rubric(
+                _load_yaml_mapping(rubric_path, "rubric"),
+                label=f"Rubric {rubric_path}",
+            )
         except (TypeError, ValueError) as error:
             degraded.append(f"rubric unavailable: {error}")
             judge_trace = {"name": judge.name, "rubric_error": str(error)}
