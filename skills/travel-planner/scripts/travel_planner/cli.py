@@ -178,10 +178,16 @@ def _publish_draft_after_failure(state, challenge, generated_at: datetime, outpu
     """Prefer a current Draft after a failed Final publication; never leave an unreceipted Final."""
     try:
         _write_draft_html(state, challenge, generated_at, output)
-    except OSError:
+    except (OSError, ValueError):
         if _has_final_status(output):
-            output.unlink(missing_ok=True)
-        attestation_path(output).unlink(missing_ok=True)
+            try:
+                output.unlink(missing_ok=True)
+            except OSError:
+                pass
+        try:
+            attestation_path(output).unlink(missing_ok=True)
+        except OSError:
+            pass
 
 
 def _finalize_html(path: Path, output: Path, generated_at: datetime, profiles: tuple[str, ...]) -> int:
@@ -193,14 +199,18 @@ def _finalize_html(path: Path, output: Path, generated_at: datetime, profiles: t
     state = load_trip(path)
     challenge = run_challenge(state, "detailed", generated_at)
     candidate = build_view(state, challenge, generated_at, qa_attested=True)
-    if candidate.status != "final":
-        _write_draft_html(state, challenge, generated_at, output)
-        print("Final status requires requested final state, a frozen route, and a passing challenge.", file=sys.stderr)
-        return 5
-
-    output.parent.mkdir(parents=True, exist_ok=True)
-    candidate_path = _staging_path(output, ".html")
+    candidate_path: Path | None = None
     try:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        if candidate.status != "final":
+            _write_draft_html(state, challenge, generated_at, output)
+            print(
+                "Final status requires requested final state, a frozen route, and a passing challenge.",
+                file=sys.stderr,
+            )
+            return 5
+
+        candidate_path = _staging_path(output, ".html")
         write_html(candidate, candidate_path, HTML_DEFAULTS)
         qa_report = run_document_qa(candidate_path, profiles)
         if not qa_report.final_allowed:
@@ -217,7 +227,11 @@ def _finalize_html(path: Path, output: Path, generated_at: datetime, profiles: t
         print(f"Final publication failed: {error}", file=sys.stderr)
         return 5
     finally:
-        candidate_path.unlink(missing_ok=True)
+        if candidate_path is not None:
+            try:
+                candidate_path.unlink(missing_ok=True)
+            except OSError:
+                pass
     print(f"Finalized HTML: {output}")
     return 0
 

@@ -271,3 +271,30 @@ def test_finalize_receipt_write_failure_leaves_no_visible_unattested_final(
         r'class="[^"]*\bdocument-status--final\b', output.read_text(encoding="utf-8")
     )
     assert not Path(f"{output}.qa.json").exists()
+
+
+def test_finalize_handles_a_file_used_as_the_output_parent(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Catch output setup escaping finalization's controlled failure boundary."""
+    blocked_parent = tmp_path / "not-a-directory"
+    blocked_parent.write_text("ordinary file", encoding="utf-8")
+    output = blocked_parent / "japan-final.html"
+    fixture = Path(__file__).parents[1] / "fixtures" / "japan-final-reference"
+
+    exit_code = main(
+        [
+            "finalize",
+            str(fixture),
+            "--output",
+            str(output),
+            "--at",
+            "2026-08-28T12:00:00+00:00",
+        ]
+    )
+
+    assert exit_code == 5
+    assert "Final publication failed:" in capsys.readouterr().err
+    assert not output.exists()
+    assert not Path(f"{output}.qa.json").exists()
+    assert not list(tmp_path.glob(".japan-final.html.*"))
