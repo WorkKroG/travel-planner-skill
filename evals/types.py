@@ -23,6 +23,16 @@ class AgentRun:
 
 
 @dataclass(frozen=True)
+class JudgeRun:
+    """Independent semantic-judge result; it cannot change hard-gate outcomes."""
+
+    scores: Mapping[str, Any]
+    metadata: Mapping[str, Any]
+    degraded: tuple[str, ...] = ()
+    errors: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True)
 class HardCheck:
     """A completed invariant check with stable evidence for human review."""
 

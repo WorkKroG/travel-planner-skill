@@ -8,7 +8,7 @@ from typing import Any
 
 import yaml
 
-from .types import Finding, GradeReport, HardCheck, RubricItem, RubricReport
+from .types import Finding, GradeReport, HardCheck, JudgeRun, RubricItem, RubricReport
 
 
 def grade_hard_invariants(checks: Sequence[HardCheck]) -> GradeReport:
@@ -41,17 +41,13 @@ def _number(value: Any) -> int | float | None:
     return value
 
 
-def grade_soft_rubric(
-    response: Mapping[str, Any], rubric: Mapping[str, Any] | Path
-) -> RubricReport:
+def grade_soft_rubric(judge_result: JudgeRun, rubric: Mapping[str, Any] | Path) -> RubricReport:
     """Score declared qualitative dimensions without touching the hard-gate decision."""
     rubric_data = _rubric_mapping(rubric)
     dimensions = rubric_data.get("dimensions")
     if not isinstance(dimensions, list):
         raise TypeError("Rubric requires a dimensions list.")
-    values = response.get("rubric", {})
-    if not isinstance(values, Mapping):
-        values = {}
+    values = judge_result.scores
 
     items: list[RubricItem] = []
     for dimension in dimensions:

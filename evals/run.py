@@ -4,7 +4,10 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
+import shlex
 import sys
+import uuid
 from collections.abc import Mapping, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
@@ -15,14 +18,17 @@ import yaml
 if __package__ in {None, ""}:  # Support `python evals/run.py` from a checkout.
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from evals.adapters import AgentAdapter, CodexCliAdapter, FixtureAdapter
+from evals.adapters import AgentAdapter, CodexCliAdapter, FixtureAdapter, FixtureJudge, JudgeAdapter
 from evals.graders import grade_hard_invariants, grade_soft_rubric
-from evals.types import AgentRun, EvalResult, HardCheck
+from evals.redaction import redact_value
+from evals.types import AgentRun, EvalResult, HardCheck, JudgeRun, RubricReport
 
 TRACE_SCHEMA_VERSION = 1
 _ROOT = Path(__file__).resolve().parent
 DEFAULT_WORLD = _ROOT / "fixture-world" / "base.yaml"
 DEFAULT_RUBRIC = _ROOT / "rubrics" / "quality.yaml"
+_SAFE_SCENARIO_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$")
+_MISSING = object()
 
 
 def _load_yaml_mapping(path: Path, label: str) -> Mapping[str, Any]:
@@ -45,8 +51,8 @@ def load_fixture_world(path: Path = DEFAULT_WORLD) -> Mapping[str, Any]:
 
 def _scenario_id(scenario: Mapping[str, Any]) -> str:
     value = scenario.get("id")
-    if not isinstance(value, str) or not value:
-        raise ValueError("Scenario requires a non-empty id.")
+    if not isinstance(value, str) or not _SAFE_SCENARIO_ID.fullmatch(value):
+        raise ValueError("Scenario requires an id using the safe filename grammar.")
     return value
 
 
@@ -54,16 +60,17 @@ def _lookup(value: Mapping[str, Any], dotted_path: str) -> Any:
     current: Any = value
     for component in dotted_path.split("."):
         if not isinstance(current, Mapping) or component not in current:
-            return None
+            return _MISSING
         current = current[component]
     return current
 
 
-def _hard_checks(scenario: Mapping[str, Any], operations: Mapping[str, Any]) -> list[HardCheck]:
+def _hard_checks(scenario: Mapping[str, Any], operations: Mapping[str, Any]) -> tuple[list[HardCheck], list[str]]:
     definitions = scenario.get("hard_checks")
     if not isinstance(definitions, list) or not definitions:
         raise ValueError(f"Scenario {_scenario_id(scenario)} requires a non-empty hard_checks list.")
     checks: list[HardCheck] = []
+    missing_rules: list[str] = []
     for definition in definitions:
         if not isinstance(definition, Mapping):
             raise TypeError("Scenario hard_checks entries must be mappings.")
@@ -73,22 +80,25 @@ def _hard_checks(scenario: Mapping[str, Any], operations: Mapping[str, Any]) -> 
         if not isinstance(rule_id, str) or not rule_id or not isinstance(dotted_path, str) or not dotted_path:
             raise ValueError("Hard checks require non-empty rule_id and path.")
         actual = _lookup(operations, dotted_path)
+        missing = actual is _MISSING
+        if missing:
+            missing_rules.append(rule_id)
         evidence = {
             "fixture_evidence": definition.get("evidence", ""),
             "path": dotted_path,
             "expected": expected,
-            "actual": actual,
+            "actual": "<missing>" if missing else actual,
         }
         checks.append(
             HardCheck(
                 rule_id=rule_id,
-                status="passed" if actual == expected else "failed",
+                status="passed" if not missing and actual == expected else "failed",
                 evidence=evidence,
                 message=f"Expected {dotted_path} to equal {expected!r}.",
                 rule_version=int(definition.get("rule_version", 1)),
             )
         )
-    return checks
+    return checks, missing_rules
 
 
 def _prompt(scenario: Mapping[str, Any]) -> tuple[str, str]:
@@ -108,6 +118,58 @@ def _failed_adapter_run(adapter: AgentAdapter, error: Exception) -> AgentRun:
     )
 
 
+def _error_findings(errors: Sequence[str], missing_rules: Sequence[str]) -> list[HardCheck]:
+    findings: list[HardCheck] = []
+    if errors:
+        findings.append(
+            HardCheck(
+                "EVAL-ADAPTER",
+                "failed",
+                {"errors": list(errors)},
+                "Adapter reported errors; hard evidence is incomplete.",
+            )
+        )
+    for rule_id in missing_rules:
+        findings.append(
+            HardCheck(
+                f"EVAL-{rule_id}",
+                "invalid",
+                {"required_rule_id": rule_id},
+                "Required operation path is missing.",
+            )
+        )
+    return findings
+
+
+def _trace_root(results_dir: Path) -> Path:
+    root = Path(results_dir).resolve()
+    root.mkdir(parents=True, exist_ok=True)
+    return root
+
+
+def _write_trace(
+    results_dir: Path, scenario_id: str, started_at: datetime, trace: Mapping[str, Any]
+) -> Path:
+    """Create an audit trace exactly once; collision retries preserve concurrent evidence."""
+    root = _trace_root(results_dir)
+    timestamp = started_at.strftime("%Y%m%dT%H%M%S%fZ")
+    for _ in range(16):
+        run_id = uuid.uuid4().hex
+        destination = root / f"{scenario_id}-{timestamp}-{run_id}.json"
+        if not destination.resolve().is_relative_to(root):
+            raise ValueError("Resolved trace path escapes results_dir.")
+        serialized = json.dumps(
+            redact_value(dict(trace) | {"run_id": run_id}), ensure_ascii=False, indent=2, sort_keys=True
+        ) + "\n"
+        try:
+            with destination.open("x", encoding="utf-8") as stream:
+                stream.write(serialized)
+        except FileExistsError:
+            continue
+        return destination
+    raise RuntimeError("Could not allocate a unique trace path after 16 attempts.")
+
+
 def run_scenario(
     scenario: Mapping[str, Any],
     adapter: AgentAdapter,
@@ -115,6 +177,7 @@ def run_scenario(
     results_dir: Path = _ROOT / "results",
     rubric_path: Path = DEFAULT_RUBRIC,
     workspace: Path | None = None,
+    judge: JudgeAdapter | None = None,
 ) -> EvalResult:
     """Run one scenario, grade it, and retain every input/output needed to inspect it."""
     scenario_id = _scenario_id(scenario)
@@ -125,8 +188,9 @@ def run_scenario(
     except Exception as error:  # noqa: BLE001 - third-party adapters may raise arbitrary exceptions.
         agent_run = _failed_adapter_run(adapter, error)
     errors = list(agent_run.errors)
+    degraded = list(agent_run.degraded)
     try:
-        checks = _hard_checks(scenario, agent_run.operations)
+        checks, missing_rules = _hard_checks(scenario, agent_run.operations)
     except (TypeError, ValueError) as error:
         checks = [
             HardCheck(
@@ -136,26 +200,36 @@ def run_scenario(
                 "Scenario hard-check configuration is invalid.",
             )
         ]
+        missing_rules = []
         errors.append(f"scenario error: {error}")
-    try:
-        rubric = _load_yaml_mapping(rubric_path, "rubric")
-        soft = grade_soft_rubric(agent_run.operations, rubric)
-    except (TypeError, ValueError) as error:
-        checks.append(
-            HardCheck(
-                "EVAL-002",
-                "failed",
-                {"rubric_path": str(rubric_path)},
-                "Soft-rubric configuration could not be loaded or graded.",
-            )
-        )
-        soft = None
-        errors.append(f"rubric error: {error}")
+    checks.extend(_error_findings(errors, missing_rules))
+    soft: RubricReport | None = None
+    judge_trace: Mapping[str, Any] | None = None
+    if judge is None:
+        degraded.append("no independent judge configured")
+    else:
+        try:
+            judge_run = judge.judge(prompt, agent_run.response, workspace or Path.cwd())
+        except Exception as error:  # noqa: BLE001 - third-party judge adapters may raise arbitrary exceptions.
+            judge_run = JudgeRun({}, {"judge": judge.name}, errors=(f"judge error: {type(error).__name__}: {error}",))
+        judge_trace = {
+            "name": judge.name,
+            "metadata": dict(judge_run.metadata),
+            "scores": dict(judge_run.scores),
+            "degraded": list(judge_run.degraded),
+            "errors": list(judge_run.errors),
+        }
+        degraded.extend(judge_run.degraded)
+        if judge_run.errors:
+            degraded.append("independent judge did not produce a valid score envelope")
+        else:
+            try:
+                rubric = _load_yaml_mapping(rubric_path, "rubric")
+                soft = grade_soft_rubric(judge_run, rubric)
+            except (TypeError, ValueError) as error:
+                degraded.append(f"rubric unavailable: {error}")
+                judge_trace = dict(judge_trace) | {"rubric_error": str(error)}
     hard = grade_hard_invariants(checks)
-    results_path = Path(results_dir)
-    results_path.mkdir(parents=True, exist_ok=True)
-    timestamp = started_at.strftime("%Y%m%dT%H%M%S%fZ")
-    trace_path = results_path / f"{scenario_id}-{timestamp}.json"
     trace = {
         "schema_version": TRACE_SCHEMA_VERSION,
         "scenario_id": scenario_id,
@@ -167,10 +241,11 @@ def run_scenario(
         "response": agent_run.response,
         "operations": dict(agent_run.operations),
         "grading": {"hard": hard.as_dict(), "soft": soft.as_dict() if soft else None},
-        "degraded": list(agent_run.degraded),
+        "judge": judge_trace,
+        "degraded": degraded,
         "errors": errors,
     }
-    trace_path.write_text(json.dumps(trace, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    trace_path = _write_trace(results_dir, scenario_id, started_at, trace)
     return EvalResult(scenario_id, hard, soft, trace_path)
 
 
@@ -183,8 +258,10 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--results-dir", type=Path, default=_ROOT / "results")
     parser.add_argument("--fixture-world", type=Path, default=DEFAULT_WORLD)
     parser.add_argument("--rubric", type=Path, default=DEFAULT_RUBRIC)
-    parser.add_argument("--codex-command", nargs="+")
+    parser.add_argument("--codex-command", help="Quoted explicit command for the agent adapter.")
     parser.add_argument("--model")
+    parser.add_argument("--judge-command", help="Quoted explicit command for the semantic judge.")
+    parser.add_argument("--judge-model")
     return parser
 
 
@@ -203,10 +280,16 @@ def main(argv: Sequence[str] | None = None) -> int:
             selected = [scenario]
         if args.adapter == "fixture":
             adapter: AgentAdapter = FixtureAdapter(world)
+            judge: JudgeAdapter | None = FixtureJudge(world)
         else:
-            adapter = CodexCliAdapter(args.codex_command or (), model=args.model)
+            adapter = CodexCliAdapter(shlex.split(args.codex_command or ""), model=args.model)
+            if not args.judge_command or not args.judge_model:
+                raise ValueError("codex-cli requires --judge-command and --judge-model for semantic scoring.")
+            from evals.adapters import CodexCliJudge
+
+            judge = CodexCliJudge(shlex.split(args.judge_command), model=args.judge_model)
         results = [
-            run_scenario(scenario, adapter, results_dir=args.results_dir, rubric_path=args.rubric)
+            run_scenario(scenario, adapter, results_dir=args.results_dir, rubric_path=args.rubric, judge=judge)
             for scenario in selected
         ]
     except (TypeError, ValueError) as error:

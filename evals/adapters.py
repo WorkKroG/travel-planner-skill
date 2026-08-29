@@ -2,13 +2,16 @@
 
 from __future__ import annotations
 
+import copy
+import json
 import re
 import subprocess
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any, Protocol
 
-from .types import AgentRun
+from .redaction import redact_text
+from .types import AgentRun, JudgeRun
 
 
 class AgentAdapter(Protocol):
@@ -17,24 +20,92 @@ class AgentAdapter(Protocol):
     def run(self, prompt: str, workspace: Path) -> AgentRun: ...
 
 
+class JudgeAdapter(Protocol):
+    name: str
+
+    def judge(self, prompt: str, response: str, workspace: Path) -> JudgeRun: ...
+
+
 class AdapterError(RuntimeError):
     """Raised when an adapter cannot execute the requested scenario."""
 
 
 _SCENARIO_ID = re.compile(r"^SCENARIO_ID:\s*([A-Za-z0-9][A-Za-z0-9_-]*)\s*$", re.MULTILINE)
-_SENSITIVE = re.compile(r"(api[_-]?key|token|secret|password)", re.IGNORECASE)
+RESULT_ENVELOPE_VERSION = 1
+RUBRIC_DIMENSIONS = (
+    "skeleton_distinctness",
+    "tradeoffs",
+    "pacing",
+    "backup_usefulness",
+    "readability",
+    "calibrated_uncertainty",
+)
 
 
 def _safe_command(command: Sequence[str]) -> list[str]:
-    safe: list[str] = []
-    redact_next = False
-    for item in command:
-        if redact_next or _SENSITIVE.search(item):
-            safe.append("<redacted>")
-            redact_next = item.startswith("-")
-        else:
-            safe.append(item)
-    return safe
+    return [redact_text(item) for item in command]
+
+
+def _string_list(value: Any, field: str) -> tuple[str, ...]:
+    if not isinstance(value, list) or not all(isinstance(item, str) for item in value):
+        raise ValueError(f"{field} must be a list of strings")
+    return tuple(value)
+
+
+def _agent_from_stdout(stdout: str, metadata: Mapping[str, Any]) -> AgentRun:
+    try:
+        envelope = json.loads(stdout)
+        if not isinstance(envelope, Mapping):
+            raise TypeError("result envelope must be a JSON object")
+        if envelope.get("schema_version") != RESULT_ENVELOPE_VERSION:
+            raise ValueError(f"unsupported result schema_version: {envelope.get('schema_version')!r}")
+        response = envelope.get("response")
+        operations = envelope.get("operations")
+        if not isinstance(response, str) or not isinstance(operations, Mapping):
+            raise TypeError("result envelope requires string response and object operations")
+        return AgentRun(
+            response=response,
+            operations=copy.deepcopy(dict(operations)),
+            metadata=dict(metadata) | {"result_schema_version": RESULT_ENVELOPE_VERSION},
+            degraded=_string_list(envelope.get("degraded"), "degraded"),
+            errors=_string_list(envelope.get("errors"), "errors"),
+        )
+    except (TypeError, ValueError, json.JSONDecodeError) as error:
+        return AgentRun(
+            response=stdout,
+            operations={},
+            metadata=dict(metadata),
+            errors=(f"result envelope error: {redact_text(str(error))}",),
+        )
+
+
+def _judge_from_stdout(stdout: str, metadata: Mapping[str, Any]) -> JudgeRun:
+    try:
+        envelope = json.loads(stdout)
+        if not isinstance(envelope, Mapping):
+            raise TypeError("judge envelope must be a JSON object")
+        if envelope.get("schema_version") != RESULT_ENVELOPE_VERSION:
+            raise ValueError(f"unsupported judge schema_version: {envelope.get('schema_version')!r}")
+        scores = envelope.get("scores")
+        if not isinstance(scores, Mapping) or set(scores) != set(RUBRIC_DIMENSIONS):
+            raise ValueError("judge scores must contain exactly the six rubric dimensions")
+        if any(isinstance(value, bool) or not isinstance(value, (int, float)) for value in scores.values()):
+            raise ValueError("judge scores must be numeric")
+        return JudgeRun(
+            scores=copy.deepcopy(dict(scores)),
+            metadata=dict(metadata) | {"judge_schema_version": RESULT_ENVELOPE_VERSION},
+            degraded=_string_list(envelope.get("degraded"), "degraded"),
+            errors=_string_list(envelope.get("errors"), "errors"),
+        )
+    except (TypeError, ValueError, json.JSONDecodeError) as error:
+        return JudgeRun({}, dict(metadata), errors=(f"judge envelope error: {redact_text(str(error))}",))
+
+
+def _scenario_id_from_prompt(prompt: str) -> str:
+    match = _SCENARIO_ID.search(prompt)
+    if match is None:
+        raise AdapterError("Fixture prompt is missing SCENARIO_ID.")
+    return match.group(1)
 
 
 class FixtureAdapter:
@@ -51,10 +122,7 @@ class FixtureAdapter:
 
     def run(self, prompt: str, workspace: Path) -> AgentRun:
         del workspace
-        match = _SCENARIO_ID.search(prompt)
-        if match is None:
-            raise AdapterError("Fixture prompt is missing SCENARIO_ID.")
-        scenario_id = match.group(1)
+        scenario_id = _scenario_id_from_prompt(prompt)
         scenario = self._scenarios.get(scenario_id)
         if not isinstance(scenario, Mapping):
             raise AdapterError(f"Fixture scenario not found: {scenario_id}")
@@ -67,7 +135,7 @@ class FixtureAdapter:
             raise AdapterError(f"Fixture scenario {scenario_id} has an invalid fixture_response.")
         return AgentRun(
             response=response_text,
-            operations=dict(operations),
+            operations=copy.deepcopy(dict(operations)),
             metadata={
                 "mode": "offline",
                 "fixture_world_version": self._world.get("version", 1),
@@ -84,6 +152,8 @@ class CodexCliAdapter:
     def __init__(self, command: Sequence[str], model: str | None = None) -> None:
         if not command:
             raise ValueError("CodexCliAdapter requires an explicit command.")
+        if not isinstance(model, str) or not model.strip():
+            raise ValueError("CodexCliAdapter requires a non-empty model.")
         self._command = tuple(command)
         self._model = model
 
@@ -99,18 +169,74 @@ class CodexCliAdapter:
                 check=False,
             )
         except OSError as error:
-            return AgentRun("", {}, metadata, errors=(f"command could not start: {error}",))
+            return AgentRun("", {}, metadata, errors=(f"command could not start: {redact_text(str(error))}",))
         if completed.returncode != 0:
-            detail = completed.stderr.strip() or completed.stdout.strip() or "no command output"
+            detail = redact_text(completed.stderr.strip() or completed.stdout.strip() or "no command output")
             return AgentRun(
                 completed.stdout,
                 {},
                 metadata | {"returncode": completed.returncode},
                 errors=(f"command failed ({completed.returncode}): {detail}",),
             )
-        return AgentRun(
-            completed.stdout,
-            {},
-            metadata | {"returncode": completed.returncode},
-            degraded=("operations were not structured by the command adapter",),
+        return _agent_from_stdout(completed.stdout, metadata | {"returncode": completed.returncode})
+
+
+class FixtureJudge:
+    """Deterministic offline judge whose scores live separately from fixture agent operations."""
+
+    name = "fixture-judge"
+
+    def __init__(self, world: Mapping[str, Any]) -> None:
+        scenarios = world.get("scenarios")
+        if not isinstance(scenarios, Mapping):
+            raise TypeError("Fixture world requires a scenarios mapping.")
+        self._world = world
+        self._scenarios = scenarios
+
+    def judge(self, prompt: str, response: str, workspace: Path) -> JudgeRun:
+        del response, workspace
+        scenario_id = _scenario_id_from_prompt(prompt)
+        scenario = self._scenarios.get(scenario_id)
+        judge = scenario.get("fixture_judge") if isinstance(scenario, Mapping) else None
+        scores = judge.get("scores") if isinstance(judge, Mapping) else None
+        if not isinstance(scores, Mapping):
+            return JudgeRun({}, {"mode": "offline", "scenario_id": scenario_id}, errors=("fixture judge scores missing",))
+        return JudgeRun(
+            copy.deepcopy(dict(scores)),
+            {"mode": "offline", "fixture_world_version": self._world.get("version", 1), "scenario_id": scenario_id},
         )
+
+
+class CodexCliJudge:
+    """Explicit command-based semantic judge with a separate model and score envelope."""
+
+    name = "codex-cli-judge"
+
+    def __init__(self, command: Sequence[str], model: str | None = None) -> None:
+        if not command:
+            raise ValueError("CodexCliJudge requires an explicit command.")
+        if not isinstance(model, str) or not model.strip():
+            raise ValueError("CodexCliJudge requires a non-empty model.")
+        self._command = tuple(command)
+        self._model = model
+
+    def judge(self, prompt: str, response: str, workspace: Path) -> JudgeRun:
+        metadata = {"command": _safe_command(self._command), "model": self._model}
+        payload = json.dumps({"schema_version": 1, "prompt": prompt, "response": response})
+        try:
+            completed = subprocess.run(
+                self._command,
+                cwd=workspace,
+                input=payload,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+        except OSError as error:
+            return JudgeRun({}, metadata, errors=(f"judge command could not start: {redact_text(str(error))}",))
+        if completed.returncode != 0:
+            detail = redact_text(completed.stderr.strip() or completed.stdout.strip() or "no command output")
+            return JudgeRun(
+                {}, metadata | {"returncode": completed.returncode}, errors=(f"judge command failed ({completed.returncode}): {detail}",)
+            )
+        return _judge_from_stdout(completed.stdout, metadata | {"returncode": completed.returncode})
