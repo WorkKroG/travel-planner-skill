@@ -1,0 +1,52 @@
+version: 1
+scenarios:
+  harness-smoke:
+    id: harness-smoke
+    prompt_version: fixture-v1
+    prompt: Identify the deterministic last-admission conflict from this offline fixture world.
+    hard_checks:
+      - rule_id: CAL-001
+        path: checks.CAL-001.status
+        equals: identified
+        evidence: fixture-calendar-conflict
+      - rule_id: OPS-011
+        path: checks.OPS-011.status
+        equals: identified
+        evidence: fixture-last-admission
+    fixture_response:
+      text: The calendar and last-admission conflicts are identified from fixture facts.
+      operations:
+        checks:
+          CAL-001:
+            status: identified
+          OPS-011:
+            status: identified
+        rubric:
+          skeleton_distinctness: 3
+          tradeoffs: 3
+          pacing: 3
+          backup_usefulness: 3
+          readability: 4
+          calibrated_uncertainty: 4
+  last-admission-mutation:
+    id: last-admission-mutation
+    prompt_version: fixture-v1
+    prompt: Deliberately omit the known last-admission conflict to prove the macro gate fails.
+    hard_checks:
+      - rule_id: OPS-011
+        path: checks.OPS-011.status
+        equals: identified
+        evidence: fixture-last-admission-mutation
+    fixture_response:
+      text: The deliberate mutation does not report the last-admission conflict.
+      operations:
+        checks:
+          OPS-011:
+            status: ignored
+        rubric:
+          skeleton_distinctness: 4
+          tradeoffs: 4
+          pacing: 4
+          backup_usefulness: 4
+          readability: 4
+          calibrated_uncertainty: 4
