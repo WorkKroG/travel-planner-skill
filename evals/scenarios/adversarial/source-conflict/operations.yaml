@@ -18,21 +18,3 @@ operations:
       - open
     traps:
       conflicting-hours: mark conflict and prefer primary evidence
-fixture_judge:
-  scores:
-    skeleton_distinctness: 4
-    tradeoffs: 4
-    pacing: 4
-    backup_usefulness: 4
-    readability: 4
-    calibrated_uncertainty: 4
-  evidence:
-    skeleton_distinctness: Response and frozen inputs support skeleton distinctness
-      for source-conflict.
-    tradeoffs: Response and frozen inputs support tradeoffs for source-conflict.
-    pacing: Response and frozen inputs support pacing for source-conflict.
-    backup_usefulness: Response and frozen inputs support backup usefulness for source-conflict.
-    readability: Response and frozen inputs support readability for source-conflict.
-    calibrated_uncertainty: Response and frozen inputs support calibrated uncertainty
-      for source-conflict.
-  response_hash: 0f2f73868aa56288e93f65347b79d3a95695d80ebd6e7247565a6c6ebb14975b

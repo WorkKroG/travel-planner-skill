@@ -58,7 +58,7 @@ def test_required_scenarios_and_exact_adversarial_cases_are_executable() -> None
         case = load_scenario_case(case_id, ROOT)
         assert case.path.is_dir()
         assert {path.name for path in case.path.iterdir()} >= REQUIRED_CASE_FILES
-        assert case.scenario["fixture_response"]["operations"].items() >= case.operations.items()
+        assert case.scenario["fixture_oracle"]["fixture_input"]["brief"] == case.brief
         assert case.scenario["rubric_path"] == case.rubric_path
 
 
@@ -138,12 +138,14 @@ def test_unknown_non_eval_rule_is_rejected(tmp_path: Path) -> None:
         load_scenario_case("japan-autumn", root)
 
 
-def test_fixture_judge_evidence_must_match_the_declared_response(tmp_path: Path) -> None:
-    """Offline replay may be deterministic, but its independent rubric evidence cannot score another response."""
-    root = tmp_path / "scenarios"
-    shutil.copytree(ROOT, root)
-    operations = root / "adversarial" / "booking-timezone" / "operations.yaml"
-    operations.write_text(operations.read_text().replace("booking window", "wrong window", 1), encoding="utf-8")
+def test_fixture_judge_scores_a_contradictory_response_lower_than_oracle_output(tmp_path: Path) -> None:
+    """Fixture scoring inspects the actual response instead of replaying authored perfect scores."""
+    from evals.adapters import FixtureJudge
+    from evals.scenarios import load_scenario_world
 
-    with pytest.raises(ValueError, match="does not match response"):
-        load_scenario_case("booking-timezone", root)
+    world = load_scenario_world(ROOT)
+    judge = FixtureJudge(world)
+    good = judge.judge("SCENARIO_ID: booking-timezone", "identified booking-timezone", tmp_path)
+    bad = judge.judge("SCENARIO_ID: booking-timezone", "contradictory response", tmp_path)
+
+    assert sum(good.scores.values()) > sum(bad.scores.values())

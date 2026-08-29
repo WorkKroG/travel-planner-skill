@@ -15,21 +15,3 @@ operations:
       - transfer accessibility unknown
     traps:
       assumed-elevator: require provider confirmation
-fixture_judge:
-  scores:
-    skeleton_distinctness: 4
-    tradeoffs: 4
-    pacing: 4
-    backup_usefulness: 4
-    readability: 4
-    calibrated_uncertainty: 4
-  evidence:
-    skeleton_distinctness: Response and frozen inputs support skeleton distinctness
-      for multigenerational-accessibility.
-    tradeoffs: Response and frozen inputs support tradeoffs for multigenerational-accessibility.
-    pacing: Response and frozen inputs support pacing for multigenerational-accessibility.
-    backup_usefulness: Response and frozen inputs support backup usefulness for multigenerational-accessibility.
-    readability: Response and frozen inputs support readability for multigenerational-accessibility.
-    calibrated_uncertainty: Response and frozen inputs support calibrated uncertainty
-      for multigenerational-accessibility.
-  response_hash: b66ec517cad90343e077c5b5ea5c5c3e5c145f29a1026ee843ba4706a2ab24cb

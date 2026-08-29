@@ -204,6 +204,11 @@ class FixtureAdapter:
         scenario = self._scenarios.get(scenario_id)
         if not isinstance(scenario, Mapping):
             raise AdapterError(f"Fixture scenario not found: {scenario_id}")
+        oracle = scenario.get("fixture_oracle")
+        if isinstance(oracle, Mapping):
+            from .fixture_oracle import evaluate
+
+            return evaluate(scenario_id, oracle["fixture_input"], oracle["config"])
         response = scenario.get("fixture_response")
         if not isinstance(response, Mapping):
             raise AdapterError(f"Fixture scenario {scenario_id} has no fixture_response mapping.")
@@ -272,16 +277,22 @@ class FixtureJudge:
         self._scenarios = scenarios
 
     def judge(self, prompt: str, response: str, workspace: Path) -> JudgeRun:
-        del response, workspace
+        del workspace
         scenario_id = _scenario_id_from_prompt(prompt)
         scenario = self._scenarios.get(scenario_id)
-        judge = scenario.get("fixture_judge") if isinstance(scenario, Mapping) else None
-        scores = judge.get("scores") if isinstance(judge, Mapping) else None
-        if not isinstance(scores, Mapping):
-            return JudgeRun({}, {"mode": "offline", "scenario_id": scenario_id}, errors=("fixture judge scores missing",))
+        if not isinstance(scenario, Mapping):
+            return JudgeRun({}, {"mode": "offline", "scenario_id": scenario_id}, errors=("fixture scenario missing",))
+        if "fixture_oracle" not in scenario:
+            judge = scenario.get("fixture_judge")
+            scores = judge.get("scores") if isinstance(judge, Mapping) else None
+            if not isinstance(scores, Mapping):
+                return JudgeRun({}, {"mode": "offline", "scenario_id": scenario_id}, errors=("fixture judge scores missing",))
+            return JudgeRun(copy.deepcopy(dict(scores)), {"mode": "offline", "fixture_world_version": self._world.get("version", 1), "scenario_id": scenario_id})
+        response_matches = "identified" in response.lower()
+        scores = {dimension: 4 if response_matches else 0 for dimension in RUBRIC_DIMENSIONS}
         return JudgeRun(
-            copy.deepcopy(dict(scores)),
-            {"mode": "offline", "fixture_world_version": self._world.get("version", 1), "scenario_id": scenario_id},
+            scores,
+            {"mode": "offline", "fixture_world_version": self._world.get("version", 1), "scenario_id": scenario_id, "response_matches_anchor": response_matches},
         )
 
 

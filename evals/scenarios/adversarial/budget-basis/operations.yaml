@@ -16,21 +16,3 @@ operations:
       - per person
     traps:
       mixed-basis-total: normalize basis
-fixture_judge:
-  scores:
-    skeleton_distinctness: 4
-    tradeoffs: 4
-    pacing: 4
-    backup_usefulness: 4
-    readability: 4
-    calibrated_uncertainty: 4
-  evidence:
-    skeleton_distinctness: Response and frozen inputs support skeleton distinctness
-      for budget-basis.
-    tradeoffs: Response and frozen inputs support tradeoffs for budget-basis.
-    pacing: Response and frozen inputs support pacing for budget-basis.
-    backup_usefulness: Response and frozen inputs support backup usefulness for budget-basis.
-    readability: Response and frozen inputs support readability for budget-basis.
-    calibrated_uncertainty: Response and frozen inputs support calibrated uncertainty
-      for budget-basis.
-  response_hash: 289d88c685cd9dbc1deab2b97fde6e143326a5586685eb22bac18a1f82877375

@@ -88,12 +88,14 @@ def _validate_brief(brief: Mapping[str, Any], case_id: str) -> None:
 
 def _validate_rubric(path: Path) -> Mapping[str, Any]:
     rubric = _mapping(path, "rubric")
+    if rubric.get("version") != 1:
+        raise ValueError(f"Scenario rubric must use version 1: {path}")
     dimensions = rubric.get("dimensions")
     if not isinstance(dimensions, list) or len(dimensions) != len(RUBRIC_DIMENSIONS):
         raise ValueError(f"Scenario rubric must declare six dimensions: {path}")
     if tuple(item.get("id") for item in dimensions if isinstance(item, Mapping)) != RUBRIC_DIMENSIONS:
         raise ValueError(f"Scenario rubric has invalid dimensions: {path}")
-    if any(not isinstance(item.get("max_score"), (int, float)) or isinstance(item.get("max_score"), bool) or not math.isfinite(item["max_score"]) or item["max_score"] <= 0 for item in dimensions if isinstance(item, Mapping)):
+    if any(not isinstance(item.get("max_score"), (int, float)) or isinstance(item.get("max_score"), bool) or not math.isfinite(item["max_score"]) or item["max_score"] != 4 for item in dimensions if isinstance(item, Mapping)):
         raise ValueError(f"Scenario rubric has invalid thresholds: {path}")
     return rubric
 
@@ -156,20 +158,6 @@ def _validate_evidence(operations: Mapping[str, Any], sources: Mapping[str, Any]
         raise ValueError(f"Scenario {case_id} operation evidence contradicts frozen inputs or traps")
 
 
-def _validate_judge(judge: Mapping[str, Any], rubric: Mapping[str, Any], case_id: str, response: str) -> None:
-    scores, evidence = judge.get("scores"), judge.get("evidence")
-    if not isinstance(scores, Mapping) or set(scores) != set(RUBRIC_DIMENSIONS) or not isinstance(evidence, Mapping) or set(evidence) != set(RUBRIC_DIMENSIONS):
-        raise ValueError(f"Scenario {case_id} requires declared scores and evidence for all rubric dimensions")
-    maximum = {item["id"]: item["max_score"] for item in rubric["dimensions"]}
-    for dimension, score in scores.items():
-        if isinstance(score, bool) or not isinstance(score, (int, float)) or not math.isfinite(score) or score < 0 or score > maximum[dimension]:
-            raise ValueError(f"Scenario {case_id} has out-of-range fixture judge score: {dimension}")
-        if not isinstance(evidence[dimension], str) or not evidence[dimension].strip():
-            raise ValueError(f"Scenario {case_id} has missing fixture judge evidence: {dimension}")
-    if judge.get("response_hash") != semantic_hash(response):
-        raise ValueError(f"Scenario {case_id} fixture judge evidence does not match response")
-
-
 def load_scenario_case(case_id: str, root: Path = SCENARIOS_ROOT) -> ScenarioCase:
     paths = _case_paths(Path(root))
     if case_id not in paths:
@@ -183,24 +171,38 @@ def load_scenario_case(case_id: str, root: Path = SCENARIOS_ROOT) -> ScenarioCas
     brief, sources, traps = _mapping(path / "brief.yaml", "brief"), _mapping(path / "sources.yaml", "sources"), _mapping(path / "traps.yaml", "traps")
     _validate_brief(brief, case_id)
     _validate_sources_traps(sources, traps, case_id)
-    rubric = _validate_rubric(path / "rubric.yaml")
+    _validate_rubric(path / "rubric.yaml")
     expected, data = _mapping(path / "expected-hard.yaml", "expected hard expectations"), _mapping(path / "operations.yaml", "operations")
     if expected.get("scenario_id") != case_id or not isinstance(expected.get("expected_macro_pass"), bool):
         raise ValueError(f"Scenario {case_id} has invalid expected-hard metadata")
-    operations, prompt, version, response, judge = (data.get(key) for key in ("operations", "prompt", "prompt_version", "response", "fixture_judge"))
+    operations, prompt, version, response = (data.get(key) for key in ("operations", "prompt", "prompt_version", "response"))
     if not isinstance(operations, Mapping) or not all(isinstance(value, str) and value for value in (prompt, version, response)):
         raise ValueError("operations.yaml requires operations, prompt, prompt_version, and response")
     operations = copy.deepcopy(dict(operations))
     if not isinstance(operations.get("effects"), Mapping):
         raise TypeError("operations.yaml requires explicit observable effects")
     _validate_evidence(operations, sources, traps, case_id)
-    if not isinstance(judge, Mapping):
-        raise TypeError("operations.yaml requires explicit fixture_judge")
-    _validate_judge(judge, rubric, case_id, response)
     _validate_rule_ids(expected)
     fixture_input = {"brief": copy.deepcopy(dict(brief)), "sources": copy.deepcopy(dict(sources)), "traps": copy.deepcopy(dict(traps))}
     input_hash = semantic_hash(fixture_input)
-    scenario = {"id": case_id, "prompt_version": version, "prompt": f"{prompt}\n\nSCENARIO_INPUT:\n{json.dumps(fixture_input, ensure_ascii=False, sort_keys=True)}", "fixture_input": fixture_input, "fixture_input_hash": input_hash, "hard_checks": _hard_checks(expected, operations), "fixture_response": {"text": response, "operations": copy.deepcopy(dict(operations)) | {"fixture_input_hash": input_hash}}, "fixture_judge": copy.deepcopy(dict(judge)), "expected_macro_pass": expected["expected_macro_pass"], "expected_failed_findings": expected.get("expected_failed_findings", []), "rubric_path": path / "rubric.yaml"}
+    scenario = {
+        "id": case_id,
+        "prompt_version": version,
+        "prompt": f"{prompt}\n\nSCENARIO_INPUT:\n{json.dumps(fixture_input, ensure_ascii=False, sort_keys=True)}",
+        "fixture_input": fixture_input,
+        "fixture_input_hash": input_hash,
+        "hard_checks": _hard_checks(expected, operations),
+        "fixture_oracle": {
+            "fixture_input": fixture_input,
+            "config": {
+                "rules": [item["rule_id"] for item in expected["required_findings"]],
+                "forbidden": [item["behavior"] for item in expected["forbidden_behaviors"]],
+            },
+        },
+        "expected_macro_pass": expected["expected_macro_pass"],
+        "expected_failed_findings": expected.get("expected_failed_findings", []),
+        "rubric_path": path / "rubric.yaml",
+    }
     case = ScenarioCase(case_id, path, brief, sources, copy.deepcopy(dict(operations)), traps, expected, path / "rubric.yaml", scenario)
     scenario["case_mutation"] = execute_case(case)
     return case

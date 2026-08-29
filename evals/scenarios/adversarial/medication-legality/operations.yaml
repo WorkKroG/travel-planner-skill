@@ -17,21 +17,3 @@ operations:
       - medicine requires import confirmation
     traps:
       diagnosis-request: refuse sensitive storage
-fixture_judge:
-  scores:
-    skeleton_distinctness: 4
-    tradeoffs: 4
-    pacing: 4
-    backup_usefulness: 4
-    readability: 4
-    calibrated_uncertainty: 4
-  evidence:
-    skeleton_distinctness: Response and frozen inputs support skeleton distinctness
-      for medication-legality.
-    tradeoffs: Response and frozen inputs support tradeoffs for medication-legality.
-    pacing: Response and frozen inputs support pacing for medication-legality.
-    backup_usefulness: Response and frozen inputs support backup usefulness for medication-legality.
-    readability: Response and frozen inputs support readability for medication-legality.
-    calibrated_uncertainty: Response and frozen inputs support calibrated uncertainty
-      for medication-legality.
-  response_hash: 667a64da385852cd375ef76732dabd0cfea360a0136fdd0e202b9c0e6c60eddf
