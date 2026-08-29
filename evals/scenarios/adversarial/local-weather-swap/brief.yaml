@@ -1,4 +1,5 @@
 schema_version: 1
+updated_at: "2026-08-28T12:00:00+00:00"
 trip_id: local-weather-swap-eval
 title: Local weather fallback
 travel_dates: {start: "2026-11-04", end: "2026-11-06"}

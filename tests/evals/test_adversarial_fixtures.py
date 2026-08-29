@@ -3,11 +3,12 @@
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 
 from evals.adapters import FixtureAdapter, FixtureJudge
 from evals.run import main, run_scenario
-from evals.scenarios import load_scenario_case, load_scenario_world
+from evals.scenarios import execute_case, load_scenario_case, load_scenario_world
 
 ROOT = Path(__file__).parents[2] / "evals" / "scenarios"
 
@@ -27,11 +28,11 @@ def _run_case(case_id: str, tmp_path: Path):
 def test_weather_swap_preserves_unrelated_days_and_changes_only_target_day(tmp_path: Path) -> None:
     """A local weather fallback must not rewrite the neighbouring day during a partial rebuild."""
     result = _run_case("local-weather-swap", tmp_path)
-    hashes = result.scenario_semantic_hashes
+    mutation = result.case_mutation
 
     assert result.hard.macro_pass is True
-    assert hashes["day-5-before"] == hashes["day-5-after"]
-    assert hashes["day-4-before"] != hashes["day-4-after"]
+    assert mutation["day-5-before"] == mutation["day-5-after"]
+    assert mutation["day-4-before"] != mutation["day-4-after"]
 
 
 def test_frozen_mutation_preserves_frozen_route_and_is_an_expected_negative(tmp_path: Path) -> None:
@@ -40,8 +41,20 @@ def test_frozen_mutation_preserves_frozen_route_and_is_an_expected_negative(tmp_
     trace = json.loads(result.trace_path.read_text(encoding="utf-8"))
 
     assert result.hard.macro_pass is False
-    assert result.scenario_semantic_hashes["frozen-route-before"] == result.scenario_semantic_hashes["frozen-route-after"]
+    assert result.case_mutation["rejected"] is True
+    assert result.case_mutation["route-before"] == result.case_mutation["route-after"]
     assert trace["grading"]["hard"]["macro_pass"] is False
+
+
+def test_case_mutations_execute_production_impact_and_freeze_guards() -> None:
+    """Preservation evidence must come from real production state transitions, not authored snapshots."""
+    weather = execute_case(load_scenario_case("local-weather-swap", ROOT))
+    frozen = execute_case(load_scenario_case("frozen-mutation", ROOT))
+
+    assert weather["impact_targets"] == ["day:day-4", "outputs:all"]
+    assert weather["day-4-before"] != weather["day-4-after"]
+    assert frozen["rejected"] is True
+    assert frozen["route-before"] == frozen["route-after"]
 
 
 def test_all_accepts_declared_negative_outcomes_without_overriding_raw_hard_gate(
@@ -77,3 +90,17 @@ def test_direct_negative_scenario_keeps_raw_failure_and_nonzero_exit(tmp_path: P
     assert "last-admission: macro FAIL" in capsys.readouterr().out
     trace = next(tmp_path.glob("last-admission-*.json"))
     assert json.loads(trace.read_text(encoding="utf-8"))["grading"]["hard"]["macro_pass"] is False
+
+
+def test_expected_negative_rejects_an_adapter_crash_and_unrelated_failures(tmp_path: Path, capsys) -> None:
+    """A negative fixture is expected only for its declared failed signature, never an adapter outage."""
+    command = f'{sys.executable} -c "import sys; sys.exit(1)"'
+    exit_code = main(
+        [
+            "--adapter", "codex-cli", "--all", "--scenarios-root", str(ROOT), "--results-dir", str(tmp_path),
+            "--codex-command", command, "--model", "fixture-crash", "--judge-command", command, "--judge-model", "judge",
+        ]
+    )
+
+    assert exit_code == 1
+    assert "last-admission: UNEXPECTED FAIL" in capsys.readouterr().out

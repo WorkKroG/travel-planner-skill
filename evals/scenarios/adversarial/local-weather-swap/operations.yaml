@@ -1,7 +1,7 @@
 prompt_version: adversarial-v1
 prompt: Swap only day 4 to its indoor fallback, preserving unrelated day 5 exactly.
 response: The rainy day is changed locally and day 5 remains semantically unchanged.
-operations: {checks: {EVAL-IMPACT-001: {status: identified}}}
-preservation:
-  - before: {day-4: {id: day-4, activity: garden-walk}, day-5: {id: day-5, activity: market}}
-    after: {day-4: {id: day-4, activity: museum}, day-5: {id: day-5, activity: market}}
+operations:
+  checks: {EVAL-IMPACT-001: {status: identified}}
+  effects: {forbidden_behaviors: []}
+  mutation: {kind: weather_swap, replacement_activity: museum}

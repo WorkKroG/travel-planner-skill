@@ -300,7 +300,7 @@ def _days(state: TripState) -> tuple[DayView, ...]:
                 last_checked=_text(item.get("last_checked")),
             )
         )
-    return tuple(views)
+    return tuple(sorted(views, key=lambda item: (item.number, item.day_id)))
 
 
 def _readiness(state: TripState) -> tuple[ReadinessView, ...]:

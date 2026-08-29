@@ -94,3 +94,4 @@ class EvalResult:
     soft: RubricReport | None
     trace_path: Path
     scenario_semantic_hashes: Mapping[str, str]
+    case_mutation: Mapping[str, Any]

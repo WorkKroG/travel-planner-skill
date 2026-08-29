@@ -1,4 +1,5 @@
 schema_version: 1
+updated_at: "2026-08-28T12:00:00+00:00"
 trip_id: luggage-storage-eval
 title: Luggage storage handoff
 travel_dates: {start: "2026-04-01", end: "2026-04-03"}

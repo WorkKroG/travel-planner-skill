@@ -290,7 +290,9 @@ def run_scenario(
     trace_path = _write_trace(results_dir, scenario_id, started_at, trace)
     raw_hashes = scenario.get("scenario_semantic_hashes", {})
     semantic_hashes = dict(raw_hashes) if isinstance(raw_hashes, Mapping) else {}
-    return EvalResult(scenario_id, hard, soft, trace_path, semantic_hashes)
+    raw_mutation = scenario.get("case_mutation", {})
+    case_mutation = dict(raw_mutation) if isinstance(raw_mutation, Mapping) else {}
+    return EvalResult(scenario_id, hard, soft, trace_path, semantic_hashes, case_mutation)
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -308,6 +310,26 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--judge-command", help="Quoted explicit command for the semantic judge.")
     parser.add_argument("--judge-model")
     return parser
+
+
+def _matches_declared_outcome(result: EvalResult, scenario: Mapping[str, Any]) -> bool:
+    """Accept a negative fixture only for its exact declared raw hard-failure signature."""
+    expected_macro = scenario.get("expected_macro_pass", True)
+    if not isinstance(expected_macro, bool) or result.hard.macro_pass != expected_macro:
+        return False
+    if expected_macro:
+        return True
+    expected = scenario.get("expected_failed_findings")
+    if not isinstance(expected, list) or not expected:
+        return False
+    signature = {(item.rule_id, item.status) for item in result.hard.findings if item.status != "passed"}
+    declared: set[tuple[str, str]] = set()
+    for item in expected:
+        if not isinstance(item, Mapping) or not isinstance(item.get("rule_id"), str) or not isinstance(item.get("status"), str):
+            return False
+        declared.add((item["rule_id"], item["status"]))
+    forbidden_infrastructure = {"EVAL-ADAPTER", "EVAL-001"}
+    return signature == declared and not any(rule_id in forbidden_infrastructure for rule_id, _ in signature)
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -347,19 +369,15 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(f"eval error: {error}", file=sys.stderr)
         return 2
     for result in results:
-        expected = next(item for item in selected if _scenario_id(item) == result.scenario_id).get(
-            "expected_macro_pass", True
-        )
         status = "PASS" if result.hard.macro_pass else "FAIL"
         if args.all:
-            outcome = "EXPECTED" if result.hard.macro_pass == expected else "UNEXPECTED"
+            outcome = "EXPECTED" if _matches_declared_outcome(result, next(item for item in selected if _scenario_id(item) == result.scenario_id)) else "UNEXPECTED"
             print(f"{result.scenario_id}: {outcome} {status} ({result.trace_path})")
         else:
             print(f"{result.scenario_id}: macro {status} ({result.trace_path})")
     if args.all:
         return 0 if all(
-            result.hard.macro_pass
-            == next(item for item in selected if _scenario_id(item) == result.scenario_id).get("expected_macro_pass", True)
+            _matches_declared_outcome(result, next(item for item in selected if _scenario_id(item) == result.scenario_id))
             for result in results
         ) else 1
     return 0 if all(result.hard.macro_pass for result in results) else 1

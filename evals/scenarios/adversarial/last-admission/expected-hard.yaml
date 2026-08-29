@@ -1,4 +1,5 @@
 scenario_id: last-admission
 expected_macro_pass: false
+expected_failed_findings: [{rule_id: OPS-002, status: failed}]
 required_findings: [{rule_id: OPS-002, severity: blocking, affected_ids: [activity-museum, day-4], path: checks.OPS-002.status, equals: identified}]
 forbidden_behaviors: [invent_later_admission, silently_move_frozen_activity]

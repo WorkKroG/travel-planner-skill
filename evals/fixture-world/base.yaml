@@ -32,6 +32,9 @@ scenarios:
   last-admission-mutation:
     id: last-admission-mutation
     expected_macro_pass: false
+    expected_failed_findings:
+      - rule_id: OPS-011
+        status: failed
     prompt_version: fixture-v1
     prompt: Deliberately omit the known last-admission conflict to prove the macro gate fails.
     hard_checks:

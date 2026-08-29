@@ -6,6 +6,16 @@ sources:
     source_type: official
     publisher: Frozen official fixture
     retrieved_at: "2026-08-28T12:00:00+00:00"
+  - id: official-tokyo-fixture
+    url: https://example.invalid/tokyo-official
+    source_type: official
+    publisher: Frozen Tokyo fixture
+    retrieved_at: "2026-08-28T12:00:00+00:00"
+  - id: official-kanazawa-fixture
+    url: https://example.invalid/kanazawa-official
+    source_type: official
+    publisher: Frozen Kanazawa fixture
+    retrieved_at: "2026-08-28T12:00:00+00:00"
 items:
   - id: kyoto-garden
     name: Kyoto garden
@@ -18,5 +28,21 @@ items:
         freshness_status: aging
         source_ids: [official-kyoto-fixture]
     popularity_signals: [{platform: fixture, observed_at: "2026-08-28", signal: known seasonal interest}]
-    assessments: [{dimension: trip_value, value: high, rationale: fits the autumn route}] 
+    assessments: [{dimension: trip_value, value: high, rationale: fits the autumn route}]
     verdict: {status: shortlisted, rationale: weather-sensitive primary with indoor backup}
+  - id: tokyo-neighbourhood
+    name: Tokyo neighbourhood walk
+    geography: {country_code: JP, locality: Tokyo}
+    discovery_layers: [cultural]
+    claims: [{id: tokyo-walk, topic: walkability, status: reported, freshness_status: aging, source_ids: [official-tokyo-fixture]}]
+    popularity_signals: []
+    assessments: [{dimension: trip_value, value: medium, rationale: suitable for flexible arrival days}]
+    verdict: {status: selected, rationale: low-commitment arrival activity}
+  - id: kanazawa-district
+    name: Kanazawa historic district
+    geography: {country_code: JP, locality: Kanazawa}
+    discovery_layers: [cultural]
+    claims: [{id: kanazawa-access, topic: access, status: reported, freshness_status: aging, source_ids: [official-kanazawa-fixture]}]
+    popularity_signals: []
+    assessments: [{dimension: trip_value, value: high, rationale: final-region cultural focus}]
+    verdict: {status: selected, rationale: compact final base}
