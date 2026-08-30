@@ -6,11 +6,14 @@ These tests exercise concrete artifacts. They do not simulate or score model beh
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import re
 import shlex
 from pathlib import Path
 
+import yaml
+from jsonschema import Draft202012Validator, FormatChecker
 from travel_planner.cli import _parser, main
 from travel_planner.workspace import CANONICAL_FILES, GENERATED_DIRECTORIES, GENERATED_FILES
 
@@ -132,6 +135,30 @@ def _single_code_value(value: str, label: str) -> str:
     return next(iter(values))
 
 
+def _accepted_blocker_schema() -> tuple[dict[str, object], dict[str, object]]:
+    schema = json.loads(
+        (_skill_root() / "schemas" / "itinerary.schema.json").read_text(encoding="utf-8")
+    )
+    definition = schema["$defs"]["accepted_blocker"]
+    validator_schema = {
+        "$schema": schema["$schema"],
+        "$defs": schema["$defs"],
+        "$ref": "#/$defs/accepted_blocker",
+    }
+    return definition, validator_schema
+
+
+def _yaml_examples() -> list[dict[str, object]]:
+    examples: list[dict[str, object]] = []
+    for path in _active_documents():
+        text = path.read_text(encoding="utf-8")
+        for block in re.findall(r"```yaml\n(.*?)\n```", text, re.DOTALL):
+            value = yaml.safe_load(block)
+            if isinstance(value, dict):
+                examples.append(value)
+    return examples
+
+
 def test_documented_cli_examples_execute_real_handlers_and_match_inventory(
     tmp_path: Path,
     capsys,
@@ -233,8 +260,13 @@ def test_material_change_contract_preserves_consent_and_affected_scope() -> None
     assert _code_values(material["Record"]) == {"decisions.md"}
 
 
-def test_day_contract_keeps_practical_planning_value() -> None:
+def test_day_contract_applies_to_initial_detail_and_material_change() -> None:
     """Detailed and changed days retain the decision-relevant information reviewers need."""
+    applicability = _contract_rows({"Day contract applicability"})
+    assert {
+        value for row in applicability for value in _code_values(row["Day contract applicability"])
+    } == {"initial_detail", "material_change"}
+
     rows = _contract_rows({"Day facet", "Required content"})
     actual = {
         _single_code_value(row["Day facet"], "day facet"): _code_values(row["Required content"])
@@ -257,6 +289,35 @@ def test_day_contract_keeps_practical_planning_value() -> None:
     assert actual == expected
 
 
+def test_documented_acceptance_fields_validate_against_actual_schema() -> None:
+    """The lifecycle table must name fields accepted by the shipped itinerary schema."""
+    rows = _contract_rows({"Final basis", "Required state", "Remaining blockers"})
+    user_confirmed = _row_by_code(rows, "Final basis", "user_confirmed")
+    documented_fields = _code_values(user_confirmed["Remaining blockers"].split(";", 1)[0])
+    definition, _ = _accepted_blocker_schema()
+
+    assert documented_fields == set(definition["required"])
+
+
+def test_documented_acceptance_yaml_example_validates_against_actual_schema() -> None:
+    """The copyable acceptance record must remain valid when the real schema changes."""
+    definition, validator_schema = _accepted_blocker_schema()
+    property_names = set(definition["properties"])
+    candidates = [example for example in _yaml_examples() if property_names & set(example)]
+    assert len(candidates) == 1, (
+        f"expected one accepted_blocker YAML example, got {len(candidates)}"
+    )
+
+    errors = sorted(
+        Draft202012Validator(validator_schema, format_checker=FormatChecker()).iter_errors(
+            candidates[0]
+        ),
+        key=lambda error: error.message,
+    )
+
+    assert errors == [], "; ".join(error.message for error in errors)
+
+
 def test_user_confirmed_final_keeps_every_accepted_blocker_visible() -> None:
     """User confirmation records acceptance without erasing unresolved blockers."""
     rows = _contract_rows({"Final basis", "Required state", "Remaining blockers"})
@@ -266,10 +327,14 @@ def test_user_confirmed_final_keeps_every_accepted_blocker_visible() -> None:
         user_confirmed["Required state"]
     )
     assert {
-        "actual_blocker_id",
-        "accepted_by_user",
-        "accepted_at",
-        "rationale",
+        "blocker_id",
+        "itinerary.yaml.accepted_blockers",
+        "one_per_blocker",
+        "partial_forbidden",
+        "duplicate_forbidden",
+        "orphan_forbidden",
+        "challenge_findings",
+        "acceptance_not_replacement",
         "blocking",
         "unresolved",
         "visible",

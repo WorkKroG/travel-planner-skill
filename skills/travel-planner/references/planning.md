@@ -6,7 +6,11 @@ Show trade-offs and a recommendation before asking the user to choose. Record th
 
 Detail only the chosen route. Use `route_stops` and `days[].timeline[]`; every day and timeline event has an ID. Keep human time labels, and add offset-bearing timestamps, operating/service cutoffs, component durations, connection minimums, and buffer markers only when supported. Link days/events to canonical route, overnight, readiness, source, and claim IDs. Unknown stays unknown.
 
-Apply this day contract both when first detailing a day and when a material change affects it:
+Apply the same day contract in both cases:
+
+| Day contract applicability |
+| --- |
+| `initial_detail`, `material_change` |
 
 | Day facet | Required content |
 | --- | --- |

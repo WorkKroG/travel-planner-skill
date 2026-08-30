@@ -25,9 +25,20 @@ Draft uses `document_status: draft`, `finalization_basis: null`, and the verific
 | Final basis | Required state | Remaining blockers |
 | --- | --- | --- |
 | `codex_validated` | `document_status: final`, `verification_level: codex_validated`, `finalization_basis: codex_validated` after a successful check | None. |
-| `user_confirmed` | `document_status: final`, `finalization_basis: user_confirmed` after an explicit request | For every `actual_blocker_id`, add acceptance metadata `accepted_by_user`, `accepted_at`, and `rationale`; keep it `blocking`, `unresolved`, and `visible` in canonical state and HTML. |
+| `user_confirmed` | `document_status: final`, `finalization_basis: user_confirmed` after an explicit request | Use `blocker_id`, `accepted_by_user`, `accepted_at`, `rationale`; store `one_per_blocker` in `itinerary.yaml.accepted_blockers`. `partial_forbidden`, `duplicate_forbidden`, `orphan_forbidden`; `acceptance_not_replacement`: retain the source in `challenge_findings` or computed findings as `blocking`, `unresolved`, and `visible`. |
 
-Display `Final — проверено в Codex` only for the Codex basis and `Final — подтверждено пользователем` for explicit user confirmation. Enumerate every remaining blocker and obtain explicit acceptance for each actual blocker ID before recording the user-confirmed basis.
+One canonical acceptance record is required for each remaining factual blocker. Replace the example ID and rationale with the user's explicit acceptance:
+
+```yaml
+blocker_id: blocker-rail-timetable
+accepted_by_user: true
+accepted_at: "2026-08-30T09:00:00+00:00"
+rationale: "User accepts the unresolved timetable risk and will recheck it before booking."
+```
+
+Acceptance never replaces or deletes the blocker. Partial acceptance does not permit Final; duplicate records for one blocker and records without a matching blocker are invalid.
+
+Display `Final — проверено в Codex` only for the Codex basis and `Final — подтверждено пользователем` for explicit user confirmation. Enumerate every remaining blocker and obtain explicit acceptance for each blocker ID before recording the user-confirmed basis.
 
 Never infer acceptance from silence. `ai_reviewed` never equals `codex_validated`. The renderer copies lifecycle and findings; it does not decide status, resolve blockers, or invent findings.
 
