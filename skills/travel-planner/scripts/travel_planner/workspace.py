@@ -14,14 +14,16 @@ import yaml
 
 from .resources import resource_path
 
-STATE_FILES = (
+CANONICAL_FILES = (
     "brief.yaml",
     "candidates.yaml",
     "itinerary.yaml",
     "readiness.yaml",
     "decisions.md",
-    "sources.md",
 )
+GENERATED_FILES = ("sources.md",)
+GENERATED_DIRECTORIES = ("outputs",)
+WORKSPACE_FILES = CANONICAL_FILES + GENERATED_FILES
 PROJECT_REMINDER = (
     "Для новой поездки рекомендуется отдельная папка и локальный Codex project. "
     "Подтвердите выбранный путь перед созданием файлов."
@@ -43,7 +45,7 @@ class WorkspacePathError(WorkspaceError):
 
 @dataclass(frozen=True)
 class TripPaths:
-    """Canonical paths for one trip workspace."""
+    """Canonical and generated paths for one trip workspace."""
 
     root: Path
     brief: Path
@@ -81,9 +83,8 @@ def _validate_target(root: Path) -> None:
         raise WorkspacePathError(f"Workspace target is not a directory: {root}")
     if (root / "brief.yaml").exists():
         raise WorkspaceExistsError(f"A trip workspace already exists at {root}")
-    conflicts = [name for name in STATE_FILES if (root / name).exists()]
-    if (root / "outputs").exists():
-        conflicts.append("outputs")
+    conflicts = [name for name in WORKSPACE_FILES if (root / name).exists()]
+    conflicts.extend(name for name in GENERATED_DIRECTORIES if (root / name).exists())
     if conflicts:
         raise WorkspacePathError(
             "Workspace files already exist and will not be overwritten: " + ", ".join(conflicts)
@@ -91,7 +92,7 @@ def _validate_target(root: Path) -> None:
 
 
 def _prepare_staging(staging: Path, title: str, trip_id: str) -> None:
-    for name in STATE_FILES:
+    for name in WORKSPACE_FILES:
         source = resource_path("trip-template", name)
         target = staging / name
         if source.suffix == ".yaml":
@@ -105,7 +106,8 @@ def _prepare_staging(staging: Path, title: str, trip_id: str) -> None:
             )
         else:
             shutil.copyfile(source, target)
-    (staging / "outputs").mkdir()
+    for name in GENERATED_DIRECTORIES:
+        (staging / name).mkdir()
 
 
 def initialize_trip(root: Path, title: str, trip_id: str | None = None) -> TripPaths:

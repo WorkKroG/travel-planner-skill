@@ -1,9 +1,12 @@
 schema_version: 1
 trip_id: ""
+document_status: draft
+verification_level: none
+finalization_basis: null
+accepted_blockers: []
 route_state: draft
 alternatives: []
 selected_route_id: null
 days: []
 budget_items: []
 challenge_findings: []
-

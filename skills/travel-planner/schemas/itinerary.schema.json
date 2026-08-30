@@ -3,10 +3,17 @@
   "$id": "itinerary.schema.json",
   "title": "Travel Planner itinerary v1",
   "type": "object",
-  "required": ["schema_version", "trip_id", "route_state", "alternatives", "selected_route_id", "days", "budget_items", "challenge_findings"],
+  "required": ["schema_version", "trip_id", "document_status", "verification_level", "finalization_basis", "accepted_blockers", "route_state", "alternatives", "selected_route_id", "days", "budget_items", "challenge_findings"],
   "properties": {
     "schema_version": {"const": 1},
     "trip_id": {"$ref": "#/$defs/id"},
+    "document_status": {"enum": ["draft", "final"]},
+    "verification_level": {"enum": ["none", "ai_reviewed", "codex_validated"]},
+    "finalization_basis": {"enum": [null, "codex_validated", "user_confirmed"]},
+    "accepted_blockers": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/accepted_blocker"}
+    },
     "route_state": {"enum": ["draft", "challenged", "selected", "frozen"]},
     "alternatives": {"type": "array", "items": {"type": "object"}},
     "selected_route_id": {"anyOf": [{"$ref": "#/$defs/id"}, {"type": "null"}]},
@@ -28,7 +35,17 @@
   },
   "additionalProperties": true,
   "$defs": {
-    "id": {"type": "string", "pattern": "^[a-z0-9](?:[a-z0-9-]{0,62}[a-z0-9])?$"}
+    "id": {"type": "string", "pattern": "^[a-z0-9](?:[a-z0-9-]{0,62}[a-z0-9])?$"},
+    "accepted_blocker": {
+      "type": "object",
+      "required": ["blocker_id", "accepted_by_user", "accepted_at", "rationale"],
+      "properties": {
+        "blocker_id": {"$ref": "#/$defs/id"},
+        "accepted_by_user": {"const": true},
+        "accepted_at": {"type": "string", "format": "date-time"},
+        "rationale": {"type": "string", "minLength": 1, "pattern": "\\S"}
+      },
+      "additionalProperties": false
+    }
   }
 }
-

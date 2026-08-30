@@ -2,6 +2,7 @@ from pathlib import Path
 
 import pytest
 import yaml
+from travel_planner import workspace as workspace_module
 from travel_planner.cli import main
 from travel_planner.workspace import (
     WorkspaceExistsError,
@@ -46,6 +47,27 @@ def test_initialize_creates_the_complete_workspace(tmp_path: Path) -> None:
         "sources.md",
     }
     assert paths.outputs.is_dir()
+    itinerary = yaml.safe_load(paths.itinerary.read_text())
+    expected_lifecycle = {
+        "document_status": "draft",
+        "verification_level": "none",
+        "finalization_basis": None,
+        "accepted_blockers": [],
+    }
+    assert {key: itinerary.get(key) for key in expected_lifecycle} == expected_lifecycle
+
+
+def test_workspace_names_canonical_and_generated_paths_separately() -> None:
+    """Catch generated sources and outputs being mislabeled as canonical trip state."""
+    assert getattr(workspace_module, "CANONICAL_FILES", ()) == (
+        "brief.yaml",
+        "candidates.yaml",
+        "itinerary.yaml",
+        "readiness.yaml",
+        "decisions.md",
+    )
+    assert getattr(workspace_module, "GENERATED_FILES", ()) == ("sources.md",)
+    assert getattr(workspace_module, "GENERATED_DIRECTORIES", ()) == ("outputs",)
 
 
 def test_cli_refuses_to_write_until_path_is_confirmed(
