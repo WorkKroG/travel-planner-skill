@@ -2,7 +2,7 @@
 
 **Дата среза:** 2026-08-30
 
-**Текущий этап:** PR 7 реализован и проходит финальную PR delivery; публикация и пользовательские cross-surface gates не выполнены
+**Текущий этап:** PR 7 проходит focused follow-up по независимому review; публикация и пользовательские cross-surface gates не выполнены
 
 Этот документ фиксирует проверяемые факты. Data-only catalogs, checklist items и будущие ручные наблюдения не считаются выполненным evidence.
 
@@ -51,13 +51,14 @@ PR 6 завершён и squash-merged в `main` на `3e2ec67deebeb73ab1872cc1f
 
 ## PR 7: completed и pending
 
-В текущем PR реализованы public README, краткий contributor guide, truthful manifest metadata, один release checklist, исправление Japan commands, удаление historical/orphaned residue и cleanup активных ссылок. Production schema, checks, renderer behavior и catalogs не расширялись.
+В текущем PR реализованы public README, краткий contributor guide, truthful manifest metadata, один release checklist, исправление Japan commands, удаление historical/orphaned residue и cleanup активных ссылок. Focused follow-up исправляет только misleading empty-blocker copy, нормализует operational surface identifier на `chat_web` и уточняет фиксированный язык lifecycle badges. Production state, checks, CLI, schemas и catalogs не расширяются.
 
-Свежая verification final tree: полный suite — `154 passed`; focused package/skill/catalog/render/CLI — `63 passed`; Ruff, `pip check`, `quick_validate` и staged plugin validation — passed; clean editable install, wheel install, CLI smoke и fixed-time Japan determinism — passed. Exact PR head фиксируется в PR body после commit и повторной проверки чистого worktree.
+Независимый двухфазный blind review выполнен 2026-08-30 на exact head `e3ca14c0951b6e4254932095cfb0fdd361f2de7a`: isolation clean/preserved, результат — 8/8 Pass, invariant violations — 0. Это external model evidence; catalog-level `not_executed` сохраняется, потому что catalogs не содержат embedded runner или result.
+
+Свежая verification текущего follow-up tree: полный suite — `157 passed`; focused package/skill/catalog/render/CLI — `66 passed`, включая отдельные три blocker-state regressions; Ruff, `pip check`, `quick_validate` и staged plugin validation — passed; fresh temp CLI и fixed-time Japan determinism — passed. Exact новый PR head и clean-worktree evidence фиксируются в PR body после commit и повторной проверки.
 
 Отдельно остаются pending:
 
-- независимый model review всех восьми targeted prompts — implementation owner не выполняет self-grade;
 - local desktop manual HTML checklist: доступный in-app browser заблокировал `file://` до загрузки по своей URL security policy, поэтому manual pass не заявлен;
 - ровно два пользовательских cross-surface observations: Chat web и mobile;
 - внешняя submission/review в universal plugin directory.

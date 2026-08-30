@@ -236,7 +236,7 @@ def test_surface_contract_requires_honest_verification_gates() -> None:
     assert "codex_validated" in _code_values(codex["Allowed verification"])
     assert {"successful_check", "no_blockers"} <= _code_values(codex["Codex validation gate"])
 
-    for surface in ("chat_work", "mobile"):
+    for surface in ("chat_web", "mobile"):
         row = by_surface[surface]
         assert _code_values(row["Deterministic helpers"]) == {"unavailable"}
         assert _code_values(row["Allowed verification"]) == {"none", "ai_reviewed"}

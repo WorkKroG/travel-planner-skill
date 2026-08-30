@@ -24,6 +24,8 @@ Availability of a source or local marketplace can vary by surface. The table des
 | ChatGPT Chat/Work | Core planning workflow and the same self-contained HTML template | `none` or explicitly limited `ai_reviewed`; never claim Codex validation without the helper |
 | Mobile | Core planning workflow and the same self-contained HTML template, subject to file capabilities on the device | `none` or explicitly limited `ai_reviewed`; manual bundle transfer and human review required |
 
+In v0.1, Final badges retain the exact Russian labels `Final — проверено в Codex` and `Final — подтверждено пользователем`; the surrounding planning conversation follows the user's language.
+
 ## Package and trip data
 
 This repository contains one plugin manifest and one skill tree:

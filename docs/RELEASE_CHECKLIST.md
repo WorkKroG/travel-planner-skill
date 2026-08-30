@@ -24,9 +24,11 @@ Run every command on the final PR head and record the exact commit in the PR bod
 
 ## Independent model review
 
-- [ ] A separate reviewer evaluates all eight entries in `evals/skill-scenarios.yaml` against their observable invariants.
+- [x] A separate reviewer evaluated all eight entries in `evals/skill-scenarios.yaml` against their observable invariants.
 
-The implementation owner must not self-grade these prompts. Passing catalog structure tests is not execution evidence.
+External evidence recorded 2026-08-30 against exact reviewed head `e3ca14c0951b6e4254932095cfb0fdd361f2de7a`: two-phase blind isolation was preserved, the result was 8/8 Pass, and invariant violations were 0. The implementation owner did not self-grade them. The review also reported one Important UX defect and two taxonomy/spec ambiguities; this focused follow-up addresses only those findings.
+
+Both catalogs remain data-only with `execution_status: not_executed`. Here `not_executed` means the catalog embeds no runner or result; it does not erase separately recorded external review evidence. Catalog structure tests alone are not execution evidence.
 
 ## Local desktop HTML observations
 

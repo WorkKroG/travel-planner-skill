@@ -19,6 +19,10 @@ from travel_planner.render.viewmodel import ItineraryView, build_view
 from tests.render.css_contracts import assert_css_rule
 
 
+def _blocker_section(html: str) -> str:
+    return html[html.index('id="blockers"') : html.index('id="route-overview"')]
+
+
 def test_html_contains_required_semantic_reading_order(japan_view: ItineraryView) -> None:
     """Catch a dashboard-like layout that buries route, decisions, or warnings."""
     html = render_html(japan_view, media={}, options=DEFAULTS)
@@ -44,9 +48,101 @@ def test_html_exposes_lifecycle_and_blocker_groups_without_disclosure(
     assert "AI-review — менее точная проверка" in html
     assert 'id="blockers"' in html
     assert "Непринятые блокеры" in html
-    blockers = html[html.index('id="blockers"') : html.index('id="route-overview"')]
+    blockers = _blocker_section(html)
     assert "Rail booking window is not open yet." in blockers
     assert "<details" not in blockers
+
+
+def test_blocker_section_reports_a_clear_empty_state(japan_state) -> None:
+    """Catch an empty blocker section claiming that blockers remain unresolved."""
+    view = build_view(
+        japan_state,
+        CheckReport((), (), (), ()),
+        datetime(2026, 8, 28, 12, tzinfo=UTC),
+    )
+
+    blockers = _blocker_section(render_html(view, media={}, options=DEFAULTS))
+
+    assert "No blockers are recorded in the canonical trip state." in blockers
+    assert "Blockers remain unresolved and blocking" not in blockers
+    assert "No unaccepted blockers." in blockers
+    assert "No accepted blockers." in blockers
+
+
+def test_blocker_section_keeps_an_accepted_blocker_unresolved_and_visible(
+    japan_state,
+) -> None:
+    """Catch accepted blockers losing either their explanation or acceptance details."""
+    state = deepcopy(japan_state)
+    blocker = Finding(
+        "blocker-rail",
+        "SCHEDULE_UNRELEASED",
+        "blocking",
+        "itinerary.yaml.days[1]",
+        ("day-2",),
+        "The final timetable is not released.",
+    )
+    state.itinerary.update(
+        document_status="final",
+        verification_level="ai_reviewed",
+        finalization_basis="user_confirmed",
+        accepted_blockers=[
+            {
+                "blocker_id": blocker.id,
+                "accepted_by_user": True,
+                "accepted_at": "2026-08-30T09:00:00+00:00",
+                "rationale": "Accepted explicitly.",
+            }
+        ],
+    )
+    view = build_view(
+        state,
+        CheckReport((), (blocker,), (), (blocker.id,)),
+        datetime(2026, 8, 28, 12, tzinfo=UTC),
+    )
+
+    blockers = _blocker_section(render_html(view, media={}, options=DEFAULTS))
+
+    assert (
+        "Blockers remain unresolved and blocking until the canonical trip state changes."
+        in blockers
+    )
+    assert "SCHEDULE_UNRELEASED · Blocking · Unresolved" in blockers
+    assert "Принят пользователем — остаётся блокирующим" in blockers
+    assert (
+        "Accepted at: 2026-08-30T09:00:00+00:00 · Rationale: Accepted explicitly."
+        in blockers
+    )
+    assert "No unaccepted blockers." in blockers
+
+
+def test_blocker_section_keeps_an_unaccepted_blocker_unresolved_and_visible(
+    japan_state,
+) -> None:
+    """Catch an open blocker losing its unresolved explanation or finding details."""
+    blocker = Finding(
+        "blocker-rail",
+        "SCHEDULE_UNRELEASED",
+        "blocking",
+        "itinerary.yaml.days[1]",
+        ("day-2",),
+        "The final timetable is not released.",
+    )
+    view = build_view(
+        japan_state,
+        CheckReport((), (blocker,), (), ()),
+        datetime(2026, 8, 28, 12, tzinfo=UTC),
+    )
+
+    blockers = _blocker_section(render_html(view, media={}, options=DEFAULTS))
+
+    assert (
+        "Blockers remain unresolved and blocking until the canonical trip state changes."
+        in blockers
+    )
+    assert "SCHEDULE_UNRELEASED · Blocking · Unresolved" in blockers
+    assert "The final timetable is not released." in blockers
+    assert "No accepted blockers." in blockers
 
 
 @pytest.mark.parametrize(

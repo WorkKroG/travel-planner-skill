@@ -109,7 +109,11 @@
 
       <section class="document-section blocker-section" id="blockers" aria-labelledby="blockers-title">
         <h2 id="blockers-title">Blockers</h2>
+        {% if view.unaccepted_blockers or view.accepted_blockers %}
         <p>Blockers remain unresolved and blocking until the canonical trip state changes.</p>
+        {% else %}
+        <p>No blockers are recorded in the canonical trip state.</p>
+        {% endif %}
 
         <section aria-labelledby="unaccepted-blockers-title">
           <h3 id="unaccepted-blockers-title" lang="ru">Непринятые блокеры</h3>
