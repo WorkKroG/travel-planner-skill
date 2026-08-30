@@ -1,8 +1,0 @@
-mode: offline-frozen
-sources:
-  - id: hotel-quote
-    type: provider
-    data: {amount: 600, currency: EUR, basis: group, taxes_included: true}
-  - id: pass-price
-    type: provider
-    data: {amount: 150, currency: EUR, basis: person, taxes_included: true}

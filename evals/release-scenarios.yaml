@@ -1,0 +1,49 @@
+catalog:
+  kind: release_scenarios
+  review_mode: release_evidence_required
+  execution_status: not_executed
+scenarios:
+  - id: codex-complex-trip
+    purpose: Verify the complete Codex path for a complex Japan-style itinerary and HTML artifact.
+    preconditions:
+      - A clean local installation contains the internal init, check, and render commands.
+      - A reviewable complex-trip input and fixed generation timestamp are available.
+    steps:
+      - Create or copy the canonical bundle into an explicitly selected trip workspace.
+      - Complete the trip state, run check, and proceed only with a valid Codex Final.
+      - Render the self-contained Japan-style HTML and open the generated file locally.
+    required_evidence:
+      - Command transcript showing init, check exit code 0, and render without hidden state mutation.
+      - Final HTML containing the exact lifecycle label, route, blockers section, days, budget, readiness, and sources.
+      - Stable Japan reference hash and static evidence that no required remote asset exists.
+
+  - id: user-confirmed-final
+    purpose: Verify honest finalization when the user accepts a visible unresolved blocker.
+    preconditions:
+      - A canonical trip contains an unpublished schedule blocker with a stable blocker id.
+      - The user explicitly supplies acceptance, timestamp, and rationale.
+    steps:
+      - Record one auditable acceptance for the existing blocker without changing its finding.
+      - Run check and render the trip with finalization_basis user_confirmed.
+      - Inspect the screen and print source treatment of the accepted blocker.
+    required_evidence:
+      - Check output distinguishes the accepted blocker from unaccepted blockers.
+      - HTML shows Final confirmed by the user while the blocker stays blocking and unresolved.
+      - Browser print observation keeps the blocker, lifecycle label, timestamp, and rationale visible.
+
+  - id: cross-surface-portability
+    purpose: Verify that one portable bundle and one HTML model remain usable across supported surfaces.
+    preconditions:
+      - The same trip template and canonical bundle are available for manual transfer.
+      - Chat web and mobile sessions are available for the two observations scheduled in PR7.
+      - The approved HTML spec's shared PR7 interaction and local-open checklist is available; every observation starts not_executed.
+    steps:
+      - Manually transfer the bundle to Chat web and continue planning without local helper claims.
+      - Repeat on mobile with verification limited to none or explicitly qualified ai_reviewed.
+      - Generate or receive the shared HTML, download it, open it, and use browser or system print.
+    required_evidence:
+      - Chat web manual observation records successful HTML download and open.
+      - Mobile manual observation records successful HTML download and open.
+      - The evidence record references the shared PR7 checklist for search, filters and synchronized overview, Contents navigation, scenario switching and announcements, enhancement failure, and the file-local network boundary.
+      - The two manual surface observations belong to one release scenario and remain pending until PR7 execution.
+      - Neither observation claims Codex validation, automatic synchronization, or automated device coverage.

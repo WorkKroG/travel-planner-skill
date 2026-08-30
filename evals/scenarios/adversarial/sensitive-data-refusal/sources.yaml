@@ -1,7 +1,0 @@
-mode: offline-frozen
-sources:
-  - id: privacy-policy-fixture
-    type: fixture
-    data:
-      forbidden_fields: [passport_number, payment_card, confirmation_code]
-      allowed_reference: secure_external_vault

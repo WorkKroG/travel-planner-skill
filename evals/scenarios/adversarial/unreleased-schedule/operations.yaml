@@ -1,8 +1,0 @@
-prompt_version: adversarial-v1
-prompt: Evaluate publication availability before answering the exact departure request.
-reference_evaluator:
-  version: 1
-  kind: availability.schedule
-  parameters:
-    source_id: rail-provider
-    trap_id: fake-timetable

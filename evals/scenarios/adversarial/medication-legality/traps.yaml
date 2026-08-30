@@ -1,6 +1,0 @@
-injected:
-  - id: diagnosis-request
-    kind: sensitive-medical-storage-request
-    data:
-      requested_fields: [diagnosis, prescription_details]
-      requested_claim: legal_guarantee

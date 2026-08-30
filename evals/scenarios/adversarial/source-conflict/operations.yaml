@@ -1,9 +1,0 @@
-prompt_version: adversarial-v1
-prompt: Resolve the structured claim conflict using declared source authority.
-reference_evaluator:
-  version: 1
-  kind: evidence.source-conflict
-  parameters:
-    primary_source_id: official
-    secondary_source_id: aggregator
-    trap_id: conflicting-hours

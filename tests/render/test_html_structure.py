@@ -5,7 +5,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
-from travel_planner.checks import CheckReport, Finding, run_checks
+from travel_planner.checks import CheckReport, Finding
 from travel_planner.cli import main
 from travel_planner.render.html import (
     DEFAULTS,
@@ -15,7 +15,8 @@ from travel_planner.render.html import (
     write_html,
 )
 from travel_planner.render.viewmodel import ItineraryView, build_view
-from travel_planner.state import load_trip
+
+from tests.render.css_contracts import assert_css_rule
 
 
 def test_html_contains_required_semantic_reading_order(japan_view: ItineraryView) -> None:
@@ -152,10 +153,10 @@ def test_html_marks_a_blocked_codex_final_as_inconsistent(japan_state) -> None:
     assert "не следует считать безопасным Final" in html
 
 
-def test_day_filters_expose_synced_overview_and_visible_empty_state(
+def test_day_filter_source_exposes_overview_and_empty_state_hooks(
     japan_view: ItineraryView,
 ) -> None:
-    """Catch filters hiding detailed articles while leaving the overview misleadingly unchanged."""
+    """Catch missing source hooks needed for PR7's manual synchronization checks."""
     html = render_html(japan_view, media={}, options=DEFAULTS)
 
     for day in japan_view.days:
@@ -243,6 +244,47 @@ def test_critical_constraints_precede_optional_media_in_the_document_order(
     assert 'class="print-images"' in html
 
 
+def test_static_css_declares_long_content_wrapping_contract(
+    japan_view: ItineraryView,
+) -> None:
+    """Catch removal of source-level wrapping safeguards without claiming browser layout."""
+    html = render_html(japan_view, media={}, options=DEFAULTS)
+    css = html[html.index("<style>") : html.index("</style>")]
+
+    assert_css_rule(css, ("html",), {"min-width": "20rem"})
+    assert_css_rule(css, ("body",), {"overflow-wrap": "anywhere"})
+    assert_css_rule(
+        css,
+        (".trip-hero *", ".document-grid *", ".document-footer *"),
+        {"min-width": "0"},
+    )
+    assert_css_rule(
+        css,
+        (".budget-table",),
+        {"width": "100%", "table-layout": "fixed"},
+    )
+
+
+def test_scenarios_and_day_metadata_keep_semantic_source_wrappers(
+    japan_view: ItineraryView,
+) -> None:
+    """Catch print-oriented heading and metadata groups being flattened in source HTML."""
+    html = render_html(japan_view, media={}, options=DEFAULTS)
+    scenario_groups = re.findall(
+        r'<section class="scenario-panel".*?'
+        r'<header class="scenario-heading">.*?</header>\s*<p>.*?</p>\s*</section>',
+        html,
+        flags=re.DOTALL,
+    )
+    metadata_groups = re.findall(
+        r'<div class="metadata-pair"><dt>.*?</dt><dd>.*?</dd></div>',
+        html,
+    )
+
+    assert len(scenario_groups) == sum(len(day.scenarios) for day in japan_view.days)
+    assert len(metadata_groups) == len(japan_view.days) * 4
+
+
 def test_html_is_deterministic_and_write_helper_uses_exact_bytes(
     japan_view: ItineraryView, tmp_path: Path
 ) -> None:
@@ -264,26 +306,6 @@ def test_japan_reference_matches_reviewable_html_snapshot(japan_view: ItineraryV
     actual = hashlib.sha256(render_html(japan_view, media={}, options=DEFAULTS).encode()).hexdigest()
 
     assert actual == expected
-
-
-def test_final_ui_state_fixture_uses_the_canonical_renderer_and_has_no_blockers() -> None:
-    """Catch a visual Final state fabricated by relabelling a Draft document."""
-    repository = Path(__file__).parents[2]
-    fixture = repository / "tests" / "fixtures" / "japan-final-reference"
-    generated_at = datetime(2026, 8, 28, 12, tzinfo=UTC)
-    state = load_trip(fixture)
-    report = run_checks(state)
-    view = build_view(state, report, generated_at)
-
-    assert view.document_status == "final"
-    assert view.status_label == "Final — проверено в Codex"
-    assert view.unaccepted_blockers == ()
-    assert view.accepted_blockers == ()
-    assert view.summary.readiness_confirmed == view.summary.readiness_total
-    assert view.budget.unknown_count == 0
-    assert (repository / "tests" / "ui" / "state-fixtures" / "final.html").read_text(
-        encoding="utf-8"
-    ) == render_html(view, media={}, options=DEFAULTS)
 
 
 def test_render_cli_writes_html(japan_view: ItineraryView, tmp_path: Path) -> None:

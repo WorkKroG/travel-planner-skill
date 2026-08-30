@@ -1,4 +1,0 @@
-injected:
-  - id: summer-route
-    kind: stale-map-route
-    data: {selected_road_id: mountain-road}

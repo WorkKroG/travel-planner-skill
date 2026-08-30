@@ -1,7 +1,22 @@
 import re
 
+import pytest
 from travel_planner.render.html import DEFAULTS, render_html
 from travel_planner.render.viewmodel import ItineraryView
+
+from tests.render.css_contracts import assert_css_rule
+
+CRITICAL_PRINT_SELECTORS = (
+    ".warning-block",
+    ".blocker-item",
+    ".constraint-list li",
+    ".metadata-pair",
+    ".timeline-event",
+    ".decision-item",
+    ".readiness-item",
+    ".risk-item",
+    ".source-item",
+)
 
 
 def _without_javascript(html: str) -> str:
@@ -42,10 +57,10 @@ def test_contents_and_all_core_sections_remain_linked_without_javascript(
     assert 'id="blockers"' in html
 
 
-def test_print_keeps_both_scenarios_and_removes_interactive_chrome(
+def test_print_static_css_keeps_both_scenarios_and_removes_interactive_chrome(
     japan_view: ItineraryView,
 ) -> None:
-    """Catch a printed route inheriting an ambiguous switched scenario state."""
+    """Catch print-source rules inheriting an ambiguous switched scenario state."""
     html = render_html(japan_view, media={}, options=DEFAULTS)
 
     assert "@media print" in html
@@ -56,7 +71,38 @@ def test_print_keeps_both_scenarios_and_removes_interactive_chrome(
     assert "article[data-day][hidden]" in html
     assert ".day-overview li[hidden]" in html
     print_css = html[html.index("@media print") :]
-    assert ".source-item" in print_css
+    assert_css_rule(print_css, CRITICAL_PRINT_SELECTORS, {"break-inside": "avoid"})
+    assert_css_rule(
+        print_css,
+        (".scenario-heading",),
+        {"break-after": "avoid", "break-inside": "avoid"},
+    )
+    assert_css_rule(
+        print_css,
+        (".scenario-panel > p",),
+        {"orphans": "2", "widows": "2"},
+    )
+
+
+def test_print_critical_group_contract_rejects_auto_mutation(
+    japan_view: ItineraryView,
+) -> None:
+    """Catch the critical group losing page-break protection while another rule keeps it."""
+    html = render_html(japan_view, media={}, options=DEFAULTS)
+    print_css = html[html.index("@media print") :]
+    rule_start = print_css.index(".warning-block,")
+    rule_end = print_css.index("}", rule_start) + 1
+    critical_rule = print_css[rule_start:rule_end]
+    assert "break-inside: avoid;" in critical_rule
+    mutated_rule = critical_rule.replace("break-inside: avoid;", "break-inside: auto;", 1)
+    mutated_css = print_css[:rule_start] + mutated_rule + print_css[rule_end:]
+
+    with pytest.raises(AssertionError, match=r"break-inside: expected 'avoid'"):
+        assert_css_rule(
+            mutated_css,
+            CRITICAL_PRINT_SELECTORS,
+            {"break-inside": "avoid"},
+        )
 
 
 def test_print_removes_the_fixed_page_decoration(japan_view: ItineraryView) -> None:

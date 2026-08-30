@@ -1,4 +1,0 @@
-injected:
-  - id: conflicting-hours
-    kind: weaker-source-preference
-    data: {preferred_source_id: aggregator}

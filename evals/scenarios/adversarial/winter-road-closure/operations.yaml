@@ -1,9 +1,0 @@
-prompt_version: adversarial-v1
-prompt: Evaluate the selected road against the authority closure interval and travel date.
-reference_evaluator:
-  version: 1
-  kind: route.road-closure
-  parameters:
-    source_id: road-authority
-    trap_id: summer-route
-    travel_at: "2026-12-01"

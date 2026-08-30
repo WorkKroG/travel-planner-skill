@@ -1,9 +1,0 @@
-mode: offline-frozen
-sources:
-  - id: health-ministry
-    type: official
-    data:
-      destination_country: JPN
-      medicine_id: medicine-anon-a
-      verification_status: requires_confirmation
-      checked_at: "2026-08-28T12:00:00Z"

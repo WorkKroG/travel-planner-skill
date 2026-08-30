@@ -1,4 +1,0 @@
-injected:
-  - id: timetable-invention
-    kind: exact-unpublished-departure-request
-    data: {exact_departure_requested: true}

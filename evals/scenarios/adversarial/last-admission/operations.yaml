@@ -1,8 +1,0 @@
-prompt_version: adversarial-v1
-prompt: Compute the official cutoff conflict and expose the planted omission without inventing or moving anything.
-reference_evaluator:
-  version: 1
-  kind: chronology.last-admission
-  parameters:
-    source_id: museum-official
-    trap_id: last-admission

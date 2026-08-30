@@ -104,12 +104,15 @@ Print CSS сохраняет критический контент, lifecycle la
 
 - Один plugin и один manifest.
 - `pyproject.toml` только для внутренних/local helpers.
-- Node, `package.json`, axe и Node Playwright удаляются в последующем PR.
-- Основные проверки: unit/integration tests, один Japan HTML reference, 6–8 targeted skill evals и 3 release scenarios.
+- Node, `package.json`, axe и browser-driver dependencies отсутствуют.
+- Основные автоматические проверки: Python unit/integration tests, один deterministic Japan HTML reference/hash и минимальная contract validation каталогов.
+- Каталог targeted skill scenarios содержит восемь data-only inputs для независимого model review; он не содержит authored answers, runner, judge или offline simulator и не доказывает поведение модели.
+- Каталог release scenarios содержит ровно три unexecuted evidence targets; browser/device observations не автоматизируются.
 - Перед релизом вручную выполняются ровно два surface smoke checks: Chat web и mobile.
-- Допустим один технический тест отсутствия обязательной сетевой зависимости HTML.
+- Статические HTML/CSS tests честно проверяют source contracts, но не называются browser layout, accessibility-engine или visual evidence.
+- Допустим один технический test отсутствия обязательной сетевой зависимости HTML.
 
-`reference_evaluator.py`, offline evaluator, матрица из 23 сценариев, дублирующие rubrics/graders, сохранённые eval results и тесты удалённых модулей не входят в целевую архитектуру.
+`reference_evaluator.py`, adapters, judges, rubrics/graders, fixture worlds, scenario-directory matrix, сохранённые eval traces и тесты удалённых модулей не входят в целевую архитектуру.
 
 ## Последовательность упрощения
 
