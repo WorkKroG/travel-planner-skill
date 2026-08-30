@@ -1,4 +1,0 @@
-injected:
-  - id: false-pdf-success
-    kind: demanded-success-claim
-    data: {requested_format: pdf, require_success_wording: true}

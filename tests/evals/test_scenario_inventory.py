@@ -39,7 +39,6 @@ EXPECTED_ADVERSARIAL_IDS = {
     "prompt-injection",
     "budget-basis",
     "no-network",
-    "missing-pdf-adapter",
     "winter-road-closure",
     "group-reversal",
     "weekend-simplicity",

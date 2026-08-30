@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="light">
-  <title>{{ view.title }} · {{ view.status|capitalize }} itinerary</title>
+  <title>{{ view.title }} · {{ view.status_label }} itinerary</title>
   <style>{{ css }}</style>
 </head>
 <body class="{% if options.print_images %}print-images{% else %}no-print-images{% endif %}">
@@ -22,10 +22,23 @@
   <header class="trip-hero" id="trip-summary">
     <div class="hero-copy">
       <div class="status-line">
-        <span class="document-status document-status--{{ view.status }}">{{ view.status|capitalize }}</span>
+        <span class="document-status document-status--{% if not view.lifecycle_safe %}unsafe{% else %}{{ view.document_status }}{% endif %}" lang="ru">{{ view.status_label }}</span>
         <span>{{ view.summary.date_range }}</span>
         <span>{{ view.summary.traveler_count }} travellers</span>
       </div>
+      <p class="verification-line" lang="ru"><strong>Уровень проверки:</strong> {{ view.verification_label }}</p>
+      <dl class="lifecycle-details" aria-label="Canonical lifecycle values">
+        <div><dt>document_status</dt><dd>{{ view.document_status }}</dd></div>
+        <div><dt>verification_level</dt><dd>{{ view.verification_level }}</dd></div>
+        <div><dt>finalization_basis</dt><dd>{{ view.finalization_basis or 'none' }}</dd></div>
+      </dl>
+      {% if view.lifecycle_warning %}
+      <div class="lifecycle-warning" role="alert" lang="ru">
+        <strong>Несогласованное состояние</strong>
+        <p>{{ view.lifecycle_warning }}</p>
+        {% if view.declared_final_label %}<p>Заявленное основание: {{ view.declared_final_label }}</p>{% endif %}
+      </div>
+      {% endif %}
       <h1>{{ view.title }}</h1>
       <p class="trip-thesis">{{ view.summary.thesis }}</p>
       <p class="route-ribbon"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg> {{ view.summary.route_text }}</p>
@@ -57,10 +70,11 @@
         </strong>
         <span>{{ view.budget.confidence|capitalize }} confidence · {{ view.budget.unknown_count }} unknown</span>
       </div>
-      {% for finding in view.summary.blockers[:3] %}
+      {% for finding in (view.unaccepted_blockers + view.accepted_blockers)[:3] %}
       <div class="warning-block">
         <p class="status-with-icon"><svg class="icon" aria-hidden="true"><use href="#icon-stop"></use></svg><strong>Blocking · {{ finding.code }}</strong></p>
         <p>{{ finding.message }}</p>
+        {% if finding.acceptance_label %}<p class="acceptance-label" lang="ru">{{ finding.acceptance_label }}</p>{% endif %}
       </div>
       {% endfor %}
     </aside>
@@ -72,6 +86,7 @@
         <summary><svg class="icon" aria-hidden="true"><use href="#icon-menu"></use></svg> Contents</summary>
         <ol>
           <li><a href="#trip-summary">Trip summary</a></li>
+          <li><a href="#blockers">Blockers</a></li>
           <li><a href="#route-overview">Route and days</a></li>
           <li><a href="#open-decisions">Open decisions</a></li>
           <li><a href="#detailed-days">Detailed days</a></li>
@@ -91,6 +106,39 @@
     <main class="document-main" id="main-content">
       <p class="enhancement-error" data-enhancement-error hidden>Interactive controls are unavailable. The complete itinerary remains below.</p>
       <p class="screen-reader-live" aria-live="polite" aria-atomic="true" data-live-region></p>
+
+      <section class="document-section blocker-section" id="blockers" aria-labelledby="blockers-title">
+        <h2 id="blockers-title">Blockers</h2>
+        <p>Blockers remain unresolved and blocking until the canonical trip state changes.</p>
+
+        <section aria-labelledby="unaccepted-blockers-title">
+          <h3 id="unaccepted-blockers-title" lang="ru">Непринятые блокеры</h3>
+          <ul class="blocker-list">
+            {% for blocker in view.unaccepted_blockers %}
+            <li class="blocker-item blocker-item--unaccepted">
+              <p class="status-with-icon"><svg class="icon" aria-hidden="true"><use href="#icon-stop"></use></svg><strong>{{ blocker.code }} · Blocking · Unresolved</strong></p>
+              <p>{{ blocker.message }}</p>
+              <p>Affects: {{ blocker.affected_ids|join(', ') or 'Unknown' }} · Path: {{ blocker.path }}</p>
+            </li>
+            {% else %}<li>No unaccepted blockers.</li>{% endfor %}
+          </ul>
+        </section>
+
+        <section aria-labelledby="accepted-blockers-title">
+          <h3 id="accepted-blockers-title" lang="ru">Принятые блокеры</h3>
+          <ul class="blocker-list">
+            {% for blocker in view.accepted_blockers %}
+            <li class="blocker-item blocker-item--accepted">
+              <p class="status-with-icon"><svg class="icon" aria-hidden="true"><use href="#icon-stop"></use></svg><strong>{{ blocker.code }} · Blocking · Unresolved</strong></p>
+              <p>{{ blocker.message }}</p>
+              <p class="acceptance-label" lang="ru">{{ blocker.acceptance_label }}</p>
+              <p>Accepted at: {{ blocker.accepted_at }} · Rationale: {{ blocker.rationale }}</p>
+              <p>Affects: {{ blocker.affected_ids|join(', ') or 'Unknown' }} · Path: {{ blocker.path }}</p>
+            </li>
+            {% else %}<li>No accepted blockers.</li>{% endfor %}
+          </ul>
+        </section>
+      </section>
 
       <section class="document-section" id="route-overview" aria-labelledby="route-title">
         <h2 id="route-title">Route and day overview</h2>
@@ -168,15 +216,6 @@
             </div>
           </header>
 
-          {% if media.get(day.day_id) %}
-          {% set photo = media.get(day.day_id) %}
-          <figure class="day-photo" data-optional-media>
-            <img src="{{ photo.data_url }}" alt="{{ photo.alt }}" width="1200" height="800" loading="lazy" decoding="async" data-media-image>
-            <p class="media-fallback" data-media-fallback hidden>Photo unavailable; the day plan remains complete.</p>
-            <figcaption>Source: {{ photo.source_id }} · Licence: {{ photo.license }}</figcaption>
-          </figure>
-          {% endif %}
-
           <div class="day-layout">
             <div class="day-primary">
               <h4>Timeline</h4>
@@ -198,8 +237,10 @@
               {% endif %}
               {% for scenario in day.scenarios %}
               <section class="scenario-panel" data-scenario="{{ scenario.kind }}" aria-label="{{ scenario.kind|capitalize }} scenario">
-                <span class="scenario-kind">{{ scenario.kind }}</span>
-                <strong>{{ scenario.title }}</strong>
+                <header class="scenario-heading">
+                  <span class="scenario-kind">{{ scenario.kind }}</span>
+                  <strong>{{ scenario.title }}</strong>
+                </header>
                 <p>{{ scenario.description }}</p>
               </section>
               {% else %}<p>No scenarios recorded.</p>{% endfor %}
@@ -218,10 +259,10 @@
                 {% for constraint in day.critical_constraints %}<li>{{ constraint }}</li>{% else %}<li>No critical constraints recorded.</li>{% endfor %}
               </ul>
               <dl>
-                <dt>Overnight</dt><dd>{{ day.overnight }}</dd>
-                <dt>Travel</dt><dd>{{ day.travel }}</dd>
-                <dt>Load</dt><dd>{{ day.load|capitalize }}</dd>
-                <dt>Last checked</dt><dd>{{ day.last_checked }}</dd>
+                <div class="metadata-pair"><dt>Overnight</dt><dd>{{ day.overnight }}</dd></div>
+                <div class="metadata-pair"><dt>Travel</dt><dd>{{ day.travel }}</dd></div>
+                <div class="metadata-pair"><dt>Load</dt><dd>{{ day.load|capitalize }}</dd></div>
+                <div class="metadata-pair"><dt>Last checked</dt><dd>{{ day.last_checked }}</dd></div>
               </dl>
               {% if day.links %}
               <h4>Contextual actions</h4>
@@ -233,6 +274,15 @@
               {% endif %}
             </aside>
           </div>
+
+          {% if media.get(day.day_id) %}
+          {% set photo = media.get(day.day_id) %}
+          <figure class="day-photo" data-optional-media>
+            <img src="{{ photo.data_url }}" alt="{{ photo.alt }}" width="1200" height="800" loading="lazy" decoding="async" data-media-image>
+            <p class="media-fallback" data-media-fallback hidden>Photo unavailable; the day plan remains complete.</p>
+            <figcaption>Source: {{ photo.source_id }} · Licence: {{ photo.license }}</figcaption>
+          </figure>
+          {% endif %}
 
           <nav class="day-nav" aria-label="Adjacent days">
             {% if not loop.first %}<a href="#{{ view.days[loop.index0 - 1].day_id }}">← Previous day</a>{% else %}<span></span>{% endif %}
@@ -263,16 +313,17 @@
           <div><span>Estimate quality</span><strong>{{ view.budget.confidence|capitalize }}</strong><span>{{ view.budget.unknown_count }} unknown amounts</span></div>
         </div>
         <table class="budget-table">
-          <thead><tr><th>Category</th><th>Range</th><th>Type</th><th>Confidence</th></tr></thead>
+          <thead><tr><th>Category</th><th>Range</th><th>Type</th><th>Basis</th><th>Confidence</th></tr></thead>
           <tbody>
             {% for category in view.budget.categories %}
             <tr>
               <td data-label="Category">{{ category.category }}</td>
               <td data-label="Range">{% if category.minimum is not none %}{{ "{:,.0f}".format(category.minimum) }} — {{ "{:,.0f}".format(category.maximum) }} {{ category.currency }}{% else %}Unknown{% endif %}</td>
               <td data-label="Type">{{ category.amount_type|replace('_', ' ') }}</td>
+              <td data-label="Basis">{{ category.basis|replace('_', ' ') }}</td>
               <td data-label="Confidence">{{ category.confidence }}</td>
             </tr>
-            {% else %}<tr><td colspan="4">No budget items recorded.</td></tr>{% endfor %}
+            {% else %}<tr><td colspan="5">No budget items recorded.</td></tr>{% endfor %}
           </tbody>
         </table>
       </section>
@@ -292,6 +343,11 @@
 
       <section class="document-section" id="sources" aria-labelledby="sources-title">
         <h2 id="sources-title">Sources and document version</h2>
+        <p class="document-version" id="document-version">
+          <strong>Document version</strong> · {{ view.trip_id }} ·
+          <span lang="ru">{{ view.status_label }} · {{ view.verification_label }}</span> ·
+          Generated {{ view.generated_at.isoformat() }} · Artefact v0.1
+        </p>
         <ul class="source-list">
           {% for source in view.sources %}
           <li class="source-item">
@@ -306,7 +362,7 @@
   </div>
 
   <footer class="document-footer">
-    <strong>{{ view.title }}</strong> · {{ view.trip_id }} · {{ view.status|capitalize }} · Generated {{ view.generated_at.isoformat() }} · Artefact v0.1
+    <strong>{{ view.title }}</strong> · {{ view.trip_id }} · <span lang="ru">{{ view.status_label }} · {{ view.verification_label }}</span> · Generated {{ view.generated_at.isoformat() }} · Artefact v0.1
   </footer>
   <script>{{ js }}</script>
 </body>

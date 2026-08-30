@@ -28,6 +28,7 @@ def test_contents_and_all_core_sections_remain_linked_without_javascript(
     assert '<details class="contents" open>' in html
     for anchor in (
         "#trip-summary",
+        "#blockers",
         "#route-overview",
         "#open-decisions",
         "#day-1",
@@ -37,6 +38,8 @@ def test_contents_and_all_core_sections_remain_linked_without_javascript(
         "#sources",
     ):
         assert f'href="{anchor}"' in html
+    assert "Rail booking window is not open yet." in html
+    assert 'id="blockers"' in html
 
 
 def test_print_keeps_both_scenarios_and_removes_interactive_chrome(
@@ -50,3 +53,31 @@ def test_print_keeps_both_scenarios_and_removes_interactive_chrome(
     assert "display: block !important" in html
     assert ".interactive-controls" in html
     assert "display: none !important" in html
+    assert "article[data-day][hidden]" in html
+    assert ".day-overview li[hidden]" in html
+    print_css = html[html.index("@media print") :]
+    assert ".source-item" in print_css
+
+
+def test_print_removes_the_fixed_page_decoration(japan_view: ItineraryView) -> None:
+    """Catch the fixed background layer generating a mostly blank trailing print page."""
+    html = render_html(japan_view, media={}, options=DEFAULTS)
+    print_css = html[html.index("@media print") :]
+
+    assert "body::before" in print_css
+    assert "display: none !important" in print_css[print_css.index("body::before") :]
+
+
+def test_print_keeps_version_provenance_without_a_footer_only_page(
+    japan_view: ItineraryView,
+) -> None:
+    """Catch version provenance depending on a screen footer that paginates alone."""
+    html = render_html(japan_view, media={}, options=DEFAULTS)
+    sources = html[html.index('id="sources"') : html.index("</main>")]
+    print_css = html[html.index("@media print") :]
+
+    assert 'id="document-version"' in sources
+    assert japan_view.status_label in sources
+    assert japan_view.generated_at.isoformat() in sources
+    footer_rules = print_css[print_css.index(".document-footer") :]
+    assert "display: none !important" in footer_rules

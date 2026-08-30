@@ -15,7 +15,6 @@ from . import __version__
 from .checks import CheckReport, run_checks
 from .render.html import DEFAULTS as HTML_DEFAULTS
 from .render.html import write_html
-from .render.pdf import render_pdf
 from .render.viewmodel import build_view
 from .state import load_trip, validate_trip
 from .workspace import PROJECT_REMINDER, WorkspaceError, initialize_trip
@@ -40,9 +39,6 @@ def _parser() -> argparse.ArgumentParser:
     render.add_argument("--output", type=Path, required=True)
     render.add_argument("--at", type=datetime.fromisoformat, required=True)
 
-    pdf = commands.add_parser("pdf", help="Create a PDF from ready HTML")
-    pdf.add_argument("html", type=Path)
-    pdf.add_argument("--output", type=Path, required=True)
     return parser
 
 
@@ -58,7 +54,7 @@ def _print_report(report: CheckReport) -> None:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    """Run one of the four internal helper commands."""
+    """Run one of the three internal helper commands."""
     arguments = list(argv) if argv is not None else sys.argv[1:]
     if not arguments:
         print(f"travel-planner {__version__}")
@@ -100,12 +96,6 @@ def main(argv: Sequence[str] | None = None) -> int:
         write_html(build_view(state, report, args.at), args.output, HTML_DEFAULTS)
         print(f"Rendered HTML: {args.output}")
         return 0
-
-    if args.command == "pdf":
-        result = render_pdf(args.html, args.output)
-        stream = sys.stdout if result.created else sys.stderr
-        print(f"{result.code}: {result.message}", file=stream)
-        return 0 if result.created else 4
 
     _parser().print_help()
     return 2

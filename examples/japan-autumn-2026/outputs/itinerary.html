@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="light">
-  <title>Japan autumn 2026 — anonymized planning example · Draft itinerary</title>
+  <title>Japan autumn 2026 — anonymized planning example · Draft — без проверки itinerary</title>
   <style>:root {
   --mineral: #edf1ec;
   --paper: #fffdf7;
@@ -46,6 +46,7 @@ body {
   color: var(--teal);
   font-size: 1rem;
   line-height: 1.65;
+  overflow-wrap: anywhere;
 }
 
 body::before {
@@ -119,6 +120,12 @@ a:hover {
   background: var(--paper);
 }
 
+.trip-hero *,
+.document-grid *,
+.document-footer * {
+  min-width: 0;
+}
+
 .trip-hero {
   position: relative;
   min-height: min(48rem, calc(100vh - 2rem));
@@ -164,10 +171,50 @@ a:hover {
 }
 
 .document-status--draft,
+.document-status--unsafe,
 .status--blocking,
 .status--conflicting {
   color: #8c2d20;
   background: #fff1ec;
+}
+
+.verification-line {
+  margin: var(--space-2) 0 0;
+  color: var(--ink-soft);
+}
+
+.lifecycle-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  margin: var(--space-1) 0 0;
+  color: var(--ink-soft);
+  font-size: 0.875rem;
+}
+
+.lifecycle-details div {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.lifecycle-details dt {
+  font-weight: 700;
+}
+
+.lifecycle-details dd {
+  margin: 0;
+}
+
+.lifecycle-warning {
+  margin-block: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border: 2px solid #8c2d20;
+  background: #fff1ec;
+  color: #6f2017;
+}
+
+.lifecycle-warning p {
+  margin: 0.25rem 0 0;
 }
 
 .document-status--final,
@@ -521,6 +568,7 @@ button[aria-pressed="true"] {
 }
 
 .decision-list,
+.blocker-list,
 .readiness-list,
 .source-list,
 .risk-list {
@@ -530,11 +578,32 @@ button[aria-pressed="true"] {
 }
 
 .decision-item,
+.blocker-item,
 .readiness-item,
 .source-item,
 .risk-item {
   padding: var(--space-3) 0;
   border-top: 1px solid var(--line);
+}
+
+.blocker-item {
+  padding-inline: var(--space-2);
+  border-left: 4px solid var(--maple);
+  background: #fff4ef;
+}
+
+.blocker-item + .blocker-item {
+  margin-top: var(--space-2);
+}
+
+.blocker-item--accepted {
+  border-left-color: var(--brass);
+  background: #fff7db;
+}
+
+.acceptance-label {
+  font-weight: 750;
+  color: #6f2017;
 }
 
 .decision-question {
@@ -756,6 +825,7 @@ button[aria-pressed="true"] {
 
 .budget-table {
   width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
 }
 
@@ -779,6 +849,14 @@ button[aria-pressed="true"] {
 
 .source-url {
   overflow-wrap: anywhere;
+}
+
+.document-version {
+  margin: var(--space-3) 0 0;
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--line);
+  color: var(--ink-soft);
+  font-size: 0.875rem;
 }
 
 .document-footer {
@@ -837,7 +915,7 @@ button[aria-pressed="true"] {
   }
 
   .day-context {
-    order: 0;
+    order: -1;
   }
 }
 
@@ -1100,13 +1178,12 @@ button[aria-pressed="true"] {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  :root {
     scroll-behavior: auto !important;
-    transition-duration: 0.01ms !important;
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
+  }
+
+  .contents {
+    transition: none;
   }
 }
 
@@ -1127,6 +1204,10 @@ button[aria-pressed="true"] {
 
   body {
     padding: 0;
+  }
+
+  body::before {
+    display: none !important;
   }
 
   h1 {
@@ -1153,6 +1234,10 @@ button[aria-pressed="true"] {
     break-after: page;
   }
 
+  .stamp {
+    transform: none;
+  }
+
   .document-grid {
     display: block;
   }
@@ -1162,7 +1247,8 @@ button[aria-pressed="true"] {
   .day-nav,
   .skip-link,
   .screen-reader-live,
-  .enhancement-error {
+  .enhancement-error,
+  .document-footer {
     display: none !important;
   }
 
@@ -1170,27 +1256,42 @@ button[aria-pressed="true"] {
     display: block !important;
   }
 
+  article[data-day][hidden] {
+    display: block !important;
+  }
+
+  .day-overview li[hidden] {
+    display: list-item !important;
+  }
+
   .document-section {
     padding: 8mm 0 0;
   }
 
   .day-article {
-    break-before: page;
     padding: 8mm 0 0;
   }
 
-  .day-article:first-of-type {
-    break-before: auto;
-  }
-
-  .day-article,
   .warning-block,
+  .blocker-item,
   .constraint-list li,
+  .metadata-pair,
   .timeline-event,
   .decision-item,
   .readiness-item,
-  .risk-item {
+  .risk-item,
+  .source-item {
     break-inside: avoid;
+  }
+
+  .scenario-heading {
+    break-after: avoid;
+    break-inside: avoid;
+  }
+
+  .scenario-panel > p {
+    orphans: 2;
+    widows: 2;
   }
 
   h2,
@@ -1239,10 +1340,16 @@ button[aria-pressed="true"] {
   <header class="trip-hero" id="trip-summary">
     <div class="hero-copy">
       <div class="status-line">
-        <span class="document-status document-status--draft">Draft</span>
+        <span class="document-status document-status--draft" lang="ru">Draft — без проверки</span>
         <span>2026-11-02 — 2026-11-13</span>
         <span>2 travellers</span>
       </div>
+      <p class="verification-line" lang="ru"><strong>Уровень проверки:</strong> Не проверено</p>
+      <dl class="lifecycle-details" aria-label="Canonical lifecycle values">
+        <div><dt>document_status</dt><dd>draft</dd></div>
+        <div><dt>verification_level</dt><dd>none</dd></div>
+        <div><dt>finalization_basis</dt><dd>none</dd></div>
+      </dl>
       <h1>Japan autumn 2026 — anonymized planning example</h1>
       <p class="trip-thesis">A measured three-region autumn route with flexible arrival, rail-transfer buffers, and local weather backups rather than live operational claims.</p>
       <p class="route-ribbon"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg> Tokyo → Kyoto → Kanazawa</p>
@@ -1281,6 +1388,7 @@ button[aria-pressed="true"] {
         <summary><svg class="icon" aria-hidden="true"><use href="#icon-menu"></use></svg> Contents</summary>
         <ol>
           <li><a href="#trip-summary">Trip summary</a></li>
+          <li><a href="#blockers">Blockers</a></li>
           <li><a href="#route-overview">Route and days</a></li>
           <li><a href="#open-decisions">Open decisions</a></li>
           <li><a href="#detailed-days">Detailed days</a></li>
@@ -1299,6 +1407,23 @@ button[aria-pressed="true"] {
     <main class="document-main" id="main-content">
       <p class="enhancement-error" data-enhancement-error hidden>Interactive controls are unavailable. The complete itinerary remains below.</p>
       <p class="screen-reader-live" aria-live="polite" aria-atomic="true" data-live-region></p>
+
+      <section class="document-section blocker-section" id="blockers" aria-labelledby="blockers-title">
+        <h2 id="blockers-title">Blockers</h2>
+        <p>Blockers remain unresolved and blocking until the canonical trip state changes.</p>
+
+        <section aria-labelledby="unaccepted-blockers-title">
+          <h3 id="unaccepted-blockers-title" lang="ru">Непринятые блокеры</h3>
+          <ul class="blocker-list">
+<li>No unaccepted blockers.</li>          </ul>
+        </section>
+
+        <section aria-labelledby="accepted-blockers-title">
+          <h3 id="accepted-blockers-title" lang="ru">Принятые блокеры</h3>
+          <ul class="blocker-list">
+<li>No accepted blockers.</li>          </ul>
+        </section>
+      </section>
 
       <section class="document-section" id="route-overview" aria-labelledby="route-title">
         <h2 id="route-title">Route and day overview</h2>
@@ -1441,7 +1566,6 @@ button[aria-pressed="true"] {
             </div>
           </header>
 
-
           <div class="day-layout">
             <div class="day-primary">
               <h4>Timeline</h4>
@@ -1458,8 +1582,10 @@ button[aria-pressed="true"] {
                 <button type="button" data-show-scenario="backup" aria-pressed="false">Backup</button>
               </div>
               <section class="scenario-panel" data-scenario="primary" aria-label="Primary scenario">
-                <span class="scenario-kind">primary</span>
-                <strong>Neighbourhood walk</strong>
+                <header class="scenario-heading">
+                  <span class="scenario-kind">primary</span>
+                  <strong>Neighbourhood walk</strong>
+                </header>
                 <p>Walk only if energy and weather allow.</p>
               </section>
 
@@ -1473,13 +1599,14 @@ button[aria-pressed="true"] {
               <ul class="constraint-list">
 <li>No critical constraints recorded.</li>              </ul>
               <dl>
-                <dt>Overnight</dt><dd>Tokyo</dd>
-                <dt>Travel</dt><dd>Arrival transfer is intentionally flexible.</dd>
-                <dt>Load</dt><dd>Light</dd>
-                <dt>Last checked</dt><dd>2026-08-28</dd>
+                <div class="metadata-pair"><dt>Overnight</dt><dd>Tokyo</dd></div>
+                <div class="metadata-pair"><dt>Travel</dt><dd>Arrival transfer is intentionally flexible.</dd></div>
+                <div class="metadata-pair"><dt>Load</dt><dd>Light</dd></div>
+                <div class="metadata-pair"><dt>Last checked</dt><dd>2026-08-28</dd></div>
               </dl>
             </aside>
           </div>
+
 
           <nav class="day-nav" aria-label="Adjacent days">
 <span></span><a href="#day-2">Next day →</a>          </nav>
@@ -1495,7 +1622,6 @@ button[aria-pressed="true"] {
               <span class="status status--selected">selected</span>
             </div>
           </header>
-
 
           <div class="day-layout">
             <div class="day-primary">
@@ -1513,8 +1639,10 @@ button[aria-pressed="true"] {
                 <button type="button" data-show-scenario="backup" aria-pressed="false">Backup</button>
               </div>
               <section class="scenario-panel" data-scenario="primary" aria-label="Primary scenario">
-                <span class="scenario-kind">primary</span>
-                <strong>Tokyo walk</strong>
+                <header class="scenario-heading">
+                  <span class="scenario-kind">primary</span>
+                  <strong>Tokyo walk</strong>
+                </header>
                 <p>Choose a nearby cultural area.</p>
               </section>
 
@@ -1528,13 +1656,14 @@ button[aria-pressed="true"] {
               <ul class="constraint-list">
 <li>No critical constraints recorded.</li>              </ul>
               <dl>
-                <dt>Overnight</dt><dd>Tokyo</dd>
-                <dt>Travel</dt><dd>Walk and local transit.</dd>
-                <dt>Load</dt><dd>Moderate</dd>
-                <dt>Last checked</dt><dd>2026-08-28</dd>
+                <div class="metadata-pair"><dt>Overnight</dt><dd>Tokyo</dd></div>
+                <div class="metadata-pair"><dt>Travel</dt><dd>Walk and local transit.</dd></div>
+                <div class="metadata-pair"><dt>Load</dt><dd>Moderate</dd></div>
+                <div class="metadata-pair"><dt>Last checked</dt><dd>2026-08-28</dd></div>
               </dl>
             </aside>
           </div>
+
 
           <nav class="day-nav" aria-label="Adjacent days">
 <a href="#day-1">← Previous day</a><a href="#day-3">Next day →</a>          </nav>
@@ -1550,7 +1679,6 @@ button[aria-pressed="true"] {
               <span class="status status--recheck">recheck</span>
             </div>
           </header>
-
 
           <div class="day-layout">
             <div class="day-primary">
@@ -1568,13 +1696,17 @@ button[aria-pressed="true"] {
                 <button type="button" data-show-scenario="backup" aria-pressed="false">Backup</button>
               </div>
               <section class="scenario-panel" data-scenario="primary" aria-label="Primary scenario">
-                <span class="scenario-kind">primary</span>
-                <strong>Early visit</strong>
+                <header class="scenario-heading">
+                  <span class="scenario-kind">primary</span>
+                  <strong>Early visit</strong>
+                </header>
                 <p>Use an early arrival to reduce crowd risk.</p>
               </section>
               <section class="scenario-panel" data-scenario="backup" aria-label="Backup scenario">
-                <span class="scenario-kind">backup</span>
-                <strong>Local museum</strong>
+                <header class="scenario-heading">
+                  <span class="scenario-kind">backup</span>
+                  <strong>Local museum</strong>
+                </header>
                 <p>Weather-independent fallback.</p>
               </section>
 
@@ -1588,13 +1720,14 @@ button[aria-pressed="true"] {
               <ul class="constraint-list">
 <li>No critical constraints recorded.</li>              </ul>
               <dl>
-                <dt>Overnight</dt><dd>Tokyo</dd>
-                <dt>Travel</dt><dd>Local transit with buffer.</dd>
-                <dt>Load</dt><dd>Moderate</dd>
-                <dt>Last checked</dt><dd>2026-08-28</dd>
+                <div class="metadata-pair"><dt>Overnight</dt><dd>Tokyo</dd></div>
+                <div class="metadata-pair"><dt>Travel</dt><dd>Local transit with buffer.</dd></div>
+                <div class="metadata-pair"><dt>Load</dt><dd>Moderate</dd></div>
+                <div class="metadata-pair"><dt>Last checked</dt><dd>2026-08-28</dd></div>
               </dl>
             </aside>
           </div>
+
 
           <nav class="day-nav" aria-label="Adjacent days">
 <a href="#day-2">← Previous day</a><a href="#day-4">Next day →</a>          </nav>
@@ -1610,7 +1743,6 @@ button[aria-pressed="true"] {
               <span class="status status--recheck">recheck</span>
             </div>
           </header>
-
 
           <div class="day-layout">
             <div class="day-primary">
@@ -1628,8 +1760,10 @@ button[aria-pressed="true"] {
                 <button type="button" data-show-scenario="backup" aria-pressed="false">Backup</button>
               </div>
               <section class="scenario-panel" data-scenario="primary" aria-label="Primary scenario">
-                <span class="scenario-kind">primary</span>
-                <strong>Check-in and local walk</strong>
+                <header class="scenario-heading">
+                  <span class="scenario-kind">primary</span>
+                  <strong>Check-in and local walk</strong>
+                </header>
                 <p>Keep evening flexible after transfer.</p>
               </section>
 
@@ -1643,13 +1777,14 @@ button[aria-pressed="true"] {
               <ul class="constraint-list">
 <li>No critical constraints recorded.</li>              </ul>
               <dl>
-                <dt>Overnight</dt><dd>Kyoto</dd>
-                <dt>Travel</dt><dd>Confirm final rail timing with provider before departure.</dd>
-                <dt>Load</dt><dd>Light</dd>
-                <dt>Last checked</dt><dd>2026-08-28</dd>
+                <div class="metadata-pair"><dt>Overnight</dt><dd>Kyoto</dd></div>
+                <div class="metadata-pair"><dt>Travel</dt><dd>Confirm final rail timing with provider before departure.</dd></div>
+                <div class="metadata-pair"><dt>Load</dt><dd>Light</dd></div>
+                <div class="metadata-pair"><dt>Last checked</dt><dd>2026-08-28</dd></div>
               </dl>
             </aside>
           </div>
+
 
           <nav class="day-nav" aria-label="Adjacent days">
 <a href="#day-3">← Previous day</a><a href="#day-5">Next day →</a>          </nav>
@@ -1665,7 +1800,6 @@ button[aria-pressed="true"] {
               <span class="status status--selected">selected</span>
 <span class="status status--recheck">Weather-sensitive</span>            </div>
           </header>
-
 
           <div class="day-layout">
             <div class="day-primary">
@@ -1683,13 +1817,17 @@ button[aria-pressed="true"] {
                 <button type="button" data-show-scenario="backup" aria-pressed="false">Backup</button>
               </div>
               <section class="scenario-panel" data-scenario="primary" aria-label="Primary scenario">
-                <span class="scenario-kind">primary</span>
-                <strong>District walk</strong>
+                <header class="scenario-heading">
+                  <span class="scenario-kind">primary</span>
+                  <strong>District walk</strong>
+                </header>
                 <p>Follow the local route.</p>
               </section>
               <section class="scenario-panel" data-scenario="backup" aria-label="Backup scenario">
-                <span class="scenario-kind">backup</span>
-                <strong>Craft museum</strong>
+                <header class="scenario-heading">
+                  <span class="scenario-kind">backup</span>
+                  <strong>Craft museum</strong>
+                </header>
                 <p>Indoor backup.</p>
               </section>
 
@@ -1703,13 +1841,14 @@ button[aria-pressed="true"] {
               <ul class="constraint-list">
 <li>No critical constraints recorded.</li>              </ul>
               <dl>
-                <dt>Overnight</dt><dd>Kyoto</dd>
-                <dt>Travel</dt><dd>Walk and local transit.</dd>
-                <dt>Load</dt><dd>Moderate</dd>
-                <dt>Last checked</dt><dd>2026-08-28</dd>
+                <div class="metadata-pair"><dt>Overnight</dt><dd>Kyoto</dd></div>
+                <div class="metadata-pair"><dt>Travel</dt><dd>Walk and local transit.</dd></div>
+                <div class="metadata-pair"><dt>Load</dt><dd>Moderate</dd></div>
+                <div class="metadata-pair"><dt>Last checked</dt><dd>2026-08-28</dd></div>
               </dl>
             </aside>
           </div>
+
 
           <nav class="day-nav" aria-label="Adjacent days">
 <a href="#day-4">← Previous day</a><a href="#day-6">Next day →</a>          </nav>
@@ -1725,7 +1864,6 @@ button[aria-pressed="true"] {
               <span class="status status--recheck">recheck</span>
 <span class="status status--recheck">Weather-sensitive</span>            </div>
           </header>
-
 
           <div class="day-layout">
             <div class="day-primary">
@@ -1743,13 +1881,17 @@ button[aria-pressed="true"] {
                 <button type="button" data-show-scenario="backup" aria-pressed="false">Backup</button>
               </div>
               <section class="scenario-panel" data-scenario="primary" aria-label="Primary scenario">
-                <span class="scenario-kind">primary</span>
-                <strong>Garden visit</strong>
+                <header class="scenario-heading">
+                  <span class="scenario-kind">primary</span>
+                  <strong>Garden visit</strong>
+                </header>
                 <p>Use only when weather and access remain suitable.</p>
               </section>
               <section class="scenario-panel" data-scenario="backup" aria-label="Backup scenario">
-                <span class="scenario-kind">backup</span>
-                <strong>Indoor museum</strong>
+                <header class="scenario-heading">
+                  <span class="scenario-kind">backup</span>
+                  <strong>Indoor museum</strong>
+                </header>
                 <p>Local rain fallback without changing lodging.</p>
               </section>
 
@@ -1763,13 +1905,14 @@ button[aria-pressed="true"] {
               <ul class="constraint-list">
 <li>Confirm seasonal conditions close to travel.</li>              </ul>
               <dl>
-                <dt>Overnight</dt><dd>Kyoto</dd>
-                <dt>Travel</dt><dd>Local transit only.</dd>
-                <dt>Load</dt><dd>Moderate</dd>
-                <dt>Last checked</dt><dd>2026-08-28</dd>
+                <div class="metadata-pair"><dt>Overnight</dt><dd>Kyoto</dd></div>
+                <div class="metadata-pair"><dt>Travel</dt><dd>Local transit only.</dd></div>
+                <div class="metadata-pair"><dt>Load</dt><dd>Moderate</dd></div>
+                <div class="metadata-pair"><dt>Last checked</dt><dd>2026-08-28</dd></div>
               </dl>
             </aside>
           </div>
+
 
           <nav class="day-nav" aria-label="Adjacent days">
 <a href="#day-5">← Previous day</a><a href="#day-7">Next day →</a>          </nav>
@@ -1785,7 +1928,6 @@ button[aria-pressed="true"] {
               <span class="status status--recheck">recheck</span>
 <span class="status status--recheck">Weather-sensitive</span>            </div>
           </header>
-
 
           <div class="day-layout">
             <div class="day-primary">
@@ -1803,13 +1945,17 @@ button[aria-pressed="true"] {
                 <button type="button" data-show-scenario="backup" aria-pressed="false">Backup</button>
               </div>
               <section class="scenario-panel" data-scenario="primary" aria-label="Primary scenario">
-                <span class="scenario-kind">primary</span>
-                <strong>Temple area</strong>
+                <header class="scenario-heading">
+                  <span class="scenario-kind">primary</span>
+                  <strong>Temple area</strong>
+                </header>
                 <p>Outdoor cultural plan.</p>
               </section>
               <section class="scenario-panel" data-scenario="backup" aria-label="Backup scenario">
-                <span class="scenario-kind">backup</span>
-                <strong>Indoor collection</strong>
+                <header class="scenario-heading">
+                  <span class="scenario-kind">backup</span>
+                  <strong>Indoor collection</strong>
+                </header>
                 <p>Rain fallback.</p>
               </section>
 
@@ -1823,13 +1969,14 @@ button[aria-pressed="true"] {
               <ul class="constraint-list">
 <li>No critical constraints recorded.</li>              </ul>
               <dl>
-                <dt>Overnight</dt><dd>Kyoto</dd>
-                <dt>Travel</dt><dd>Local transit only.</dd>
-                <dt>Load</dt><dd>Moderate</dd>
-                <dt>Last checked</dt><dd>2026-08-28</dd>
+                <div class="metadata-pair"><dt>Overnight</dt><dd>Kyoto</dd></div>
+                <div class="metadata-pair"><dt>Travel</dt><dd>Local transit only.</dd></div>
+                <div class="metadata-pair"><dt>Load</dt><dd>Moderate</dd></div>
+                <div class="metadata-pair"><dt>Last checked</dt><dd>2026-08-28</dd></div>
               </dl>
             </aside>
           </div>
+
 
           <nav class="day-nav" aria-label="Adjacent days">
 <a href="#day-6">← Previous day</a><a href="#day-8">Next day →</a>          </nav>
@@ -1845,7 +1992,6 @@ button[aria-pressed="true"] {
               <span class="status status--recheck">recheck</span>
             </div>
           </header>
-
 
           <div class="day-layout">
             <div class="day-primary">
@@ -1863,8 +2009,10 @@ button[aria-pressed="true"] {
                 <button type="button" data-show-scenario="backup" aria-pressed="false">Backup</button>
               </div>
               <section class="scenario-panel" data-scenario="primary" aria-label="Primary scenario">
-                <span class="scenario-kind">primary</span>
-                <strong>Hotel check-in</strong>
+                <header class="scenario-heading">
+                  <span class="scenario-kind">primary</span>
+                  <strong>Hotel check-in</strong>
+                </header>
                 <p>Keep evening unscheduled.</p>
               </section>
 
@@ -1878,13 +2026,14 @@ button[aria-pressed="true"] {
               <ul class="constraint-list">
 <li>No critical constraints recorded.</li>              </ul>
               <dl>
-                <dt>Overnight</dt><dd>Kanazawa</dd>
-                <dt>Travel</dt><dd>Confirm provider timetable; retain station buffer.</dd>
-                <dt>Load</dt><dd>Light</dd>
-                <dt>Last checked</dt><dd>2026-08-28</dd>
+                <div class="metadata-pair"><dt>Overnight</dt><dd>Kanazawa</dd></div>
+                <div class="metadata-pair"><dt>Travel</dt><dd>Confirm provider timetable; retain station buffer.</dd></div>
+                <div class="metadata-pair"><dt>Load</dt><dd>Light</dd></div>
+                <div class="metadata-pair"><dt>Last checked</dt><dd>2026-08-28</dd></div>
               </dl>
             </aside>
           </div>
+
 
           <nav class="day-nav" aria-label="Adjacent days">
 <a href="#day-7">← Previous day</a><a href="#day-9">Next day →</a>          </nav>
@@ -1900,7 +2049,6 @@ button[aria-pressed="true"] {
               <span class="status status--selected">selected</span>
             </div>
           </header>
-
 
           <div class="day-layout">
             <div class="day-primary">
@@ -1918,8 +2066,10 @@ button[aria-pressed="true"] {
                 <button type="button" data-show-scenario="backup" aria-pressed="false">Backup</button>
               </div>
               <section class="scenario-panel" data-scenario="primary" aria-label="Primary scenario">
-                <span class="scenario-kind">primary</span>
-                <strong>District route</strong>
+                <header class="scenario-heading">
+                  <span class="scenario-kind">primary</span>
+                  <strong>District route</strong>
+                </header>
                 <p>Cultural day at walkable scale.</p>
               </section>
 
@@ -1933,13 +2083,14 @@ button[aria-pressed="true"] {
               <ul class="constraint-list">
 <li>No critical constraints recorded.</li>              </ul>
               <dl>
-                <dt>Overnight</dt><dd>Kanazawa</dd>
-                <dt>Travel</dt><dd>Walk and local bus.</dd>
-                <dt>Load</dt><dd>Moderate</dd>
-                <dt>Last checked</dt><dd>2026-08-28</dd>
+                <div class="metadata-pair"><dt>Overnight</dt><dd>Kanazawa</dd></div>
+                <div class="metadata-pair"><dt>Travel</dt><dd>Walk and local bus.</dd></div>
+                <div class="metadata-pair"><dt>Load</dt><dd>Moderate</dd></div>
+                <div class="metadata-pair"><dt>Last checked</dt><dd>2026-08-28</dd></div>
               </dl>
             </aside>
           </div>
+
 
           <nav class="day-nav" aria-label="Adjacent days">
 <a href="#day-8">← Previous day</a><a href="#day-10">Next day →</a>          </nav>
@@ -1955,7 +2106,6 @@ button[aria-pressed="true"] {
               <span class="status status--recheck">recheck</span>
 <span class="status status--recheck">Weather-sensitive</span>            </div>
           </header>
-
 
           <div class="day-layout">
             <div class="day-primary">
@@ -1973,13 +2123,17 @@ button[aria-pressed="true"] {
                 <button type="button" data-show-scenario="backup" aria-pressed="false">Backup</button>
               </div>
               <section class="scenario-panel" data-scenario="primary" aria-label="Primary scenario">
-                <span class="scenario-kind">primary</span>
-                <strong>Garden</strong>
+                <header class="scenario-heading">
+                  <span class="scenario-kind">primary</span>
+                  <strong>Garden</strong>
+                </header>
                 <p>Weather-dependent option.</p>
               </section>
               <section class="scenario-panel" data-scenario="backup" aria-label="Backup scenario">
-                <span class="scenario-kind">backup</span>
-                <strong>Museum</strong>
+                <header class="scenario-heading">
+                  <span class="scenario-kind">backup</span>
+                  <strong>Museum</strong>
+                </header>
                 <p>Indoor alternative.</p>
               </section>
 
@@ -1993,13 +2147,14 @@ button[aria-pressed="true"] {
               <ul class="constraint-list">
 <li>No critical constraints recorded.</li>              </ul>
               <dl>
-                <dt>Overnight</dt><dd>Kanazawa</dd>
-                <dt>Travel</dt><dd>Local transit.</dd>
-                <dt>Load</dt><dd>Moderate</dd>
-                <dt>Last checked</dt><dd>2026-08-28</dd>
+                <div class="metadata-pair"><dt>Overnight</dt><dd>Kanazawa</dd></div>
+                <div class="metadata-pair"><dt>Travel</dt><dd>Local transit.</dd></div>
+                <div class="metadata-pair"><dt>Load</dt><dd>Moderate</dd></div>
+                <div class="metadata-pair"><dt>Last checked</dt><dd>2026-08-28</dd></div>
               </dl>
             </aside>
           </div>
+
 
           <nav class="day-nav" aria-label="Adjacent days">
 <a href="#day-9">← Previous day</a><a href="#day-11">Next day →</a>          </nav>
@@ -2015,7 +2170,6 @@ button[aria-pressed="true"] {
               <span class="status status--selected">selected</span>
             </div>
           </header>
-
 
           <div class="day-layout">
             <div class="day-primary">
@@ -2033,8 +2187,10 @@ button[aria-pressed="true"] {
                 <button type="button" data-show-scenario="backup" aria-pressed="false">Backup</button>
               </div>
               <section class="scenario-panel" data-scenario="primary" aria-label="Primary scenario">
-                <span class="scenario-kind">primary</span>
-                <strong>Return visit</strong>
+                <header class="scenario-heading">
+                  <span class="scenario-kind">primary</span>
+                  <strong>Return visit</strong>
+                </header>
                 <p>Preserve user choice.</p>
               </section>
 
@@ -2048,13 +2204,14 @@ button[aria-pressed="true"] {
               <ul class="constraint-list">
 <li>No critical constraints recorded.</li>              </ul>
               <dl>
-                <dt>Overnight</dt><dd>Kanazawa</dd>
-                <dt>Travel</dt><dd>Local walking.</dd>
-                <dt>Load</dt><dd>Light</dd>
-                <dt>Last checked</dt><dd>2026-08-28</dd>
+                <div class="metadata-pair"><dt>Overnight</dt><dd>Kanazawa</dd></div>
+                <div class="metadata-pair"><dt>Travel</dt><dd>Local walking.</dd></div>
+                <div class="metadata-pair"><dt>Load</dt><dd>Light</dd></div>
+                <div class="metadata-pair"><dt>Last checked</dt><dd>2026-08-28</dd></div>
               </dl>
             </aside>
           </div>
+
 
           <nav class="day-nav" aria-label="Adjacent days">
 <a href="#day-10">← Previous day</a><a href="#day-12">Next day →</a>          </nav>
@@ -2070,7 +2227,6 @@ button[aria-pressed="true"] {
               <span class="status status--recheck">recheck</span>
             </div>
           </header>
-
 
           <div class="day-layout">
             <div class="day-primary">
@@ -2088,8 +2244,10 @@ button[aria-pressed="true"] {
                 <button type="button" data-show-scenario="backup" aria-pressed="false">Backup</button>
               </div>
               <section class="scenario-panel" data-scenario="primary" aria-label="Primary scenario">
-                <span class="scenario-kind">primary</span>
-                <strong>Checkout and transfer</strong>
+                <header class="scenario-heading">
+                  <span class="scenario-kind">primary</span>
+                  <strong>Checkout and transfer</strong>
+                </header>
                 <p>No fixed activity after checkout.</p>
               </section>
 
@@ -2103,13 +2261,14 @@ button[aria-pressed="true"] {
               <ul class="constraint-list">
 <li>No critical constraints recorded.</li>              </ul>
               <dl>
-                <dt>Overnight</dt><dd>Departure</dd>
-                <dt>Travel</dt><dd>Leave time for station or airport transfer.</dd>
-                <dt>Load</dt><dd>Light</dd>
-                <dt>Last checked</dt><dd>2026-08-28</dd>
+                <div class="metadata-pair"><dt>Overnight</dt><dd>Departure</dd></div>
+                <div class="metadata-pair"><dt>Travel</dt><dd>Leave time for station or airport transfer.</dd></div>
+                <div class="metadata-pair"><dt>Load</dt><dd>Light</dd></div>
+                <div class="metadata-pair"><dt>Last checked</dt><dd>2026-08-28</dd></div>
               </dl>
             </aside>
           </div>
+
 
           <nav class="day-nav" aria-label="Adjacent days">
 <a href="#day-11">← Previous day</a>          </nav>
@@ -2139,18 +2298,20 @@ button[aria-pressed="true"] {
           <div><span>Estimate quality</span><strong>Low</strong><span>0 unknown amounts</span></div>
         </div>
         <table class="budget-table">
-          <thead><tr><th>Category</th><th>Range</th><th>Type</th><th>Confidence</th></tr></thead>
+          <thead><tr><th>Category</th><th>Range</th><th>Type</th><th>Basis</th><th>Confidence</th></tr></thead>
           <tbody>
             <tr>
               <td data-label="Category">lodging</td>
               <td data-label="Range">240,000 — 240,000 JPY</td>
               <td data-label="Type">estimate</td>
+              <td data-label="Basis">per group</td>
               <td data-label="Confidence">medium</td>
             </tr>
             <tr>
               <td data-label="Category">transport</td>
               <td data-label="Range">90,000 — 90,000 JPY</td>
               <td data-label="Type">estimate</td>
+              <td data-label="Basis">per group</td>
               <td data-label="Confidence">low</td>
             </tr>
           </tbody>
@@ -2160,16 +2321,16 @@ button[aria-pressed="true"] {
       <section class="document-section" id="risks" aria-labelledby="risks-title">
         <h2 id="risks-title">Risks and backup plans</h2>
         <ul class="risk-list">
-          <li class="risk-item risk-item--warning">
-            <p class="status-with-icon"><svg class="icon" aria-hidden="true"><use href="#icon-recheck"></use></svg><strong>BUD-004 · Warning</strong></p>
-            <p>Budget has no explicit contingency buffer.</p>
-            <p>Affects: japan-autumn-2026-example · Confidence: medium</p>
-          </li>
-        </ul>
+<li>No open findings.</li>        </ul>
       </section>
 
       <section class="document-section" id="sources" aria-labelledby="sources-title">
         <h2 id="sources-title">Sources and document version</h2>
+        <p class="document-version" id="document-version">
+          <strong>Document version</strong> · japan-autumn-2026-example ·
+          <span lang="ru">Draft — без проверки · Не проверено</span> ·
+          Generated 2026-08-28T12:00:00+00:00 · Artefact v0.1
+        </p>
         <ul class="source-list">
           <li class="source-item">
             <p><strong>official-kanazawa-fixture · Frozen Kanazawa fixture</strong> <span class="status status--reported">reported</span> <span class="status status--aging">aging</span></p>
@@ -2192,7 +2353,7 @@ button[aria-pressed="true"] {
   </div>
 
   <footer class="document-footer">
-    <strong>Japan autumn 2026 — anonymized planning example</strong> · japan-autumn-2026-example · Draft · Generated 2026-08-28T12:00:00+00:00 · Artefact v0.1
+    <strong>Japan autumn 2026 — anonymized planning example</strong> · japan-autumn-2026-example · <span lang="ru">Draft — без проверки · Не проверено</span> · Generated 2026-08-28T12:00:00+00:00 · Artefact v0.1
   </footer>
   <script>(() => {
   "use strict";

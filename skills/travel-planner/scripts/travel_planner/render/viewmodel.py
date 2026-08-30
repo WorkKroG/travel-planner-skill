@@ -1,4 +1,4 @@
-"""Immutable presentation model shared by Markdown, HTML, and PDF adapters."""
+"""Immutable normalized presentation model for the shared HTML document."""
 
 from __future__ import annotations
 
@@ -104,6 +104,7 @@ class BudgetCategoryView:
     maximum: Decimal | None
     currency: str
     amount_type: str
+    basis: str
     confidence: str
 
 
@@ -130,6 +131,20 @@ class SourceView:
 
 
 @dataclass(frozen=True)
+class BlockerView:
+    id: str
+    code: str
+    severity: Literal["blocking"]
+    path: str
+    affected_ids: tuple[str, ...]
+    message: str
+    resolution_status: Literal["unresolved"]
+    acceptance_label: str | None
+    accepted_at: str | None
+    rationale: str | None
+
+
+@dataclass(frozen=True)
 class SummaryView:
     date_range: str
     traveler_count: int
@@ -137,15 +152,22 @@ class SummaryView:
     route_text: str
     readiness_confirmed: int
     readiness_total: int
-    blockers: tuple[Finding, ...]
-    warnings: tuple[Finding, ...]
 
 
 @dataclass(frozen=True)
 class ItineraryView:
     trip_id: str
     title: str
-    status: Literal["draft", "final"]
+    document_status: Literal["draft", "final"]
+    verification_level: Literal["none", "ai_reviewed", "codex_validated"]
+    finalization_basis: Literal["codex_validated", "user_confirmed"] | None
+    status_label: str
+    verification_label: str
+    declared_final_label: str | None
+    lifecycle_safe: bool
+    lifecycle_warning: str | None
+    accepted_blockers: tuple[BlockerView, ...]
+    unaccepted_blockers: tuple[BlockerView, ...]
     summary: SummaryView
     route: tuple[RouteStopView, ...]
     open_decisions: tuple[DecisionView, ...]
@@ -334,6 +356,8 @@ def _readiness(state: TripState) -> tuple[ReadinessView, ...]:
 def _budget(state: TripState) -> BudgetView:
     default_currency = _text(state.brief.get("budget", {}).get("currency"), "Unknown")
     categories: list[BudgetCategoryView] = []
+    currencies: set[str] = set()
+    bases: set[str] = set()
     minimum = Decimal(0)
     maximum = Decimal(0)
     known_count = 0
@@ -351,23 +375,41 @@ def _budget(state: TripState) -> BudgetView:
             known_count += 1
         confidence = _text(item.get("confidence"), "unknown")
         confidences.append(confidence)
+        item_currency = _text(item.get("currency"), default_currency)
+        item_basis = _text(item.get("basis"), "unknown")
+        currencies.add(item_currency)
+        bases.add(item_basis)
         categories.append(
             BudgetCategoryView(
                 category=_text(item.get("category"), _text(item.get("id"))),
                 minimum=item_minimum,
                 maximum=item_maximum,
-                currency=_text(item.get("currency"), default_currency),
+                currency=item_currency,
                 amount_type=amount_type,
+                basis=item_basis,
                 confidence=confidence,
             )
         )
     confidence = "low" if "low" in confidences or unknown_count else "unknown"
     if confidences and not unknown_count and "low" not in confidences:
         confidence = "medium" if "medium" in confidences else "high"
+    summary = state.itinerary.get("budget_summary")
+    summary_minimum: Decimal | None = None
+    summary_maximum: Decimal | None = None
+    summary_currency: str | None = None
+    if isinstance(summary, Mapping):
+        summary_currency = _text(summary.get("currency"), default_currency)
+        amount = _decimal(summary.get("amount"))
+        summary_minimum = amount if amount is not None else _decimal(summary.get("amount_min"))
+        summary_maximum = amount if amount is not None else _decimal(summary.get("amount_max"))
+    comparable = len(currencies) <= 1 and bases <= {"per_group"}
     return BudgetView(
-        currency=default_currency,
-        minimum=minimum if known_count else None,
-        maximum=maximum if known_count else None,
+        currency=(
+            summary_currency
+            or (next(iter(currencies), default_currency) if comparable else "Multiple currencies")
+        ),
+        minimum=summary_minimum if summary_currency else (minimum if known_count and comparable else None),
+        maximum=summary_maximum if summary_currency else (maximum if known_count and comparable else None),
         unknown_count=unknown_count,
         confidence=confidence,
         categories=tuple(sorted(categories, key=lambda item: item.category)),
@@ -423,27 +465,99 @@ def _sources(state: TripState) -> tuple[SourceView, ...]:
     return tuple(sorted(views, key=lambda item: item.source_id))
 
 
+def _verification_label(level: str) -> str:
+    return {
+        "none": "Не проверено",
+        "ai_reviewed": "AI-review — менее точная проверка",
+        "codex_validated": "Проверено в Codex",
+    }.get(level, "Неизвестный уровень проверки")
+
+
+def _declared_final_label(status: str, basis: Any) -> str | None:
+    if status != "final":
+        return None
+    return {
+        "codex_validated": "Final — проверено в Codex",
+        "user_confirmed": "Final — подтверждено пользователем",
+    }.get(basis)
+
+
+def _status_label(
+    status: str,
+    verification: str,
+    declared_final_label: str | None,
+    lifecycle_safe: bool,
+) -> str:
+    if status == "final":
+        return declared_final_label if lifecycle_safe and declared_final_label else (
+            "Final — несогласованное состояние"
+        )
+    if verification == "ai_reviewed":
+        return "Draft — AI-review"
+    if verification == "codex_validated":
+        return "Draft — проверено в Codex"
+    return "Draft — без проверки"
+
+
+def _acceptance_records(state: TripState) -> dict[str, Mapping[str, Any]]:
+    records: dict[str, Mapping[str, Any]] = {}
+    for item in _mapping_items(state.itinerary.get("accepted_blockers")):
+        blocker_id = item.get("blocker_id")
+        if isinstance(blocker_id, str) and blocker_id not in records:
+            records[blocker_id] = item
+    return records
+
+
+def _blocker_view(
+    finding: Finding,
+    acceptance: Mapping[str, Any] | None,
+    *,
+    accepted: bool,
+) -> BlockerView:
+    return BlockerView(
+        id=finding.id,
+        code=finding.code,
+        severity="blocking",
+        path=finding.path,
+        affected_ids=finding.affected_ids,
+        message=finding.message,
+        resolution_status="unresolved",
+        acceptance_label="Принят пользователем — остаётся блокирующим" if accepted else None,
+        accepted_at=(
+            _text(acceptance.get("accepted_at") if acceptance else None) if accepted else None
+        ),
+        rationale=(
+            _text(acceptance.get("rationale") if acceptance else None) if accepted else None
+        ),
+    )
+
+
 def build_view(
     state: TripState,
     check_report: CheckReport,
     generated_at: datetime,
-    *,
-    qa_attested: bool = False,
 ) -> ItineraryView:
     """Project canonical state into an immutable, deterministic document view."""
     route = _route(state)
     readiness = _readiness(state)
     budget = _budget(state)
-    blockers = tuple(
-        finding for finding in check_report.all_findings if finding.severity == "blocking"
+    document_status = state.itinerary.get("document_status")
+    verification_level = state.itinerary.get("verification_level")
+    finalization_basis = state.itinerary.get("finalization_basis")
+    acceptance_records = _acceptance_records(state)
+    lifecycle_safe = (
+        check_report.ok
+        if document_status == "final"
+        else not check_report.structural_errors and check_report.lifecycle_consistent
     )
-    warnings = tuple(
-        finding for finding in check_report.all_findings if finding.severity == "warning"
+    declared_final_label = _declared_final_label(document_status, finalization_basis)
+    accepted_blockers = tuple(
+        _blocker_view(finding, acceptance_records.get(finding.id), accepted=True)
+        for finding in check_report.accepted_blocking_findings
     )
-    requested_final = state.itinerary.get("output_status") == "final"
-    route_frozen = state.itinerary.get("route_state") == "frozen"
-    status: Literal["draft", "final"] = (
-        "final" if requested_final and route_frozen and check_report.ok and qa_attested else "draft"
+    unaccepted_blockers = tuple(
+        _blocker_view(finding, None, accepted=False)
+        for finding in check_report.unaccepted_blocking_findings
     )
     dates = state.brief.get("travel_dates", {})
     summary = SummaryView(
@@ -453,13 +567,32 @@ def build_view(
         route_text=" → ".join(stop.name for stop in route) or "Route not selected",
         readiness_confirmed=sum(item.status == "confirmed" for item in readiness),
         readiness_total=len(readiness),
-        blockers=blockers,
-        warnings=warnings,
     )
     return ItineraryView(
         trip_id=_text(state.brief.get("trip_id")),
         title=_text(state.brief.get("title")),
-        status=status,
+        document_status=document_status,
+        verification_level=verification_level,
+        finalization_basis=finalization_basis,
+        status_label=_status_label(
+            document_status,
+            verification_level,
+            declared_final_label,
+            lifecycle_safe,
+        ),
+        verification_label=_verification_label(verification_level),
+        declared_final_label=declared_final_label,
+        lifecycle_safe=lifecycle_safe,
+        lifecycle_warning=(
+            None
+            if lifecycle_safe
+            else (
+                "Статус и отчёт проверки противоречат друг другу; "
+                "этот документ не следует считать безопасным Final."
+            )
+        ),
+        accepted_blockers=accepted_blockers,
+        unaccepted_blockers=unaccepted_blockers,
         summary=summary,
         route=route,
         open_decisions=_decisions(state),

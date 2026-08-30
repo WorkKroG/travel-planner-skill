@@ -16,8 +16,7 @@
 - выбор маршрута и журнал пользовательских решений;
 - жёсткие проверки календаря, времени, логистики, бюджета и readiness;
 - contextual map links и приоритет Яндекс Карт для России, СНГ и Турции;
-- один доступный self-contained HTML, показывающий риски и принятые блокеры;
-- опциональный PDF.
+- один доступный self-contained HTML, показывающий риски и принятые блокеры и пригодный для browser print.
 
 Случайная техническая сложность, не требуемая v0.1:
 
@@ -45,8 +44,7 @@
     ├── maps
     ├── decisions
     ├── sources report
-    ├── view model + HTML renderer
-    └── optional PDF adapter
+    └── view model + HTML renderer
 
 trip workspace, переносимый пользователем
 ├── brief.yaml
@@ -70,19 +68,17 @@ Plugin не имеет MCP, backend, аккаунтов, синхронизац�
 | Maps | Выбор provider и безопасные contextual URLs | Достоверность расписаний и встроенные интерактивные карты |
 | Decisions | Запись решения, основания и явного принятия блокера | Route state machine и скрытые изменения |
 | Sources report | Metadata/structure источников и генерация `sources.md` | Универсальный evidence engine |
-| View model + HTML | Один нормализованный view model и один шаблон для всех поверхностей | Изменение канонического состояния |
-| PDF adapter | Best-effort PDF из готового HTML | Обязательный результат вне Codex |
+| View model + HTML | Один нормализованный view model и один шаблон для всех поверхностей, включая browser print | Изменение канонического состояния и встроенную PDF-генерацию |
 
 Четыре JSON Schema отвечают только за структуру. Любое правило, которое сравнивает файлы, считает время или бюджет, проверяет ссылки между сущностями либо обнаруживает цикл зависимостей, является явным Python hard check. Вероятностная AI-review остаётся работой модели и не маскируется под hard check.
 
 ## Внутренний интерфейс
 
-Целевой внутренний CLI ограничен четырьмя действиями или их эквивалентными entry points:
+Целевой внутренний CLI ограничен тремя действиями или их эквивалентными entry points:
 
 - `init` — создать bundle поездки;
 - `check` — выполнить schema validation и hard checks;
-- `render` — построить общий self-contained HTML;
-- `pdf` — опционально преобразовать проверенный HTML в PDF.
+- `render` — построить общий self-contained HTML.
 
 Команды не являются стабильным публичным интерфейсом. Модель может использовать внутренние функции напрямую, когда это проще и безопаснее.
 
@@ -94,7 +90,7 @@ View model переносит без переосмысления три пол�
 - `verification_level`: `none`, `ai_reviewed` или `codex_validated`;
 - `finalization_basis`: `codex_validated` или `user_confirmed` для `final`.
 
-Hard check может открыть или подтвердить блокер, но не решает его автоматически. `verification_level: codex_validated` сохраняет фактический результат checks, а `finalization_basis: codex_validated` требует отсутствия блокирующих ошибок финализации. Ручная финализация требует явного принятия каждого остающегося блокера. Renderer сохраняет блокер видимым в HTML/PDF и показывает одну из меток: `Final — проверено в Codex` или `Final — подтверждено пользователем`.
+Hard check может открыть или подтвердить блокер, но не решает его автоматически. `verification_level: codex_validated` сохраняет фактический результат checks, а `finalization_basis: codex_validated` требует отсутствия блокирующих ошибок финализации. Ручная финализация требует явного принятия каждого остающегося блокера. Renderer сохраняет блокер видимым в HTML и при печати и показывает одну из меток: `Final — проверено в Codex` или `Final — подтверждено пользователем`.
 
 ## Поверхности и рендеринг
 
@@ -102,28 +98,27 @@ Hard check может открыть или подтвердить блокер,
 
 Self-contained означает, что скачанный HTML открывается локально без обязательных сетевых assets. Это свойство артефакта, а не offline workflow. Специальных offline-статусов, UI, challenge или evals нет.
 
-PDF вне Codex — опциональный best-effort. В Codex разрешён optional Python Playwright-адаптер поверх уже созданного HTML.
+Print CSS сохраняет критический контент, lifecycle labels, блокеры, источники и читаемую пагинацию. Если пользователю нужен PDF, он вручную выбирает browser Print → Save as PDF; отдельного adapter, data pipeline или продуктовой гарантии PDF нет.
 
 ## Целевая упаковка и QA
 
 - Один plugin и один manifest.
 - `pyproject.toml` только для внутренних/local helpers.
 - Node, `package.json`, axe и Node Playwright удаляются в последующем PR.
-- Python Playwright остаётся optional dev/PDF dependency.
 - Основные проверки: unit/integration tests, один Japan HTML reference, 6–8 targeted skill evals и 3 release scenarios.
 - Перед релизом вручную выполняются ровно два surface smoke checks: Chat web и mobile.
 - Допустим один технический тест отсутствия обязательной сетевой зависимости HTML.
 
 `reference_evaluator.py`, offline evaluator, матрица из 23 сценариев, дублирующие rubrics/graders, сохранённые eval results и тесты удалённых модулей не входят в целевую архитектуру.
 
-## Запланированное удаление и отсрочка
+## Последовательность упрощения
 
-Последующие PR, а не этот документационный PR:
+Последовательные PR:
 
 - превращают `challenge/` в набор явных hard checks;
 - сужают `evidence` до metadata, structure и sources report;
 - удаляют `impact.py`, `migration.py`, route state machine, partial rebuild, soft Python challenge, Markdown renderer и QA attestation/receipt pipeline;
-- сокращают CLI до `init/check/render/pdf`;
+- сокращают CLI до `init/check/render`;
 - откладывают migrations и partial rebuild до подтверждённой потребности;
 - упрощают упаковку и QA до целевой границы выше.
 
@@ -131,4 +126,4 @@ PDF вне Codex — опциональный best-effort. В Codex разреш
 
 ## Связь с HTML spec
 
-[Interactive Itinerary HTML spec](docs/superpowers/specs/2026-08-28-interactive-itinerary-html-design.md) остаётся источником UX, responsive, accessibility, progressive enhancement, print и visual requirements. Будущий renderer PR обязан сохранить эти требования, одновременно согласовав два устаревших пункта: `user_confirmed` Final с видимыми принятыми блокерами и отсутствие отдельного offline workflow.
+[Interactive Itinerary HTML spec](docs/superpowers/specs/2026-08-28-interactive-itinerary-html-design.md) остаётся источником UX, responsive, accessibility, progressive enhancement, browser print и visual requirements. PR 4 согласует с продуктовым контрактом `user_confirmed` Final, отсутствие отдельного offline workflow и отсутствие встроенного PDF pipeline.
