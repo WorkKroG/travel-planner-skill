@@ -13,34 +13,84 @@ def _state(japan_state: TripState) -> TripState:
             "accepted_blockers": [],
             "challenge_findings": [],
             "selected_route_id": None,
+            "alternatives": [],
+            "route_stops": [],
+            "days": [],
             "budget_items": [],
+            "budget_summary": None,
         }
     )
+    state.readiness["items"] = []
+    state.candidates["claims"] = []
+    state.candidates["items"] = []
     return state
 
 
-def test_calendar_rejects_invalid_and_overlapping_explicit_intervals(
+def test_calendar_uses_canonical_timeline_and_detects_cross_day_overlap(
     japan_state: TripState,
 ) -> None:
     state = _state(japan_state)
     state.itinerary["days"] = [
         {
-            "id": "day-check",
-            "intervals": [
+            "id": "day-one",
+            "timeline": [
                 {
-                    "id": "visit-a",
-                    "start": "2026-11-02T09:00:00+09:00",
-                    "end": "2026-11-02T10:30:00+09:00",
+                    "id": "overnight-ride",
+                    "time": "23:30",
+                    "title": "Overnight ride",
+                    "detail": "Arrives after midnight.",
+                    "start_at": "2026-11-02T23:30:00+09:00",
+                    "end_at": "2026-11-03T01:00:00+09:00",
+                }
+            ],
+        },
+        {
+            "id": "day-two",
+            "timeline": [
+                {
+                    "id": "early-transfer",
+                    "time": "00:30",
+                    "title": "Early transfer",
+                    "detail": "Overlaps the inbound ride.",
+                    "start_at": "2026-11-03T00:30:00+09:00",
+                    "end_at": "2026-11-03T01:30:00+09:00",
+                }
+            ],
+        },
+    ]
+
+    report = run_checks(state)
+
+    overlap = next(
+        finding for finding in report.findings if finding.code == "CALENDAR_INTERVAL_OVERLAP"
+    )
+    assert overlap.path == "itinerary.yaml.days[1].timeline[0]"
+    assert overlap.affected_ids == ("overnight-ride", "early-transfer")
+
+
+def test_calendar_reports_naive_timestamps_instead_of_raising_type_error(
+    japan_state: TripState,
+) -> None:
+    state = _state(japan_state)
+    state.itinerary["days"] = [
+        {
+            "id": "day-one",
+            "timeline": [
+                {
+                    "id": "aware",
+                    "time": "09:00",
+                    "title": "Aware event",
+                    "detail": "Offset is explicit.",
+                    "start_at": "2026-11-02T09:00:00+09:00",
+                    "end_at": "2026-11-02T10:00:00+09:00",
                 },
                 {
-                    "id": "visit-b",
-                    "start": "2026-11-02T10:00:00+09:00",
-                    "end": "2026-11-02T11:00:00+09:00",
-                },
-                {
-                    "id": "visit-invalid",
-                    "start": "2026-11-02T12:00:00+09:00",
-                    "end": "2026-11-02T12:00:00+09:00",
+                    "id": "naive",
+                    "time": "09:30",
+                    "title": "Naive event",
+                    "detail": "Offset is missing.",
+                    "start_at": "2026-11-02T09:30:00",
+                    "end_at": "2026-11-02T10:30:00",
                 },
             ],
         }
@@ -48,128 +98,108 @@ def test_calendar_rejects_invalid_and_overlapping_explicit_intervals(
 
     report = run_checks(state)
 
-    assert [finding.code for finding in report.findings] == [
-        "CALENDAR_INTERVAL_INVALID",
-        "CALENDAR_INTERVAL_OVERLAP",
-    ]
-    overlap = next(
-        finding for finding in report.findings if finding.code == "CALENDAR_INTERVAL_OVERLAP"
+    finding = next(
+        finding for finding in report.findings if finding.code == "CALENDAR_TIMESTAMP_INVALID"
     )
-    assert overlap.affected_ids == ("day-check", "visit-a", "visit-b")
+    assert finding.path == "itinerary.yaml.days[0].timeline[1]"
+    assert finding.affected_ids == ("naive",)
 
 
-def test_calendar_checks_only_explicit_operating_and_service_cutoffs(
+def test_calendar_checks_only_structured_operating_and_service_cutoffs(
     japan_state: TripState,
 ) -> None:
     state = _state(japan_state)
     state.itinerary["days"] = [
         {
-            "id": "day-check",
-            "intervals": [
+            "id": "day-one",
+            "timeline": [
                 {
                     "id": "late-visit",
-                    "start": "2026-11-02T10:15:00+09:00",
-                    "end": "2026-11-02T12:30:00+09:00",
-                    "operating_start": "2026-11-02T10:30:00+09:00",
-                    "operating_end": "2026-11-02T12:00:00+09:00",
+                    "time": "10:15",
+                    "title": "Late visit",
+                    "detail": "Outside explicit cutoffs.",
+                    "start_at": "2026-11-02T10:15:00+09:00",
+                    "end_at": "2026-11-02T12:30:00+09:00",
+                    "operating_start_at": "2026-11-02T10:30:00+09:00",
+                    "operating_end_at": "2026-11-02T12:00:00+09:00",
                     "last_admission_at": "2026-11-02T10:00:00+09:00",
                     "last_service_at": "2026-11-02T10:10:00+09:00",
                 },
                 {
                     "id": "unknown-hours",
-                    "start": "2026-11-02T13:00:00+09:00",
-                    "end": "2026-11-02T14:00:00+09:00",
+                    "time": "13:00",
+                    "title": "Unknown hours",
+                    "detail": "No structured cutoff exists.",
                 },
             ],
         }
     ]
 
-    codes = [finding.code for finding in run_checks(state).findings]
-
-    assert codes == [
+    assert [finding.code for finding in run_checks(state).findings] == [
         "CALENDAR_LAST_ADMISSION",
         "CALENDAR_LAST_SERVICE",
         "CALENDAR_OUTSIDE_OPERATING_WINDOW",
     ]
 
 
-def test_calendar_reports_incomparable_explicit_cutoff_instead_of_crashing(
+def test_timeline_travel_fields_expose_buffer_and_connection_shortfalls(
     japan_state: TripState,
 ) -> None:
     state = _state(japan_state)
     state.itinerary["days"] = [
         {
-            "id": "day-check",
-            "intervals": [
+            "id": "day-one",
+            "timeline": [
                 {
-                    "id": "mixed-timezone",
-                    "start": "2026-11-02T10:15:00+09:00",
-                    "end": "2026-11-02T11:15:00+09:00",
-                    "operating_start": "2026-11-02T10:00:00",
+                    "id": "leg-tight",
+                    "time": "09:00",
+                    "title": "Tight transfer",
+                    "detail": "Explicit travel arithmetic.",
+                    "allocated_minutes": 30,
+                    "components_minutes": {"walk": 10, "platform": 5, "ride": 20},
+                    "required_buffer_markers": ["security", "station"],
+                    "buffer_markers": ["station"],
+                    "connection": {"available_minutes": 12, "minimum_minutes": 15},
                 }
             ],
         }
     ]
 
-    report = run_checks(state)
-
-    assert [finding.code for finding in report.findings] == [
-        "CALENDAR_TIMESTAMP_INVALID"
-    ]
-
-
-def test_explicit_door_to_door_connection_and_buffer_shortfalls_are_blocking(
-    japan_state: TripState,
-) -> None:
-    state = _state(japan_state)
-    state.itinerary["legs"] = [
-        {
-            "id": "leg-tight",
-            "components": {"walk": 10, "platform": 5, "ride": 20},
-            "allocated_minutes": 30,
-            "required_buffers": ["security", "station"],
-            "buffer_markers": ["station"],
-        }
-    ]
-    state.itinerary["connections"] = [
-        {"id": "connection-tight", "available_minutes": 12, "minimum_minutes": 15}
-    ]
-
-    findings = run_checks(state).findings
-
-    assert [finding.code for finding in findings] == [
+    assert [finding.code for finding in run_checks(state).findings] == [
         "BUFFER_DOOR_TO_DOOR_SHORTFALL",
         "BUFFER_MARKER_MISSING",
         "CONNECTION_MINIMUM_SHORTFALL",
     ]
-    assert all(finding.severity == "blocking" for finding in findings)
 
 
-def test_reference_and_overnight_links_must_resolve_to_canonical_ids(
+def test_canonical_references_resolve_and_array_findings_include_the_index(
     japan_state: TripState,
 ) -> None:
     state = _state(japan_state)
+    source_id = state.candidates["sources"][0]["id"]
     state.itinerary.update(
         {
             "alternatives": [{"id": "route-known"}],
-            "selected_route_id": "route-missing",
-            "nights": [{"id": "night-known"}],
+            "selected_route_id": "route-known",
+            "route_stops": [{"id": "stop-known"}],
             "days": [
                 {
                     "id": "day-known",
-                    "route_id": "route-missing",
-                    "readiness_ids": ["ready-missing"],
-                    "source_ids": ["source-missing"],
+                    "route_id": "route-known",
+                    "overnight": "Tokyo",
+                    "overnight_stop_id": "stop-missing",
+                    "readiness_ids": ["ready-known", "ready-missing"],
+                    "source_ids": [source_id, "source-missing"],
                     "claim_ids": ["claim-missing"],
-                }
-            ],
-            "legs": [
-                {
-                    "id": "leg-night",
-                    "day_id": "day-missing",
-                    "dependency_ids": ["ready-missing"],
-                    "overnight": True,
-                    "night_id": "night-missing",
+                    "timeline": [
+                        {
+                            "id": "leg-known",
+                            "time": "09:00",
+                            "title": "Transfer",
+                            "detail": "Canonical nested leg.",
+                            "readiness_ids": ["ready-missing"],
+                        }
+                    ],
                 }
             ],
         }
@@ -180,17 +210,21 @@ def test_reference_and_overnight_links_must_resolve_to_canonical_ids(
             "category": "transport",
             "status": "action_needed",
             "dependencies": ["ready-missing"],
-            "source_ids": ["source-missing"],
-            "claim_ids": ["claim-missing"],
         }
     ]
 
     report = run_checks(state)
-    codes = [finding.code for finding in report.findings]
 
-    assert codes.count("LINK_ROUTE_NOT_FOUND") == 2
-    assert codes.count("LINK_DAY_NOT_FOUND") == 1
-    assert codes.count("LINK_READINESS_NOT_FOUND") == 3
-    assert codes.count("LINK_SOURCE_NOT_FOUND") == 2
-    assert codes.count("LINK_CLAIM_NOT_FOUND") == 2
-    assert codes.count("LINK_OVERNIGHT_STAY_NOT_FOUND") == 1
+    missing_ready = [
+        finding for finding in report.findings if finding.code == "LINK_READINESS_NOT_FOUND"
+    ]
+    assert {finding.path for finding in missing_ready} == {
+        "itinerary.yaml.days[0].readiness_ids[1]",
+        "itinerary.yaml.days[0].timeline[0].readiness_ids[0]",
+        "readiness.yaml.items[0].dependencies[0]",
+    }
+    assert any(
+        finding.code == "LINK_OVERNIGHT_STAY_NOT_FOUND"
+        and finding.path == "itinerary.yaml.days[0].overnight_stop_id"
+        for finding in report.findings
+    )

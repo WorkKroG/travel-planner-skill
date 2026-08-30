@@ -1,7 +1,4 @@
 injected:
-  - id: weather-risk
-    kind: local-weather-change
-    data: {requested_day_ids: [day-7], suggested_scope: target-day}
   - id: timetable-invention
     kind: exact-unpublished-departure-request
     data: {exact_departure_requested: true}

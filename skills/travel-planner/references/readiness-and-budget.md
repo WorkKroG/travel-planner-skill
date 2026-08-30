@@ -4,6 +4,8 @@
 
 For each budget item, state currency, amount quality (confirmed, estimate, or unknown), per-person/group basis, taxes/fees, refundability, FX date where used, and contingency. Do not merge incompatible price bases into a reassuring total. Build food choices iteratively by location: propose, compare, check the day fit, obtain the user's choice, and retain alternatives.
 
+Use `itinerary.yaml.budget_items` as the only itemized budget shape: exact/estimate items carry `amount`, ranges carry `amount_min` and `amount_max`, and unknown items carry no numeric amount. When a total or FX normalization is explicitly available, store both in the optional `budget_summary`; otherwise leave it `null` and preserve unknowns.
+
 The skill may research and prepare a booking decision, but never buys, books, pays, or contacts a third party. Require the user's selected option and keep payment, passport, account, and confirmation data in an external secure system. Re-run validation after saving changes:
 
 ```bash

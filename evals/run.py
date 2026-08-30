@@ -295,6 +295,7 @@ def run_scenario(
     trace = {
         "schema_version": TRACE_SCHEMA_VERSION,
         "scenario_id": scenario_id,
+        "check_scope": scenario.get("check_scope", "unspecified"),
         "adapter": adapter.name,
         "adapter_metadata": dict(agent_run.metadata),
         "prompt_version": prompt_version,

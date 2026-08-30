@@ -3,7 +3,22 @@
   "$id": "itinerary.schema.json",
   "title": "Travel Planner itinerary v1",
   "type": "object",
-  "required": ["schema_version", "trip_id", "document_status", "verification_level", "finalization_basis", "accepted_blockers", "route_state", "alternatives", "selected_route_id", "days", "budget_items", "challenge_findings"],
+  "required": [
+    "schema_version",
+    "trip_id",
+    "document_status",
+    "verification_level",
+    "finalization_basis",
+    "accepted_blockers",
+    "route_state",
+    "alternatives",
+    "selected_route_id",
+    "route_stops",
+    "days",
+    "budget_items",
+    "budget_summary",
+    "challenge_findings"
+  ],
   "properties": {
     "schema_version": {"const": 1},
     "trip_id": {"$ref": "#/$defs/id"},
@@ -15,27 +30,195 @@
       "items": {"$ref": "#/$defs/accepted_blocker"}
     },
     "route_state": {"enum": ["draft", "challenged", "selected", "frozen"]},
-    "alternatives": {"type": "array", "items": {"type": "object"}},
+    "alternatives": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/identified"}
+    },
     "selected_route_id": {"anyOf": [{"$ref": "#/$defs/id"}, {"type": "null"}]},
-    "days": {"type": "array", "items": {"type": "object"}},
+    "route_stops": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/identified"}
+    },
+    "days": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/day"}
+    },
     "budget_items": {
       "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "id": {"$ref": "#/$defs/id"},
-          "amount_type": {"enum": ["exact", "estimate", "range", "unknown"]},
-          "currency": {"type": "string", "pattern": "^[A-Z]{3}$"},
-          "basis": {"enum": ["per_person", "per_group"]}
-        },
-        "additionalProperties": true
-      }
+      "items": {"$ref": "#/$defs/budget_item"}
     },
-    "challenge_findings": {"type": "array", "items": {"type": "object"}}
+    "budget_summary": {
+      "oneOf": [{"type": "null"}, {"$ref": "#/$defs/budget_summary"}]
+    },
+    "challenge_findings": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/stored_blocker"}
+    }
   },
   "additionalProperties": true,
   "$defs": {
-    "id": {"type": "string", "pattern": "^[a-z0-9](?:[a-z0-9-]{0,62}[a-z0-9])?$"},
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9](?:[a-z0-9-]{0,62}[a-z0-9])?$"
+    },
+    "id_list": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/id"},
+      "uniqueItems": true
+    },
+    "identified": {
+      "type": "object",
+      "required": ["id"],
+      "properties": {"id": {"$ref": "#/$defs/id"}},
+      "additionalProperties": true
+    },
+    "day": {
+      "type": "object",
+      "required": ["id", "timeline"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "route_id": {"$ref": "#/$defs/id"},
+        "overnight_stop_id": {"$ref": "#/$defs/id"},
+        "readiness_ids": {"$ref": "#/$defs/id_list"},
+        "source_ids": {"$ref": "#/$defs/id_list"},
+        "claim_ids": {"$ref": "#/$defs/id_list"},
+        "timeline": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/timeline_event"}
+        }
+      },
+      "additionalProperties": true
+    },
+    "timeline_event": {
+      "type": "object",
+      "required": ["id", "time", "title", "detail"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "time": {"type": "string"},
+        "title": {"type": "string", "minLength": 1},
+        "detail": {"type": "string"},
+        "start_at": {"type": "string"},
+        "end_at": {"type": "string"},
+        "operating_start_at": {"type": "string"},
+        "operating_end_at": {"type": "string"},
+        "last_admission_at": {"type": "string"},
+        "last_service_at": {"type": "string"},
+        "allocated_minutes": {"type": "number", "minimum": 0},
+        "components_minutes": {
+          "type": "object",
+          "additionalProperties": {"type": "number", "minimum": 0}
+        },
+        "required_buffer_markers": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "buffer_markers": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "connection": {
+          "type": "object",
+          "required": ["available_minutes", "minimum_minutes"],
+          "properties": {
+            "available_minutes": {"type": "number", "minimum": 0},
+            "minimum_minutes": {"type": "number", "minimum": 0}
+          },
+          "additionalProperties": false
+        },
+        "route_id": {"$ref": "#/$defs/id"},
+        "readiness_ids": {"$ref": "#/$defs/id_list"},
+        "source_ids": {"$ref": "#/$defs/id_list"},
+        "claim_ids": {"$ref": "#/$defs/id_list"}
+      },
+      "additionalProperties": true
+    },
+    "budget_item": {
+      "type": "object",
+      "required": ["id", "amount_type", "currency", "basis"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "amount_type": {"enum": ["exact", "estimate", "range", "unknown"]},
+        "amount": {"type": "number", "minimum": 0},
+        "amount_min": {"type": "number", "minimum": 0},
+        "amount_max": {"type": "number", "minimum": 0},
+        "currency": {"type": "string", "pattern": "^[A-Z]{3}$"},
+        "basis": {"enum": ["per_person", "per_group"]}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"amount_type": {"enum": ["exact", "estimate"]}}},
+          "then": {
+            "required": ["amount"],
+            "not": {"anyOf": [{"required": ["amount_min"]}, {"required": ["amount_max"]}]}
+          }
+        },
+        {
+          "if": {"properties": {"amount_type": {"const": "range"}}},
+          "then": {
+            "required": ["amount_min", "amount_max"],
+            "not": {"required": ["amount"]}
+          }
+        },
+        {
+          "if": {"properties": {"amount_type": {"const": "unknown"}}},
+          "then": {
+            "not": {
+              "anyOf": [
+                {"required": ["amount"]},
+                {"required": ["amount_min"]},
+                {"required": ["amount_max"]}
+              ]
+            }
+          }
+        }
+      ],
+      "additionalProperties": true
+    },
+    "budget_summary": {
+      "type": "object",
+      "required": ["currency", "basis"],
+      "properties": {
+        "currency": {"type": "string", "pattern": "^[A-Z]{3}$"},
+        "basis": {"const": "per_group"},
+        "amount": {"type": "number", "minimum": 0},
+        "amount_min": {"type": "number", "minimum": 0},
+        "amount_max": {"type": "number", "minimum": 0},
+        "fx": {"$ref": "#/$defs/fx"}
+      },
+      "oneOf": [
+        {
+          "required": ["amount"],
+          "not": {"anyOf": [{"required": ["amount_min"]}, {"required": ["amount_max"]}]}
+        },
+        {
+          "required": ["amount_min", "amount_max"],
+          "not": {"required": ["amount"]}
+        }
+      ],
+      "additionalProperties": false
+    },
+    "fx": {
+      "type": "object",
+      "required": ["base_currency", "observed_at", "source_id", "rates"],
+      "properties": {
+        "base_currency": {"type": "string", "pattern": "^[A-Z]{3}$"},
+        "observed_at": {"type": "string", "format": "date-time"},
+        "source_id": {"$ref": "#/$defs/id"},
+        "rates": {
+          "type": "object",
+          "additionalProperties": {"type": "number", "exclusiveMinimum": 0}
+        }
+      },
+      "additionalProperties": false
+    },
+    "stored_blocker": {
+      "type": "object",
+      "required": ["id", "code", "severity", "status", "path", "affected_ids", "message"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "code": {"type": "string", "minLength": 1},
+        "severity": {"const": "blocking"},
+        "status": {"enum": ["open", "unresolved"]},
+        "path": {"type": "string", "minLength": 1},
+        "affected_ids": {"$ref": "#/$defs/id_list"},
+        "message": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
     "accepted_blocker": {
       "type": "object",
       "required": ["blocker_id", "accepted_by_user", "accepted_at", "rationale"],

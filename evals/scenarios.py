@@ -185,6 +185,7 @@ def load_scenario_case(case_id: str, root: Path = SCENARIOS_ROOT) -> ScenarioCas
     ).hexdigest()
     scenario = {
         "id": case_id,
+        "check_scope": "legacy_skill_behavior",
         "prompt_version": version,
         "prompt": f"{prompt}\n\nSCENARIO_INPUT:\n{json.dumps(fixture_input, ensure_ascii=False, sort_keys=True)}",
         "fixture_input": fixture_input,

@@ -2,7 +2,7 @@
 
 **Дата среза:** 2026-08-30
 
-**Текущий этап:** explicit hard checks и узкий internal CLI реализованы; следующий gate — shared HTML/PDF boundary
+**Текущий этап:** PR 3 находится в review; canonical hard-check shape и adversarial findings проверяются до merge
 
 Этот документ фиксирует принятые решения, проверяемые факты и последовательность изменений. Он не выдаёт целевую архитектуру за текущее состояние.
 
@@ -40,15 +40,15 @@ PR 1 начат от свежего `origin/main` на коммите `ba99476` 
 
 ## Фактическое состояние сейчас
 
-PR 3 заменяет `challenge/` и rule catalog одним явным `checks.py`, который читает только canonical `TripState`. Детерминированные findings содержат стабильные `id` и `code`, severity, path, affected IDs и message; confidence, stage, rule versions, proposed patches и внешний facts bag отсутствуют. Report отдельно показывает structural errors, lifecycle consistency, все blockers, принятые blockers и непринятые blockers.
+Текущий head PR 3 заменяет `challenge/` и rule catalog одним явным `checks.py`, который читает только canonical `TripState`. PR ещё не завершён: merge gate остаётся закрытым до повторного независимого review. Детерминированные findings содержат стабильные `id` и `code`, severity, path, affected IDs и message; confidence, stage, rule versions, proposed patches и внешний facts bag отсутствуют. Report отдельно показывает structural errors, lifecycle consistency, все blockers, принятые blockers и непринятые blockers.
 
-Hard checks покрывают только утверждённые категории: интервалы и явные operating/service cutoffs; door-to-door components, connection minimums, buffer markers и ID links; известную бюджетную арифметику без подстановки нуля для unknown; readiness dependencies и cycles; source/claim metadata и official-source link для verified high-stakes claims; lifecycle/finalization contract PR 2. Soft load, accessibility, cancellation, contingency и другие эвристики старого challenge engine не перенесены.
+Единственная canonical itinerary shape использует `route_stops`, `days[].timeline[]`, `budget_items` и optional `budget_summary`; параллельные top-level intervals/legs/connections/stays отсутствуют. Hard checks покрывают только утверждённые категории: offset-bearing timeline intervals и явные operating/service cutoffs; door-to-door components, connection minimums, buffer markers и ID links; известную бюджетную арифметику без подстановки нуля для unknown; uniqueness, readiness dependencies и cycles; source/claim metadata и official-source link для verified high-stakes claims; lifecycle/finalization contract PR 2. Soft load, accessibility, cancellation, contingency и другие эвристики старого challenge engine не перенесены.
 
 Удалены `challenge/`, `impact.py`, `migration.py`, `route.py`, evidence confidence inference и связанная readiness automation. `maps.py`, workspace safety, state diagnostics, decisions и generated sources report сохранены. Internal CLI содержит ровно `init`, `check`, `render`, `pdf`; `check` возвращает 2 для structural/state errors, 3 для несогласованного lifecycle или непринятых blockers и 0 для согласованного результата. Check не изменяет canonical state.
 
 Renderer остаётся переходным до PR 4: существующие view model, HTML, Markdown, PDF и QA/attestation modules ещё присутствуют, но CLI exposes только HTML render и optional PDF от готового HTML. Шаблон получил лишь совместимость с `CheckReport`; redesign, lifecycle labels и полный отказ от старого receipt pipeline не выполнены. `challenge_findings` временно остаётся в schema/fixtures только как сохранённый blocker list.
 
-SKILL.md и references остаются без изменений до PR 5. Расширенный fixture eval harness сохранён и минимально отвязан от удалённых production abstractions; его сокращение остаётся PR 6. Node/package/Playwright, plugin manifest, packaging и исторические документы также не менялись и остаются последующим scope.
+SKILL.md и полный workflow rewrite остаются PR 5; в двух references добавлены только минимальные canonical timeline/budget field notes, необходимые для отсутствия второй модели данных. Fixture eval harness теперь явно маркирует оставшиеся cases как `legacy_skill_behavior`; frozen-route и weather-impact cases/реализации удалены, а окончательное сокращение harness остаётся PR 6. Node/package/Playwright, plugin manifest, packaging и исторические документы также не менялись и остаются последующим scope.
 
 ## Последовательность PR 1–7
 
@@ -56,8 +56,8 @@ SKILL.md и references остаются без изменений до PR 5. Р�
 | --- | --- | --- |
 | 1. Product contract | Обновить `PRODUCT.md`, добавить короткий `ARCHITECTURE.md` и этот status; зафиксировать источники истины и расхождения | Завершён в PR 1 |
 | 2. State and validation contract | Привести canonical bundle, schema-only boundary, три поля статуса/проверки и правила принятия блокеров к контракту | Завершён в PR 2; semantic hard checks были добавлены только в PR 3 |
-| 3. Internal helpers and CLI | Превратить challenge в явные hard checks, сузить evidence, оставить `init/check/render/pdf`, удалить route/impact/migration/partial rebuild | Завершён этим PR; renderer/skill/eval compatibility remains transitional |
-| 4. Shared HTML and optional PDF | Свести поверхности к одному view model/template, реализовать метки Final и видимые принятые блокеры, удалить Markdown/receipt CLI-era complexity, оставить optional Python PDF; согласовать HTML spec | Следующий PR; текущий renderer пока действует |
+| 3. Internal helpers and CLI | Превратить challenge в явные hard checks, сузить evidence, оставить `init/check/render/pdf`, удалить route/impact/migration/partial rebuild | В review; implementation findings исправляются, merge gate ещё не пройден |
+| 4. Shared HTML and optional PDF | Свести поверхности к одному view model/template, реализовать метки Final и видимые принятые блокеры, удалить Markdown/receipt CLI-era complexity, оставить optional Python PDF; согласовать HTML spec | Следующий PR только после merge PR 3; текущий renderer пока действует |
 | 5. Skill workflow | Привести SKILL.md и references к canonical bundle, четырём CLI-командам и lifecycle contract | Запланирован; текущие skill instructions пока сохранены |
 | 6. QA and eval reduction | Оставить unit/integration, Japan HTML reference, 6–8 targeted skill evals и 3 release scenarios; убрать Node/package.json/axe/Node Playwright и дублирующий harness | Запланирован; текущая матрица и Node QA пока действуют |
 | 7. Packaging, canonical docs and release gate | Зафиксировать plugin packaging и internal Python helpers, завершить README/AGENTS/release guidance, перенести уникальные требования, удалить устаревшие docs/research и выполнить Chat web/mobile smoke checks | Запланирован; текущая упаковка и старые документы пока сохранены |
@@ -88,8 +88,8 @@ SKILL.md и references остаются без изменений до PR 5. Р�
 3. Renderer и SKILL workflow пока не используют lifecycle-поля и accepted blockers для новых Final labels; это предмет PR 4 и PR 5.
 4. Текущий renderer понимает `CheckReport`, но ещё содержит Markdown и QA/attestation modules; они не являются частью четырёхкомандного CLI и будут упрощены в PR 4.
 5. Пригодность общего HTML на Chat web и mobile остаётся release evidence, которое должно быть получено в PR 7 двумя ручными smoke checks.
-6. Расширенный fixture eval harness всё ещё хранит legacy scenario vocabulary; PR 6 сократит матрицу, не возвращая удалённые production abstractions.
+6. Fixture eval harness всё ещё хранит legacy skill-behavior vocabulary и не является проверкой production hard-check codes; PR 6 сократит матрицу, не возвращая удалённые production abstractions.
 
 ## Следующий gate
 
-После merge PR 3 следующий шаг — PR 4: перевести shared HTML/PDF boundary на lifecycle labels и постоянную видимость принятых blockers, удалить переходные Markdown/receipt dependencies и сохранить optional PDF от готового HTML. SKILL workflow, eval reduction и packaging остаются PR 5–7.
+Следующий gate — повторное независимое review и merge PR 3. Только после этого PR 4 переводит shared HTML/PDF boundary на lifecycle labels и постоянную видимость принятых blockers. SKILL workflow, eval reduction и packaging остаются PR 5–7.

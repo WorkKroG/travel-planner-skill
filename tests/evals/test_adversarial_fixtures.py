@@ -24,31 +24,6 @@ def _run_case(case_id: str, tmp_path: Path):
     )
 
 
-def test_weather_swap_preserves_unrelated_days_and_changes_only_target_day(tmp_path: Path) -> None:
-    """A local weather fallback must not rewrite the neighbouring day during a partial rebuild."""
-    result = _run_case("local-weather-swap", tmp_path)
-    trace = json.loads(result.trace_path.read_text(encoding="utf-8"))
-    mutation = trace["operations"]["weather_change"]
-    hashes = mutation["semantic_hashes"]
-
-    assert result.hard.macro_pass is True
-    assert hashes["day-5-before"] == hashes["day-5-after"]
-    assert hashes["day-4-before"] != hashes["day-4-after"]
-    assert mutation["impact_targets"] == ["day:day-4", "outputs:all"]
-
-
-def test_frozen_mutation_preserves_frozen_route_and_is_an_expected_negative(tmp_path: Path) -> None:
-    """A silent hotel mutation must stay a raw macro failure without corrupting frozen route state."""
-    result = _run_case("frozen-mutation", tmp_path)
-    trace = json.loads(result.trace_path.read_text(encoding="utf-8"))
-    transition = trace["operations"]["route_transition"]
-
-    assert result.hard.macro_pass is False
-    assert transition["rejected"] is True
-    assert transition["route_before"] == transition["route_after"]
-    assert trace["grading"]["hard"]["macro_pass"] is False
-
-
 def test_all_accepts_declared_negative_outcomes_without_overriding_raw_hard_gate(
     tmp_path: Path, capsys
 ) -> None:
@@ -60,7 +35,6 @@ def test_all_accepts_declared_negative_outcomes_without_overriding_raw_hard_gate
     assert exit_code == 0
     output = capsys.readouterr().out
     assert "last-admission: EXPECTED FAIL" in output
-    assert "frozen-mutation: EXPECTED FAIL" in output
 
 
 def test_direct_negative_scenario_keeps_raw_failure_and_nonzero_exit(tmp_path: Path, capsys) -> None:

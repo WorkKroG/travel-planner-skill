@@ -219,12 +219,15 @@ def test_user_acceptance_keeps_the_original_blocker_unresolved_and_visible(
     """Catch acceptance being represented by mutating or removing the source blocker."""
     itinerary = yaml.safe_load((minimal_trip / "itinerary.yaml").read_text())
     itinerary["challenge_findings"] = [
-        {
-            "id": "blocker-rail",
-            "severity": "blocking",
-            "status": "unresolved",
-            "message": "The final timetable is not released.",
-        }
+            {
+                "id": "blocker-rail",
+                "code": "SCHEDULE_UNRELEASED",
+                "severity": "blocking",
+                "status": "unresolved",
+                "path": "itinerary.yaml.days[0]",
+                "affected_ids": ["day-1"],
+                "message": "The final timetable is not released.",
+            }
     ]
     write_state_file(minimal_trip / "itinerary.yaml", itinerary)
     _write_lifecycle(

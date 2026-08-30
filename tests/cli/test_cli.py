@@ -55,6 +55,8 @@ def test_check_returns_3_and_keeps_draft_blocker_visible(
                 "code": "SCHEDULE_UNRELEASED",
                 "severity": "blocking",
                 "status": "unresolved",
+                "path": "itinerary.yaml.days[0]",
+                "affected_ids": ["day-1"],
                 "message": "The final timetable is not released.",
             }
         ],
@@ -82,6 +84,8 @@ def test_check_returns_0_for_user_confirmed_final_with_accepted_blocker(
                 "code": "SCHEDULE_UNRELEASED",
                 "severity": "blocking",
                 "status": "unresolved",
+                "path": "itinerary.yaml.days[0]",
+                "affected_ids": ["day-1"],
                 "message": "The final timetable is not released.",
             }
         ],

@@ -7,6 +7,8 @@ accepted_blockers: []
 route_state: draft
 alternatives: []
 selected_route_id: null
+route_stops: []
 days: []
 budget_items: []
+budget_summary: null
 challenge_findings: []

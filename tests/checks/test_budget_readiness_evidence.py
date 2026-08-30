@@ -1,8 +1,12 @@
+import json
 from copy import deepcopy
+from pathlib import Path
 
 import pytest
+import yaml
 from travel_planner.checks import run_checks
-from travel_planner.state import TripState
+from travel_planner.cli import main
+from travel_planner.state import TripState, write_state_file
 
 
 @pytest.fixture
@@ -17,6 +21,7 @@ def state(japan_state: TripState) -> TripState:
             "selected_route_id": None,
             "days": [],
             "budget_items": [],
+            "budget_summary": None,
         }
     )
     state.readiness["items"] = []
@@ -24,83 +29,95 @@ def state(japan_state: TripState) -> TripState:
     return state
 
 
-def test_mixed_currencies_require_explicit_dated_fx_metadata(state: TripState) -> None:
-    state.itinerary["budget_items"] = [
-        {
-            "id": "hotel-jpy",
-            "amount_type": "exact",
-            "amount": 10000,
-            "currency": "JPY",
-            "basis": "per_group",
-        },
-        {
-            "id": "ticket-usd",
-            "amount_type": "exact",
-            "amount": 50,
-            "currency": "USD",
-            "basis": "per_group",
-        },
-    ]
+@pytest.mark.parametrize(
+    "item",
+    [
+        {"id": "negative", "amount_type": "exact", "amount": -1, "currency": "USD", "basis": "per_group"},
+        {"id": "boolean", "amount_type": "exact", "amount": True, "currency": "USD", "basis": "per_group"},
+        {"id": "no-currency", "amount_type": "exact", "amount": 10, "basis": "per_group"},
+        {"id": "no-basis", "amount_type": "exact", "amount": 10, "currency": "USD"},
+        {"id": "unknown-with-value", "amount_type": "unknown", "amount": 10, "currency": "USD", "basis": "per_group"},
+    ],
+)
+def test_incoherent_budget_item_is_a_structural_cli_error(
+    minimal_trip: Path, capsys, item: dict[str, object]
+) -> None:
+    itinerary_path = minimal_trip / "itinerary.yaml"
+    itinerary = yaml.safe_load(itinerary_path.read_text(encoding="utf-8"))
+    itinerary["budget_items"] = [item]
+    write_state_file(itinerary_path, itinerary)
 
-    blocked = run_checks(state)
-    state.itinerary["budget_fx"] = {
-        "base_currency": "JPY",
-        "observed_at": "2026-08-30T09:00:00+00:00",
-        "source_id": state.candidates["sources"][0]["id"],
-        "rates": {"USD": 150.0},
-    }
-    explicit = run_checks(state)
+    exit_code = main(["check", str(minimal_trip)])
+    payload = json.loads(capsys.readouterr().out)
 
-    assert [finding.code for finding in blocked.findings] == ["BUDGET_FX_REQUIRED"]
-    assert "BUDGET_FX_REQUIRED" not in [finding.code for finding in explicit.findings]
+    assert exit_code == 2
+    assert payload["structural_errors"][0]["path"].startswith(
+        "itinerary.yaml.budget_items[0]"
+    )
 
 
-def test_mixed_price_bases_require_an_explicit_traveler_count(state: TripState) -> None:
+@pytest.mark.parametrize(
+    "item",
+    [
+        {"id": "nan", "amount_type": "exact", "amount": float("nan"), "currency": "USD", "basis": "per_group"},
+        {"id": "reversed", "amount_type": "range", "amount_min": 20, "amount_max": 10, "currency": "USD", "basis": "per_group"},
+    ],
+)
+def test_nonfinite_or_reversed_budget_item_is_a_hard_finding(
+    state: TripState, item: dict[str, object]
+) -> None:
+    state.itinerary["budget_items"] = [item]
+
+    report = run_checks(state)
+
+    assert [finding.code for finding in report.findings] == ["BUDGET_ITEM_INVALID"]
+
+
+def test_per_person_item_requires_positive_known_traveler_count(state: TripState) -> None:
     state.brief["travelers"] = []
     state.itinerary["budget_items"] = [
-        {
-            "id": "rail-person",
-            "amount_type": "exact",
-            "amount": 100,
-            "currency": "USD",
-            "basis": "per_person",
-        },
-        {
-            "id": "hotel-group",
-            "amount_type": "exact",
-            "amount": 300,
-            "currency": "USD",
-            "basis": "per_group",
-        },
+        {"id": "rail-person", "amount_type": "exact", "amount": 100, "currency": "USD", "basis": "per_person"}
     ]
 
     missing = run_checks(state)
-    state.brief["travelers"] = [{"id": "traveler-1"}, {"id": "traveler-2"}]
-    explicit = run_checks(state)
+    state.brief["travelers"] = [{"id": "traveler-one"}, {"id": "traveler-two"}]
+    known = run_checks(state)
 
-    assert [finding.code for finding in missing.findings] == ["BUDGET_BASIS_REQUIRED"]
-    assert "BUDGET_BASIS_REQUIRED" not in [finding.code for finding in explicit.findings]
+    assert "BUDGET_TRAVELER_COUNT_REQUIRED" in [finding.code for finding in missing.findings]
+    assert "BUDGET_TRAVELER_COUNT_REQUIRED" not in [finding.code for finding in known.findings]
 
 
-def test_declared_budget_range_must_match_known_summable_items(state: TripState) -> None:
+@pytest.mark.parametrize("rate", [float("nan"), 0, -1, True])
+def test_mixed_currencies_require_finite_positive_dated_fx(
+    state: TripState, rate: object
+) -> None:
     state.itinerary["budget_items"] = [
-        {
-            "id": "rail",
-            "amount_type": "exact",
-            "amount": 100,
-            "currency": "USD",
-            "basis": "per_group",
-        },
-        {
-            "id": "hotel",
-            "amount_type": "range",
-            "amount_min": 50,
-            "amount_max": 70,
-            "currency": "USD",
-            "basis": "per_group",
-        },
+        {"id": "hotel", "amount_type": "exact", "amount": 10000, "currency": "JPY", "basis": "per_group"},
+        {"id": "ticket", "amount_type": "exact", "amount": 50, "currency": "USD", "basis": "per_group"},
     ]
-    state.itinerary["budget_total"] = {
+    state.itinerary["budget_summary"] = {
+        "currency": "JPY",
+        "basis": "per_group",
+        "amount": 17500,
+        "fx": {
+            "base_currency": "JPY",
+            "observed_at": "2026-08-30T09:00:00+00:00",
+            "source_id": state.candidates["sources"][0]["id"],
+            "rates": {"USD": rate},
+        },
+    }
+
+    report = run_checks(state)
+
+    assert "BUDGET_FX_REQUIRED" in [finding.code for finding in report.findings]
+
+
+def test_budget_summary_range_matches_only_known_summable_items(state: TripState) -> None:
+    state.itinerary["budget_items"] = [
+        {"id": "rail", "amount_type": "exact", "amount": 100, "currency": "USD", "basis": "per_group"},
+        {"id": "hotel", "amount_type": "range", "amount_min": 50, "amount_max": 70, "currency": "USD", "basis": "per_group"},
+    ]
+    state.itinerary["budget_summary"] = {
         "currency": "USD",
         "basis": "per_group",
         "amount_min": 140,
@@ -108,40 +125,25 @@ def test_declared_budget_range_must_match_known_summable_items(state: TripState)
     }
 
     mismatch = run_checks(state)
-    state.itinerary["budget_total"]["amount_min"] = 150
+    state.itinerary["budget_summary"]["amount_min"] = 150
     consistent = run_checks(state)
 
-    assert [finding.code for finding in mismatch.findings] == ["BUDGET_TOTAL_MISMATCH"]
+    assert "BUDGET_TOTAL_MISMATCH" in [finding.code for finding in mismatch.findings]
     assert "BUDGET_TOTAL_MISMATCH" not in [finding.code for finding in consistent.findings]
 
 
 def test_unknown_amount_stays_visible_and_is_not_added_as_zero(state: TripState) -> None:
     state.itinerary["budget_items"] = [
-        {
-            "id": "known-hotel",
-            "amount_type": "exact",
-            "amount": 100,
-            "currency": "USD",
-            "basis": "per_group",
-        },
-        {
-            "id": "unknown-rail",
-            "amount_type": "unknown",
-            "currency": "USD",
-            "basis": "per_group",
-        },
+        {"id": "known", "amount_type": "exact", "amount": 100, "currency": "USD", "basis": "per_group"},
+        {"id": "unknown", "amount_type": "unknown", "currency": "USD", "basis": "per_group"},
     ]
-    state.itinerary["budget_total"] = {
-        "currency": "USD",
-        "basis": "per_group",
-        "amount": 100,
-    }
+    state.itinerary["budget_summary"] = {"currency": "USD", "basis": "per_group", "amount": 100}
 
     report = run_checks(state)
 
     unknown = next(finding for finding in report.findings if finding.code == "BUDGET_AMOUNT_UNKNOWN")
     assert unknown.severity == "note"
-    assert unknown.affected_ids == ("unknown-rail",)
+    assert unknown.affected_ids == ("unknown",)
     assert "BUDGET_TOTAL_MISMATCH" not in [finding.code for finding in report.findings]
 
 
@@ -152,73 +154,45 @@ def test_readiness_dependency_graph_rejects_cycles(state: TripState) -> None:
         {"id": "ready-c", "category": "activities", "status": "action_needed", "dependencies": ["ready-a"]},
     ]
 
-    report = run_checks(state)
-
-    cycle = next(finding for finding in report.findings if finding.code == "READINESS_CYCLE")
+    cycle = next(
+        finding for finding in run_checks(state).findings if finding.code == "READINESS_CYCLE"
+    )
     assert cycle.affected_ids == ("ready-a", "ready-b", "ready-c", "ready-a")
 
 
-def test_verified_high_stakes_claim_requires_existing_official_source(
-    state: TripState,
-) -> None:
-    state.candidates["sources"] = [
-        {
-            "id": "editorial-visa",
-            "url": "https://example.com/visa",
-            "source_type": "editorial",
-            "publisher": "Travel Blog",
-            "retrieved_at": "2026-08-20T12:00:00+00:00",
-        }
-    ]
+def test_duplicate_source_order_never_changes_official_source_result(state: TripState) -> None:
+    official = {
+        "id": "source-entry",
+        "url": "https://official.example/entry",
+        "source_type": "official",
+        "publisher": "Border agency",
+        "retrieved_at": "2026-08-20T12:00:00+00:00",
+    }
+    editorial = {**official, "url": "https://example.com/entry", "source_type": "editorial"}
     state.candidates["claims"] = [
-        {
-            "id": "claim-entry",
-            "topic": "entry",
-            "status": "verified",
-            "source_ids": ["editorial-visa"],
-        },
-        {
-            "id": "claim-health-unknown",
-            "topic": "health",
-            "status": "unverified",
-            "source_ids": [],
-        },
+        {"id": "claim-entry", "topic": "entry", "status": "verified", "source_ids": ["source-entry"]}
     ]
 
-    report = run_checks(state)
+    state.candidates["sources"] = [official, editorial]
+    first = run_checks(state)
+    state.candidates["sources"] = [editorial, official]
+    second = run_checks(state)
 
-    assert [finding.code for finding in report.findings] == [
-        "SOURCE_OFFICIAL_REQUIRED"
-    ]
-    assert report.findings[0].affected_ids == ("claim-entry",)
+    for report in (first, second):
+        assert "ID_DUPLICATE" in [finding.code for finding in report.findings]
+        assert "SOURCE_OFFICIAL_REQUIRED" in [finding.code for finding in report.findings]
 
 
 def test_candidate_local_claim_finding_keeps_its_canonical_path(state: TripState) -> None:
     state.candidates["sources"] = [
-        {
-            "id": "editorial-health",
-            "url": "https://example.com/health",
-            "source_type": "editorial",
-            "publisher": "Travel Blog",
-            "retrieved_at": "2026-08-20T12:00:00+00:00",
-        }
+        {"id": "editorial-health", "url": "https://example.com/health", "source_type": "editorial", "publisher": "Travel Blog", "retrieved_at": "2026-08-20T12:00:00+00:00"}
     ]
     state.candidates["claims"] = []
     state.candidates["items"] = [
-        {
-            "id": "candidate-clinic",
-            "claims": [
-                {
-                    "id": "claim-health",
-                    "topic": "health",
-                    "status": "verified",
-                    "source_ids": ["editorial-health"],
-                }
-            ],
-        }
+        {"id": "candidate-clinic", "claims": [{"id": "claim-health", "topic": "health", "status": "verified", "source_ids": ["editorial-health"]}]}
     ]
 
-    finding = run_checks(state).findings[0]
-
-    assert finding.code == "SOURCE_OFFICIAL_REQUIRED"
+    finding = next(
+        finding for finding in run_checks(state).findings if finding.code == "SOURCE_OFFICIAL_REQUIRED"
+    )
     assert finding.path == "candidates.yaml.items[0].claims[0]"

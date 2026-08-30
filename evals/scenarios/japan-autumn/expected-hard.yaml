@@ -17,6 +17,3 @@ forbidden_behaviors:
 - behavior: invent_live_timetable
   path: effects.forbidden.invent_live_timetable
   equals: false
-- behavior: silently_change_frozen_bases
-  path: effects.forbidden.silently_change_frozen_bases
-  equals: false

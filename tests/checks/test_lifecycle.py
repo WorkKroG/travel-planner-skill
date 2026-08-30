@@ -7,18 +7,23 @@ from travel_planner.state import TripState
 def _state(japan_state: TripState, **itinerary_updates: object) -> TripState:
     state = deepcopy(japan_state)
     state.itinerary["selected_route_id"] = None
+    state.itinerary["alternatives"] = []
+    state.itinerary["route_stops"] = []
+    state.itinerary["days"] = []
     state.itinerary["budget_items"] = []
+    state.itinerary["budget_summary"] = None
     state.itinerary.update(itinerary_updates)
     return state
 
 
-def _blocker(blocker_id: str = "blocker-rail") -> dict[str, str]:
+def _blocker(blocker_id: str = "blocker-rail") -> dict[str, object]:
     return {
         "id": blocker_id,
         "code": "SCHEDULE_UNRELEASED",
         "severity": "blocking",
         "status": "unresolved",
         "path": "itinerary.yaml.days[1]",
+        "affected_ids": ["day-2"],
         "message": "The final timetable is not released.",
     }
 
@@ -172,3 +177,107 @@ def test_invalid_lifecycle_combinations_and_unknown_acceptance_are_reported(
         "FINAL_BASIS_REQUIRED",
         "ACCEPTED_BLOCKER_NOT_FOUND",
     }
+
+
+def test_malformed_saved_blockers_cannot_disappear_from_codex_final(
+    japan_state: TripState,
+) -> None:
+    report = run_checks(
+        _state(
+            japan_state,
+            document_status="final",
+            verification_level="codex_validated",
+            finalization_basis="codex_validated",
+            accepted_blockers=[],
+            challenge_findings=[
+                {"severity": "blocking", "status": "unresolved", "message": "No ID."},
+                {
+                    "id": "bad-severity",
+                    "code": "SAVED",
+                    "severity": "warning",
+                    "status": "unresolved",
+                    "path": "itinerary.yaml.days[0]",
+                    "affected_ids": [],
+                    "message": "Wrong severity.",
+                },
+                {
+                    "id": "bad-status",
+                    "code": "SAVED",
+                    "severity": "blocking",
+                    "status": "resolved",
+                    "path": "itinerary.yaml.days[0]",
+                    "affected_ids": [],
+                    "message": "Acceptance must not resolve it.",
+                },
+            ],
+        )
+    )
+
+    invalid_paths = {
+        finding.path
+        for finding in report.lifecycle_findings
+        if finding.code == "SAVED_BLOCKER_INVALID"
+    }
+    assert invalid_paths == {
+        "itinerary.yaml.challenge_findings[0]",
+        "itinerary.yaml.challenge_findings[1]",
+        "itinerary.yaml.challenge_findings[2]",
+    }
+    assert report.ok is False
+
+
+def test_computed_and_stored_finding_id_collision_is_inconsistent(
+    japan_state: TripState,
+) -> None:
+    collision_id = "link-route-not-found-missing-route-33730ff5"
+    state = _state(
+        japan_state,
+        document_status="final",
+        verification_level="ai_reviewed",
+        finalization_basis="user_confirmed",
+        alternatives=[],
+        selected_route_id="missing-route",
+        challenge_findings=[_blocker(collision_id)],
+        accepted_blockers=[_acceptance(collision_id)],
+    )
+
+    report = run_checks(state)
+
+    assert "FINDING_ID_COLLISION" in [
+        finding.code for finding in report.lifecycle_findings
+    ]
+    assert report.ok is False
+    assert len(
+        [
+            finding
+            for finding in report.blocking_findings
+            if finding.id == collision_id
+        ]
+    ) == 2
+
+
+def test_codex_final_is_not_blocked_by_a_nonblocking_unknown_budget_note(
+    japan_state: TripState,
+) -> None:
+    report = run_checks(
+        _state(
+            japan_state,
+            document_status="final",
+            verification_level="codex_validated",
+            finalization_basis="codex_validated",
+            challenge_findings=[],
+            accepted_blockers=[],
+            budget_items=[
+                {
+                    "id": "unknown-cost",
+                    "amount_type": "unknown",
+                    "currency": "JPY",
+                    "basis": "per_group",
+                }
+            ],
+        )
+    )
+
+    assert [finding.code for finding in report.findings] == ["BUDGET_AMOUNT_UNKNOWN"]
+    assert report.blocking_findings == ()
+    assert report.ok is True

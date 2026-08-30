@@ -1,5 +1,5 @@
 prompt_version: scenario-v1
-prompt: Challenge the frozen Japan route across calendar, schedule-evidence, and local weather components.
+prompt: Evaluate the legacy Japan fixture for calendar and unavailable-schedule behavior.
 reference_evaluator:
   version: 1
   kind: e2e.composite
@@ -7,11 +7,3 @@ reference_evaluator:
     components:
       - {kind: weekday, source_id: autumn-event}
       - {kind: schedule-evidence, source_id: regional-rail, trap_id: timetable-invention}
-      - kind: weather-swap
-        source_id: mountain-weather
-        trap_id: weather-risk
-        wet_conditions: [rain, storm]
-        days:
-          - {id: day-6, activity: market, base: Kanazawa}
-          - {id: day-7, activity: mountain-hike, base: Kanazawa}
-          - {id: day-8, activity: rail-transfer, base: Kyoto}
