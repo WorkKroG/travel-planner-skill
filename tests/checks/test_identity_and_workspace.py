@@ -1,4 +1,5 @@
 import json
+from copy import deepcopy
 from pathlib import Path
 
 import yaml
@@ -16,7 +17,13 @@ def test_duplicate_canonical_ids_and_acceptances_have_exact_paths(
             "alternatives": [{"id": "route-one"}, {"id": "route-one"}],
             "route_stops": [{"id": "stop-one"}, {"id": "stop-one"}],
             "days": [
-                {"id": "day-one", "timeline": [{"id": "leg-one"}, {"id": "leg-one"}]},
+                {
+                    "id": "day-one",
+                    "timeline": [
+                        {"id": "leg-one", "time": "09:00", "title": "First", "detail": ""},
+                        {"id": "leg-one", "time": "10:00", "title": "Second", "detail": ""},
+                    ],
+                },
                 {"id": "day-one", "timeline": []},
             ],
             "challenge_findings": [
@@ -27,8 +34,13 @@ def test_duplicate_canonical_ids_and_acceptances_have_exact_paths(
                 {"blocker_id": "blocker-one", "accepted_by_user": True, "accepted_at": "2026-08-30T09:00:00+00:00", "rationale": "Accepted once."},
                 {"blocker_id": "blocker-one", "accepted_by_user": True, "accepted_at": "2026-08-30T09:01:00+00:00", "rationale": "Accepted twice."},
             ],
+            "budget_items": [
+                {"id": "budget-one", "amount_type": "exact", "amount": 10, "currency": "USD", "basis": "per_group"},
+                {"id": "budget-one", "amount_type": "exact", "amount": 10, "currency": "USD", "basis": "per_group"},
+            ],
         }
     )
+    state.brief["travelers"] = [{"id": "traveler-one"}, {"id": "traveler-one"}]
     state.candidates["sources"] = [
         {"id": "source-one", "url": "https://one.example", "source_type": "official", "publisher": "One", "retrieved_at": "2026-08-20T12:00:00+00:00"},
         {"id": "source-one", "url": "https://two.example", "source_type": "official", "publisher": "Two", "retrieved_at": "2026-08-20T12:00:00+00:00"},
@@ -37,6 +49,10 @@ def test_duplicate_canonical_ids_and_acceptances_have_exact_paths(
         {"id": "claim-one", "topic": "entry", "status": "verified", "source_ids": ["source-one"]},
         {"id": "claim-one", "topic": "entry", "status": "verified", "source_ids": ["source-one"]},
     ]
+    candidate = deepcopy(state.candidates["items"][0])
+    candidate["id"] = "candidate-one"
+    candidate["claims"] = []
+    state.candidates["items"] = [candidate, deepcopy(candidate)]
     state.readiness["items"] = [
         {"id": "ready-one", "category": "transport", "status": "action_needed"},
         {"id": "ready-one", "category": "lodging", "status": "action_needed"},
@@ -55,6 +71,9 @@ def test_duplicate_canonical_ids_and_acceptances_have_exact_paths(
         "readiness.yaml.items[1].id",
         "itinerary.yaml.challenge_findings[1].id",
         "itinerary.yaml.accepted_blockers[1].blocker_id",
+        "itinerary.yaml.budget_items[1].id",
+        "brief.yaml.travelers[1].id",
+        "candidates.yaml.items[1].id",
     }
     assert report.ok is False
 

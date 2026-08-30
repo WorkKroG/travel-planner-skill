@@ -132,7 +132,9 @@ def test_budget_summary_range_matches_only_known_summable_items(state: TripState
     assert "BUDGET_TOTAL_MISMATCH" not in [finding.code for finding in consistent.findings]
 
 
-def test_unknown_amount_stays_visible_and_is_not_added_as_zero(state: TripState) -> None:
+def test_numeric_summary_is_blocked_while_any_budget_amount_is_unknown(
+    state: TripState,
+) -> None:
     state.itinerary["budget_items"] = [
         {"id": "known", "amount_type": "exact", "amount": 100, "currency": "USD", "basis": "per_group"},
         {"id": "unknown", "amount_type": "unknown", "currency": "USD", "basis": "per_group"},
@@ -144,7 +146,160 @@ def test_unknown_amount_stays_visible_and_is_not_added_as_zero(state: TripState)
     unknown = next(finding for finding in report.findings if finding.code == "BUDGET_AMOUNT_UNKNOWN")
     assert unknown.severity == "note"
     assert unknown.affected_ids == ("unknown",)
-    assert "BUDGET_TOTAL_MISMATCH" not in [finding.code for finding in report.findings]
+    incomplete = next(
+        finding
+        for finding in report.findings
+        if finding.code == "BUDGET_TOTAL_WITH_UNKNOWN"
+    )
+    assert incomplete.severity == "blocking"
+    assert report.ok is False
+
+
+def test_cli_returns_3_for_numeric_summary_with_unknown_amount(
+    minimal_trip: Path, capsys
+) -> None:
+    itinerary_path = minimal_trip / "itinerary.yaml"
+    itinerary = yaml.safe_load(itinerary_path.read_text(encoding="utf-8"))
+    itinerary.update(
+        {
+            "document_status": "final",
+            "verification_level": "codex_validated",
+            "finalization_basis": "codex_validated",
+            "budget_items": [
+                {
+                    "id": "known",
+                    "amount_type": "exact",
+                    "amount": 100,
+                    "currency": "USD",
+                    "basis": "per_group",
+                },
+                {
+                    "id": "unknown",
+                    "amount_type": "unknown",
+                    "currency": "USD",
+                    "basis": "per_group",
+                },
+            ],
+            "budget_summary": {
+                "currency": "USD",
+                "basis": "per_group",
+                "amount": 100,
+            },
+        }
+    )
+    write_state_file(itinerary_path, itinerary)
+
+    exit_code = main(["check", str(minimal_trip)])
+    payload = json.loads(capsys.readouterr().out)
+
+    assert exit_code == 3
+    assert "BUDGET_TOTAL_WITH_UNKNOWN" in {
+        finding["code"] for finding in payload["unaccepted_blocking_findings"]
+    }
+
+
+@pytest.mark.parametrize(
+    ("case", "fx"),
+    [
+        (
+            "missing-source",
+            {
+                "base_currency": "USD",
+                "observed_at": "2026-08-30T09:00:00+00:00",
+                "source_id": "missing-source",
+                "rates": {"EUR": 0.9},
+            },
+        ),
+        (
+            "wrong-base",
+            {
+                "base_currency": "EUR",
+                "observed_at": "2026-08-30T09:00:00+00:00",
+                "source_id": "source-rail",
+                "rates": {"USD": 1.1},
+            },
+        ),
+        (
+            "nan-extra-rate",
+            {
+                "base_currency": "USD",
+                "observed_at": "2026-08-30T09:00:00+00:00",
+                "source_id": "source-rail",
+                "rates": {"EUR": float("nan")},
+            },
+        ),
+        (
+            "infinite-extra-rate",
+            {
+                "base_currency": "USD",
+                "observed_at": "2026-08-30T09:00:00+00:00",
+                "source_id": "source-rail",
+                "rates": {"EUR": float("inf")},
+            },
+        ),
+        (
+            "negative-extra-rate",
+            {
+                "base_currency": "USD",
+                "observed_at": "2026-08-30T09:00:00+00:00",
+                "source_id": "source-rail",
+                "rates": {"EUR": -1},
+            },
+        ),
+    ],
+    ids=lambda value: value if isinstance(value, str) else None,
+)
+def test_optional_single_currency_fx_is_fully_validated(
+    state: TripState, case: str, fx: dict[str, object]
+) -> None:
+    state.itinerary["budget_items"] = [
+        {
+            "id": "known",
+            "amount_type": "exact",
+            "amount": 100,
+            "currency": "USD",
+            "basis": "per_group",
+        }
+    ]
+    state.itinerary["budget_summary"] = {
+        "currency": "USD",
+        "basis": "per_group",
+        "amount": 100,
+        "fx": fx,
+    }
+
+    report = run_checks(state)
+
+    assert "BUDGET_FX_INVALID" in [finding.code for finding in report.findings], case
+
+
+def test_valid_optional_single_currency_fx_has_no_false_positive(
+    state: TripState,
+) -> None:
+    state.itinerary["budget_items"] = [
+        {
+            "id": "known",
+            "amount_type": "exact",
+            "amount": 100,
+            "currency": "USD",
+            "basis": "per_group",
+        }
+    ]
+    state.itinerary["budget_summary"] = {
+        "currency": "USD",
+        "basis": "per_group",
+        "amount": 100,
+        "fx": {
+            "base_currency": "USD",
+            "observed_at": "2026-08-30T09:00:00+00:00",
+            "source_id": "source-rail",
+            "rates": {"EUR": 0.9},
+        },
+    }
+
+    assert "BUDGET_FX_INVALID" not in [
+        finding.code for finding in run_checks(state).findings
+    ]
 
 
 def test_readiness_dependency_graph_rejects_cycles(state: TripState) -> None:

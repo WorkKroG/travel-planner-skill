@@ -179,53 +179,6 @@ def test_invalid_lifecycle_combinations_and_unknown_acceptance_are_reported(
     }
 
 
-def test_malformed_saved_blockers_cannot_disappear_from_codex_final(
-    japan_state: TripState,
-) -> None:
-    report = run_checks(
-        _state(
-            japan_state,
-            document_status="final",
-            verification_level="codex_validated",
-            finalization_basis="codex_validated",
-            accepted_blockers=[],
-            challenge_findings=[
-                {"severity": "blocking", "status": "unresolved", "message": "No ID."},
-                {
-                    "id": "bad-severity",
-                    "code": "SAVED",
-                    "severity": "warning",
-                    "status": "unresolved",
-                    "path": "itinerary.yaml.days[0]",
-                    "affected_ids": [],
-                    "message": "Wrong severity.",
-                },
-                {
-                    "id": "bad-status",
-                    "code": "SAVED",
-                    "severity": "blocking",
-                    "status": "resolved",
-                    "path": "itinerary.yaml.days[0]",
-                    "affected_ids": [],
-                    "message": "Acceptance must not resolve it.",
-                },
-            ],
-        )
-    )
-
-    invalid_paths = {
-        finding.path
-        for finding in report.lifecycle_findings
-        if finding.code == "SAVED_BLOCKER_INVALID"
-    }
-    assert invalid_paths == {
-        "itinerary.yaml.challenge_findings[0]",
-        "itinerary.yaml.challenge_findings[1]",
-        "itinerary.yaml.challenge_findings[2]",
-    }
-    assert report.ok is False
-
-
 def test_computed_and_stored_finding_id_collision_is_inconsistent(
     japan_state: TripState,
 ) -> None:

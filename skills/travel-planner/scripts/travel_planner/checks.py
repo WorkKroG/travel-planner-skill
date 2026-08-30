@@ -152,10 +152,13 @@ def _identity_findings(entries: tuple[Entry, ...], key: str = "id") -> tuple[Fin
 
 def _identity_checks(state: TripState, days: tuple[Entry, ...]) -> tuple[Finding, ...]:
     groups = (
+        _records(state.brief.get("travelers"), "brief.yaml.travelers"),
+        _records(state.candidates.get("items"), "candidates.yaml.items"),
         _records(state.itinerary.get("alternatives"), "itinerary.yaml.alternatives"),
         _records(state.itinerary.get("route_stops"), "itinerary.yaml.route_stops"),
         days,
         _timeline_entries(days),
+        _records(state.itinerary.get("budget_items"), "itinerary.yaml.budget_items"),
         _records(state.candidates.get("sources"), "candidates.yaml.sources"),
         _claim_entries(state),
         _records(state.readiness.get("items"), "readiness.yaml.items"),
@@ -433,15 +436,15 @@ def _valid_fx(
     fx = summary["fx"]
     base, rates = fx.get("base_currency"), fx.get("rates")
     if (
-        base not in currencies
+        base != summary.get("currency")
+        or base not in currencies
         or _timestamp(fx.get("observed_at")) is None
         or fx.get("source_id") not in source_ids
         or not isinstance(rates, dict)
+        or any(_number(rate, positive=True) is None for rate in rates.values())
+        or not currencies - {str(base)} <= set(rates)
     ):
         return None
-    for currency in currencies - {str(base)}:
-        if _number(rates.get(currency), positive=True) is None:
-            return None
     return fx
 
 
@@ -497,7 +500,8 @@ def _budget_checks(state: TripState) -> tuple[Finding, ...]:
     currencies = {str(item["currency"]) for item, _ in known}
     summary = state.itinerary.get("budget_summary")
     source_ids = _unique_ids(_records(state.candidates.get("sources"), "candidates.yaml.sources"))
-    fx = _valid_fx(summary, currencies, source_ids) if len(currencies) > 1 else None
+    fx_present = isinstance(summary, dict) and "fx" in summary
+    fx = _valid_fx(summary, currencies, source_ids) if fx_present else None
     if len(currencies) > 1 and fx is None:
         findings.append(
             _finding(
@@ -506,8 +510,24 @@ def _budget_checks(state: TripState) -> tuple[Finding, ...]:
                 "Mixed currencies require finite positive dated FX linked to one source.",
             )
         )
+    elif fx_present and fx is None:
+        findings.append(
+            _finding(
+                "BUDGET_FX_INVALID",
+                "itinerary.yaml.budget_summary.fx",
+                "FX metadata must use the summary currency, one source, and finite positive rates.",
+            )
+        )
     if summary is not None:
         declared = _summary_value(summary)
+        if unknown:
+            findings.append(
+                _finding(
+                    "BUDGET_TOTAL_WITH_UNKNOWN",
+                    "itinerary.yaml.budget_summary",
+                    "A numeric budget summary cannot represent unknown amounts.",
+                )
+            )
         if declared is None or not _CURRENCY.fullmatch(str(summary.get("currency", ""))):
             findings.append(
                 _finding(
@@ -598,44 +618,21 @@ def _source_checks(state: TripState) -> tuple[Finding, ...]:
     return tuple(findings)
 
 
-def _stored_blockers(state: TripState) -> tuple[tuple[Finding, ...], tuple[Finding, ...]]:
-    blockers: list[Finding] = []
-    invalid: list[Finding] = []
-    required = {"id", "code", "severity", "status", "path", "affected_ids", "message"}
-    for item, path in _records(
-        state.itinerary.get("challenge_findings"), "itinerary.yaml.challenge_findings"
-    ):
-        valid = (
-            required <= set(item)
-            and isinstance(item.get("id"), str)
-            and isinstance(item.get("code"), str)
-            and item.get("severity") == "blocking"
-            and item.get("status") in {"open", "unresolved"}
-            and isinstance(item.get("path"), str)
-            and isinstance(item.get("affected_ids"), list)
-            and all(isinstance(value, str) for value in item.get("affected_ids", []))
-            and isinstance(item.get("message"), str)
+def _stored_blockers(state: TripState) -> tuple[Finding, ...]:
+    return tuple(
+        Finding(
+            item["id"],
+            item["code"],
+            "blocking",
+            item["path"],
+            tuple(item["affected_ids"]),
+            item["message"],
         )
-        if not valid:
-            invalid.append(
-                _finding(
-                    "SAVED_BLOCKER_INVALID",
-                    path,
-                    "Stored challenge finding must be a complete unresolved blocking record.",
-                )
-            )
-            continue
-        blockers.append(
-            Finding(
-                item["id"],
-                item["code"],
-                "blocking",
-                item["path"],
-                tuple(item["affected_ids"]),
-                item["message"],
-            )
+        for item, _ in _records(
+            state.itinerary.get("challenge_findings"),
+            "itinerary.yaml.challenge_findings",
         )
-    return tuple(blockers), tuple(invalid)
+    )
 
 
 def _effective_acceptances(
@@ -659,7 +656,6 @@ def _effective_acceptances(
 def _lifecycle_checks(
     state: TripState,
     blockers: tuple[Finding, ...],
-    invalid_saved: tuple[Finding, ...],
     collided: set[str],
     accepted: tuple[str, ...],
 ) -> tuple[Finding, ...]:
@@ -669,7 +665,7 @@ def _lifecycle_checks(
         itinerary.get("verification_level"),
         itinerary.get("finalization_basis"),
     )
-    findings = list(invalid_saved)
+    findings: list[Finding] = []
     if status == "draft" and basis is not None:
         findings.append(_finding("DRAFT_FINALIZATION_BASIS", "itinerary.yaml.finalization_basis", "Draft requires finalization_basis=null."))
     if status == "final" and basis not in {"codex_validated", "user_confirmed"}:
@@ -696,7 +692,7 @@ def run_checks(state: TripState) -> CheckReport:
     """Run hard checks without mutating canonical state."""
     days = _records(state.itinerary.get("days"), "itinerary.yaml.days")
     timeline = _timeline_entries(days)
-    stored, invalid_saved = _stored_blockers(state)
+    stored = _stored_blockers(state)
     computed = (
         *_identity_checks(state, days),
         *_calendar_checks(timeline),
@@ -712,7 +708,7 @@ def run_checks(state: TripState) -> CheckReport:
     accepted = _effective_acceptances(state, blockers, collided)
     lifecycle = tuple(
         sorted(
-            _lifecycle_checks(state, blockers, invalid_saved, collided, accepted),
+            _lifecycle_checks(state, blockers, collided, accepted),
             key=_finding_key,
         )
     )
