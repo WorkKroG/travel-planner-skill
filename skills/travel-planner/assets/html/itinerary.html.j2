@@ -237,8 +237,10 @@
               {% endif %}
               {% for scenario in day.scenarios %}
               <section class="scenario-panel" data-scenario="{{ scenario.kind }}" aria-label="{{ scenario.kind|capitalize }} scenario">
-                <span class="scenario-kind">{{ scenario.kind }}</span>
-                <strong>{{ scenario.title }}</strong>
+                <header class="scenario-heading">
+                  <span class="scenario-kind">{{ scenario.kind }}</span>
+                  <strong>{{ scenario.title }}</strong>
+                </header>
                 <p>{{ scenario.description }}</p>
               </section>
               {% else %}<p>No scenarios recorded.</p>{% endfor %}
@@ -257,10 +259,10 @@
                 {% for constraint in day.critical_constraints %}<li>{{ constraint }}</li>{% else %}<li>No critical constraints recorded.</li>{% endfor %}
               </ul>
               <dl>
-                <dt>Overnight</dt><dd>{{ day.overnight }}</dd>
-                <dt>Travel</dt><dd>{{ day.travel }}</dd>
-                <dt>Load</dt><dd>{{ day.load|capitalize }}</dd>
-                <dt>Last checked</dt><dd>{{ day.last_checked }}</dd>
+                <div class="metadata-pair"><dt>Overnight</dt><dd>{{ day.overnight }}</dd></div>
+                <div class="metadata-pair"><dt>Travel</dt><dd>{{ day.travel }}</dd></div>
+                <div class="metadata-pair"><dt>Load</dt><dd>{{ day.load|capitalize }}</dd></div>
+                <div class="metadata-pair"><dt>Last checked</dt><dd>{{ day.last_checked }}</dd></div>
               </dl>
               {% if day.links %}
               <h4>Contextual actions</h4>

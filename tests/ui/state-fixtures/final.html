@@ -1275,12 +1275,23 @@ button[aria-pressed="true"] {
   .warning-block,
   .blocker-item,
   .constraint-list li,
+  .metadata-pair,
   .timeline-event,
   .decision-item,
   .readiness-item,
   .risk-item,
   .source-item {
     break-inside: avoid;
+  }
+
+  .scenario-heading {
+    break-after: avoid;
+    break-inside: avoid;
+  }
+
+  .scenario-panel > p {
+    orphans: 2;
+    widows: 2;
   }
 
   h2,
@@ -1497,13 +1508,17 @@ button[aria-pressed="true"] {
                 <button type="button" data-show-scenario="backup" aria-pressed="false">Backup</button>
               </div>
               <section class="scenario-panel" data-scenario="primary" aria-label="Primary scenario">
-                <span class="scenario-kind">primary</span>
-                <strong>Neighbourhood walk</strong>
+                <header class="scenario-heading">
+                  <span class="scenario-kind">primary</span>
+                  <strong>Neighbourhood walk</strong>
+                </header>
                 <p>Take a short walk after check-in.</p>
               </section>
               <section class="scenario-panel" data-scenario="backup" aria-label="Backup scenario">
-                <span class="scenario-kind">backup</span>
-                <strong>Direct rest</strong>
+                <header class="scenario-heading">
+                  <span class="scenario-kind">backup</span>
+                  <strong>Direct rest</strong>
+                </header>
                 <p>Rest at the lodging if arrival is delayed.</p>
               </section>
 
@@ -1514,10 +1529,10 @@ button[aria-pressed="true"] {
               <ul class="constraint-list">
 <li>No critical constraints recorded.</li>              </ul>
               <dl>
-                <dt>Overnight</dt><dd>Tokyo</dd>
-                <dt>Travel</dt><dd>Airport arrival</dd>
-                <dt>Load</dt><dd>Light</dd>
-                <dt>Last checked</dt><dd>2026-08-28T10:00:00+00:00</dd>
+                <div class="metadata-pair"><dt>Overnight</dt><dd>Tokyo</dd></div>
+                <div class="metadata-pair"><dt>Travel</dt><dd>Airport arrival</dd></div>
+                <div class="metadata-pair"><dt>Load</dt><dd>Light</dd></div>
+                <div class="metadata-pair"><dt>Last checked</dt><dd>2026-08-28T10:00:00+00:00</dd></div>
               </dl>
               <h4>Contextual actions</h4>
               <ul class="link-list">
@@ -1562,13 +1577,17 @@ button[aria-pressed="true"] {
                 <button type="button" data-show-scenario="backup" aria-pressed="false">Backup</button>
               </div>
               <section class="scenario-panel" data-scenario="primary" aria-label="Primary scenario">
-                <span class="scenario-kind">primary</span>
-                <strong>Garden visit</strong>
+                <header class="scenario-heading">
+                  <span class="scenario-kind">primary</span>
+                  <strong>Garden visit</strong>
+                </header>
                 <p>Follow the verified outdoor plan.</p>
               </section>
               <section class="scenario-panel" data-scenario="backup" aria-label="Backup scenario">
-                <span class="scenario-kind">backup</span>
-                <strong>Indoor cultural visit</strong>
+                <header class="scenario-heading">
+                  <span class="scenario-kind">backup</span>
+                  <strong>Indoor cultural visit</strong>
+                </header>
                 <p>Keep the same city and lodging if weather changes.</p>
               </section>
 
@@ -1579,10 +1598,10 @@ button[aria-pressed="true"] {
               <ul class="constraint-list">
 <li>No critical constraints recorded.</li>              </ul>
               <dl>
-                <dt>Overnight</dt><dd>Kyoto</dd>
-                <dt>Travel</dt><dd>Intercity rail</dd>
-                <dt>Load</dt><dd>Medium</dd>
-                <dt>Last checked</dt><dd>2026-08-28T10:00:00+00:00</dd>
+                <div class="metadata-pair"><dt>Overnight</dt><dd>Kyoto</dd></div>
+                <div class="metadata-pair"><dt>Travel</dt><dd>Intercity rail</dd></div>
+                <div class="metadata-pair"><dt>Load</dt><dd>Medium</dd></div>
+                <div class="metadata-pair"><dt>Last checked</dt><dd>2026-08-28T10:00:00+00:00</dd></div>
               </dl>
               <h4>Contextual actions</h4>
               <ul class="link-list">

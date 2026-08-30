@@ -1268,12 +1268,23 @@ button[aria-pressed="true"] {
   .warning-block,
   .blocker-item,
   .constraint-list li,
+  .metadata-pair,
   .timeline-event,
   .decision-item,
   .readiness-item,
   .risk-item,
   .source-item {
     break-inside: avoid;
+  }
+
+  .scenario-heading {
+    break-after: avoid;
+    break-inside: avoid;
+  }
+
+  .scenario-panel > p {
+    orphans: 2;
+    widows: 2;
   }
 
   h2,
