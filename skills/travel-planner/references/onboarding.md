@@ -1,19 +1,27 @@
-# Onboarding and resuming
+# Start or resume a trip
 
-One trip uses one explicit trip workspace. Recommend a separate folder and local Codex project before writing: this isolates sources and decisions, supports several focused chats, and makes archival safe. Project creation is the user's action in v0.1.0; explain how to choose/add the folder but do not claim to have created or switched a project.
+One trip uses one explicit workspace. Before creating local files, confirm the exact path, title, and stable `trip_id` with the user. The path must not be the installed skill source or another trip workspace. Initialization never overwrites existing workspace files.
 
-For a new trip, first check that the chosen folder is neither the skill source nor an existing trip. Confirm the exact path and title with the user, then initialize only after that confirmation:
+In a full local Codex environment, initialize only after that confirmation:
 
 ```bash
 travel-planner init PATH --title "TITLE" --trip-id TRIP_ID --confirm-path
 ```
 
-`--confirm-path` is deliberate. Do not initialize in a skill-development repository, overwrite state, or infer dates. A user may deliberately use a chosen folder without a separate project; name it as an advanced mode and still require the path confirmation.
+`--confirm-path` records deliberate path selection; it does not create or switch a Codex project. A separate folder/local project is recommended, but the user chooses it.
 
-For continuation, a valid `brief.yaml` and its stable `trip_id` identify a workspace. When more than one workspace is available, ask the user to name a path or `trip_id`; do not select the newest. Read the canonical YAML and decision/source files, then validate before editing:
+## Bundle ownership
 
-```bash
-travel-planner validate PATH
-```
+| Path | Ownership |
+| --- | --- |
+| `brief.yaml` | canonical |
+| `candidates.yaml` | canonical |
+| `itinerary.yaml` | canonical |
+| `readiness.yaml` | canonical |
+| `decisions.md` | canonical |
+| `sources.md` | generated |
+| `outputs/` | generated |
 
-The four YAML files are canonical machine state. `decisions.md` preserves decision history; `sources.md` is a regenerable, read-only projection from the YAML source records. Update source facts and freshness in their owning YAML records, then regenerate `sources.md` and derived HTML/PDF. Resume from affected state and explain any scoped rebuild that a later change will require.
+`brief.yaml` owns goals, travellers, dates, constraints, and preferences. `candidates.yaml` owns researched candidates, sources, claims, and comparisons. `itinerary.yaml` owns the selected route, days/timeline, budget, scenarios, blockers, and lifecycle. `readiness.yaml` owns bookings, actions, rechecks, and dependencies. `decisions.md` preserves the rationale and history of material user decisions. Regenerate `sources.md` and `outputs/`; neither chat nor HTML is authoritative state.
+
+To resume, require an explicit path or `trip_id`. If several trips match, ask rather than choosing by recency. Read only the canonical files and IDs relevant to the current request, then follow [verification and render](verification-and-render.md) before editing when deterministic helpers are available.

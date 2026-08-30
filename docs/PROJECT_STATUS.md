@@ -2,20 +2,20 @@
 
 **Дата среза:** 2026-08-30
 
-**Текущий этап:** PR 4 находится в review; shared HTML и browser print проверяются до merge
+**Текущий этап:** PR 5 находится в review; skill workflow согласован с canonical product contract
 
 Этот документ фиксирует принятые решения, проверяемые факты и последовательность изменений. Он не выдаёт целевую архитектуру за текущее состояние.
 
 ## Проверенный baseline
 
-PR 4 начат от свежего `origin/main` на коммите `91773e1` в чистом изолированном worktree. Этот коммит — squash merge PR 3.
+PR 5 начат от свежего `origin/main` на коммите `289111e` в чистом изолированном worktree. Этот коммит — squash merge PR 4.
 
-До изменений PR 4 прошли:
+До изменений PR 5 прошли:
 
-- `.venv/bin/pytest -q` — 240 passed;
+- `.venv/bin/pytest -q` — 242 passed;
 - `.venv/bin/ruff check .` — без замечаний;
-- `npm run test:ui-unit` — 1 passed;
-- `.venv/bin/python evals/run.py --adapter fixture --all` — все сценарии дали ожидаемые результаты; fixture adapter не запускал online soft review, как и заявляет текущий harness.
+- `npm run test:ui-unit` — 5 passed;
+- `.venv/bin/python evals/run.py --adapter fixture --all` — все 22 сценария дали ожидаемые результаты; fixture adapter не запускал online soft review, как и заявляет текущий harness.
 
 Эти результаты подтверждают baseline существующей реализации, а не готовность упрощённого v0.1 к релизу.
 
@@ -46,9 +46,9 @@ PR 3 завершён и squash-merged в `main` на `91773e1`. Он замен
 
 Удалены `challenge/`, `impact.py`, `migration.py`, `route.py`, evidence confidence inference и связанная readiness automation. `maps.py`, workspace safety, state diagnostics, decisions и generated sources report сохранены. После PR 4 internal CLI содержит ровно `init`, `check`, `render`; `check` возвращает 2 для structural/state errors, 3 для несогласованного lifecycle или непринятых blockers и 0 для согласованного результата. Check не изменяет canonical state.
 
-Текущий head PR 4 сводит derived output к одному прозрачному view model и одному self-contained responsive HTML-шаблону. HTML переносит canonical lifecycle без переосмысления, показывает точные Final labels, постоянно видимые принятые и непринятые блокеры и защитное предупреждение для несогласованного Final. Print CSS сохраняет эти свойства для browser Print → Save as PDF. Markdown renderer, Python QA/attestation/receipt pipeline и Python PDF adapter удалены; CLI содержит ровно `init`, `check`, `render`.
+PR 4 завершён и squash-merged в `main` на `289111e`. Он свёл derived output к одному прозрачному view model и одному self-contained responsive HTML-шаблону. HTML переносит canonical lifecycle без переосмысления, показывает точные Final labels, постоянно видимые принятые и непринятые блокеры и защитное предупреждение для несогласованного Final. Print CSS сохраняет эти свойства для browser Print → Save as PDF. Markdown renderer, Python QA/attestation/receipt pipeline и Python PDF adapter удалены; CLI содержит ровно `init`, `check`, `render`.
 
-SKILL.md и полный workflow rewrite остаются PR 5; поэтому их устаревшие PDF-инструкции временно сохраняются и не определяют новый product scope. Fixture eval harness теперь явно маркирует оставшиеся cases как `legacy_skill_behavior`; PDF-only case удалён без замены, остальные 20 cases сохранены, а окончательное сокращение harness остаётся PR 6. Node/package/Playwright HTML QA, plugin manifest, packaging и исторические документы остаются последующим scope.
+PR 5 переписал `SKILL.md` как короткий router и сократил десять references до семи владельцев: onboarding, intake, research, planning, readiness/budget, security и verification/render. Активный workflow использует canonical bundle, фактические `init/check/render`, surface-specific verification, lifecycle/user-confirmation rules, общий HTML и ручной перенос между поверхностями. Fixture eval harness по-прежнему маркирует cases как `legacy_skill_behavior`; его сокращение остаётся PR 6. Node/package/Playwright HTML QA, plugin manifest, packaging и исторические документы остаются последующим scope.
 
 ## Последовательность PR 1–7
 
@@ -57,9 +57,9 @@ SKILL.md и полный workflow rewrite остаются PR 5; поэтому 
 | 1. Product contract | Обновить `PRODUCT.md`, добавить короткий `ARCHITECTURE.md` и этот status; зафиксировать источники истины и расхождения | Завершён в PR 1 |
 | 2. State and validation contract | Привести canonical bundle, schema-only boundary, три поля статуса/проверки и правила принятия блокеров к контракту | Завершён в PR 2; semantic hard checks были добавлены только в PR 3 |
 | 3. Internal helpers and CLI | Превратить challenge в явные hard checks, сузить evidence, временно оставить `init/check/render/pdf`, удалить route/impact/migration/partial rebuild | Завершён в PR 3; squash-merged как `91773e1` |
-| 4. Shared HTML and browser print | Свести поверхности к одному view model/template, реализовать метки Final и видимые принятые блокеры, удалить Markdown/receipt/PDF adapter complexity, согласовать HTML spec | В review; merge gate остаётся закрытым до проверки PR |
-| 5. Skill workflow | Привести SKILL.md и references к canonical bundle, трём CLI-командам и lifecycle contract | Следующий PR после merge PR 4; текущие skill instructions пока сохранены |
-| 6. QA and eval reduction | Оставить unit/integration, Japan HTML reference, 6–8 targeted skill evals и 3 release scenarios; убрать Node/package.json/axe/Node Playwright и дублирующий harness | Запланирован; текущая матрица и Node QA пока действуют |
+| 4. Shared HTML and browser print | Свести поверхности к одному view model/template, реализовать метки Final и видимые принятые блокеры, удалить Markdown/receipt/PDF adapter complexity, согласовать HTML spec | Завершён в PR 4; squash-merged как `289111e` |
+| 5. Skill workflow | Привести SKILL.md и references к canonical bundle, трём CLI-командам и lifecycle contract | В review; router и семь focused references проходят deterministic CLI/state/link/contract tests; model forward-testing остаётся независимым review gate |
+| 6. QA and eval reduction | Оставить unit/integration, Japan HTML reference, 6–8 targeted skill evals и 3 release scenarios; убрать Node/package.json/axe/Node Playwright и дублирующий harness | Следующий PR; текущая матрица и Node QA пока действуют |
 | 7. Packaging, canonical docs and release gate | Зафиксировать plugin packaging и internal Python helpers, завершить README/AGENTS/release guidance, перенести уникальные требования, удалить устаревшие docs/research и выполнить Chat web/mobile smoke checks | Запланирован; текущая упаковка и старые документы пока сохранены |
 
 Каждый следующий PR должен оставаться самостоятельно проверяемым и не смешивать функциональное упрощение с несвязанной уборкой.
@@ -83,11 +83,10 @@ SKILL.md и полный workflow rewrite остаются PR 5; поэтому 
 
 ## Зарегистрированные расхождения и риски
 
-1. SKILL.md и полный workflow rewrite ещё не используют весь lifecycle contract нового renderer; это scope PR 5.
-2. Node/package/axe/Node Playwright и часть прежней UI QA-матрицы сохранены переходно до PR 6 только для browser HTML/print QA; автоматическая PDF-генерация из QA удалена.
-3. Пригодность общего HTML на Chat web и mobile остаётся release evidence, которое должно быть получено в PR 7 двумя ручными smoke checks.
-4. Fixture eval harness всё ещё хранит legacy skill-behavior vocabulary и не является проверкой production hard-check codes; PR 6 сократит матрицу, не возвращая удалённые production abstractions.
+1. Node/package/axe/Node Playwright и часть прежней UI QA-матрицы сохранены переходно до PR 6 только для browser HTML/print QA; автоматическая PDF-генерация из QA удалена.
+2. Пригодность общего HTML на Chat web и mobile остаётся release evidence, которое должно быть получено в PR 7 двумя ручными smoke checks.
+3. Fixture eval harness всё ещё хранит legacy skill-behavior vocabulary и не является проверкой production hard-check codes; PR 6 сократит матрицу, не возвращая удалённые production abstractions.
 
 ## Следующий gate
 
-Следующий gate — review и merge PR 4. После него PR 5 приводит SKILL.md и references к canonical bundle, трём CLI-командам и lifecycle contract. Eval reduction и packaging остаются PR 6–7.
+Следующий gate — review и merge PR 5. После него PR 6 сокращает QA/eval контуры; packaging и release evidence остаются PR 7.
