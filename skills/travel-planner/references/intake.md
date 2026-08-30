@@ -1,13 +1,9 @@
 # Intake
 
-Use collaborative planning unless the user explicitly requests a quick draft. Ask one consequential question at a time and save the confirmed answer before moving on. Start with destination or route shape, dates/fixed events, travellers, origin, budget range/currency, pace, hard constraints, and decision owner; do not invent missing dates or preferences.
+Ask one consequential question at a time and save confirmed answers before moving on. Establish destination or route shape, dates and fixed events, origin, travellers, budget range/currency, pace, hard constraints, important preferences, and who decides when the group disagrees. Do not turn the first conversation into a form.
 
-Capture traveller information only when it affects the plan: anonymous IDs, mobility, dietary/allergy needs, pace, luggage, driving role, interests, must-sees/exclusions, and group conflict rules. Request citizenship/residency only for a necessary entry/transit check and record a medication-check need rather than a diagnosis. Keep passport numbers, payment cards, account credentials, confirmation codes, and medical records outside the workspace.
+Collect traveller details only when they change the plan: anonymous ID, age group, mobility/access needs, dietary or allergy constraints, pace, luggage, driving role, interests, and exclusions. Ask citizenship or residency only for a necessary entry/transit check. Record that a medication check is required rather than collecting a diagnosis or medical record.
 
-Run a light readiness preflight for unknowns that can block entry or booking. It creates a later action; it does not turn the first conversation into a document questionnaire. Keep hard constraints separate from soft preferences and record unresolved assumptions.
+Keep hard constraints separate from preferences. Label assumptions and unknowns, especially dates, prices, availability, and high-stakes requirements. Create readiness actions for unknowns that can block entry, transport, lodging, or timed activities.
 
-For an explicit quick draft, use only the available brief, show assumptions, unknowns, and recheck actions in the draft, and keep its route state non-final. Validate state after a substantive saved update:
-
-```bash
-travel-planner validate PATH
-```
+If the user explicitly asks for a quick draft, use only known inputs, keep lifecycle status `draft`, show every important assumption/unknown, and attach a recheck or user-decision action. Otherwise continue collaboratively until the brief is sufficient to research useful alternatives.

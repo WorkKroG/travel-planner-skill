@@ -1,13 +1,9 @@
 # Readiness, budget, food, and bookings
 
-`readiness.yaml` is an action list with owner, status, due/recheck time, dependencies, official/source link, and concise cancellation condition. Use it for entry/transit, health/medication, insurance, transport, lodging, activities, dining, connectivity, money, documents, packing, emergency, and pre-departure work. A critical unknown remains an action-needed blocker until verified; do not promise visa, medical, legal, or emergency certainty.
+Use `readiness.yaml` for entry/transit, health/medication, insurance, transport, lodging, activities, dining, connectivity, money, documents, packing, emergency, and pre-departure actions. Each item needs a stable ID, status, owner when known, due/recheck time when known, source/claim links, dependencies, and a concise completion or cancellation condition. Critical unknowns remain visible actions or blockers until verified.
 
-For each budget item, state currency, amount quality (confirmed, estimate, or unknown), per-person/group basis, taxes/fees, refundability, FX date where used, and contingency. Do not merge incompatible price bases into a reassuring total. Build food choices iteratively by location: propose, compare, check the day fit, obtain the user's choice, and retain alternatives.
+Use only `itinerary.yaml` `budget_items` for itemized cost. Record `exact`, `estimate`, `range`, or `unknown`; currency; per-person/per-group basis; inclusions, taxes/fees, and refundability when known. Exact/estimate uses `amount`, range uses `amount_min` and `amount_max`, and unknown has no numeric amount. Never turn unknown into zero or combine incompatible currencies/bases into a reassuring total.
 
-Use `itinerary.yaml.budget_items` as the only itemized budget shape: exact/estimate items carry `amount`, ranges carry `amount_min` and `amount_max`, and unknown items carry no numeric amount. When a total or FX normalization is explicitly available, store both in the optional `budget_summary`; otherwise leave it `null` and preserve unknowns.
+Populate optional `budget_summary` only when all included arithmetic and any FX source/date are explicit. Otherwise leave it `null` and show known subtotals plus unknowns. Keep contingency as a labelled item or assumption.
 
-The skill may research and prepare a booking decision, but never buys, books, pays, or contacts a third party. Require the user's selected option and keep payment, passport, account, and confirmation data in an external secure system. Re-run validation after saving changes:
-
-```bash
-travel-planner validate PATH
-```
+Build food choices by location and day fit: propose alternatives, compare constraints and booking needs, ask the user to choose, and retain useful rejected options in decision history. Research may prepare a booking decision, but the user selects and completes every reservation, payment, or external contact.

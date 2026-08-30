@@ -29,13 +29,12 @@ def test_every_workflow_stage_has_one_owned_reference() -> None:
         "resume": "references/onboarding.md",
         "intake": "references/intake.md",
         "research": "references/research.md",
-        "route_synthesis": "references/route-synthesis.md",
-        "challenge": "references/challenge.md",
-        "day_planning": "references/day-planning.md",
-        "transport_maps": "references/transport-and-maps.md",
+        "compare_select": "references/planning.md",
+        "detail_change": "references/planning.md",
         "readiness_budget": "references/readiness-and-budget.md",
-        "security": "references/security.md",
-        "finalize": "references/render-and-qa.md",
+        "high_risk": "references/security.md",
+        "review_render": "references/verification-and-render.md",
+        "continue_elsewhere": "references/verification-and-render.md",
     }
 
 
@@ -46,3 +45,16 @@ def test_every_routed_reference_is_installable() -> None:
     assert routes
     missing = [reference for reference in routes.values() if not (SKILL_ROOT / reference).is_file()]
     assert missing == []
+
+
+def test_reference_graph_has_no_unrouted_or_dangling_markdown() -> None:
+    """Catch stale workflow files and links that progressive routing can never reach."""
+    routes = parse_reference_routes(SKILL_PATH)
+    routed = {SKILL_ROOT / reference for reference in routes.values()}
+    installed = set((SKILL_ROOT / "references").glob("*.md"))
+
+    assert routed == installed
+    for path in (SKILL_PATH, *sorted(installed)):
+        for target in re.findall(r"\[[^]]+\]\(([^)]+\.md)\)", path.read_text(encoding="utf-8")):
+            resolved = (path.parent / target).resolve()
+            assert resolved.is_file(), f"dangling reference from {path}: {target}"

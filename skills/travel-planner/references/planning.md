@@ -1,0 +1,16 @@
+# Compare, select, detail, and revise
+
+When meaningful choices exist, present up to three genuinely different alternatives in geography, bases, pace, cost, or experience mix. Reject alternatives that violate hard constraints, then compare travel time, lodging changes, physical load, weather resilience, cost basis, and preference fit. If only one route is sensible, explain why.
+
+Show trade-offs and a recommendation before asking the user to choose. Record the selected option, rejected alternatives, and reasons in `decisions.md`. Store alternatives and the selection in `itinerary.yaml`; a view-only primary/backup switch in HTML does not alter that selection.
+
+Detail only the chosen route. Use `route_stops` and `days[].timeline[]`; every day and timeline event has an ID. Keep human time labels, and add offset-bearing timestamps, operating/service cutoffs, component durations, connection minimums, and buffer markers only when supported. Link days/events to canonical route, overnight, readiness, source, and claim IDs. Record transport door-to-door, including connections, check-in, luggage/storage, booking need, and known cost basis. Unknown stays unknown.
+
+| Situation | Required outcome |
+| --- | --- |
+| Material user-decision change | Explain affected route, days, budget, and readiness; obtain explicit consent; record the reason in `decisions.md`; update only affected canonical records. |
+| Restaurant or activity substitution | Explain affected timing, location, booking, cost, and fallback; preserve unrelated days. |
+| Russia/CIS/Turkey with auto maps | Use Yandex Maps from the internal provider policy unless the user explicitly chose another provider. |
+| Cross-border transport | Label contextual map alternatives, but treat the official operator as authority for schedules and border/check-in rules. |
+
+Maps provide place and route context, never proof of schedules, accessibility, border rules, or travel time. Apply automatic provider selection by the destination/leg ISO country code, not the document language or user location. After a substantive saved change, use the review rules in [verification and render](verification-and-render.md).
