@@ -1,6 +1,5 @@
-"""Canonical derived views and document renderers."""
+"""Canonical derived view for the shared HTML renderer."""
 
-from .markdown import render_markdown
 from .viewmodel import ItineraryView, build_view
 
-__all__ = ["ItineraryView", "build_view", "render_markdown"]
+__all__ = ["ItineraryView", "build_view"]

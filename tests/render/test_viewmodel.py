@@ -1,11 +1,13 @@
 from copy import deepcopy
 from dataclasses import FrozenInstanceError
 from datetime import UTC, datetime
+from decimal import Decimal
+from pathlib import Path
 
 import pytest
-from travel_planner.checks import CheckReport
+from travel_planner.checks import CheckReport, Finding, run_checks
 from travel_planner.render.viewmodel import build_view
-from travel_planner.state import TripState
+from travel_planner.state import TripState, load_trip
 
 GENERATED_AT = datetime(2026, 8, 28, 12, tzinfo=UTC)
 
@@ -16,8 +18,8 @@ def test_view_places_blockers_before_day_details(
     """Catch a renderer that buries feasibility blockers inside later day content."""
     view = build_view(japan_state, japan_report, GENERATED_AT)
 
-    assert view.summary.blockers[0].severity == "blocking"
-    assert view.summary.blockers[0].code == "BOOK-001"
+    assert view.unaccepted_blockers[0].severity == "blocking"
+    assert view.unaccepted_blockers[0].code == "BOOK-001"
     assert view.days[0].day_id == "day-1"
     assert view.open_decisions[0].severity == "blocking"
 
@@ -50,20 +52,188 @@ def test_view_does_not_mutate_canonical_state(
         view.title = "Changed"  # type: ignore[misc]
 
 
-def test_final_requires_explicit_final_state_and_no_blockers(
-    japan_state: TripState, japan_report: CheckReport
+@pytest.mark.parametrize(
+    ("verification_level", "status_label", "verification_label"),
+    [
+        ("none", "Draft — без проверки", "Не проверено"),
+        (
+            "ai_reviewed",
+            "Draft — AI-review",
+            "AI-review — менее точная проверка",
+        ),
+    ],
+)
+def test_draft_lifecycle_is_copied_without_looking_final(
+    japan_state: TripState,
+    japan_report: CheckReport,
+    verification_level: str,
+    status_label: str,
+    verification_label: str,
 ) -> None:
-    """Catch a frozen route being presented as Final before blockers and QA are cleared."""
-    final_state = deepcopy(japan_state)
-    final_state.itinerary["output_status"] = "final"
-    final_state.itinerary["route_state"] = "frozen"
+    """Catch Draft or AI review being upgraded through renderer-era status logic."""
+    state = deepcopy(japan_state)
+    state.itinerary["verification_level"] = verification_level
 
-    blocked_view = build_view(final_state, japan_report, GENERATED_AT)
-    clear_report = CheckReport((), (), (), ())
-    final_view = build_view(final_state, clear_report, GENERATED_AT, qa_attested=True)
+    view = build_view(state, japan_report, GENERATED_AT)
 
-    assert blocked_view.status == "draft"
-    assert final_view.status == "final"
+    assert view.document_status == "draft"
+    assert view.verification_level == verification_level
+    assert view.finalization_basis is None
+    assert view.status_label == status_label
+    assert view.verification_label == verification_label
+    assert view.lifecycle_safe is True
+
+
+def test_codex_validated_final_uses_exact_product_label() -> None:
+    """Catch a valid Codex Final being relabelled by a renderer-specific QA receipt."""
+    fixture = Path(__file__).parents[1] / "fixtures" / "japan-final-reference"
+    state = load_trip(fixture)
+
+    view = build_view(state, run_checks(state), GENERATED_AT)
+
+    assert view.document_status == "final"
+    assert view.verification_level == "codex_validated"
+    assert view.finalization_basis == "codex_validated"
+    assert view.status_label == "Final — проверено в Codex"
+    assert view.lifecycle_safe is True
+
+
+def test_user_confirmed_final_keeps_accepted_blocker_blocking_and_visible(
+    japan_state: TripState,
+) -> None:
+    """Catch acceptance being presented as resolution or losing its audit context."""
+    state = deepcopy(japan_state)
+    blocker = Finding(
+        id="blocker-rail",
+        code="SCHEDULE_UNRELEASED",
+        severity="blocking",
+        path="itinerary.yaml.days[1]",
+        affected_ids=("day-2",),
+        message="The final timetable is not released.",
+    )
+    state.itinerary.update(
+        document_status="final",
+        verification_level="ai_reviewed",
+        finalization_basis="user_confirmed",
+        accepted_blockers=[
+            {
+                "blocker_id": "blocker-rail",
+                "accepted_by_user": True,
+                "accepted_at": "2026-08-30T09:00:00+00:00",
+                "rationale": "The user accepts the remaining timetable uncertainty.",
+            }
+        ],
+    )
+    report = CheckReport((), (blocker,), (), ("blocker-rail",))
+
+    view = build_view(state, report, GENERATED_AT)
+
+    assert view.status_label == "Final — подтверждено пользователем"
+    assert view.lifecycle_safe is True
+    assert view.unaccepted_blockers == ()
+    assert len(view.accepted_blockers) == 1
+    accepted = view.accepted_blockers[0]
+    assert accepted.severity == "blocking"
+    assert accepted.resolution_status == "unresolved"
+    assert accepted.acceptance_label == "Принят пользователем — остаётся блокирующим"
+    assert accepted.accepted_at == "2026-08-30T09:00:00+00:00"
+    assert accepted.rationale == "The user accepts the remaining timetable uncertainty."
+
+
+def test_user_confirmed_final_requires_a_matching_canonical_acceptance_record(
+    japan_state: TripState,
+) -> None:
+    """Catch a stale report upgrading a blocker that canonical state never accepted."""
+    state = deepcopy(japan_state)
+    blocker = Finding(
+        "blocker-rail",
+        "SCHEDULE_UNRELEASED",
+        "blocking",
+        "itinerary.yaml.days[1]",
+        ("day-2",),
+        "The final timetable is not released.",
+    )
+    state.itinerary.update(
+        document_status="final",
+        verification_level="ai_reviewed",
+        finalization_basis="user_confirmed",
+        accepted_blockers=[],
+    )
+
+    view = build_view(
+        state,
+        CheckReport((), (blocker,), (), (blocker.id,)),
+        GENERATED_AT,
+    )
+
+    assert view.lifecycle_safe is False
+    assert view.status_label == "Final — несогласованное состояние"
+    assert view.accepted_blockers == ()
+    assert [item.id for item in view.unaccepted_blockers] == [blocker.id]
+
+
+def test_unaccepted_and_accepted_blockers_are_normalized_separately(
+    japan_state: TripState,
+) -> None:
+    """Catch a renderer combining accepted risk with blockers that still prevent finalization."""
+    state = deepcopy(japan_state)
+    accepted = Finding(
+        "accepted-one",
+        "ACCEPTED",
+        "blocking",
+        "itinerary.yaml.days[0]",
+        ("day-1",),
+        "Accepted blocker.",
+    )
+    unaccepted = Finding(
+        "open-one",
+        "OPEN",
+        "blocking",
+        "itinerary.yaml.days[1]",
+        ("day-2",),
+        "Unaccepted blocker.",
+    )
+    state.itinerary["accepted_blockers"] = [
+        {
+            "blocker_id": "accepted-one",
+            "accepted_by_user": True,
+            "accepted_at": "2026-08-30T09:00:00+00:00",
+            "rationale": "Accepted explicitly.",
+        }
+    ]
+    report = CheckReport((), (accepted, unaccepted), (), ("accepted-one",))
+
+    view = build_view(state, report, GENERATED_AT)
+
+    assert [item.id for item in view.accepted_blockers] == ["accepted-one"]
+    assert [item.id for item in view.unaccepted_blockers] == ["open-one"]
+
+
+def test_inconsistent_codex_final_is_never_presented_as_safe(
+    japan_state: TripState,
+) -> None:
+    """Catch a contradictory Final/report combination retaining success styling and copy."""
+    state = deepcopy(japan_state)
+    state.itinerary.update(
+        document_status="final",
+        verification_level="codex_validated",
+        finalization_basis="codex_validated",
+    )
+    blocker = Finding(
+        "blocker-rail",
+        "SCHEDULE_UNRELEASED",
+        "blocking",
+        "itinerary.yaml.days[1]",
+        ("day-2",),
+        "The final timetable is not released.",
+    )
+    view = build_view(state, CheckReport((), (blocker,), (), ()), GENERATED_AT)
+
+    assert view.document_status == "final"
+    assert view.declared_final_label == "Final — проверено в Codex"
+    assert view.status_label == "Final — несогласованное состояние"
+    assert view.lifecycle_safe is False
+    assert "не следует считать безопасным" in view.lifecycle_warning
 
 
 def test_source_and_readiness_uncertainty_remain_explicit(
@@ -76,3 +246,60 @@ def test_source_and_readiness_uncertainty_remain_explicit(
     assert view.sources[0].claim_status == "conflicting"
     assert view.sources[0].freshness_status == "stale"
     assert view.days[1].timeline[0].time == "Unknown"
+
+
+def test_budget_does_not_invent_a_cross_currency_total(
+    japan_state: TripState,
+) -> None:
+    """Catch presentation arithmetic adding unrelated currency units into one fake range."""
+    state = deepcopy(japan_state)
+    state.itinerary["budget_items"] = [
+        {
+            "id": "rail-jpy",
+            "category": "transport",
+            "amount_type": "exact",
+            "amount": 10000,
+            "currency": "JPY",
+            "basis": "per_group",
+            "confidence": "high",
+        },
+        {
+            "id": "hotel-usd",
+            "category": "lodging",
+            "amount_type": "exact",
+            "amount": 100,
+            "currency": "USD",
+            "basis": "per_group",
+            "confidence": "high",
+        },
+    ]
+
+    view = build_view(state, CheckReport((), (), (), ()), GENERATED_AT)
+
+    assert view.budget.minimum is None
+    assert view.budget.maximum is None
+    assert view.budget.currency == "Multiple currencies"
+    assert [(item.minimum, item.currency) for item in view.budget.categories] == [
+        (Decimal(100), "USD"),
+        (Decimal(10000), "JPY"),
+    ]
+    assert {item.basis for item in view.budget.categories} == {"per_group"}
+
+
+def test_budget_uses_the_checked_canonical_summary_when_present(
+    japan_state: TripState,
+) -> None:
+    """Catch the renderer recalculating or discarding the canonical checked total."""
+    state = deepcopy(japan_state)
+    state.itinerary["budget_summary"] = {
+        "currency": "JPY",
+        "basis": "per_group",
+        "amount_min": 250000,
+        "amount_max": 330000,
+    }
+
+    view = build_view(state, CheckReport((), (), (), ()), GENERATED_AT)
+
+    assert view.budget.minimum == Decimal(250000)
+    assert view.budget.maximum == Decimal(330000)
+    assert view.budget.currency == "JPY"

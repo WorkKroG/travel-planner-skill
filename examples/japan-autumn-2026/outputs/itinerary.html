@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="light">
-  <title>Japan autumn 2026 — anonymized planning example · Draft itinerary</title>
+  <title>Japan autumn 2026 — anonymized planning example · Draft — без проверки itinerary</title>
   <style>:root {
   --mineral: #edf1ec;
   --paper: #fffdf7;
@@ -164,10 +164,50 @@ a:hover {
 }
 
 .document-status--draft,
+.document-status--unsafe,
 .status--blocking,
 .status--conflicting {
   color: #8c2d20;
   background: #fff1ec;
+}
+
+.verification-line {
+  margin: var(--space-2) 0 0;
+  color: var(--ink-soft);
+}
+
+.lifecycle-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  margin: var(--space-1) 0 0;
+  color: var(--ink-soft);
+  font-size: 0.875rem;
+}
+
+.lifecycle-details div {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.lifecycle-details dt {
+  font-weight: 700;
+}
+
+.lifecycle-details dd {
+  margin: 0;
+}
+
+.lifecycle-warning {
+  margin-block: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border: 2px solid #8c2d20;
+  background: #fff1ec;
+  color: #6f2017;
+}
+
+.lifecycle-warning p {
+  margin: 0.25rem 0 0;
 }
 
 .document-status--final,
@@ -521,6 +561,7 @@ button[aria-pressed="true"] {
 }
 
 .decision-list,
+.blocker-list,
 .readiness-list,
 .source-list,
 .risk-list {
@@ -530,11 +571,32 @@ button[aria-pressed="true"] {
 }
 
 .decision-item,
+.blocker-item,
 .readiness-item,
 .source-item,
 .risk-item {
   padding: var(--space-3) 0;
   border-top: 1px solid var(--line);
+}
+
+.blocker-item {
+  padding-inline: var(--space-2);
+  border-left: 4px solid var(--maple);
+  background: #fff4ef;
+}
+
+.blocker-item + .blocker-item {
+  margin-top: var(--space-2);
+}
+
+.blocker-item--accepted {
+  border-left-color: var(--brass);
+  background: #fff7db;
+}
+
+.acceptance-label {
+  font-weight: 750;
+  color: #6f2017;
 }
 
 .decision-question {
@@ -781,6 +843,14 @@ button[aria-pressed="true"] {
   overflow-wrap: anywhere;
 }
 
+.document-version {
+  margin: var(--space-3) 0 0;
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--line);
+  color: var(--ink-soft);
+  font-size: 0.875rem;
+}
+
 .document-footer {
   margin-bottom: var(--space-2);
   padding: var(--space-3) clamp(1.5rem, 5vw, 5rem);
@@ -837,7 +907,7 @@ button[aria-pressed="true"] {
   }
 
   .day-context {
-    order: 0;
+    order: -1;
   }
 }
 
@@ -1100,13 +1170,12 @@ button[aria-pressed="true"] {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  :root {
     scroll-behavior: auto !important;
-    transition-duration: 0.01ms !important;
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
+  }
+
+  .contents {
+    transition: none;
   }
 }
 
@@ -1127,6 +1196,10 @@ button[aria-pressed="true"] {
 
   body {
     padding: 0;
+  }
+
+  body::before {
+    display: none !important;
   }
 
   h1 {
@@ -1162,12 +1235,21 @@ button[aria-pressed="true"] {
   .day-nav,
   .skip-link,
   .screen-reader-live,
-  .enhancement-error {
+  .enhancement-error,
+  .document-footer {
     display: none !important;
   }
 
   .scenario-panel[hidden] {
     display: block !important;
+  }
+
+  article[data-day][hidden] {
+    display: block !important;
+  }
+
+  .day-overview li[hidden] {
+    display: list-item !important;
   }
 
   .document-section {
@@ -1185,11 +1267,13 @@ button[aria-pressed="true"] {
 
   .day-article,
   .warning-block,
+  .blocker-item,
   .constraint-list li,
   .timeline-event,
   .decision-item,
   .readiness-item,
-  .risk-item {
+  .risk-item,
+  .source-item {
     break-inside: avoid;
   }
 
@@ -1239,10 +1323,16 @@ button[aria-pressed="true"] {
   <header class="trip-hero" id="trip-summary">
     <div class="hero-copy">
       <div class="status-line">
-        <span class="document-status document-status--draft">Draft</span>
+        <span class="document-status document-status--draft" lang="ru">Draft — без проверки</span>
         <span>2026-11-02 — 2026-11-13</span>
         <span>2 travellers</span>
       </div>
+      <p class="verification-line" lang="ru"><strong>Уровень проверки:</strong> Не проверено</p>
+      <dl class="lifecycle-details" aria-label="Canonical lifecycle values">
+        <div><dt>document_status</dt><dd>draft</dd></div>
+        <div><dt>verification_level</dt><dd>none</dd></div>
+        <div><dt>finalization_basis</dt><dd>none</dd></div>
+      </dl>
       <h1>Japan autumn 2026 — anonymized planning example</h1>
       <p class="trip-thesis">A measured three-region autumn route with flexible arrival, rail-transfer buffers, and local weather backups rather than live operational claims.</p>
       <p class="route-ribbon"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg> Tokyo → Kyoto → Kanazawa</p>
@@ -1281,6 +1371,7 @@ button[aria-pressed="true"] {
         <summary><svg class="icon" aria-hidden="true"><use href="#icon-menu"></use></svg> Contents</summary>
         <ol>
           <li><a href="#trip-summary">Trip summary</a></li>
+          <li><a href="#blockers">Blockers</a></li>
           <li><a href="#route-overview">Route and days</a></li>
           <li><a href="#open-decisions">Open decisions</a></li>
           <li><a href="#detailed-days">Detailed days</a></li>
@@ -1299,6 +1390,23 @@ button[aria-pressed="true"] {
     <main class="document-main" id="main-content">
       <p class="enhancement-error" data-enhancement-error hidden>Interactive controls are unavailable. The complete itinerary remains below.</p>
       <p class="screen-reader-live" aria-live="polite" aria-atomic="true" data-live-region></p>
+
+      <section class="document-section blocker-section" id="blockers" aria-labelledby="blockers-title">
+        <h2 id="blockers-title">Blockers</h2>
+        <p>Blockers remain unresolved and blocking until the canonical trip state changes.</p>
+
+        <section aria-labelledby="unaccepted-blockers-title">
+          <h3 id="unaccepted-blockers-title" lang="ru">Непринятые блокеры</h3>
+          <ul class="blocker-list">
+<li>No unaccepted blockers.</li>          </ul>
+        </section>
+
+        <section aria-labelledby="accepted-blockers-title">
+          <h3 id="accepted-blockers-title" lang="ru">Принятые блокеры</h3>
+          <ul class="blocker-list">
+<li>No accepted blockers.</li>          </ul>
+        </section>
+      </section>
 
       <section class="document-section" id="route-overview" aria-labelledby="route-title">
         <h2 id="route-title">Route and day overview</h2>
@@ -2139,18 +2247,20 @@ button[aria-pressed="true"] {
           <div><span>Estimate quality</span><strong>Low</strong><span>0 unknown amounts</span></div>
         </div>
         <table class="budget-table">
-          <thead><tr><th>Category</th><th>Range</th><th>Type</th><th>Confidence</th></tr></thead>
+          <thead><tr><th>Category</th><th>Range</th><th>Type</th><th>Basis</th><th>Confidence</th></tr></thead>
           <tbody>
             <tr>
               <td data-label="Category">lodging</td>
               <td data-label="Range">240,000 — 240,000 JPY</td>
               <td data-label="Type">estimate</td>
+              <td data-label="Basis">per group</td>
               <td data-label="Confidence">medium</td>
             </tr>
             <tr>
               <td data-label="Category">transport</td>
               <td data-label="Range">90,000 — 90,000 JPY</td>
               <td data-label="Type">estimate</td>
+              <td data-label="Basis">per group</td>
               <td data-label="Confidence">low</td>
             </tr>
           </tbody>
@@ -2160,16 +2270,16 @@ button[aria-pressed="true"] {
       <section class="document-section" id="risks" aria-labelledby="risks-title">
         <h2 id="risks-title">Risks and backup plans</h2>
         <ul class="risk-list">
-          <li class="risk-item risk-item--warning">
-            <p class="status-with-icon"><svg class="icon" aria-hidden="true"><use href="#icon-recheck"></use></svg><strong>BUD-004 · Warning</strong></p>
-            <p>Budget has no explicit contingency buffer.</p>
-            <p>Affects: japan-autumn-2026-example · Confidence: medium</p>
-          </li>
-        </ul>
+<li>No open findings.</li>        </ul>
       </section>
 
       <section class="document-section" id="sources" aria-labelledby="sources-title">
         <h2 id="sources-title">Sources and document version</h2>
+        <p class="document-version" id="document-version">
+          <strong>Document version</strong> · japan-autumn-2026-example ·
+          <span lang="ru">Draft — без проверки · Не проверено</span> ·
+          Generated 2026-08-28T12:00:00+00:00 · Artefact v0.1
+        </p>
         <ul class="source-list">
           <li class="source-item">
             <p><strong>official-kanazawa-fixture · Frozen Kanazawa fixture</strong> <span class="status status--reported">reported</span> <span class="status status--aging">aging</span></p>
@@ -2192,7 +2302,7 @@ button[aria-pressed="true"] {
   </div>
 
   <footer class="document-footer">
-    <strong>Japan autumn 2026 — anonymized planning example</strong> · japan-autumn-2026-example · Draft · Generated 2026-08-28T12:00:00+00:00 · Artefact v0.1
+    <strong>Japan autumn 2026 — anonymized planning example</strong> · japan-autumn-2026-example · <span lang="ru">Draft — без проверки · Не проверено</span> · Generated 2026-08-28T12:00:00+00:00 · Artefact v0.1
   </footer>
   <script>(() => {
   "use strict";

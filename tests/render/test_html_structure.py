@@ -1,9 +1,10 @@
 import hashlib
+from copy import deepcopy
 from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
-from travel_planner.checks import run_checks
+from travel_planner.checks import CheckReport, Finding, run_checks
 from travel_planner.cli import main
 from travel_planner.render.html import (
     DEFAULTS,
@@ -26,6 +27,128 @@ def test_html_contains_required_semantic_reading_order(japan_view: ItineraryView
     assert html.index('id="risks"') < html.index('id="sources"')
     assert '<a class="skip-link" href="#main-content">Skip to itinerary</a>' in html
     assert "<header" in html and "<nav" in html and "<main" in html and "<footer" in html
+
+
+def test_html_exposes_lifecycle_and_blocker_groups_without_disclosure(
+    japan_state, japan_report
+) -> None:
+    """Catch lifecycle truth or critical blockers being hidden behind enhanced controls."""
+    state = deepcopy(japan_state)
+    state.itinerary["verification_level"] = "ai_reviewed"
+    generated_at = datetime(2026, 8, 28, 12, tzinfo=UTC)
+    html = render_html(build_view(state, japan_report, generated_at), media={}, options=DEFAULTS)
+
+    assert "Draft — AI-review" in html
+    assert "AI-review — менее точная проверка" in html
+    assert 'id="blockers"' in html
+    assert "Непринятые блокеры" in html
+    blockers = html[html.index('id="blockers"') : html.index('id="route-overview"')]
+    assert "Rail booking window is not open yet." in blockers
+    assert "<details" not in blockers
+
+
+@pytest.mark.parametrize(
+    ("document_status", "verification_level", "finalization_basis", "label"),
+    [
+        ("draft", "none", None, "Draft — без проверки"),
+        ("draft", "ai_reviewed", None, "Draft — AI-review"),
+        (
+            "final",
+            "codex_validated",
+            "codex_validated",
+            "Final — проверено в Codex",
+        ),
+        (
+            "final",
+            "ai_reviewed",
+            "user_confirmed",
+            "Final — подтверждено пользователем",
+        ),
+    ],
+)
+def test_html_preserves_all_canonical_lifecycle_dimensions(
+    japan_state,
+    document_status: str,
+    verification_level: str,
+    finalization_basis: str | None,
+    label: str,
+) -> None:
+    """Catch friendly labels replacing rather than accompanying canonical lifecycle truth."""
+    state = deepcopy(japan_state)
+    state.itinerary.update(
+        document_status=document_status,
+        verification_level=verification_level,
+        finalization_basis=finalization_basis,
+        accepted_blockers=[],
+    )
+    report = CheckReport((), (), (), ())
+    if finalization_basis == "user_confirmed":
+        blocker = Finding(
+            "blocker-rail",
+            "SCHEDULE_UNRELEASED",
+            "blocking",
+            "itinerary.yaml.days[1]",
+            ("day-2",),
+            "The final timetable is not released.",
+        )
+        state.itinerary["accepted_blockers"] = [
+            {
+                "blocker_id": blocker.id,
+                "accepted_by_user": True,
+                "accepted_at": "2026-08-30T09:00:00+00:00",
+                "rationale": "Accepted explicitly.",
+            }
+        ]
+        report = CheckReport((), (blocker,), (), (blocker.id,))
+
+    html = render_html(
+        build_view(state, report, datetime(2026, 8, 28, 12, tzinfo=UTC)),
+        media={},
+        options=DEFAULTS,
+    )
+
+    assert label in html
+    assert f"<dt>document_status</dt><dd>{document_status}</dd>" in html
+    assert f"<dt>verification_level</dt><dd>{verification_level}</dd>" in html
+    basis = finalization_basis or "none"
+    assert f"<dt>finalization_basis</dt><dd>{basis}</dd>" in html
+    if finalization_basis == "user_confirmed":
+        assert "Принятые блокеры" in html
+        assert "SCHEDULE_UNRELEASED · Blocking · Unresolved" in html
+        assert "Принят пользователем — остаётся блокирующим" in html
+        assert "Accepted explicitly." in html
+
+
+def test_html_marks_a_blocked_codex_final_as_inconsistent(japan_state) -> None:
+    """Catch contradictory Codex Final input retaining reassuring status presentation."""
+    state = deepcopy(japan_state)
+    state.itinerary.update(
+        document_status="final",
+        verification_level="codex_validated",
+        finalization_basis="codex_validated",
+    )
+    blocker = Finding(
+        "blocker-rail",
+        "SCHEDULE_UNRELEASED",
+        "blocking",
+        "itinerary.yaml.days[1]",
+        ("day-2",),
+        "The final timetable is not released.",
+    )
+    html = render_html(
+        build_view(
+            state,
+            CheckReport((), (blocker,), (), ()),
+            datetime(2026, 8, 28, 12, tzinfo=UTC),
+        ),
+        media={},
+        options=DEFAULTS,
+    )
+
+    assert "document-status--unsafe" in html
+    assert "Final — несогласованное состояние" in html
+    assert 'class="lifecycle-warning" role="alert"' in html
+    assert "не следует считать безопасным Final" in html
 
 
 def test_day_filters_expose_synced_overview_and_visible_empty_state(
@@ -128,10 +251,12 @@ def test_final_ui_state_fixture_uses_the_canonical_renderer_and_has_no_blockers(
     generated_at = datetime(2026, 8, 28, 12, tzinfo=UTC)
     state = load_trip(fixture)
     report = run_checks(state)
-    view = build_view(state, report, generated_at, qa_attested=True)
+    view = build_view(state, report, generated_at)
 
-    assert view.status == "final"
-    assert view.summary.blockers == ()
+    assert view.document_status == "final"
+    assert view.status_label == "Final — проверено в Codex"
+    assert view.unaccepted_blockers == ()
+    assert view.accepted_blockers == ()
     assert view.summary.readiness_confirmed == view.summary.readiness_total
     assert view.budget.unknown_count == 0
     assert (repository / "tests" / "ui" / "state-fixtures" / "final.html").read_text(
@@ -160,8 +285,8 @@ def test_render_cli_writes_html(japan_view: ItineraryView, tmp_path: Path) -> No
     assert output.read_text(encoding="utf-8").startswith("<!doctype html>")
 
 
-def test_render_cli_downgrades_an_unattested_final_html_to_draft(tmp_path: Path) -> None:
-    """Catch a Final label being published before QA approves these exact HTML bytes."""
+def test_render_cli_preserves_the_canonical_valid_final_label(tmp_path: Path) -> None:
+    """Catch deleted QA-receipt logic silently downgrading a valid canonical Final."""
     output = tmp_path / "japan-final.html"
     fixture = Path(__file__).parents[1] / "fixtures" / "japan-final-reference"
 
@@ -177,4 +302,4 @@ def test_render_cli_downgrades_an_unattested_final_html_to_draft(tmp_path: Path)
     )
 
     assert exit_code == 0
-    assert ">Draft</span>" in output.read_text(encoding="utf-8")
+    assert "Final — проверено в Codex" in output.read_text(encoding="utf-8")

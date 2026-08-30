@@ -71,7 +71,7 @@ A utility-first dashboard built around schedules, readiness metrics, transfer st
 **Strengths:** rapid operational scanning and comparison.  
 **Trade-off:** too close to a generic dashboard, overstates precision, prints poorly, and serves in-trip operations better than the agreed pre-trip use case.
 
-The Curated Route direction is chosen because it best balances comprehension, judgement, character, offline use and print.
+The Curated Route direction is chosen because it best balances comprehension, judgement, character, local opening and print.
 
 ## 5. Information architecture
 
@@ -310,7 +310,7 @@ Core reading order, all primary itinerary information, links and print content r
 - Muted brass for attention/staleness: `#D1A044`
 - Moss for confirmed/ready: `#496B58`
 
-These are direction tokens, not permission to rely on hue alone. Final foreground/background pairs must be contrast-tested. Draft, stale, conflict, offline, ready and blocker states also use wording, shape and iconography.
+These are direction tokens, not permission to rely on hue alone. Final foreground/background pairs must be contrast-tested. Draft, stale, conflict, ready and blocker states also use wording, shape and iconography.
 
 ### Shape grammar
 
@@ -367,14 +367,18 @@ Photography helps comparison and decision-making, so primary locations may each 
 - provide purposeful alternative text, or empty alt text for purely decorative images;
 - missing optional media collapses cleanly without blocking content.
 
-File size is recorded during QA, but there is no arbitrary fixed size ceiling before testing the representative Japan artefact. Perceived opening speed, memory behaviour, scrolling and print reliability determine whether further optimisation is needed.
+Embedded media remains optional and must not introduce a required network dependency or compromise scrolling and print reliability.
 
 ## 16. Status and exceptional states
 
 ### Draft and Final
 
 - **Draft:** visible status label, blocker count and generated/checked date.
-- **Final:** may be displayed only after the project’s finalisation and QA rules pass and no blocker remains.
+- **Final — проверено в Codex:** used only for `finalization_basis=codex_validated`; it requires `verification_level=codex_validated` and no blocking finding.
+- **Final — подтверждено пользователем:** used only for `finalization_basis=user_confirmed`; remaining blockers are allowed only when every one has an explicit canonical `accepted_blockers` record.
+- An accepted blocker remains visible, blocking and unresolved in HTML and PDF. The UI may add “принят пользователем”, but must not call it fixed, resolved or passed.
+- Accepted and unaccepted blockers are shown separately, or with equally clear persistent wording, and are never available only inside collapsed content.
+- If a renderer receives a contradictory Final state/report combination, it shows an explicit inconsistency warning and does not use successful Final presentation. It does not create findings or mutate canonical state.
 - The distinction appears in text, repeated document furniture and print, never only in colour.
 
 ### Stale
@@ -385,9 +389,9 @@ Show the date last checked, why rechecking is required and the next action. Do n
 
 Show both claims, their sources and dates, and what must resolve the conflict. Do not collapse them into a false single answer.
 
-### Offline
+### External connectivity
 
-All core content, embedded media and navigation remain useful. External map, site and booking actions retain their destination but are marked as requiring a connection.
+The self-contained file opens locally without required network assets. External map, site and booking actions retain their destination but are marked as requiring a connection. This is an artefact property, not a separate offline workflow or status.
 
 ### Empty or unknown
 
@@ -453,16 +457,15 @@ Print uses the same information model but a dedicated composition.
 
 Print QA rejects clipped URLs, orphan headings, blank pages, split critical events and content hidden by interactive state.
 
-## 19. Performance and offline requirements
+## 19. Self-contained local-open requirements
 
 - The artefact opens directly as a local file without a server.
 - No network request is required for content, fonts, CSS, scripts, icons or media.
 - Core content remains readable without JavaScript.
 - Optional images reserve their dimensions and decode without shifting the document.
-- On representative mid-range mobile emulation, the first useful screen should appear within 2.5 seconds and cumulative layout shift should remain below 0.1.
-- Search, filter, disclosure and scenario interactions should respond within 200 ms under the same test conditions.
-- The generated file size and peak memory are measured for the Japan reference and a 30-day stress fixture; optimisation follows observed behaviour rather than a preselected file-size ceiling.
-- All external actions are identifiable before activation and degrade honestly when offline.
+- All external actions are identifiable before activation and clearly state that they require an Internet connection.
+- One automated test verifies that no required `http(s)` asset URL, import or request exists. External source and map links remain allowed as user-activated links.
+- No offline status, offline UI, offline challenge, offline eval or network-disabled workflow is introduced.
 
 ## 20. Quality assurance matrix
 
@@ -476,7 +479,7 @@ Capture and visually regress at minimum:
 - 320 px narrow-width stress check;
 - A4 print preview and Letter print preview.
 
-Required representative states include summary, a normal day, a transfer-heavy day, a conflict, a stale item, optional-media loading/error, enhancement failure, offline labelling, Draft and Final.
+Required representative states include summary, a normal day, a transfer-heavy day, a conflict, a stale item, optional-media loading/error, enhancement failure, external-connectivity labelling, Draft and both Final bases.
 
 ### Responsive acceptance
 
@@ -495,20 +498,12 @@ Required representative states include summary, a normal day, a transfer-heavy d
 - contrast is measured for every token pair and state;
 - 200% zoom and reduced-motion modes preserve all content and operations.
 
-### Offline and self-contained acceptance
+### Self-contained local-open acceptance
 
 - open from `file://` in a normal desktop browser;
-- repeat the core walkthrough with networking disabled;
-- verify zero required external asset requests;
+- run the single no-required-network-dependency test for CSS, scripts, fonts, icons and media;
 - verify all external links are still identifiable and labelled;
 - disable JavaScript and confirm complete core reading order and print content.
-
-### Performance acceptance
-
-- test the representative Japan route under mobile CPU throttling;
-- record first useful render, layout shift, interaction response, file size and peak memory;
-- repeat with imagery enabled and with optional media missing;
-- repeat against a 30-day stress itinerary.
 
 ### Content edge cases
 
@@ -569,7 +564,7 @@ The completed design was reviewed against the four requested dimensions:
 
 - **Contradictions:** the decorative postage stamp is explicitly separated from the Draft/Final status label and cannot replace the route; interactive scenario state cannot leak into print or canonical data; the overview pseudo-map remains excluded while narrowly scoped transfer sequences remain allowed.
 - **Responsive behaviour:** the route, day overview, timeline/context rail, stamp and contents navigation all have explicit transformations; the 320 px and 30-day cases catch overflow and excessive-density failures.
-- **Accessibility:** core content survives without JavaScript, semantic and keyboard behaviour is specified, state never relies only on colour, and print/offline paths preserve meaning.
+- **Accessibility:** core content survives without JavaScript, semantic and keyboard behaviour is specified, state never relies only on colour, and print/local-file paths preserve meaning.
 - **Scope:** no renderer, production HTML, implementation plan, backend or in-trip mode is introduced. This design task did not modify the main architecture specification; the approved document is linked into that specification by a separate integration step.
 
 No unresolved contradiction blocks design approval. The destination object used inside the decorative stamp remains a per-trip content choice rather than a system-level visual decision.
@@ -582,7 +577,7 @@ The design is ready for a later implementation plan when:
 - every day can be understood and compared with its backup;
 - critical constraints precede the decisions they govern;
 - external links are contextual, honest about connectivity and printable;
-- mobile, keyboard, screen-reader, offline and print paths preserve the same core meaning;
+- mobile, keyboard, screen-reader, local-file and print paths preserve the same core meaning;
 - Draft/Final, stale, conflicting, unknown and blocker states cannot be confused;
 - the 12-day Japan reference and 30-day stress fixture pass the defined QA matrix;
 - HTML remains a derived, non-authoritative representation of canonical YAML/Markdown.

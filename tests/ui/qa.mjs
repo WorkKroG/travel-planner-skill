@@ -228,7 +228,7 @@ async function captureStateMatrix(page, baselineDirectory, finalUrl) {
       const readiness = document.querySelector(".readiness-panel strong")?.textContent.trim();
       const readinessMatch = readiness?.match(/^(\d+) of (\d+) confirmed$/);
       return (
-        status === "Final" &&
+        status === "Final — проверено в Codex" &&
         readinessMatch?.[1] === readinessMatch?.[2] &&
         !document.querySelector(".hero-aside .warning-block") &&
         !document.querySelector(".status--blocking") &&
@@ -286,7 +286,8 @@ async function run() {
   const finalHtmlPath = path.join(repositoryRoot, "tests", "ui", "state-fixtures", "final.html");
   await fs.access(finalHtmlPath);
   const finalUrl = pathToFileURL(finalHtmlPath).href;
-  const baselineDirectory = path.join(repositoryRoot, "tests", "ui", "visual-baselines");
+  const baselineDirectory =
+    process.env.TRAVEL_PLANNER_QA_BASELINES || path.join(repositoryRoot, "tests", "ui", "visual-baselines");
   const artifactDirectory = process.env.TRAVEL_PLANNER_QA_OUTPUT || path.join(repositoryRoot, "tests", "ui", "artifacts");
   await fs.mkdir(baselineDirectory, { recursive: true });
   await fs.mkdir(artifactDirectory, { recursive: true });
