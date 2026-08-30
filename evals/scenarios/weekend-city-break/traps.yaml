@@ -1,4 +1,0 @@
-injected:
-  - id: artificial-complexity
-    kind: excessive-alternatives-request
-    data: {requested_skeleton_count: 3}

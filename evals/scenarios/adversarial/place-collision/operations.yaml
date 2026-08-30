@@ -1,8 +1,0 @@
-prompt_version: adversarial-v1
-prompt: Disambiguate the requested place using concrete city and coordinate identities.
-reference_evaluator:
-  version: 1
-  kind: identity.place
-  parameters:
-    source_ids: [place-a, place-b]
-    trap_id: same-name

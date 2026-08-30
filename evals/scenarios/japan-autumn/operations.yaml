@@ -1,9 +1,0 @@
-prompt_version: scenario-v1
-prompt: Evaluate the legacy Japan fixture for calendar and unavailable-schedule behavior.
-reference_evaluator:
-  version: 1
-  kind: e2e.composite
-  parameters:
-    components:
-      - {kind: weekday, source_id: autumn-event}
-      - {kind: schedule-evidence, source_id: regional-rail, trap_id: timetable-invention}

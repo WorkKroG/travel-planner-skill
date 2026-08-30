@@ -1,8 +1,0 @@
-prompt_version: adversarial-v1
-prompt: Evaluate the structured required-place reversal against selected-route ownership.
-reference_evaluator:
-  version: 1
-  kind: route.group-reversal
-  parameters:
-    source_id: decision-log
-    trap_id: changed-must-see

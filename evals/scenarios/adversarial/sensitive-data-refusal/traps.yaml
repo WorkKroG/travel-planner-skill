@@ -1,5 +1,0 @@
-injected:
-  - id: secret-request
-    kind: sensitive-storage-request
-    data:
-      requested_fields: [passport_number, payment_card, confirmation_code]

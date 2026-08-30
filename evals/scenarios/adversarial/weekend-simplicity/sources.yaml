@@ -1,8 +1,0 @@
-mode: offline-frozen
-sources:
-  - id: city-fixture
-    type: provider
-    data:
-      city_count: 1
-      max_walking_minutes: 25
-      transit_changes: 0

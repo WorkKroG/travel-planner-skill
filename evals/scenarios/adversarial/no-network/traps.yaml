@@ -1,4 +1,0 @@
-injected:
-  - id: network-request
-    kind: live-lookup-request
-    data: {requested_resource: provider-status-page}

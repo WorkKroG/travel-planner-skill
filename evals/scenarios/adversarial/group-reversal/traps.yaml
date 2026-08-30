@@ -1,9 +1,0 @@
-injected:
-  - id: changed-must-see
-    kind: selected-priority-change
-    data:
-      change_request:
-        requester_id: traveler-a
-        remove_place_id: must-see-a
-        add_place_id: optional-cafe
-        confirmed_by_group: false

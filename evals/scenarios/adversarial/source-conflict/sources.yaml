@@ -1,8 +1,0 @@
-mode: offline-frozen
-sources:
-  - id: official
-    type: official
-    data: {topic: opening_status, value: closed, checked_at: "2026-08-28T12:00:00Z"}
-  - id: aggregator
-    type: aggregator
-    data: {topic: opening_status, value: open, checked_at: "2026-08-28T12:00:00Z"}

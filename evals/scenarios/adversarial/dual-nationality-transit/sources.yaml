@@ -1,9 +1,0 @@
-mode: offline-frozen
-sources:
-  - id: transit-authority
-    type: official
-    data:
-      transit_country: GBR
-      policies:
-        - {citizenship: CAN, transit_visa_required: false}
-        - {citizenship: IND, transit_visa_required: true}

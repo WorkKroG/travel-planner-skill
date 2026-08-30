@@ -1,4 +1,0 @@
-injected:
-  - id: mixed-basis-total
-    kind: direct-sum-request
-    data: {requested_method: add_raw_amounts, requested_currency: EUR}

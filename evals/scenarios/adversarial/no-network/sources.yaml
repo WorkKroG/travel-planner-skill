@@ -1,7 +1,0 @@
-mode: offline-frozen
-sources:
-  - id: offline-world
-    type: environment
-    data:
-      network_available: false
-      cached_facts: [saved opening hours, saved route geometry]

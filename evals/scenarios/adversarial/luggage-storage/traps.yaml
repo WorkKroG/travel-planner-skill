@@ -1,4 +1,0 @@
-injected:
-  - id: storage-gap
-    kind: assume-unverified-storage
-    data: {assume_station_storage: true}

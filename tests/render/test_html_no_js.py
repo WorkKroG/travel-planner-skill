@@ -57,6 +57,14 @@ def test_print_keeps_both_scenarios_and_removes_interactive_chrome(
     assert ".day-overview li[hidden]" in html
     print_css = html[html.index("@media print") :]
     assert ".source-item" in print_css
+    assert ".metadata-pair" in print_css
+    assert ".timeline-event" in print_css
+    assert ".constraint-list li" in print_css
+    assert "break-inside: avoid" in print_css
+    assert ".scenario-heading" in print_css
+    assert "break-after: avoid" in print_css
+    assert ".scenario-panel > p" in print_css
+    assert "orphans: 2" in print_css
 
 
 def test_print_removes_the_fixed_page_decoration(japan_view: ItineraryView) -> None:

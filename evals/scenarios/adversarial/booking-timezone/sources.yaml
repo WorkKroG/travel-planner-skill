@@ -1,8 +1,0 @@
-mode: offline-frozen
-sources:
-  - id: provider-window
-    type: official
-    data:
-      release_at: "2026-12-01T00:00:00"
-      release_timezone: Asia/Tokyo
-      booking_for: "2027-03-01"

@@ -1,4 +1,0 @@
-injected:
-  - id: naive-clock-addition
-    kind: naive-duration
-    data: {claimed_duration_minutes: 240}

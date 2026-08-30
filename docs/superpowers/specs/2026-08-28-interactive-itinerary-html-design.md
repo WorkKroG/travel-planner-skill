@@ -468,9 +468,30 @@ Print QA rejects clipped URLs, orphan headings, blank pages, split critical even
 
 ## 20. Quality assurance matrix
 
-### Reference screenshots
+The user-visible requirements below remain unchanged. Their evidence is split by what the
+test method can truthfully observe; removing a browser runner does not convert layout,
+accessibility or visual behaviour into a source-code assertion.
 
-Capture and visually regress at minimum:
+### Deterministic Python and static checks
+
+Automated checks cover:
+
+- one fixed-time Japan render and committed reference hash;
+- self-contained assets, escaping and the external-link URL allow-list;
+- lifecycle labels plus visible accepted and unaccepted blockers;
+- semantic source order, navigation and complete primary/backup content without JavaScript;
+- print declarations that preserve critical content and separate control-only elements;
+- source-level long-content wrapping/min-width declarations;
+- critical constraints before optional media in DOM order;
+- scenario-heading and day-metadata wrappers used by print;
+- the data contract of eight independent-review inputs and exactly three unexecuted release scenarios.
+
+These checks do not execute a model, browser layout engine, accessibility engine, viewport
+matrix, screenshot comparison, touch-target calculation or Chromium error collection.
+
+### Manual PR7 reference observations
+
+Inspect in a normal desktop browser at minimum:
 
 - 390×844 phone;
 - 768×1024 tablet;
@@ -479,6 +500,11 @@ Capture and visually regress at minimum:
 - A4 print preview and Letter print preview.
 
 Required representative states include summary, a normal day, a transfer-heavy day, a conflict, a stale item, optional-media loading/error, enhancement failure, external-connectivity labelling, Draft and both Final bases.
+
+The release scenario also records exactly two manual cross-surface smoke observations in PR7:
+generate/download/open the shared HTML once in Chat web and once on mobile. Those two
+observations are evidence within one cross-surface release scenario, not an automated device
+matrix and not a claim of Codex validation.
 
 ### Responsive acceptance
 
@@ -491,7 +517,7 @@ Required representative states include summary, a normal day, a transfer-heavy d
 
 ### Accessibility acceptance
 
-- automated scan reports zero critical or serious violations;
+- manual inspection finds no critical or serious accessibility barrier in the reviewed path;
 - complete keyboard walkthrough succeeds;
 - VoiceOver or equivalent screen-reader walkthrough covers summary, contents, one day, scenario switch and sources;
 - contrast is measured for every token pair and state;
@@ -578,5 +604,5 @@ The design is ready for a later implementation plan when:
 - external links are contextual, honest about connectivity and printable;
 - mobile, keyboard, screen-reader, local-file and print paths preserve the same core meaning;
 - Draft/Final, stale, conflicting, unknown and blocker states cannot be confused;
-- the 12-day Japan reference and 30-day stress fixture pass the defined QA matrix;
+- the 12-day Japan reference and 30-day/long-content cases receive the defined static and manual evidence;
 - HTML remains a derived, non-authoritative representation of canonical YAML/Markdown.

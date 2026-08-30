@@ -1,4 +1,0 @@
-injected:
-  - id: same-name
-    kind: ambiguous-place-selection
-    data: {requested_name: Museum Aurora, requested_city: null}
