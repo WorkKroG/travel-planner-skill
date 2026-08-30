@@ -39,6 +39,7 @@ body {
   color: var(--teal);
   font-size: 1rem;
   line-height: 1.65;
+  overflow-wrap: anywhere;
 }
 
 body::before {
@@ -110,6 +111,12 @@ a:hover {
   width: min(100% - 2rem, 90rem);
   margin-inline: auto;
   background: var(--paper);
+}
+
+.trip-hero *,
+.document-grid *,
+.document-footer * {
+  min-width: 0;
 }
 
 .trip-hero {
@@ -811,6 +818,7 @@ button[aria-pressed="true"] {
 
 .budget-table {
   width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
 }
 
@@ -1219,6 +1227,10 @@ button[aria-pressed="true"] {
     break-after: page;
   }
 
+  .stamp {
+    transform: none;
+  }
+
   .document-grid {
     display: block;
   }
@@ -1250,15 +1262,9 @@ button[aria-pressed="true"] {
   }
 
   .day-article {
-    break-before: page;
     padding: 8mm 0 0;
   }
 
-  .day-article:first-of-type {
-    break-before: auto;
-  }
-
-  .day-article,
   .warning-block,
   .blocker-item,
   .constraint-list li,

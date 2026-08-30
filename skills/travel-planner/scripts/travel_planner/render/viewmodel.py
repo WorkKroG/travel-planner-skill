@@ -499,37 +499,11 @@ def _status_label(
     return "Draft — без проверки"
 
 
-def _lifecycle_is_safe(
-    status: Any,
-    verification: Any,
-    basis: Any,
-    report: CheckReport,
-    accepted_record_ids: set[str],
-) -> bool:
-    if report.structural_errors or not report.lifecycle_consistent:
-        return False
-    if status == "draft":
-        return basis is None
-    if status != "final":
-        return False
-    if basis == "codex_validated":
-        return verification == "codex_validated" and not report.blocking_findings
-    if basis == "user_confirmed":
-        return not report.unaccepted_blocking_findings and all(
-            finding.id in accepted_record_ids for finding in report.blocking_findings
-        )
-    return False
-
-
 def _acceptance_records(state: TripState) -> dict[str, Mapping[str, Any]]:
     records: dict[str, Mapping[str, Any]] = {}
     for item in _mapping_items(state.itinerary.get("accepted_blockers")):
         blocker_id = item.get("blocker_id")
-        if (
-            isinstance(blocker_id, str)
-            and item.get("accepted_by_user") is True
-            and blocker_id not in records
-        ):
+        if isinstance(blocker_id, str) and blocker_id not in records:
             records[blocker_id] = item
     return records
 
@@ -537,6 +511,8 @@ def _acceptance_records(state: TripState) -> dict[str, Mapping[str, Any]]:
 def _blocker_view(
     finding: Finding,
     acceptance: Mapping[str, Any] | None,
+    *,
+    accepted: bool,
 ) -> BlockerView:
     return BlockerView(
         id=finding.id,
@@ -546,11 +522,13 @@ def _blocker_view(
         affected_ids=finding.affected_ids,
         message=finding.message,
         resolution_status="unresolved",
-        acceptance_label=(
-            "Принят пользователем — остаётся блокирующим" if acceptance is not None else None
+        acceptance_label="Принят пользователем — остаётся блокирующим" if accepted else None,
+        accepted_at=(
+            _text(acceptance.get("accepted_at") if acceptance else None) if accepted else None
         ),
-        accepted_at=_text(acceptance.get("accepted_at"), "Unknown") if acceptance else None,
-        rationale=_text(acceptance.get("rationale"), "Unknown") if acceptance else None,
+        rationale=(
+            _text(acceptance.get("rationale") if acceptance else None) if accepted else None
+        ),
     )
 
 
@@ -567,24 +545,19 @@ def build_view(
     verification_level = state.itinerary.get("verification_level")
     finalization_basis = state.itinerary.get("finalization_basis")
     acceptance_records = _acceptance_records(state)
-    lifecycle_safe = _lifecycle_is_safe(
-        document_status,
-        verification_level,
-        finalization_basis,
-        check_report,
-        set(acceptance_records),
+    lifecycle_safe = (
+        check_report.ok
+        if document_status == "final"
+        else not check_report.structural_errors and check_report.lifecycle_consistent
     )
     declared_final_label = _declared_final_label(document_status, finalization_basis)
-    accepted_ids = set(check_report.accepted_blocker_ids) & set(acceptance_records)
     accepted_blockers = tuple(
-        _blocker_view(finding, acceptance_records.get(finding.id))
-        for finding in check_report.blocking_findings
-        if finding.id in accepted_ids
+        _blocker_view(finding, acceptance_records.get(finding.id), accepted=True)
+        for finding in check_report.accepted_blocking_findings
     )
     unaccepted_blockers = tuple(
-        _blocker_view(finding, None)
-        for finding in check_report.blocking_findings
-        if finding.id not in accepted_ids
+        _blocker_view(finding, None, accepted=False)
+        for finding in check_report.unaccepted_blocking_findings
     )
     dates = state.brief.get("travel_dates", {})
     summary = SummaryView(

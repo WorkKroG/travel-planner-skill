@@ -46,6 +46,7 @@ body {
   color: var(--teal);
   font-size: 1rem;
   line-height: 1.65;
+  overflow-wrap: anywhere;
 }
 
 body::before {
@@ -117,6 +118,12 @@ a:hover {
   width: min(100% - 2rem, 90rem);
   margin-inline: auto;
   background: var(--paper);
+}
+
+.trip-hero *,
+.document-grid *,
+.document-footer * {
+  min-width: 0;
 }
 
 .trip-hero {
@@ -818,6 +825,7 @@ button[aria-pressed="true"] {
 
 .budget-table {
   width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
 }
 
@@ -1226,6 +1234,10 @@ button[aria-pressed="true"] {
     break-after: page;
   }
 
+  .stamp {
+    transform: none;
+  }
+
   .document-grid {
     display: block;
   }
@@ -1257,15 +1269,9 @@ button[aria-pressed="true"] {
   }
 
   .day-article {
-    break-before: page;
     padding: 8mm 0 0;
   }
 
-  .day-article:first-of-type {
-    break-before: auto;
-  }
-
-  .day-article,
   .warning-block,
   .blocker-item,
   .constraint-list li,
@@ -1475,7 +1481,6 @@ button[aria-pressed="true"] {
             </div>
           </header>
 
-
           <div class="day-layout">
             <div class="day-primary">
               <h4>Timeline</h4>
@@ -1521,6 +1526,7 @@ button[aria-pressed="true"] {
             </aside>
           </div>
 
+
           <nav class="day-nav" aria-label="Adjacent days">
 <span></span><a href="#day-2">Next day →</a>          </nav>
         </article>
@@ -1535,7 +1541,6 @@ button[aria-pressed="true"] {
               <span class="status status--confirmed">confirmed</span>
 <span class="status status--recheck">Weather-sensitive</span>            </div>
           </header>
-
 
           <div class="day-layout">
             <div class="day-primary">
@@ -1585,6 +1590,7 @@ button[aria-pressed="true"] {
               </ul>
             </aside>
           </div>
+
 
           <nav class="day-nav" aria-label="Adjacent days">
 <a href="#day-1">← Previous day</a>          </nav>

@@ -1,4 +1,5 @@
 import hashlib
+import re
 from copy import deepcopy
 from datetime import UTC, datetime
 from pathlib import Path
@@ -219,6 +220,27 @@ def test_optional_media_has_a_visible_failure_fallback(japan_view: ItineraryView
     assert 'data-optional-media' in html
     assert 'data-media-fallback' in html
     assert "Photo unavailable; the day plan remains complete." in html
+
+
+def test_critical_constraints_precede_optional_media_in_the_document_order(
+    japan_view: ItineraryView,
+) -> None:
+    """Catch optional imagery pushing a day's critical warning later on mobile or in print."""
+    media = MediaAsset(b"image", "image/jpeg", "Garden", "photo-1", "CC BY 4.0")
+
+    html = render_html(japan_view, media={"day-1": media}, options=HtmlOptions(print_images=True))
+    day = html[
+        html.index('<article class="day-article" id="day-1"') : html.index(
+            '<article class="day-article" id="day-2"'
+        )
+    ]
+    no_javascript = re.sub(r"<script\b[^>]*>.*?</script>", "", day, flags=re.DOTALL)
+
+    assert day.index("Critical constraints") < day.index('data-optional-media')
+    assert no_javascript.index("Critical constraints") < no_javascript.index(
+        'data-optional-media'
+    )
+    assert 'class="print-images"' in html
 
 
 def test_html_is_deterministic_and_write_helper_uses_exact_bytes(

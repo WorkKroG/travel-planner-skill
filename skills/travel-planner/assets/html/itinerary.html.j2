@@ -216,15 +216,6 @@
             </div>
           </header>
 
-          {% if media.get(day.day_id) %}
-          {% set photo = media.get(day.day_id) %}
-          <figure class="day-photo" data-optional-media>
-            <img src="{{ photo.data_url }}" alt="{{ photo.alt }}" width="1200" height="800" loading="lazy" decoding="async" data-media-image>
-            <p class="media-fallback" data-media-fallback hidden>Photo unavailable; the day plan remains complete.</p>
-            <figcaption>Source: {{ photo.source_id }} · Licence: {{ photo.license }}</figcaption>
-          </figure>
-          {% endif %}
-
           <div class="day-layout">
             <div class="day-primary">
               <h4>Timeline</h4>
@@ -281,6 +272,15 @@
               {% endif %}
             </aside>
           </div>
+
+          {% if media.get(day.day_id) %}
+          {% set photo = media.get(day.day_id) %}
+          <figure class="day-photo" data-optional-media>
+            <img src="{{ photo.data_url }}" alt="{{ photo.alt }}" width="1200" height="800" loading="lazy" decoding="async" data-media-image>
+            <p class="media-fallback" data-media-fallback hidden>Photo unavailable; the day plan remains complete.</p>
+            <figcaption>Source: {{ photo.source_id }} · Licence: {{ photo.license }}</figcaption>
+          </figure>
+          {% endif %}
 
           <nav class="day-nav" aria-label="Adjacent days">
             {% if not loop.first %}<a href="#{{ view.days[loop.index0 - 1].day_id }}">← Previous day</a>{% else %}<span></span>{% endif %}

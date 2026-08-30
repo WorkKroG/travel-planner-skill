@@ -140,10 +140,10 @@ def test_user_confirmed_final_keeps_accepted_blocker_blocking_and_visible(
     assert accepted.rationale == "The user accepts the remaining timetable uncertainty."
 
 
-def test_user_confirmed_final_requires_a_matching_canonical_acceptance_record(
+def test_view_uses_check_report_as_the_lifecycle_classification_boundary(
     japan_state: TripState,
 ) -> None:
-    """Catch a stale report upgrading a blocker that canonical state never accepted."""
+    """Catch the renderer reimplementing acceptance rules already decided by checks."""
     state = deepcopy(japan_state)
     blocker = Finding(
         "blocker-rail",
@@ -166,10 +166,13 @@ def test_user_confirmed_final_requires_a_matching_canonical_acceptance_record(
         GENERATED_AT,
     )
 
-    assert view.lifecycle_safe is False
-    assert view.status_label == "Final — несогласованное состояние"
-    assert view.accepted_blockers == ()
-    assert [item.id for item in view.unaccepted_blockers] == [blocker.id]
+    assert view.lifecycle_safe is True
+    assert view.status_label == "Final — подтверждено пользователем"
+    assert [item.id for item in view.accepted_blockers] == [blocker.id]
+    assert view.accepted_blockers[0].acceptance_label == (
+        "Принят пользователем — остаётся блокирующим"
+    )
+    assert view.unaccepted_blockers == ()
 
 
 def test_unaccepted_and_accepted_blockers_are_normalized_separately(
