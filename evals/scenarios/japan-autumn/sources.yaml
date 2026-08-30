@@ -14,10 +14,3 @@ sources:
       published: false
       publication_at: "2026-10-08T10:00:00+09:00"
       departures: []
-  - id: mountain-weather
-    type: provider
-    data:
-      target_day_id: day-7
-      observed_at: "2026-11-06T18:00:00+09:00"
-      condition: rain
-      backup_activity: kanazawa-museum

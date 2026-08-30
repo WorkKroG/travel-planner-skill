@@ -6,7 +6,8 @@ finalization_basis: codex_validated
 accepted_blockers: []
 route_state: frozen
 output_status: final
-alternatives: []
+alternatives:
+  - id: route-curated-final
 selected_route_id: route-curated-final
 route_stops:
   - id: stop-tokyo
@@ -25,6 +26,7 @@ days:
     date: "2026-11-02"
     region: Tokyo
     overnight: Tokyo
+    overnight_stop_id: stop-tokyo
     thesis: Arrive gently with the confirmed transfer and lodging plan.
     load: light
     travel: Airport arrival
@@ -32,7 +34,8 @@ days:
     booking_state: confirmed
     critical_constraints: []
     timeline:
-      - time: "16:00"
+      - id: event-day-1-arrival
+        time: "16:00"
         title: Confirmed arrival transfer
         detail: Follow the booked transfer to the confirmed lodging.
     scenarios:
@@ -56,6 +59,7 @@ days:
     date: "2026-11-05"
     region: Tokyo → Kyoto
     overnight: Kyoto
+    overnight_stop_id: stop-kyoto
     thesis: Use the confirmed rail transfer and verified garden hours.
     load: medium
     travel: Intercity rail
@@ -63,10 +67,12 @@ days:
     booking_state: confirmed
     critical_constraints: []
     timeline:
-      - time: "09:00"
+      - id: event-day-2-rail
+        time: "09:00"
         title: Confirmed rail departure
         detail: Use the booked seats and protected connection buffer.
-      - time: "14:00"
+      - id: event-day-2-garden
+        time: "14:00"
         title: Garden visit
         detail: Arrive within the verified operating hours.
     scenarios:
@@ -89,17 +95,16 @@ budget_items:
   - id: budget-lodging
     category: lodging
     amount_type: exact
-    amount_min: 180000
-    amount_max: 180000
+    amount: 180000
     currency: JPY
     basis: per_group
     confidence: high
   - id: budget-transport
     category: transport
     amount_type: exact
-    amount_min: 60000
-    amount_max: 60000
+    amount: 60000
     currency: JPY
     basis: per_group
     confidence: high
+budget_summary: null
 challenge_findings: []

@@ -2,6 +2,7 @@ version: 1
 scenarios:
   harness-smoke:
     id: harness-smoke
+    check_scope: legacy_skill_behavior
     prompt_version: fixture-v1
     prompt: Identify the deterministic last-admission conflict from this offline fixture world.
     hard_checks:
@@ -23,6 +24,7 @@ scenarios:
             status: identified
   last-admission-mutation:
     id: last-admission-mutation
+    check_scope: legacy_skill_behavior
     expected_macro_pass: false
     expected_failed_findings:
       - rule_id: OPS-011

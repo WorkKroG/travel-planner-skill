@@ -1,7 +1,6 @@
 from urllib.parse import parse_qs, urlparse
 
 import pytest
-from travel_planner.cli import main
 from travel_planner.maps import (
     MapPlace,
     MapProvider,
@@ -58,23 +57,3 @@ def test_explicit_provider_does_not_add_unrequested_alternative() -> None:
 def test_place_url_rejects_auto_provider() -> None:
     with pytest.raises(ValueError, match="concrete"):
         build_place_url(MapProvider.AUTO, KAZAN_KREMLIN)
-
-
-def test_map_link_cli_prints_labelled_yandex_url(capsys) -> None:
-    exit_code = main(
-        [
-            "map-link",
-            "--country",
-            "RU",
-            "--query",
-            "Казанский кремль",
-            "--latitude",
-            "55.798994",
-            "--longitude",
-            "49.105746",
-        ]
-    )
-
-    output = capsys.readouterr().out
-    assert exit_code == 0
-    assert output.startswith("Yandex Maps: https://")

@@ -59,7 +59,7 @@
       </div>
       {% for finding in view.summary.blockers[:3] %}
       <div class="warning-block">
-        <p class="status-with-icon"><svg class="icon" aria-hidden="true"><use href="#icon-stop"></use></svg><strong>Blocking · {{ finding.rule_id }}</strong></p>
+        <p class="status-with-icon"><svg class="icon" aria-hidden="true"><use href="#icon-stop"></use></svg><strong>Blocking · {{ finding.code }}</strong></p>
         <p>{{ finding.message }}</p>
       </div>
       {% endfor %}
@@ -282,9 +282,9 @@
         <ul class="risk-list">
           {% for finding in view.risks %}
           <li class="risk-item risk-item--{{ finding.severity }}">
-            <p class="status-with-icon"><svg class="icon" aria-hidden="true"><use href="#icon-{% if finding.severity == 'blocking' %}stop{% else %}recheck{% endif %}"></use></svg><strong>{{ finding.rule_id }} · {{ finding.severity|capitalize }}</strong></p>
+            <p class="status-with-icon"><svg class="icon" aria-hidden="true"><use href="#icon-{% if finding.severity == 'blocking' %}stop{% else %}recheck{% endif %}"></use></svg><strong>{{ finding.code }} · {{ finding.severity|capitalize }}</strong></p>
             <p>{{ finding.message }}</p>
-            <p>Affects: {{ finding.affected_ids|join(', ') or 'Unknown' }} · Confidence: {{ finding.confidence }}</p>
+            <p>Affects: {{ finding.affected_ids|join(', ') or 'Unknown' }} · Path: {{ finding.path }}</p>
           </li>
           {% else %}<li>No open findings.</li>{% endfor %}
         </ul>

@@ -1,4 +1,0 @@
-injected:
-  - id: broad-rebuild
-    kind: oversized-rebuild-request
-    data: {requested_day_ids: [day-4], suggested_scope: all-days}

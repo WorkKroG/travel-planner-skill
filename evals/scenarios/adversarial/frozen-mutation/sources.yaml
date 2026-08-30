@@ -1,9 +1,0 @@
-mode: offline-frozen
-sources:
-  - id: lodging-fixture
-    type: provider
-    data:
-      route_state: frozen
-      days:
-        - {id: day-1, hotel_id: confirmed-hotel, activity: arrival}
-        - {id: day-2, hotel_id: confirmed-hotel, activity: museum}

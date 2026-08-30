@@ -219,12 +219,15 @@ def test_user_acceptance_keeps_the_original_blocker_unresolved_and_visible(
     """Catch acceptance being represented by mutating or removing the source blocker."""
     itinerary = yaml.safe_load((minimal_trip / "itinerary.yaml").read_text())
     itinerary["challenge_findings"] = [
-        {
-            "id": "blocker-rail",
-            "severity": "blocking",
-            "status": "unresolved",
-            "message": "The final timetable is not released.",
-        }
+            {
+                "id": "blocker-rail",
+                "code": "SCHEDULE_UNRELEASED",
+                "severity": "blocking",
+                "status": "unresolved",
+                "path": "itinerary.yaml.days[0]",
+                "affected_ids": ["day-1"],
+                "message": "The final timetable is not released.",
+            }
     ]
     write_state_file(minimal_trip / "itinerary.yaml", itinerary)
     _write_lifecycle(
@@ -310,7 +313,7 @@ def test_write_state_file_preserves_mapping_order_and_valid_yaml(minimal_trip: P
     assert path.read_text().splitlines()[0] == "schema_version: 1"
 
 
-def test_validate_cli_reports_file_and_field_for_corrupt_state(
+def test_check_cli_reports_file_and_field_for_corrupt_state(
     minimal_trip: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
     """Catch validation diagnostics that are unusable from a terminal or Codex."""
@@ -318,7 +321,7 @@ def test_validate_cli_reports_file_and_field_for_corrupt_state(
     data["route_state"] = "almost-final"
     write_state_file(minimal_trip / "itinerary.yaml", data)
 
-    exit_code = main(["validate", str(minimal_trip)])
+    exit_code = main(["check", str(minimal_trip)])
 
     assert exit_code == 2
-    assert "itinerary.yaml.route_state" in capsys.readouterr().err
+    assert "itinerary.yaml.route_state" in capsys.readouterr().out

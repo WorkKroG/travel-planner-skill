@@ -6,7 +6,8 @@ finalization_basis: null
 accepted_blockers: []
 route_state: selected
 output_status: draft
-alternatives: []
+alternatives:
+  - id: route-curated
 selected_route_id: route-curated
 route_stops:
   - id: stop-tokyo
@@ -37,6 +38,7 @@ days:
     date: "2026-11-02"
     region: Tokyo
     overnight: Tokyo
+    overnight_stop_id: stop-tokyo
     thesis: Arrive gently and keep the first evening flexible.
     load: light
     travel: Airport arrival
@@ -45,7 +47,8 @@ days:
     critical_constraints:
       - Arrive at lodging before the stated check-in cutoff.
     timeline:
-      - time: "16:00"
+      - id: event-day-1-arrival
+        time: "16:00"
         title: Arrival and transfer
         detail: Exact timing remains dependent on the booked flight.
     scenarios:
@@ -72,6 +75,7 @@ days:
     date: "2026-11-05"
     region: Tokyo → Kanazawa
     overnight: Kanazawa
+    overnight_stop_id: stop-kanazawa
     thesis: Protect the transfer and avoid stacking major activities.
     load: medium
     travel: Intercity rail
@@ -80,7 +84,8 @@ days:
     critical_constraints:
       - Departure time is not released yet; keep the day in Draft.
     timeline:
-      - time: Unknown
+      - id: event-day-2-rail
+        time: Unknown
         title: Intercity rail transfer
         detail: Confirm only from the operator schedule.
     scenarios:
@@ -104,6 +109,7 @@ days:
     date: "2026-11-08"
     region: Kyoto
     overnight: Kyoto
+    overnight_stop_id: stop-kyoto
     thesis: Compare the garden visit with a weather-safe cultural alternative.
     load: medium
     travel: Local transit
@@ -112,7 +118,8 @@ days:
     critical_constraints:
       - Published hours conflict and must be resolved before Final.
     timeline:
-      - time: Unknown
+      - id: event-day-3-garden
+        time: Unknown
         title: Reference Garden
         detail: Opening time remains unresolved.
     scenarios:
@@ -146,4 +153,5 @@ budget_items:
     currency: JPY
     basis: per_group
     confidence: low
+budget_summary: null
 challenge_findings: []

@@ -40,7 +40,6 @@ class HardCheck:
     status: CheckStatus
     evidence: Mapping[str, Any]
     message: str = ""
-    rule_version: int = 1
 
 
 @dataclass(frozen=True)
@@ -51,7 +50,6 @@ class Finding:
     status: CheckStatus
     evidence: Mapping[str, Any]
     message: str
-    rule_version: int = 1
 
 
 @dataclass(frozen=True)

@@ -8,8 +8,7 @@ from datetime import date, datetime
 from decimal import Decimal, InvalidOperation
 from typing import Any, Literal
 
-from ..challenge import ChallengeReport
-from ..evidence import Finding
+from ..checks import CheckReport, Finding
 from ..state import TripState
 
 
@@ -426,7 +425,7 @@ def _sources(state: TripState) -> tuple[SourceView, ...]:
 
 def build_view(
     state: TripState,
-    challenge: ChallengeReport,
+    check_report: CheckReport,
     generated_at: datetime,
     *,
     qa_attested: bool = False,
@@ -435,12 +434,16 @@ def build_view(
     route = _route(state)
     readiness = _readiness(state)
     budget = _budget(state)
-    blockers = tuple(finding for finding in challenge.findings if finding.severity == "blocking")
-    warnings = tuple(finding for finding in challenge.findings if finding.severity == "warning")
+    blockers = tuple(
+        finding for finding in check_report.all_findings if finding.severity == "blocking"
+    )
+    warnings = tuple(
+        finding for finding in check_report.all_findings if finding.severity == "warning"
+    )
     requested_final = state.itinerary.get("output_status") == "final"
     route_frozen = state.itinerary.get("route_state") == "frozen"
     status: Literal["draft", "final"] = (
-        "final" if requested_final and route_frozen and challenge.hard_pass and qa_attested else "draft"
+        "final" if requested_final and route_frozen and check_report.ok and qa_attested else "draft"
     )
     dates = state.brief.get("travel_dates", {})
     summary = SummaryView(
@@ -463,7 +466,7 @@ def build_view(
         days=_days(state),
         readiness=readiness,
         budget=budget,
-        risks=challenge.findings,
+        risks=check_report.all_findings,
         sources=_sources(state),
         generated_at=generated_at,
     )

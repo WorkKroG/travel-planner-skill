@@ -2,8 +2,7 @@ import shutil
 from pathlib import Path
 
 import pytest
-from travel_planner.challenge import ChallengeReport
-from travel_planner.evidence import Finding
+from travel_planner.checks import CheckReport, Finding
 from travel_planner.render.viewmodel import ItineraryView, build_view
 from travel_planner.state import TripState, load_trip
 
@@ -25,37 +24,34 @@ def japan_state(tmp_path: Path) -> TripState:
 
 
 @pytest.fixture
-def japan_report() -> ChallengeReport:
-    from datetime import UTC, datetime
-
-    generated_at = datetime(2026, 8, 28, 12, tzinfo=UTC)
-    return ChallengeReport(
-        stage="detailed",
-        evaluated_at=generated_at,
+def japan_report() -> CheckReport:
+    return CheckReport(
+        structural_errors=(),
         findings=(
             Finding(
-                rule_id="BOOK-001",
+                id="booking-window-rail-release",
+                code="BOOK-001",
                 severity="blocking",
-                confidence="high",
+                path="readiness.yaml.items[0]",
                 affected_ids=("rail-release", "day-2"),
-                evidence_ids=("source-rail",),
                 message="Rail booking window is not open yet.",
             ),
             Finding(
-                rule_id="EVID-001",
+                id="source-recheck-day-3",
+                code="EVID-001",
                 severity="warning",
-                confidence="medium",
+                path="itinerary.yaml.days[2]",
                 affected_ids=("day-3",),
-                evidence_ids=("source-garden",),
                 message="Garden hours require rechecking.",
             ),
         ),
-        rule_versions=(("BOOK-001", 1), ("EVID-001", 1)),
+        lifecycle_findings=(),
+        accepted_blocker_ids=(),
     )
 
 
 @pytest.fixture
-def japan_view(japan_state: TripState, japan_report: ChallengeReport) -> ItineraryView:
+def japan_view(japan_state: TripState, japan_report: CheckReport) -> ItineraryView:
     from datetime import UTC, datetime
 
     return build_view(japan_state, japan_report, datetime(2026, 8, 28, 12, tzinfo=UTC))

@@ -26,10 +26,8 @@ COUNTERFACTUALS = (
     ("budget-basis", "sources.yaml", ("sources", 1, "data", "basis"), "group", "checks.BUD-002.status", "identified", "clear", True, False),
     ("dst-overnight", "sources.yaml", ("sources", 0, "data", "arrival_at"), "2026-10-24T23:50:00", "checks.CAL-004.status", "identified", "clear", True, False),
     ("dual-nationality-transit", "operations.yaml", ("reference_evaluator", "parameters", "travelers", 1, "citizenship"), "CAN", "checks.BOOK-001.status", "identified", "clear", True, False),
-    ("frozen-mutation", "traps.yaml", ("injected", 0, "data", "report_rejection"), True, "checks.EVAL-FROZEN-001.status", "ignored", "identified", False, True),
     ("group-reversal", "traps.yaml", ("injected", 0, "data", "change_request", "remove_place_id"), "optional-cafe", "checks.EVAL-GROUP-001.status", "identified", "clear", True, False),
     ("last-admission", "traps.yaml", ("injected", 0, "data", "report_conflict"), True, "checks.OPS-002.status", "ignored", "identified", False, True),
-    ("local-weather-swap", "sources.yaml", ("sources", 0, "data", "condition"), "clear", "checks.EVAL-IMPACT-001.status", "identified", "clear", True, False),
     ("luggage-storage", "sources.yaml", ("sources", 1, "data", "storage_available"), True, "checks.LEG-005.status", "identified", "clear", True, False),
     ("medication-legality", "sources.yaml", ("sources", 0, "data", "verification_status"), "allowed", "checks.EVAL-MED-001.status", "identified", "clear", True, False),
     ("missing-pdf-adapter", "sources.yaml", ("sources", 0, "data", "pdf_adapter_available"), True, "checks.EVAL-PDF-001.status", "identified", "clear", True, False),
@@ -48,11 +46,11 @@ COUNTERFACTUALS = (
 )
 
 
-def test_counterfactual_matrix_is_exactly_twenty_adversarial_and_three_e2e_ids() -> None:
+def test_counterfactual_matrix_is_exactly_eighteen_adversarial_and_three_e2e_ids() -> None:
     """The mutation matrix cannot silently omit, duplicate, or substitute a release case."""
     ids = {item[0] for item in COUNTERFACTUALS}
 
-    assert len(COUNTERFACTUALS) == len(ids) == 23
+    assert len(COUNTERFACTUALS) == len(ids) == 21
     assert ids == scenario_ids(ROOT)
     assert ids & adversarial_case_ids(ROOT) == adversarial_case_ids(ROOT)
     assert len(ids - adversarial_case_ids(ROOT)) == 3
@@ -142,7 +140,7 @@ def test_each_reference_evaluator_case_changes_a_graded_result_for_one_relevant_
 
 
 def test_reference_evaluator_contract_never_receives_expected_hard_truth() -> None:
-    """Rule IDs, expected values, and forbidden names stay solely in the grader contract."""
+    """Check IDs, expected values, and forbidden names stay solely in the grader contract."""
     for case_id, *_ in COUNTERFACTUALS:
         case = load_scenario_case(case_id, ROOT)
         reference_evaluator = case.scenario["reference_evaluator"]

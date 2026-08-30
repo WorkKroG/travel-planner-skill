@@ -7,6 +7,7 @@ from pathlib import Path
 
 import pytest
 
+from evals.run import load_fixture_world
 from evals.scenarios import (
     adversarial_case_ids,
     load_scenario_case,
@@ -37,8 +38,6 @@ EXPECTED_ADVERSARIAL_IDS = {
     "source-conflict",
     "prompt-injection",
     "budget-basis",
-    "local-weather-swap",
-    "frozen-mutation",
     "no-network",
     "missing-pdf-adapter",
     "winter-road-closure",
@@ -59,7 +58,16 @@ def test_required_scenarios_and_exact_adversarial_cases_are_executable() -> None
         assert case.path.is_dir()
         assert {path.name for path in case.path.iterdir()} >= REQUIRED_CASE_FILES
         assert case.scenario["reference_evaluator"]["fixture_input"]["brief"] == case.brief
+        assert case.scenario["check_scope"] == "legacy_skill_behavior"
         assert case.scenario["rubric_path"] == case.rubric_path
+
+
+def test_base_fixture_cases_also_declare_legacy_scope() -> None:
+    world = load_fixture_world()
+
+    assert {
+        scenario.get("check_scope") for scenario in world["scenarios"].values()
+    } == {"legacy_skill_behavior"}
 
 
 def test_loader_reads_fixture_operations_instead_of_only_documenting_them() -> None:
@@ -68,12 +76,11 @@ def test_loader_reads_fixture_operations_instead_of_only_documenting_them() -> N
 
     assert case.brief["trip_id"] == "japan-autumn-2026-eval"
     assert case.sources["mode"] == "offline-frozen"
-    assert case.traps["injected"][0]["id"] == "weather-risk"
+    assert case.traps["injected"][0]["id"] == "timetable-invention"
     assert case.reference_evaluator["kind"] == "e2e.composite"
     assert [item["kind"] for item in case.reference_evaluator["parameters"]["components"]] == [
         "weekday",
         "schedule-evidence",
-        "weather-swap",
     ]
     assert case.scenario["hard_checks"][0]["path"] == "checks.CAL-001.status"
 
@@ -140,15 +147,4 @@ def test_missing_reference_evaluator_and_invalid_rubric_limits_fail_closed(
     rubric = root / "japan-autumn" / "rubric.yaml"
     rubric.write_text(rubric.read_text().replace("max_score: 4", f"max_score: {invalid}", 1), encoding="utf-8")
     with pytest.raises(ValueError, match="threshold"):
-        load_scenario_case("japan-autumn", root)
-
-
-def test_unknown_non_eval_rule_is_rejected(tmp_path: Path) -> None:
-    """A typo such as the retired EVD-001 must not masquerade as a production challenge rule."""
-    root = tmp_path / "scenarios"
-    shutil.copytree(ROOT, root)
-    expected = root / "japan-autumn" / "expected-hard.yaml"
-    expected.write_text(expected.read_text().replace("EVID-001", "EVD-001"), encoding="utf-8")
-
-    with pytest.raises(ValueError, match="Unknown scenario rule ID"):
         load_scenario_case("japan-autumn", root)

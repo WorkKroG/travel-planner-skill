@@ -1,9 +1,0 @@
-mode: offline-frozen
-sources:
-  - id: weather-fixture
-    type: provider
-    data:
-      target_day_id: day-4
-      observed_at: "2026-11-03T18:00:00+09:00"
-      condition: rain
-      backup_activity: museum

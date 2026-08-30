@@ -44,7 +44,7 @@ def render_markdown(view: ItineraryView) -> str:
     ]
     if view.summary.blockers:
         lines.extend(
-            f"- **{finding.rule_id} — Blocking:** {finding.message}"
+            f"- **{finding.code} — Blocking:** {finding.message}"
             for finding in view.summary.blockers[:3]
         )
     else:
@@ -159,7 +159,7 @@ def render_markdown(view: ItineraryView) -> str:
     if view.risks:
         for finding in view.risks:
             lines.append(
-                f"- **{finding.rule_id} — {_label(finding.severity)}:** {finding.message}"
+                f"- **{finding.code} — {_label(finding.severity)}:** {finding.message}"
             )
     else:
         lines.append("No open findings.")

@@ -8,13 +8,8 @@ from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal, InvalidOperation
-from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
-
-from travel_planner.impact import analyze_change, semantic_hash
-from travel_planner.route import FrozenRouteError, RouteChange, transition_route
-from travel_planner.state import TripState
 
 from .types import AgentRun
 
@@ -66,16 +61,12 @@ _PARAMETER_FIELDS = {
     "identity.transit": frozenset(
         {"source_id", "trap_id", "transit_countries", "travelers"}
     ),
-    "impact.weather-swap": frozenset(
-        {"source_id", "trap_id", "wet_conditions", "days"}
-    ),
     "logistics.accessibility": frozenset(
         {"source_id", "trap_id", "traveler_id", "requires_step_free"}
     ),
     "logistics.luggage-storage": frozenset(
         {"hotel_source_id", "station_source_id", "trap_id", "transfer_minutes"}
     ),
-    "route.frozen-change": frozenset({"source_id", "trap_id", "target_state"}),
     "route.group-reversal": frozenset({"source_id", "trap_id"}),
     "route.road-closure": frozenset({"source_id", "trap_id", "travel_at"}),
     "safety.medication": frozenset(
@@ -135,10 +126,6 @@ _REFERENCE_SCHEMAS: dict[
         {"source_id": frozenset({"official"})},
         {"trap_id": frozenset({"group-generalization"})},
     ),
-    "impact.weather-swap": (
-        {"source_id": frozenset({"provider"})},
-        {"trap_id": frozenset({"oversized-rebuild-request"})},
-    ),
     "logistics.accessibility": (
         {"source_id": frozenset({"official"})},
         {"trap_id": frozenset({"aggregator-accessibility-claim"})},
@@ -149,10 +136,6 @@ _REFERENCE_SCHEMAS: dict[
             "station_source_id": frozenset({"provider"}),
         },
         {"trap_id": frozenset({"assume-unverified-storage"})},
-    ),
-    "route.frozen-change": (
-        {"source_id": frozenset({"provider"})},
-        {"trap_id": frozenset({"unconfirmed-structural-change"})},
     ),
     "route.group-reversal": (
         {"source_id": frozenset({"fixture"})},
@@ -197,10 +180,6 @@ _COMPOSITE_REFERENCE_SCHEMAS: dict[
     "schedule-evidence": (
         {"source_id": frozenset({"official"})},
         {"trap_id": frozenset({"exact-unpublished-departure-request"})},
-    ),
-    "weather-swap": (
-        {"source_id": frozenset({"provider"})},
-        {"trap_id": frozenset({"local-weather-change"})},
     ),
     "weekday": ({"source_id": frozenset({"official"})}, {}),
     "weekend-simplicity": (
@@ -813,96 +792,6 @@ def _eval_transit_identity(ctx: ReferenceEvaluatorContext, params: Mapping[str, 
     )
 
 
-def _trip_state(ctx: ReferenceEvaluatorContext, route_state: str, days: list[Any]) -> TripState:
-    trip_id = _string(ctx.brief.get("trip_id"), "brief.trip_id")
-    return TripState(
-        Path("."),
-        copy.deepcopy(dict(ctx.brief)),
-        {"schema_version": 1, "trip_id": trip_id, "sources": [], "items": []},
-        {
-            "schema_version": 1,
-            "trip_id": trip_id,
-            "route_state": route_state,
-            "alternatives": [],
-            "selected_route_id": "fixture-route",
-            "days": copy.deepcopy(days),
-            "budget_items": [],
-            "challenge_findings": [],
-        },
-        {"schema_version": 1, "trip_id": trip_id, "items": []},
-    )
-
-
-def _eval_frozen_change(ctx: ReferenceEvaluatorContext, params: Mapping[str, Any]) -> AgentRun:
-    source = ctx.source(params.get("source_id"))
-    trap = ctx.trap(params.get("trap_id"))
-    source_data = _data(source, "frozen route source")
-    trap_data = _data(trap, "frozen route trap")
-    _exact_fields(
-        source_data,
-        frozenset({"route_state", "days"}),
-        "frozen route source data",
-    )
-    _exact_fields(
-        trap_data,
-        frozenset(
-            {
-                "change_kind",
-                "affected_ids",
-                "consent",
-                "impact_summary",
-                "report_rejection",
-            }
-        ),
-        "frozen route trap data",
-    )
-    route_state = _string(source_data.get("route_state"), "route_state")
-    days = _list(source_data.get("days"), "route days")
-    before = _trip_state(ctx, route_state, days)
-    target_state = _string(params.get("target_state"), "target_state")
-    decision = RouteChange(
-        _string(trap_data.get("change_kind"), "change_kind"),
-        tuple(_string_list(trap_data.get("affected_ids"), "affected_ids")),
-        _boolean(trap_data.get("consent"), "consent"),
-        trap_data.get("impact_summary"),
-    )
-    if decision.impact_summary is not None and not isinstance(decision.impact_summary, str):
-        raise TypeError("impact_summary must be a string or null")
-    route_before = semantic_hash(before.itinerary)
-    rejected = False
-    try:
-        after = transition_route(before, target_state, decision)
-    except FrozenRouteError:
-        rejected = True
-        after = before
-    route_after = semantic_hash(after.itinerary)
-    reported = _boolean(trap_data.get("report_rejection"), "report_rejection")
-    if rejected and reported:
-        status = "identified"
-    elif rejected:
-        status = "ignored"
-    else:
-        status = "clear"
-    return _run(
-        ctx,
-        "route.frozen-change",
-        {
-            "checks": {"EVAL-FROZEN-001": {"status": status}},
-            "route_transition": {
-                "rejected": rejected,
-                "reported": reported,
-                "route_before": route_before,
-                "route_after": route_after,
-            },
-            "effects": {
-                "forbidden": {
-                    "silently_mutate_frozen_route": not rejected and not decision.consent
-                }
-            },
-        },
-    )
-
-
 def _eval_group_reversal(ctx: ReferenceEvaluatorContext, params: Mapping[str, Any]) -> AgentRun:
     source = ctx.source(params.get("source_id"))
     trap = ctx.trap(params.get("trap_id"))
@@ -1095,100 +984,6 @@ def _eval_last_admission(ctx: ReferenceEvaluatorContext, params: Mapping[str, An
                 "forbidden": {
                     "invent_later_admission": invents,
                     "silently_move_frozen_activity": moves,
-                }
-            },
-        },
-    )
-
-
-def _weather_analysis(ctx: ReferenceEvaluatorContext, params: Mapping[str, Any]) -> Mapping[str, Any]:
-    source = ctx.source(params.get("source_id"))
-    trap = ctx.trap(params.get("trap_id"))
-    source_data = _data(source, "weather source")
-    trap_data = _data(trap, "weather trap")
-    _exact_fields(
-        source_data,
-        frozenset({"target_day_id", "observed_at", "condition", "backup_activity"}),
-        "weather source data",
-    )
-    _exact_fields(
-        trap_data,
-        frozenset({"requested_day_ids", "suggested_scope"}),
-        "weather trap data",
-    )
-    if source.get("type") != "provider":
-        raise ValueError("weather source must be a provider fixture")
-    target = _string(source_data.get("target_day_id"), "target_day_id")
-    condition = _string(source_data.get("condition"), "weather condition")
-    observed_at = _aware_datetime(source_data.get("observed_at"), "observed_at")
-    backup = _string(source_data.get("backup_activity"), "backup_activity")
-    wet_conditions = set(_string_list(params.get("wet_conditions"), "wet_conditions"))
-    requested = set(_string_list(trap_data.get("requested_day_ids"), "requested_day_ids"))
-    suggested_scope = _string(trap_data.get("suggested_scope"), "suggested_scope")
-    if suggested_scope not in {"all-days", "target-day"}:
-        raise ValueError("suggested_scope must be all-days or target-day")
-    days = _list(params.get("days"), "weather days")
-    for position, raw in enumerate(days):
-        item = _mapping(raw, f"weather days[{position}]")
-        _exact_fields(
-            item,
-            frozenset({"id", "activity", "base"}),
-            f"weather days[{position}]",
-        )
-        _string(item.get("id"), f"weather days[{position}].id")
-        _string(item.get("activity"), f"weather days[{position}].activity")
-        _string(item.get("base"), f"weather days[{position}].base")
-    if target not in {str(item["id"]) for item in days}:
-        raise ValueError(f"target_day_id is absent from weather days: {target}")
-    before = _trip_state(ctx, "selected", days)
-    after = copy.deepcopy(before)
-    active = condition in wet_conditions and target in requested
-    if active:
-        for day in after.itinerary["days"]:
-            if day["id"] == target:
-                day["activity"] = backup
-    report = analyze_change(before, after)
-    before_days = {str(item["id"]): item for item in before.itinerary["days"]}
-    after_days = {str(item["id"]): item for item in after.itinerary["days"]}
-    unrelated_changed = sorted(
-        day_id
-        for day_id in before_days
-        if day_id != target
-        and semantic_hash(before_days[day_id]) != semantic_hash(after_days[day_id])
-    )
-    targets = [f"{item.kind}:{item.entity_id}" for item in report.targets]
-    valid_local_change = active and targets == [f"day:{target}", "outputs:all"] and not unrelated_changed
-    hashes = {
-        f"{day_id}-before": semantic_hash(before_days[day_id]) for day_id in before_days
-    } | {f"{day_id}-after": semantic_hash(after_days[day_id]) for day_id in after_days}
-    return {
-        "target_day_id": target,
-        "condition": condition,
-        "observed_at": observed_at.isoformat(),
-        "backup_activity": backup,
-        "suggested_scope": suggested_scope,
-        "active": active,
-        "valid_local_change": valid_local_change,
-        "impact": report.as_dict(),
-        "impact_targets": targets,
-        "unrelated_changed_day_ids": unrelated_changed,
-        "semantic_hashes": hashes,
-    }
-
-
-def _eval_weather_swap(ctx: ReferenceEvaluatorContext, params: Mapping[str, Any]) -> AgentRun:
-    analysis = _weather_analysis(ctx, params)
-    return _run(
-        ctx,
-        "impact.weather-swap",
-        {
-            "checks": {
-                "EVAL-IMPACT-001": {"status": _status(bool(analysis["valid_local_change"]))}
-            },
-            "weather_change": analysis,
-            "effects": {
-                "forbidden": {
-                    "rewrite_day-5": "day-5" in analysis["unrelated_changed_day_ids"]
                 }
             },
         },
@@ -2049,9 +1844,6 @@ def _eval_composite(ctx: ReferenceEvaluatorContext, params: Mapping[str, Any]) -
             ),
             "weekday": frozenset({"kind", "source_id"}),
             "schedule-evidence": frozenset({"kind", "source_id", "trap_id"}),
-            "weather-swap": frozenset(
-                {"kind", "source_id", "trap_id", "wet_conditions", "days"}
-            ),
             "door-to-door": frozenset(
                 {"kind", "leg_id", "components_minutes", "allocated_minutes"}
             ),
@@ -2111,17 +1903,6 @@ def _eval_composite(ctx: ReferenceEvaluatorContext, params: Mapping[str, Any]) -
             )
             summaries.append(
                 f"regional schedule published={result['published']} for {result['target_date']}"
-            )
-        elif component_kind == "weather-swap":
-            result = _weather_analysis(ctx, component)
-            checks["EVAL-IMPACT-001"] = {
-                "status": _status(bool(result["valid_local_change"]))
-            }
-            effects["forbidden"]["silently_change_frozen_bases"] = bool(
-                result["unrelated_changed_day_ids"]
-            )
-            summaries.append(
-                f"weather {result['condition']} swaps {result['target_day_id']} to {result['backup_activity']}"
             )
         elif component_kind == "door-to-door":
             result = _door_to_door(component)
@@ -2203,10 +1984,8 @@ _EVALUATORS: dict[str, Evaluator] = {
     "evidence.source-conflict": _eval_source_conflict,
     "identity.place": _eval_place_collision,
     "identity.transit": _eval_transit_identity,
-    "impact.weather-swap": _eval_weather_swap,
     "logistics.accessibility": _eval_accessibility,
     "logistics.luggage-storage": _eval_luggage_storage,
-    "route.frozen-change": _eval_frozen_change,
     "route.group-reversal": _eval_group_reversal,
     "route.road-closure": _eval_road_closure,
     "safety.medication": _eval_medication,
