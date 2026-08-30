@@ -4,11 +4,28 @@ When meaningful choices exist, present up to three genuinely different alternati
 
 Show trade-offs and a recommendation before asking the user to choose. Record the selected option, rejected alternatives, and reasons in `decisions.md`. Store alternatives and the selection in `itinerary.yaml`; a view-only primary/backup switch in HTML does not alter that selection.
 
-Detail only the chosen route. Use `route_stops` and `days[].timeline[]`; every day and timeline event has an ID. Keep human time labels, and add offset-bearing timestamps, operating/service cutoffs, component durations, connection minimums, and buffer markers only when supported. Link days/events to canonical route, overnight, readiness, source, and claim IDs. Record transport door-to-door, including connections, check-in, luggage/storage, booking need, and known cost basis. Unknown stays unknown.
+Detail only the chosen route. Use `route_stops` and `days[].timeline[]`; every day and timeline event has an ID. Keep human time labels, and add offset-bearing timestamps, operating/service cutoffs, component durations, connection minimums, and buffer markers only when supported. Link days/events to canonical route, overnight, readiness, source, and claim IDs. Unknown stays unknown.
+
+Apply this day contract both when first detailing a day and when a material change affects it:
+
+| Day facet | Required content |
+| --- | --- |
+| `intent` | State a concise day `thesis`. |
+| `summary` | Summarize expected `load` and `travel`. |
+| `cutoffs` | Identify supported `critical_cutoffs` and the `latest_switch_point`. |
+| `scenarios` | Give the `primary` plan and a `realistic_backup`. |
+| `context` | Include relevant `meal` and `booking` context. |
+| `evidence` | Attach `linked_sources` and preserve `claim_status`. |
+| `transport` | Show segments in `local_time`, cover `door_to_door`, and offer a practical `comfortable_alternative` and `budget_alternative` when choices exist. |
+
+Before editing a material user decision, follow this contract:
+
+| Case | Explain before edit | User gate | Update scope | Record |
+| --- | --- | --- | --- | --- |
+| `material_change` | `route`, `days`, `budget`, `readiness` | `explicit_consent` | `affected_only` | `decisions.md` |
 
 | Situation | Required outcome |
 | --- | --- |
-| Material user-decision change | Explain affected route, days, budget, and readiness; obtain explicit consent; record the reason in `decisions.md`; update only affected canonical records. |
 | Restaurant or activity substitution | Explain affected timing, location, booking, cost, and fallback; preserve unrelated days. |
 | Russia/CIS/Turkey with auto maps | Use Yandex Maps from the internal provider policy unless the user explicitly chose another provider. |
 | Cross-border transport | Label contextual map alternatives, but treat the official operator as authority for schedules and border/check-in rules. |

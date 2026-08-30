@@ -2,11 +2,11 @@
 
 ## Surface routing
 
-| Surface | Deterministic helpers | Allowed verification |
-| --- | --- | --- |
-| Codex | `init`, `check`, `render` | `none`, `ai_reviewed`, `codex_validated` |
-| Chat/Work | unavailable | `none`, `ai_reviewed` |
-| mobile | unavailable | `none`, `ai_reviewed` |
+| Surface | Deterministic helpers | Allowed verification | Required disclosure | Codex validation gate |
+| --- | --- | --- | --- | --- |
+| `codex` | `init`, `check`, `render` | `none`, `ai_reviewed`, `codex_validated` | Report the checks actually run. | `successful_check`, `no_blockers` |
+| `chat_work` | `unavailable` | `none`, `ai_reviewed` | AI-review is `less_precise` and requires `careful_human_review`. | `never` |
+| `mobile` | `unavailable` | `none`, `ai_reviewed` | AI-review is `less_precise` and requires `careful_human_review`. | `never` |
 
 In Codex, run `check` after substantive canonical changes and before lifecycle changes or rendering:
 
@@ -20,9 +20,14 @@ On Chat/Work/mobile, use the same canonical workflow but assume no Python, inter
 
 ## Lifecycle
 
-- Draft: `document_status: draft`, `finalization_basis: null`, and the verification actually achieved.
-- Codex Final: `document_status: final`, `verification_level: codex_validated`, `finalization_basis: codex_validated`, followed by a successful check with no blockers. Display `Final — проверено в Codex`.
-- User-confirmed Final: honor an explicit request to mark the document final. Enumerate every remaining blocker and obtain explicit acceptance for each actual blocker ID. Add one `accepted_blockers` record per blocker with `blocker_id`, `accepted_by_user: true`, `accepted_at`, and a non-empty rationale; set `finalization_basis: user_confirmed`. Each blocker remains blocking, unresolved, and visible in canonical state and HTML. Display `Final — подтверждено пользователем`.
+Draft uses `document_status: draft`, `finalization_basis: null`, and the verification actually achieved. Final state follows this contract:
+
+| Final basis | Required state | Remaining blockers |
+| --- | --- | --- |
+| `codex_validated` | `document_status: final`, `verification_level: codex_validated`, `finalization_basis: codex_validated` after a successful check | None. |
+| `user_confirmed` | `document_status: final`, `finalization_basis: user_confirmed` after an explicit request | For every `actual_blocker_id`, add acceptance metadata `accepted_by_user`, `accepted_at`, and `rationale`; keep it `blocking`, `unresolved`, and `visible` in canonical state and HTML. |
+
+Display `Final — проверено в Codex` only for the Codex basis and `Final — подтверждено пользователем` for explicit user confirmation. Enumerate every remaining blocker and obtain explicit acceptance for each actual blocker ID before recording the user-confirmed basis.
 
 Never infer acceptance from silence. `ai_reviewed` never equals `codex_validated`. The renderer copies lifecycle and findings; it does not decide status, resolve blockers, or invent findings.
 
