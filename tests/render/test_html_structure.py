@@ -16,6 +16,8 @@ from travel_planner.render.html import (
 )
 from travel_planner.render.viewmodel import ItineraryView, build_view
 
+from tests.render.css_contracts import assert_css_rule
+
 
 def test_html_contains_required_semantic_reading_order(japan_view: ItineraryView) -> None:
     """Catch a dashboard-like layout that buries route, decisions, or warnings."""
@@ -151,10 +153,10 @@ def test_html_marks_a_blocked_codex_final_as_inconsistent(japan_state) -> None:
     assert "не следует считать безопасным Final" in html
 
 
-def test_day_filters_expose_synced_overview_and_visible_empty_state(
+def test_day_filter_source_exposes_overview_and_empty_state_hooks(
     japan_view: ItineraryView,
 ) -> None:
-    """Catch filters hiding detailed articles while leaving the overview misleadingly unchanged."""
+    """Catch missing source hooks needed for PR7's manual synchronization checks."""
     html = render_html(japan_view, media={}, options=DEFAULTS)
 
     for day in japan_view.days:
@@ -248,13 +250,19 @@ def test_static_css_declares_long_content_wrapping_contract(
     """Catch removal of source-level wrapping safeguards without claiming browser layout."""
     html = render_html(japan_view, media={}, options=DEFAULTS)
     css = html[html.index("<style>") : html.index("</style>")]
-    body_rule = css[css.index("body {") : css.index("}", css.index("body {"))]
 
-    assert "html {\n  min-width: 20rem;" in css
-    assert "body {\n  margin: 0;" in css
-    assert "overflow-wrap: anywhere;" in body_rule
-    assert ".trip-hero *,\n.document-grid *,\n.document-footer * {\n  min-width: 0;" in css
-    assert ".budget-table {\n  width: 100%;\n  table-layout: fixed;" in css
+    assert_css_rule(css, ("html",), {"min-width": "20rem"})
+    assert_css_rule(css, ("body",), {"overflow-wrap": "anywhere"})
+    assert_css_rule(
+        css,
+        (".trip-hero *", ".document-grid *", ".document-footer *"),
+        {"min-width": "0"},
+    )
+    assert_css_rule(
+        css,
+        (".budget-table",),
+        {"width": "100%", "table-layout": "fixed"},
+    )
 
 
 def test_scenarios_and_day_metadata_keep_semantic_source_wrappers(

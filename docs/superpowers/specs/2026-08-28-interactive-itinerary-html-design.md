@@ -501,6 +501,29 @@ Inspect in a normal desktop browser at minimum:
 
 Required representative states include summary, a normal day, a transfer-heavy day, a conflict, a stale item, optional-media loading/error, enhancement failure, external-connectivity labelling, Draft and both Final bases.
 
+The following shared PR7 interaction and local-open checklist is entirely
+`not_executed` until the corresponding browser observation is recorded. Static tests may
+confirm that the necessary source hooks and fallback content exist, but do not satisfy or
+partially execute any item in this checklist:
+
+- Search: record a query with matches, a query with no matches and reset; confirm the
+  expected result/empty state and restoration of the complete itinerary.
+- Filters: exercise All days, unresolved items, weather-sensitive items, transfers and
+  warnings one at a time; for every filter, record that detailed days and the day overview
+  remain synchronized, then reset.
+- Contents: open the Contents control and follow both a section link and a day link; record
+  arrival at the labelled targets without obscured headings or focus.
+- Scenarios: switch primary to backup and back; record the corresponding visible panel and
+  the restrained screen-reader announcement for each change.
+- Enhancement failure: induce an enhancement failure and record that the complete core
+  document, both scenarios and normal links remain readable, with the failure notice kept
+  concise and no generic replacement error screen.
+- Local-open network boundary: open the artifact through `file://` with browser network
+  evidence and record that initial load and automatic operation issue no HTTP(S) asset or
+  fetch requests. Afterwards, activate representative labelled external links separately
+  and record those user-initiated navigations as connectivity-dependent actions, not as
+  automatic artifact dependencies.
+
 The release scenario also records exactly two manual cross-surface smoke observations in PR7:
 generate/download/open the shared HTML once in Chat web and once on mobile. Those two
 observations are evidence within one cross-surface release scenario, not an automated device
@@ -526,8 +549,10 @@ matrix and not a claim of Codex validation.
 ### Self-contained local-open acceptance
 
 - open from `file://` in a normal desktop browser;
-- run the single no-required-network-dependency test for CSS, scripts, fonts, icons and media;
-- verify all external links are still identifiable and labelled;
+- capture the PR7 network evidence from the shared checklist: no automatic HTTP(S) asset or
+  fetch requests on initial load or automatic operation;
+- activate external links only as separate user actions and verify that they remain
+  identifiable, labelled and explicitly connectivity-dependent;
 - disable JavaScript and confirm complete core reading order and print content.
 
 ### Content edge cases

@@ -36,6 +36,7 @@ scenarios:
     preconditions:
       - The same trip template and canonical bundle are available for manual transfer.
       - Chat web and mobile sessions are available for the two observations scheduled in PR7.
+      - The approved HTML spec's shared PR7 interaction and local-open checklist is available; every observation starts not_executed.
     steps:
       - Manually transfer the bundle to Chat web and continue planning without local helper claims.
       - Repeat on mobile with verification limited to none or explicitly qualified ai_reviewed.
@@ -43,5 +44,6 @@ scenarios:
     required_evidence:
       - Chat web manual observation records successful HTML download and open.
       - Mobile manual observation records successful HTML download and open.
+      - The evidence record references the shared PR7 checklist for search, filters and synchronized overview, Contents navigation, scenario switching and announcements, enhancement failure, and the file-local network boundary.
       - The two manual surface observations belong to one release scenario and remain pending until PR7 execution.
       - Neither observation claims Codex validation, automatic synchronization, or automated device coverage.
