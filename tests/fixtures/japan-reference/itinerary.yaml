@@ -6,7 +6,8 @@ finalization_basis: null
 accepted_blockers: []
 route_state: selected
 output_status: draft
-alternatives: []
+alternatives:
+  - id: route-curated
 selected_route_id: route-curated
 route_stops:
   - id: stop-tokyo

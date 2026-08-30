@@ -1,14 +1,7 @@
-from datetime import UTC, datetime
 from pathlib import Path
 
-import pytest
-from travel_planner.challenge import run_challenge
 from travel_planner.cli import main
-from travel_planner.render.html import DEFAULTS, write_html
-from travel_planner.render.pdf import PdfAdapter, PdfResult, render_pdf
-from travel_planner.render.qa import QaReport, attest_document, write_attestation
-from travel_planner.render.viewmodel import build_view
-from travel_planner.state import load_trip
+from travel_planner.render.pdf import PdfAdapter, render_pdf
 
 
 def test_missing_pdf_adapter_returns_html_success_but_not_pdf_success(
@@ -78,62 +71,3 @@ def test_pdf_adapter_reports_success_only_after_real_file_write(tmp_path: Path) 
     assert result.code == "PDF_CREATED"
     assert result.pdf_path == pdf
     assert pdf.stat().st_size > 0
-
-
-def _render_final_html(tmp_path: Path) -> Path:
-    fixture = Path(__file__).parents[1] / "fixtures" / "japan-final-reference"
-    generated_at = datetime(2026, 8, 28, 12, tzinfo=UTC)
-    state = load_trip(fixture)
-    view = build_view(state, run_challenge(state, "detailed", generated_at), generated_at, qa_attested=True)
-    return write_html(view, tmp_path / "trip.html", DEFAULTS)
-
-
-def _passing_qa_report() -> QaReport:
-    return QaReport(
-        first_useful_ms=120,
-        cumulative_layout_shift=0.01,
-        interaction_ms=20,
-        focus_visible=True,
-        no_js_core=True,
-        offline_core=True,
-        zoom_200_core=True,
-        reduced_motion_core=True,
-        filter_sync=True,
-        mobile_priority_visible=True,
-        state_matrix_complete=True,
-    )
-
-
-def test_pdf_cli_rejects_renderer_final_html_without_a_receipt(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
-) -> None:
-    """Catch the actual renderer's Final class bypassing its required QA receipt."""
-    html = _render_final_html(tmp_path)
-    assert "document-status--final" in html.read_text(encoding="utf-8")
-    monkeypatch.setattr(
-        "travel_planner.cli.render_pdf",
-        lambda *args, **kwargs: PdfResult(True, "PDF_CREATED", "synthetic success"),
-    )
-
-    exit_code = main(["pdf", str(html), "--output", str(tmp_path / "trip.pdf")])
-
-    assert exit_code == 4
-    assert "QA attestation" in capsys.readouterr().err
-
-
-def test_pdf_cli_rejects_renderer_final_html_after_a_checked_byte_changes(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
-) -> None:
-    """Catch a valid Final receipt being reused after the rendered artifact is altered."""
-    html = _render_final_html(tmp_path)
-    write_attestation(html, attest_document(html, _passing_qa_report()))
-    html.write_bytes(html.read_bytes() + b" ")
-    monkeypatch.setattr(
-        "travel_planner.cli.render_pdf",
-        lambda *args, **kwargs: PdfResult(True, "PDF_CREATED", "synthetic success"),
-    )
-
-    exit_code = main(["pdf", str(html), "--output", str(tmp_path / "trip.pdf")])
-
-    assert exit_code == 4
-    assert "QA attestation" in capsys.readouterr().err

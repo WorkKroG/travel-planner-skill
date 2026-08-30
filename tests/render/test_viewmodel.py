@@ -3,8 +3,7 @@ from dataclasses import FrozenInstanceError
 from datetime import UTC, datetime
 
 import pytest
-from travel_planner.challenge import ChallengeReport
-from travel_planner.impact import semantic_hash
+from travel_planner.checks import CheckReport
 from travel_planner.render.viewmodel import build_view
 from travel_planner.state import TripState
 
@@ -12,19 +11,19 @@ GENERATED_AT = datetime(2026, 8, 28, 12, tzinfo=UTC)
 
 
 def test_view_places_blockers_before_day_details(
-    japan_state: TripState, japan_report: ChallengeReport
+    japan_state: TripState, japan_report: CheckReport
 ) -> None:
     """Catch a renderer that buries feasibility blockers inside later day content."""
     view = build_view(japan_state, japan_report, GENERATED_AT)
 
     assert view.summary.blockers[0].severity == "blocking"
-    assert view.summary.blockers[0].rule_id == "BOOK-001"
+    assert view.summary.blockers[0].code == "BOOK-001"
     assert view.days[0].day_id == "day-1"
     assert view.open_decisions[0].severity == "blocking"
 
 
 def test_view_orders_days_by_number_independent_of_yaml_sequence(
-    japan_state: TripState, japan_report: ChallengeReport
+    japan_state: TripState, japan_report: CheckReport
 ) -> None:
     """Keep all render adapters chronological when canonical day records are reordered."""
     reordered = deepcopy(japan_state)
@@ -39,20 +38,20 @@ def test_view_orders_days_by_number_independent_of_yaml_sequence(
 
 
 def test_view_does_not_mutate_canonical_state(
-    japan_state: TripState, japan_report: ChallengeReport
+    japan_state: TripState, japan_report: CheckReport
 ) -> None:
     """Catch a derived view writing defaults or presentation state back into YAML data."""
-    before = semantic_hash(japan_state)
+    before = deepcopy(japan_state)
 
     view = build_view(japan_state, japan_report, GENERATED_AT)
 
-    assert semantic_hash(japan_state) == before
+    assert japan_state == before
     with pytest.raises(FrozenInstanceError):
         view.title = "Changed"  # type: ignore[misc]
 
 
 def test_final_requires_explicit_final_state_and_no_blockers(
-    japan_state: TripState, japan_report: ChallengeReport
+    japan_state: TripState, japan_report: CheckReport
 ) -> None:
     """Catch a frozen route being presented as Final before blockers and QA are cleared."""
     final_state = deepcopy(japan_state)
@@ -60,7 +59,7 @@ def test_final_requires_explicit_final_state_and_no_blockers(
     final_state.itinerary["route_state"] = "frozen"
 
     blocked_view = build_view(final_state, japan_report, GENERATED_AT)
-    clear_report = ChallengeReport("detailed", GENERATED_AT, (), ())
+    clear_report = CheckReport((), (), (), ())
     final_view = build_view(final_state, clear_report, GENERATED_AT, qa_attested=True)
 
     assert blocked_view.status == "draft"
@@ -68,7 +67,7 @@ def test_final_requires_explicit_final_state_and_no_blockers(
 
 
 def test_source_and_readiness_uncertainty_remain_explicit(
-    japan_state: TripState, japan_report: ChallengeReport
+    japan_state: TripState, japan_report: CheckReport
 ) -> None:
     """Catch stale, conflicting, and unreleased facts being flattened into neutral copy."""
     view = build_view(japan_state, japan_report, GENERATED_AT)

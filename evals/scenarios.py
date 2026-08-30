@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 from collections.abc import Mapping
 from dataclasses import dataclass
@@ -10,8 +11,6 @@ from typing import Any
 
 import yaml
 from jsonschema import Draft202012Validator
-from travel_planner.challenge.catalog import registered_rules
-from travel_planner.impact import semantic_hash
 from travel_planner.resources import resource_path
 
 from .reference_evaluator import validate_contract
@@ -142,14 +141,6 @@ def _hard_checks(expected: Mapping[str, Any]) -> list[dict[str, Any]]:
     return checks
 
 
-def _validate_rule_ids(expected: Mapping[str, Any]) -> None:
-    production = {rule.rule_id for rule in registered_rules()}
-    for finding in expected["required_findings"]:
-        rule_id = finding["rule_id"]
-        if rule_id not in production and not rule_id.startswith("EVAL-"):
-            raise ValueError(f"Unknown scenario rule ID: {rule_id}")
-
-
 def load_scenario_case(case_id: str, root: Path = SCENARIOS_ROOT) -> ScenarioCase:
     paths = _case_paths(Path(root))
     if case_id not in paths:
@@ -178,7 +169,6 @@ def load_scenario_case(case_id: str, root: Path = SCENARIOS_ROOT) -> ScenarioCas
         raise ValueError("operations.yaml must not contain authored response or outcome operations")
     if set(reference_evaluator) != {"version", "kind", "parameters"}:
         raise ValueError("reference evaluator requires exactly version, kind, and parameters")
-    _validate_rule_ids(expected)
     fixture_input = {
         "brief": json.loads(json.dumps(brief)),
         "sources": json.loads(json.dumps(sources)),
@@ -190,7 +180,9 @@ def load_scenario_case(case_id: str, root: Path = SCENARIOS_ROOT) -> ScenarioCas
         "parameters": json.loads(json.dumps(reference_evaluator["parameters"])),
     }
     validate_contract(case_id, fixture_input, evaluator_contract)
-    input_hash = semantic_hash(fixture_input)
+    input_hash = hashlib.sha256(
+        json.dumps(fixture_input, ensure_ascii=False, sort_keys=True).encode()
+    ).hexdigest()
     scenario = {
         "id": case_id,
         "prompt_version": version,

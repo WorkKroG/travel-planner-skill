@@ -1,11 +1,9 @@
 import hashlib
-import json
-import re
 from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
-from travel_planner.challenge import run_challenge
+from travel_planner.checks import run_checks
 from travel_planner.cli import main
 from travel_planner.render.html import (
     DEFAULTS,
@@ -14,7 +12,6 @@ from travel_planner.render.html import (
     render_html,
     write_html,
 )
-from travel_planner.render.qa import QaReport
 from travel_planner.render.viewmodel import ItineraryView, build_view
 from travel_planner.state import load_trip
 
@@ -130,8 +127,8 @@ def test_final_ui_state_fixture_uses_the_canonical_renderer_and_has_no_blockers(
     fixture = repository / "tests" / "fixtures" / "japan-final-reference"
     generated_at = datetime(2026, 8, 28, 12, tzinfo=UTC)
     state = load_trip(fixture)
-    challenge = run_challenge(state, "detailed", generated_at)
-    view = build_view(state, challenge, generated_at, qa_attested=True)
+    report = run_checks(state)
+    view = build_view(state, report, generated_at, qa_attested=True)
 
     assert view.status == "final"
     assert view.summary.blockers == ()
@@ -152,8 +149,6 @@ def test_render_cli_writes_html(japan_view: ItineraryView, tmp_path: Path) -> No
         [
             "render",
             str(fixture),
-            "--format",
-            "html",
             "--output",
             str(output),
             "--at",
@@ -174,8 +169,6 @@ def test_render_cli_downgrades_an_unattested_final_html_to_draft(tmp_path: Path)
         [
             "render",
             str(fixture),
-            "--format",
-            "html",
             "--output",
             str(output),
             "--at",
@@ -185,116 +178,3 @@ def test_render_cli_downgrades_an_unattested_final_html_to_draft(tmp_path: Path)
 
     assert exit_code == 0
     assert ">Draft</span>" in output.read_text(encoding="utf-8")
-
-
-def test_finalize_cli_publishes_only_the_html_bytes_approved_by_qa(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    """Catch finalization publishing different bytes from the HTML that passed QA."""
-    output = tmp_path / "japan-final.html"
-    fixture = Path(__file__).parents[1] / "fixtures" / "japan-final-reference"
-    report = QaReport(
-        first_useful_ms=120,
-        cumulative_layout_shift=0.01,
-        interaction_ms=20,
-        focus_visible=True,
-        no_js_core=True,
-        offline_core=True,
-        zoom_200_core=True,
-        reduced_motion_core=True,
-        filter_sync=True,
-        mobile_priority_visible=True,
-        state_matrix_complete=True,
-    )
-    monkeypatch.setattr("travel_planner.cli.run_document_qa", lambda *args, **kwargs: report)
-
-    exit_code = main(
-        [
-            "finalize",
-            str(fixture),
-            "--output",
-            str(output),
-            "--at",
-            "2026-08-28T12:00:00+00:00",
-        ]
-    )
-
-    assert exit_code == 0
-    html = output.read_bytes()
-    receipt = json.loads(Path(f"{output}.qa.json").read_text(encoding="utf-8"))
-    assert ">Final</span>" in html.decode("utf-8")
-    assert receipt["sha256"] == hashlib.sha256(html).hexdigest()
-
-
-def test_finalize_receipt_write_failure_leaves_no_visible_unattested_final(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    """Catch a receipt publication failure exposing a Final document without its receipt."""
-    output = tmp_path / "japan-final.html"
-    fixture = Path(__file__).parents[1] / "fixtures" / "japan-final-reference"
-    report = QaReport(
-        first_useful_ms=120,
-        cumulative_layout_shift=0.01,
-        interaction_ms=20,
-        focus_visible=True,
-        no_js_core=True,
-        offline_core=True,
-        zoom_200_core=True,
-        reduced_motion_core=True,
-        filter_sync=True,
-        mobile_priority_visible=True,
-        state_matrix_complete=True,
-    )
-    monkeypatch.setattr("travel_planner.cli.run_document_qa", lambda *args, **kwargs: report)
-
-    def fail_receipt(*args: object, **kwargs: object) -> None:
-        del args, kwargs
-        raise OSError("disk full")
-
-    monkeypatch.setattr("travel_planner.cli.write_attestation", fail_receipt)
-    try:
-        exit_code = main(
-            [
-                "finalize",
-                str(fixture),
-                "--output",
-                str(output),
-                "--at",
-                "2026-08-28T12:00:00+00:00",
-            ]
-        )
-    except OSError:
-        exit_code = 0
-
-    assert exit_code == 5
-    assert not output.exists() or not re.search(
-        r'class="[^"]*\bdocument-status--final\b', output.read_text(encoding="utf-8")
-    )
-    assert not Path(f"{output}.qa.json").exists()
-
-
-def test_finalize_handles_a_file_used_as_the_output_parent(
-    tmp_path: Path, capsys: pytest.CaptureFixture[str]
-) -> None:
-    """Catch output setup escaping finalization's controlled failure boundary."""
-    blocked_parent = tmp_path / "not-a-directory"
-    blocked_parent.write_text("ordinary file", encoding="utf-8")
-    output = blocked_parent / "japan-final.html"
-    fixture = Path(__file__).parents[1] / "fixtures" / "japan-final-reference"
-
-    exit_code = main(
-        [
-            "finalize",
-            str(fixture),
-            "--output",
-            str(output),
-            "--at",
-            "2026-08-28T12:00:00+00:00",
-        ]
-    )
-
-    assert exit_code == 5
-    assert "Final publication failed:" in capsys.readouterr().err
-    assert not output.exists()
-    assert not Path(f"{output}.qa.json").exists()
-    assert not list(tmp_path.glob(".japan-final.html.*"))

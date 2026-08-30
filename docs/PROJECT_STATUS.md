@@ -2,7 +2,7 @@
 
 **Дата среза:** 2026-08-30
 
-**Текущий этап:** контракт состояния и structural validation реализован; следующий gate — explicit hard checks
+**Текущий этап:** explicit hard checks и узкий internal CLI реализованы; следующий gate — shared HTML/PDF boundary
 
 Этот документ фиксирует принятые решения, проверяемые факты и последовательность изменений. Он не выдаёт целевую архитектуру за текущее состояние.
 
@@ -40,23 +40,27 @@ PR 1 начат от свежего `origin/main` на коммите `ba99476` 
 
 ## Фактическое состояние сейчас
 
-PR 2 приводит четыре YAML-схемы, trip template, example/reference fixtures и workspace boundary к утверждённому state contract. В корне `itinerary.yaml` обязательны `document_status`, `verification_level`, `finalization_basis` и `accepted_blockers`. Schema проверяет только required-поля, типы и enum; допустимость сочетаний lifecycle-полей, существование `blocker_id` и полнота принятия блокеров остаются explicit hard checks следующего PR.
+PR 3 заменяет `challenge/` и rule catalog одним явным `checks.py`, который читает только canonical `TripState`. Детерминированные findings содержат стабильные `id` и `code`, severity, path, affected IDs и message; confidence, stage, rule versions, proposed patches и внешний facts bag отсутствуют. Report отдельно показывает structural errors, lifecycle consistency, все blockers, принятые blockers и непринятые blockers.
 
-Канонические файлы workspace теперь явно отделены от generated `sources.md` и `outputs/`. Инициализация по-прежнему создаёт полный bundle, но отсутствие generated paths не мешает загрузке и structural validation четырёх YAML. Временная межфайловая проверка одинакового `trip_id` отделена от schema-only entry point и сохраняется до переноса в hard checks.
+Hard checks покрывают только утверждённые категории: интервалы и явные operating/service cutoffs; door-to-door components, connection minimums, buffer markers и ID links; известную бюджетную арифметику без подстановки нуля для unknown; readiness dependencies и cycles; source/claim metadata и official-source link для verified high-stakes claims; lifecycle/finalization contract PR 2. Soft load, accessibility, cancellation, contingency и другие эвристики старого challenge engine не перенесены.
 
-Route state machine, `challenge/`, широкая evidence-модель, `impact.py`, `migration.py`, partial rebuild, Markdown renderer, QA report/receipt pipeline, Node Playwright/axe, расширенный eval harness и тесты этих компонентов всё ещё присутствуют. CLI шире целевых `init/check/render/pdf`; текущий renderer и SKILL workflow ещё не показывают две новые пользовательские метки Final. Эти переходные поверхности не удаляются и не переписываются в PR 2.
+Удалены `challenge/`, `impact.py`, `migration.py`, `route.py`, evidence confidence inference и связанная readiness automation. `maps.py`, workspace safety, state diagnostics, decisions и generated sources report сохранены. Internal CLI содержит ровно `init`, `check`, `render`, `pdf`; `check` возвращает 2 для structural/state errors, 3 для несогласованного lifecycle или непринятых blockers и 0 для согласованного результата. Check не изменяет canonical state.
+
+Renderer остаётся переходным до PR 4: существующие view model, HTML, Markdown, PDF и QA/attestation modules ещё присутствуют, но CLI exposes только HTML render и optional PDF от готового HTML. Шаблон получил лишь совместимость с `CheckReport`; redesign, lifecycle labels и полный отказ от старого receipt pipeline не выполнены. `challenge_findings` временно остаётся в schema/fixtures только как сохранённый blocker list.
+
+SKILL.md и references остаются без изменений до PR 5. Расширенный fixture eval harness сохранён и минимально отвязан от удалённых production abstractions; его сокращение остаётся PR 6. Node/package/Playwright, plugin manifest, packaging и исторические документы также не менялись и остаются последующим scope.
 
 ## Последовательность PR 1–7
 
 | PR | Scope | Статус после этого PR |
 | --- | --- | --- |
 | 1. Product contract | Обновить `PRODUCT.md`, добавить короткий `ARCHITECTURE.md` и этот status; зафиксировать источники истины и расхождения | Завершён в PR 1 |
-| 2. State and validation contract | Привести canonical bundle, schema-only boundary, три поля статуса/проверки и правила принятия блокеров к контракту | Завершён этим PR; semantic hard checks не добавлялись |
-| 3. Internal helpers and CLI | Превратить challenge в явные hard checks, сузить evidence, оставить `init/check/render/pdf`, удалить route/impact/migration/partial rebuild/Markdown/receipt complexity | Запланирован; старые модули пока существуют |
-| 4. Shared HTML and optional PDF | Свести поверхности к одному view model/template, реализовать метки Final и видимые принятые блокеры, оставить optional Python PDF; согласовать HTML spec | Запланирован; текущий renderer пока действует |
-| 5. Plugin packaging | Зафиксировать один plugin и internal/local Python helpers, убрать Node/package.json/axe/Node Playwright, проверить установку | Запланирован; текущая упаковка пока действует |
-| 6. QA and eval reduction | Оставить unit/integration, Japan HTML reference, 6–8 targeted skill evals и 3 release scenarios; удалить дублирующий harness и тесты удалённых модулей | Запланирован; текущая матрица пока действует |
-| 7. Canonical docs and release gate | Завершить README/AGENTS/release guidance, перенести уникальные активные требования, слить DESIGN в HTML spec, удалить устаревшие docs и research, выполнить Chat web/mobile smoke checks | Запланирован; старые документы пока сохранены |
+| 2. State and validation contract | Привести canonical bundle, schema-only boundary, три поля статуса/проверки и правила принятия блокеров к контракту | Завершён в PR 2; semantic hard checks были добавлены только в PR 3 |
+| 3. Internal helpers and CLI | Превратить challenge в явные hard checks, сузить evidence, оставить `init/check/render/pdf`, удалить route/impact/migration/partial rebuild | Завершён этим PR; renderer/skill/eval compatibility remains transitional |
+| 4. Shared HTML and optional PDF | Свести поверхности к одному view model/template, реализовать метки Final и видимые принятые блокеры, удалить Markdown/receipt CLI-era complexity, оставить optional Python PDF; согласовать HTML spec | Следующий PR; текущий renderer пока действует |
+| 5. Skill workflow | Привести SKILL.md и references к canonical bundle, четырём CLI-командам и lifecycle contract | Запланирован; текущие skill instructions пока сохранены |
+| 6. QA and eval reduction | Оставить unit/integration, Japan HTML reference, 6–8 targeted skill evals и 3 release scenarios; убрать Node/package.json/axe/Node Playwright и дублирующий harness | Запланирован; текущая матрица и Node QA пока действуют |
+| 7. Packaging, canonical docs and release gate | Зафиксировать plugin packaging и internal Python helpers, завершить README/AGENTS/release guidance, перенести уникальные требования, удалить устаревшие docs/research и выполнить Chat web/mobile smoke checks | Запланирован; текущая упаковка и старые документы пока сохранены |
 
 Каждый следующий PR должен оставаться самостоятельно проверяемым и не смешивать функциональное упрощение с несвязанной уборкой.
 
@@ -81,10 +85,11 @@ Route state machine, `challenge/`, широкая evidence-модель, `impact
 
 1. Approved HTML spec сейчас требует отсутствия блокеров для `Final`; PR 4 должен заменить это правилом явного принятия и постоянной видимости блокеров.
 2. Approved HTML spec содержит расширенный offline/performance QA scope; PR 4 и PR 6 должны оставить self-contained локальное открытие и один no-network dependency test без offline workflow.
-3. Renderer и SKILL workflow пока не используют lifecycle-поля и accepted blockers для новых Final labels; это предмет PR 4.
-4. Удаление legacy modules нельзя считать безопасным, пока замещающие hard checks и Japan reference не пройдут в PR 3, PR 4 и PR 6.
+3. Renderer и SKILL workflow пока не используют lifecycle-поля и accepted blockers для новых Final labels; это предмет PR 4 и PR 5.
+4. Текущий renderer понимает `CheckReport`, но ещё содержит Markdown и QA/attestation modules; они не являются частью четырёхкомандного CLI и будут упрощены в PR 4.
 5. Пригодность общего HTML на Chat web и mobile остаётся release evidence, которое должно быть получено в PR 7 двумя ручными smoke checks.
+6. Расширенный fixture eval harness всё ещё хранит legacy scenario vocabulary; PR 6 сократит матрицу, не возвращая удалённые production abstractions.
 
 ## Следующий gate
 
-После merge PR 2 следующий шаг — PR 3: превратить переходный challenge surface в явные hard checks, перенести туда межфайловые правила и сократить internal helpers/CLI в границах утверждённой архитектуры. Renderer, Final labels и постоянная видимость принятых блокеров остаются gate PR 4.
+После merge PR 3 следующий шаг — PR 4: перевести shared HTML/PDF boundary на lifecycle labels и постоянную видимость принятых blockers, удалить переходные Markdown/receipt dependencies и сохранить optional PDF от готового HTML. SKILL workflow, eval reduction и packaging остаются PR 5–7.

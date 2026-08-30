@@ -49,25 +49,6 @@ def test_frozen_mutation_preserves_frozen_route_and_is_an_expected_negative(tmp_
     assert trace["grading"]["hard"]["macro_pass"] is False
 
 
-def test_reference_evaluator_operations_are_production_impact_and_freeze_evidence(tmp_path: Path) -> None:
-    """The adapter trace must expose executed production boundaries, not authored snapshots."""
-    weather = json.loads(
-        _run_case("local-weather-swap", tmp_path / "weather").trace_path.read_text(
-            encoding="utf-8"
-        )
-    )["operations"]["weather_change"]
-    frozen = json.loads(
-        _run_case("frozen-mutation", tmp_path / "frozen").trace_path.read_text(
-            encoding="utf-8"
-        )
-    )["operations"]["route_transition"]
-
-    assert weather["impact"]["changed_ids"] == ["day-4"]
-    assert weather["impact_targets"] == ["day:day-4", "outputs:all"]
-    assert frozen["rejected"] is True
-    assert frozen["route_before"] == frozen["route_after"]
-
-
 def test_all_accepts_declared_negative_outcomes_without_overriding_raw_hard_gate(
     tmp_path: Path, capsys
 ) -> None:

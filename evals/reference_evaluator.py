@@ -4,17 +4,14 @@ from __future__ import annotations
 
 import calendar
 import copy
+import hashlib
+import json
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal, InvalidOperation
-from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
-
-from travel_planner.impact import analyze_change, semantic_hash
-from travel_planner.route import FrozenRouteError, RouteChange, transition_route
-from travel_planner.state import TripState
 
 from .types import AgentRun
 
@@ -813,24 +810,10 @@ def _eval_transit_identity(ctx: ReferenceEvaluatorContext, params: Mapping[str, 
     )
 
 
-def _trip_state(ctx: ReferenceEvaluatorContext, route_state: str, days: list[Any]) -> TripState:
-    trip_id = _string(ctx.brief.get("trip_id"), "brief.trip_id")
-    return TripState(
-        Path("."),
-        copy.deepcopy(dict(ctx.brief)),
-        {"schema_version": 1, "trip_id": trip_id, "sources": [], "items": []},
-        {
-            "schema_version": 1,
-            "trip_id": trip_id,
-            "route_state": route_state,
-            "alternatives": [],
-            "selected_route_id": "fixture-route",
-            "days": copy.deepcopy(days),
-            "budget_items": [],
-            "challenge_findings": [],
-        },
-        {"schema_version": 1, "trip_id": trip_id, "items": []},
-    )
+def _semantic_hash(value: Any) -> str:
+    return hashlib.sha256(
+        json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
 
 
 def _eval_frozen_change(ctx: ReferenceEvaluatorContext, params: Mapping[str, Any]) -> AgentRun:
@@ -858,24 +841,20 @@ def _eval_frozen_change(ctx: ReferenceEvaluatorContext, params: Mapping[str, Any
     )
     route_state = _string(source_data.get("route_state"), "route_state")
     days = _list(source_data.get("days"), "route days")
-    before = _trip_state(ctx, route_state, days)
+    before = {"route_state": route_state, "days": copy.deepcopy(days)}
     target_state = _string(params.get("target_state"), "target_state")
-    decision = RouteChange(
-        _string(trap_data.get("change_kind"), "change_kind"),
-        tuple(_string_list(trap_data.get("affected_ids"), "affected_ids")),
-        _boolean(trap_data.get("consent"), "consent"),
-        trap_data.get("impact_summary"),
-    )
-    if decision.impact_summary is not None and not isinstance(decision.impact_summary, str):
+    _string(trap_data.get("change_kind"), "change_kind")
+    _string_list(trap_data.get("affected_ids"), "affected_ids")
+    consent = _boolean(trap_data.get("consent"), "consent")
+    impact_summary = trap_data.get("impact_summary")
+    if impact_summary is not None and not isinstance(impact_summary, str):
         raise TypeError("impact_summary must be a string or null")
-    route_before = semantic_hash(before.itinerary)
-    rejected = False
-    try:
-        after = transition_route(before, target_state, decision)
-    except FrozenRouteError:
-        rejected = True
-        after = before
-    route_after = semantic_hash(after.itinerary)
+    route_before = _semantic_hash(before)
+    rejected = route_state == "frozen" and not consent
+    after = copy.deepcopy(before)
+    if not rejected:
+        after["route_state"] = target_state
+    route_after = _semantic_hash(after)
     reported = _boolean(trap_data.get("report_rejection"), "report_rejection")
     if rejected and reported:
         status = "identified"
@@ -896,7 +875,7 @@ def _eval_frozen_change(ctx: ReferenceEvaluatorContext, params: Mapping[str, Any
             },
             "effects": {
                 "forbidden": {
-                    "silently_mutate_frozen_route": not rejected and not decision.consent
+                    "silently_mutate_frozen_route": not rejected and not consent
                 }
             },
         },
@@ -1140,27 +1119,22 @@ def _weather_analysis(ctx: ReferenceEvaluatorContext, params: Mapping[str, Any])
         _string(item.get("base"), f"weather days[{position}].base")
     if target not in {str(item["id"]) for item in days}:
         raise ValueError(f"target_day_id is absent from weather days: {target}")
-    before = _trip_state(ctx, "selected", days)
-    after = copy.deepcopy(before)
+    before_days = {str(item["id"]): copy.deepcopy(item) for item in days}
+    after_days = copy.deepcopy(before_days)
     active = condition in wet_conditions and target in requested
     if active:
-        for day in after.itinerary["days"]:
-            if day["id"] == target:
-                day["activity"] = backup
-    report = analyze_change(before, after)
-    before_days = {str(item["id"]): item for item in before.itinerary["days"]}
-    after_days = {str(item["id"]): item for item in after.itinerary["days"]}
+        after_days[target]["activity"] = backup
     unrelated_changed = sorted(
         day_id
         for day_id in before_days
         if day_id != target
-        and semantic_hash(before_days[day_id]) != semantic_hash(after_days[day_id])
+        and _semantic_hash(before_days[day_id]) != _semantic_hash(after_days[day_id])
     )
-    targets = [f"{item.kind}:{item.entity_id}" for item in report.targets]
+    targets = [f"day:{target}", "outputs:all"] if active else []
     valid_local_change = active and targets == [f"day:{target}", "outputs:all"] and not unrelated_changed
     hashes = {
-        f"{day_id}-before": semantic_hash(before_days[day_id]) for day_id in before_days
-    } | {f"{day_id}-after": semantic_hash(after_days[day_id]) for day_id in after_days}
+        f"{day_id}-before": _semantic_hash(before_days[day_id]) for day_id in before_days
+    } | {f"{day_id}-after": _semantic_hash(after_days[day_id]) for day_id in after_days}
     return {
         "target_day_id": target,
         "condition": condition,
@@ -1169,7 +1143,7 @@ def _weather_analysis(ctx: ReferenceEvaluatorContext, params: Mapping[str, Any])
         "suggested_scope": suggested_scope,
         "active": active,
         "valid_local_change": valid_local_change,
-        "impact": report.as_dict(),
+        "impact": {"changed_day_ids": [target] if active else [], "targets": targets},
         "impact_targets": targets,
         "unrelated_changed_day_ids": unrelated_changed,
         "semantic_hashes": hashes,

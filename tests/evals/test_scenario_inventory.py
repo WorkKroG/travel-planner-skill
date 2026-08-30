@@ -141,14 +141,3 @@ def test_missing_reference_evaluator_and_invalid_rubric_limits_fail_closed(
     rubric.write_text(rubric.read_text().replace("max_score: 4", f"max_score: {invalid}", 1), encoding="utf-8")
     with pytest.raises(ValueError, match="threshold"):
         load_scenario_case("japan-autumn", root)
-
-
-def test_unknown_non_eval_rule_is_rejected(tmp_path: Path) -> None:
-    """A typo such as the retired EVD-001 must not masquerade as a production challenge rule."""
-    root = tmp_path / "scenarios"
-    shutil.copytree(ROOT, root)
-    expected = root / "japan-autumn" / "expected-hard.yaml"
-    expected.write_text(expected.read_text().replace("EVID-001", "EVD-001"), encoding="utf-8")
-
-    with pytest.raises(ValueError, match="Unknown scenario rule ID"):
-        load_scenario_case("japan-autumn", root)

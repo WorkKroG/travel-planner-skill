@@ -6,7 +6,8 @@ finalization_basis: codex_validated
 accepted_blockers: []
 route_state: frozen
 output_status: final
-alternatives: []
+alternatives:
+  - id: route-curated-final
 selected_route_id: route-curated-final
 route_stops:
   - id: stop-tokyo

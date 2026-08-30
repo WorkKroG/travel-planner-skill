@@ -2,11 +2,15 @@
 
 from __future__ import annotations
 
+import sys
+
+if __package__ in {None, ""} and sys.path[0].endswith("/evals"):
+    sys.path[0] = sys.path[0].rsplit("/", 1)[0]
+
 import argparse
 import json
 import re
 import shlex
-import sys
 import uuid
 from collections.abc import Mapping, Sequence
 from datetime import UTC, datetime
@@ -128,7 +132,6 @@ def _hard_checks(scenario: Mapping[str, Any], operations: Mapping[str, Any]) -> 
                 status="passed" if not missing and actual == expected else "failed",
                 evidence=evidence,
                 message=f"Expected {dotted_path} to equal {expected!r}.",
-                rule_version=int(definition.get("rule_version", 1)),
             )
         )
     return checks, missing_rules

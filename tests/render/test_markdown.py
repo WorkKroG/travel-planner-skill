@@ -1,8 +1,6 @@
 from datetime import UTC, datetime
-from pathlib import Path
 
-from travel_planner.challenge import ChallengeReport
-from travel_planner.cli import main
+from travel_planner.checks import CheckReport
 from travel_planner.render.markdown import render_markdown
 from travel_planner.render.viewmodel import build_view
 from travel_planner.state import TripState
@@ -11,7 +9,7 @@ GENERATED_AT = datetime(2026, 8, 28, 12, tzinfo=UTC)
 
 
 def test_markdown_uses_approved_reading_order(
-    japan_state: TripState, japan_report: ChallengeReport
+    japan_state: TripState, japan_report: CheckReport
 ) -> None:
     """Catch an output that places detailed days before route, decisions, or blockers."""
     document = render_markdown(build_view(japan_state, japan_report, GENERATED_AT))
@@ -24,7 +22,7 @@ def test_markdown_uses_approved_reading_order(
 
 
 def test_markdown_prints_unknown_stale_conflicting_and_last_checked_text(
-    japan_state: TripState, japan_report: ChallengeReport
+    japan_state: TripState, japan_report: CheckReport
 ) -> None:
     """Catch uncertainty disappearing behind blank values or colour-only presentation."""
     document = render_markdown(build_view(japan_state, japan_report, GENERATED_AT))
@@ -37,34 +35,9 @@ def test_markdown_prints_unknown_stale_conflicting_and_last_checked_text(
 
 
 def test_markdown_is_byte_deterministic_for_fixed_inputs(
-    japan_state: TripState, japan_report: ChallengeReport
+    japan_state: TripState, japan_report: CheckReport
 ) -> None:
     """Catch hidden clock reads or unstable collection ordering in derived documents."""
     view = build_view(japan_state, japan_report, GENERATED_AT)
 
     assert render_markdown(view).encode() == render_markdown(view).encode()
-
-
-def test_render_cli_writes_markdown_from_trip_workspace(
-    japan_state: TripState, tmp_path: Path
-) -> None:
-    """Catch the public command failing to connect validated state to the renderer."""
-    output = tmp_path / "itinerary.md"
-
-    exit_code = main(
-        [
-            "render",
-            str(japan_state.root),
-            "--format",
-            "markdown",
-            "--output",
-            str(output),
-            "--at",
-            "2026-08-28T12:00:00+00:00",
-        ]
-    )
-
-    assert exit_code == 0
-    assert output.read_text(encoding="utf-8").startswith(
-        "# Japan Autumn — Render Reference\n\n**Status: Draft**"
-    )

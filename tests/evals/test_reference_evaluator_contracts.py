@@ -142,7 +142,7 @@ def test_each_reference_evaluator_case_changes_a_graded_result_for_one_relevant_
 
 
 def test_reference_evaluator_contract_never_receives_expected_hard_truth() -> None:
-    """Rule IDs, expected values, and forbidden names stay solely in the grader contract."""
+    """Check IDs, expected values, and forbidden names stay solely in the grader contract."""
     for case_id, *_ in COUNTERFACTUALS:
         case = load_scenario_case(case_id, ROOT)
         reference_evaluator = case.scenario["reference_evaluator"]

@@ -5,7 +5,8 @@ verification_level: none
 finalization_basis: null
 accepted_blockers: []
 route_state: frozen
-alternatives: []
+alternatives:
+  - id: japan-autumn-route
 selected_route_id: japan-autumn-route
 route_stops:
   - {id: tokyo, name: Tokyo, dates: "2–5 Nov", nights: 3, transfer_label: Arrival base}

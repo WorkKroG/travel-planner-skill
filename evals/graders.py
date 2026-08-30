@@ -20,7 +20,6 @@ def grade_hard_invariants(checks: Sequence[HardCheck]) -> GradeReport:
             status=check.status,
             evidence=dict(check.evidence),
             message=check.message,
-            rule_version=check.rule_version,
         )
         for check in checks
     )
