@@ -2,89 +2,65 @@
 
 **Дата среза:** 2026-08-30
 
-**Текущий этап:** PR 6 находится в review; QA и scenario catalogs приведены к целевой границе
+**Текущий этап:** PR 7 проходит focused follow-up по независимому review; публикация и пользовательские cross-surface gates не выполнены
 
-Этот документ фиксирует принятые решения, проверяемые факты и последовательность изменений. Он не выдаёт unexecuted catalog inputs или будущие ручные наблюдения за доказательство поведения модели и поверхностей.
+Этот документ фиксирует проверяемые факты. Data-only catalogs, checklist items и будущие ручные наблюдения не считаются выполненным evidence.
 
-## Проверенный baseline PR 6
+## Проверенный baseline PR 7
 
-PR 5 завершён и squash-merged в `main` на `51c26f8`. PR 6 начат от exact commit `51c26f81ce92462700da4501330e76edc64e426c` в чистом isolated worktree.
+PR 6 завершён и squash-merged в `main` на `3e2ec67deebeb73ab1872cc1f0a88be6c4b2ff22`. PR 7 создан строго от этого commit в чистом isolated worktree после совпадения `origin/main` и public GitHub REST `main`.
 
-До изменений PR 6 выполнены:
+До изменений PR 7 выполнены:
 
-- `.venv/bin/pytest -q` — 252 passed за 4.27 s test time;
-- `.venv/bin/ruff check .` — без замечаний;
-- legacy Node unit contour — 5 passed;
-- legacy browser collector — exit 0, без critical/serious accessibility-engine findings, horizontal overflow или browser errors; отдельное наблюдение `mobile_priority_visible=false` не было gating assertion старого runner;
-- legacy fixture contour — 22 declared outcomes завершены, включая два expected-negative cases.
+- clean Python 3.12 install из source checkout;
+- полный suite — `154 passed`;
+- Ruff и `pip check` — без замечаний;
+- skill `quick_validate` — passed;
+- plugin validator — passed на staged root с именем `travel-planner`;
+- внутренние CLI `init`, `check`, `render` — passed во временных workspace/output paths;
+- два fixed-time Japan renders — byte-identical друг другу и committed example;
+- catalogs — ровно восемь targeted prompts и три release scenarios, оба `not_executed`;
+- `git diff --check` — clean.
 
-Fixture outcomes были baseline существующего legacy harness. Они не подтверждали production checks, model behavior или soft quality и после удаления harness не являются release evidence.
-
-## Утверждённые решения
-
-- Продукт поставляется как один Codex plugin; Python-хелперы внутренние.
-- Codex — полная среда с детерминированными checks. ChatGPT Chat/Work и mobile поддерживают основной сценарий без обещания Codex validation.
-- В v0.1 нет MCP, backend, аккаунтов, синхронизации, серверного состояния или device farm.
-- Пользователь переносит между чатами и поверхностями единый bundle вручную.
-- Каноническое состояние: `brief.yaml`, `candidates.yaml`, `itinerary.yaml`, `readiness.yaml`, `decisions.md`; `sources.md` и `outputs/` производные.
-- JSON Schema проверяют структуру; Python проверяет жёсткие межфайловые правила.
-- `document_status`: `draft|final`; `verification_level`: `none|ai_reviewed|codex_validated`; `finalization_basis`: `codex_validated|user_confirmed` для `final`.
-- Пользователь вправе финализировать документ с явно принятыми, видимыми и не устранёнными блокерами.
-- Один self-contained HTML-шаблон обязателен на Codex, Chat/Work и mobile; PDF создаётся только вручную через browser Print → Save as PDF.
-- Offline workflow полностью исключён. Локально открываемый HTML — свойство артефакта, а не отдельный режим.
-- Приоритет Яндекс Карт для России/СНГ/Турции, official-source gate для high-stakes данных, честная неопределённость и защита от недоверенных входов сохраняются.
-
-Полные определения находятся в [PRODUCT.md](../PRODUCT.md) и [ARCHITECTURE.md](../ARCHITECTURE.md).
-
-## Фактическое состояние после PR 6
-
-Production state, hard checks, renderer, canonical schemas и внутренний CLI не менялись. CLI по-прежнему содержит ровно `init`, `check`, `render`.
-
-Удалены `package.json`, Node lock, axe, Node Playwright, browser QA scripts, state-only HTML fixture, screenshot baselines и их ignore entries. Python browser driver не добавлялся. Layout, viewport, accessibility-engine, pixel, touch-target и Chromium observations не имитируются static tests; соответствующее ручное evidence остаётся PR 7.
-
-Удалены `evals/run.py`, adapters, judge envelopes, graders, rubrics, redaction/types, `reference_evaluator.py`, fixture world, 20 scenario directories, frozen sources/traps/operations/expected-hard data, generated traces и 52 source-level tests удалённого framework. Python dependencies не сокращались: все runtime dependencies используются production helpers, а YAML также используется contract validation каталогов.
-
-В `evals/` остались только два data-only файла:
-
-- `skill-scenarios.yaml` — восемь realistic prompts с surfaces/context и observable invariants для независимого model review;
-- `release-scenarios.yaml` — ровно три unexecuted evidence targets: complex Codex trip, user-confirmed Final и одна cross-surface portability scenario с двумя будущими ручными observations.
-
-Минимальные Python tests проверяют только структуру, counts, unique IDs, known surfaces, непустые поля и отсутствие legacy runner/simulator vocabulary. Они не запускают агента, не оценивают ответы и не доказывают, что сценарии выполнены.
-
-Deterministic Python ownership сохраняет production value: schema/state/hard-check/CLI/skill contracts; self-contained HTML and URL security; lifecycle labels and accepted/unaccepted blockers; semantic no-JS source; print declarations; fixed-time determinism and the unchanged Japan hash; long-content source CSS contract; critical-before-media order; scenario/day metadata wrappers.
-
-Текущий полный Python suite после удаления contours: 153 passed; отдельно остаются восемь unexecuted skill-review inputs и три unexecuted release evidence targets.
+Первый пробный запуск через reused окружение не был baseline: в нём отсутствовал объявленный `rfc3339-validator`. Чистая установка восстановила ожидаемые 154 tests без изменения production code.
 
 ## Последовательность PR 1–7
 
-| PR | Scope | Статус после этого PR |
+| PR | Scope | Статус |
 | --- | --- | --- |
-| 1. Product contract | Зафиксировать product scope и источники истины | Завершён |
-| 2. State and validation contract | Canonical bundle, lifecycle fields и blocker acceptance | Завершён |
-| 3. Internal helpers and CLI | Явные hard checks, узкий evidence, `init/check/render` | Завершён; squash-merged как `91773e1` |
-| 4. Shared HTML and browser print | Один view model/template, Final labels, browser print | Завершён; squash-merged как `289111e` |
-| 5. Skill workflow | Короткий router и семь focused references | Завершён; squash-merged как `51c26f8` |
-| 6. QA and eval reduction | Python deterministic coverage, Japan reference, 8+3 data catalogs; удалить Node и legacy eval framework | В review |
-| 7. Packaging, canonical docs and release gate | README/AGENTS/manifest cleanup, historical docs decision, manual visual plus Chat web/mobile evidence | Следующий PR |
+| 1 | Product contract | Завершён; `3db333f` |
+| 2 | State and validation contract | Завершён; `5f41d58` |
+| 3 | Internal helpers and CLI | Завершён; `91773e1` |
+| 4 | Shared HTML and browser print | Завершён; `289111e` |
+| 5 | Skill workflow | Завершён; `51c26f8` |
+| 6 | QA and eval reduction | Завершён; `3e2ec67` |
+| 7 | Packaging, canonical docs, cleanup, and release evidence | Реализуется в `codex/simplify-07-release-package`; не merged |
 
 ## Источники истины
 
 | Документ | Роль |
 | --- | --- |
-| `PRODUCT.md` | Нормативный продуктовый scope, пользователи, поверхности, статусы и non-goals |
-| `ARCHITECTURE.md` | Нормативная минимальная архитектура и QA boundaries |
-| [Approved interactive HTML spec](superpowers/specs/2026-08-28-interactive-itinerary-html-design.md) | UX/visual requirements и честное разделение static/manual QA evidence |
-| `skills/travel-planner/SKILL.md` и references | Операционное поведение текущего plugin |
-| `docs/PROJECT_STATUS.md` | Факты прогресса, решения, риски и порядок PR |
-| `LICENSE` | MIT License |
+| [`PRODUCT.md`](../PRODUCT.md) | Продукт, пользователи, поверхности, lifecycle и non-goals |
+| [`ARCHITECTURE.md`](../ARCHITECTURE.md) | Skills-only package, internal helpers, rendering и QA boundaries |
+| [Approved interactive HTML spec](superpowers/specs/2026-08-28-interactive-itinerary-html-design.md) | UX, responsive, accessibility, progressive enhancement, local-open и print requirements |
+| [`skills/travel-planner/SKILL.md`](../skills/travel-planner/SKILL.md) и семь references | Операционный workflow plugin |
+| [`docs/RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md) | Automated exact-head gates и pending manual evidence |
+| [`LICENSE`](../LICENSE) | MIT License |
 
-`DESIGN.md`, старая architecture design spec, implementation plan и market/competitive research остаются historical до PR 7. Их упоминания удалённых Node/eval систем не являются активными командами или scope PR 6.
+Исторические market/research/design/implementation документы удалены по решению владельца продукта; они не являются нормативными источниками и не пересказываются в репозитории.
 
-## Оставшиеся риски и следующий gate
+## PR 7: completed и pending
 
-- Независимый model review восьми targeted prompts не выполнен этим PR и не заменён fixture simulation.
-- Desktop visual/responsive/print, keyboard/screen-reader и content-edge observations остаются pending PR 7.
-- Chat web и mobile должны получить ровно два manual smoke observations в одной cross-surface release scenario; device automation не планируется.
-- Release не готов, пока эти manual gates и packaging/docs cleanup PR 7 не завершены.
+В текущем PR реализованы public README, краткий contributor guide, truthful manifest metadata, один release checklist, исправление Japan commands, удаление historical/orphaned residue и cleanup активных ссылок. Focused follow-up исправляет только misleading empty-blocker copy, нормализует operational surface identifier на `chat_web` и уточняет фиксированный язык lifecycle badges. Production state, checks, CLI, schemas и catalogs не расширяются.
 
-Следующий gate — review PR 6, затем PR 7 packaging/canonical-doc cleanup и ручное release evidence.
+Независимый двухфазный blind review выполнен 2026-08-30 на exact head `e3ca14c0951b6e4254932095cfb0fdd361f2de7a`: isolation clean/preserved, результат — 8/8 Pass, invariant violations — 0. Это external model evidence; catalog-level `not_executed` сохраняется, потому что catalogs не содержат embedded runner или result.
+
+Свежая verification текущего follow-up tree: полный suite — `157 passed`; focused package/skill/catalog/render/CLI — `66 passed`, включая отдельные три blocker-state regressions; Ruff, `pip check`, `quick_validate` и staged plugin validation — passed; fresh temp CLI и fixed-time Japan determinism — passed. Exact новый PR head и clean-worktree evidence фиксируются в PR body после commit и повторной проверки.
+
+Отдельно остаются pending:
+
+- local desktop manual HTML checklist: доступный in-app browser заблокировал `file://` до загрузки по своей URL security policy, поэтому manual pass не заявлен;
+- ровно два пользовательских cross-surface observations: Chat web и mobile;
+- внешняя submission/review в universal plugin directory.
+
+До выполнения требуемых manual gates проект остаётся source release candidate, а не опубликованным universal plugin.

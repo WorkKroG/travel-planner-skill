@@ -5,8 +5,10 @@
 | Surface | Deterministic helpers | Allowed verification | Required disclosure | Codex validation gate |
 | --- | --- | --- | --- | --- |
 | `codex` | `init`, `check`, `render` | `none`, `ai_reviewed`, `codex_validated` | Report the checks actually run. | `successful_check`, `no_blockers` |
-| `chat_work` | `unavailable` | `none`, `ai_reviewed` | AI-review is `less_precise` and requires `careful_human_review`. | `never` |
+| `chat_web` | `unavailable` | `none`, `ai_reviewed` | AI-review is `less_precise` and requires `careful_human_review`. | `never` |
 | `mobile` | `unavailable` | `none`, `ai_reviewed` | AI-review is `less_precise` and requires `careful_human_review`. | `never` |
+
+`chat_web` is the canonical identifier for the ChatGPT Chat/Work web surface.
 
 In Codex, run `check` after substantive canonical changes and before lifecycle changes or rendering:
 
@@ -38,7 +40,7 @@ rationale: "User accepts the unresolved timetable risk and will recheck it befor
 
 Acceptance never replaces or deletes the blocker. Partial acceptance does not permit Final; duplicate records for one blocker and records without a matching blocker are invalid.
 
-Display `Final — проверено в Codex` only for the Codex basis and `Final — подтверждено пользователем` for explicit user confirmation. Enumerate every remaining blocker and obtain explicit acceptance for each blocker ID before recording the user-confirmed basis.
+Display `Final — проверено в Codex` only for the Codex basis and `Final — подтверждено пользователем` for explicit user confirmation. These v0.1 lifecycle badges use those exact fixed Russian labels; the surrounding planning conversation follows the user's language. Enumerate every remaining blocker and obtain explicit acceptance for each blocker ID before recording the user-confirmed basis.
 
 Never infer acceptance from silence. `ai_reviewed` never equals `codex_validated`. The renderer copies lifecycle and findings; it does not decide status, resolve blockers, or invent findings.
 
