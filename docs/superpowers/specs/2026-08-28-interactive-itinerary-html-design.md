@@ -118,7 +118,6 @@ One fictional travel-stamp illustration may appear as a small decorative accent:
 
 - on wide screens, in the upper-right area of the first screen with a very slight rotation;
 - on phones, below the title and right-aligned so it does not compress the heading;
-- once more only on the PDF cover;
 - never as a replacement for the route, summary, status or warnings;
 - its absence must collapse cleanly without leaving an empty reserved area.
 
@@ -376,7 +375,7 @@ Embedded media remains optional and must not introduce a required network depend
 - **Draft:** visible status label, blocker count and generated/checked date.
 - **Final — проверено в Codex:** used only for `finalization_basis=codex_validated`; it requires `verification_level=codex_validated` and no blocking finding.
 - **Final — подтверждено пользователем:** used only for `finalization_basis=user_confirmed`; remaining blockers are allowed only when every one has an explicit canonical `accepted_blockers` record.
-- An accepted blocker remains visible, blocking and unresolved in HTML and PDF. The UI may add “принят пользователем”, but must not call it fixed, resolved or passed.
+- An accepted blocker remains visible, blocking and unresolved in HTML and browser print. The UI may add “принят пользователем”, but must not call it fixed, resolved or passed.
 - Accepted and unaccepted blockers are shown separately, or with equally clear persistent wording, and are never available only inside collapsed content.
 - If a renderer receives a contradictory Final state/report combination, it shows an explicit inconsistency warning and does not use successful Final presentation. It does not create findings or mutate canonical state.
 - The distinction appears in text, repeated document furniture and print, never only in colour.
@@ -430,9 +429,9 @@ Render the core document and all primary/backup content in readable order. Enhan
 - `prefers-reduced-motion` is honoured.
 - Touch targets are at least 44×44 CSS px.
 
-## 18. Print and PDF mode
+## 18. Browser print and Save as PDF
 
-Print uses the same information model but a dedicated composition.
+Browser print uses the same information model with dedicated print CSS. There is no built-in PDF command, adapter, separate PDF data pipeline or automatic PDF guarantee; users may choose Print → Save as PDF in their browser.
 
 ### Page structure
 
@@ -522,12 +521,12 @@ Required representative states include summary, a normal day, a transfer-heavy d
 ### Print acceptance
 
 - no clipped or overlapping content;
-- no blank generated pages;
+- no blank print-preview pages;
 - no orphan headings;
 - no critical event divided across pages;
 - repeated headers and page furniture are correct;
 - greyscale remains comprehensible;
-- source appendix URLs remain readable and selectable where the PDF engine permits.
+- source appendix URLs remain readable and selectable in browser print output.
 
 ## 21. Canonical-data boundaries
 

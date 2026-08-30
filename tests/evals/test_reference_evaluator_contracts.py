@@ -30,7 +30,6 @@ COUNTERFACTUALS = (
     ("last-admission", "traps.yaml", ("injected", 0, "data", "report_conflict"), True, "checks.OPS-002.status", "ignored", "identified", False, True),
     ("luggage-storage", "sources.yaml", ("sources", 1, "data", "storage_available"), True, "checks.LEG-005.status", "identified", "clear", True, False),
     ("medication-legality", "sources.yaml", ("sources", 0, "data", "verification_status"), "allowed", "checks.EVAL-MED-001.status", "identified", "clear", True, False),
-    ("missing-pdf-adapter", "sources.yaml", ("sources", 0, "data", "pdf_adapter_available"), True, "checks.EVAL-PDF-001.status", "identified", "clear", True, False),
     ("multigenerational-accessibility", "operations.yaml", ("reference_evaluator", "parameters", "requires_step_free"), False, "checks.ACC-001.status", "identified", "clear", True, False),
     ("no-network", "sources.yaml", ("sources", 0, "data", "network_available"), True, "checks.EVAL-OFFLINE-001.status", "identified", "clear", True, False),
     ("place-collision", "sources.yaml", ("sources", 1, "data", "name"), "Aurora Annex", "checks.EVID-001.status", "identified", "clear", True, False),
@@ -46,11 +45,11 @@ COUNTERFACTUALS = (
 )
 
 
-def test_counterfactual_matrix_is_exactly_eighteen_adversarial_and_three_e2e_ids() -> None:
+def test_counterfactual_matrix_is_exactly_seventeen_adversarial_and_three_e2e_ids() -> None:
     """The mutation matrix cannot silently omit, duplicate, or substitute a release case."""
     ids = {item[0] for item in COUNTERFACTUALS}
 
-    assert len(COUNTERFACTUALS) == len(ids) == 21
+    assert len(COUNTERFACTUALS) == len(ids) == 20
     assert ids == scenario_ids(ROOT)
     assert ids & adversarial_case_ids(ROOT) == adversarial_case_ids(ROOT)
     assert len(ids - adversarial_case_ids(ROOT)) == 3

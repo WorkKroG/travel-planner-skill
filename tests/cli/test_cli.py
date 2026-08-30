@@ -5,7 +5,6 @@ from pathlib import Path
 import pytest
 import yaml
 from travel_planner.cli import _parser, main
-from travel_planner.render.pdf import PdfResult
 from travel_planner.state import write_state_file
 
 
@@ -24,10 +23,12 @@ def _update_itinerary(root: Path, **updates: object) -> None:
 
 
 def test_parser_exposes_exact_internal_cli_inventory() -> None:
-    assert _commands() == ("init", "check", "render", "pdf")
+    assert _commands() == ("init", "check", "render")
 
     with pytest.raises(SystemExit):
         _parser().parse_args(["challenge"])
+    with pytest.raises(SystemExit):
+        _parser().parse_args(["pdf"])
 
 
 def test_check_returns_2_and_structural_errors_for_invalid_state(
@@ -139,19 +140,3 @@ def test_render_writes_only_html_without_a_format_switch(
                 "2026-08-30T09:00:00+00:00",
             ]
         )
-
-
-def test_pdf_accepts_ready_html_without_attestation(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    html = tmp_path / "trip.html"
-    html.write_text(
-        '<!doctype html><main class="document-status--final">Trip</main>',
-        encoding="utf-8",
-    )
-    monkeypatch.setattr(
-        "travel_planner.cli.render_pdf",
-        lambda *args, **kwargs: PdfResult(True, "PDF_CREATED", "synthetic success"),
-    )
-
-    assert main(["pdf", str(html), "--output", str(tmp_path / "trip.pdf")]) == 0

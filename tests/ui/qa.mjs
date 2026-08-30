@@ -196,26 +196,6 @@ async function testThirtyDayMemory(page) {
   });
 }
 
-async function writePrintArtifacts(page, artifactDirectory) {
-  let failures = 0;
-  for (const format of ["A4", "Letter"]) {
-    const output = path.join(artifactDirectory, `japan-${format.toLowerCase()}.pdf`);
-    try {
-      await page.pdf({
-        path: output,
-        format,
-        printBackground: true,
-        preferCSSPageSize: false,
-      });
-      const stat = await fs.stat(output);
-      if (stat.size < 1000) failures += 1;
-    } catch (error) {
-      failures += 1;
-    }
-  }
-  return failures;
-}
-
 async function captureStateMatrix(page, baselineDirectory, finalUrl) {
   const stateDirectory = path.join(baselineDirectory, "states");
   await fs.mkdir(stateDirectory, { recursive: true });
@@ -288,9 +268,7 @@ async function run() {
   const finalUrl = pathToFileURL(finalHtmlPath).href;
   const baselineDirectory =
     process.env.TRAVEL_PLANNER_QA_BASELINES || path.join(repositoryRoot, "tests", "ui", "visual-baselines");
-  const artifactDirectory = process.env.TRAVEL_PLANNER_QA_OUTPUT || path.join(repositoryRoot, "tests", "ui", "artifacts");
   await fs.mkdir(baselineDirectory, { recursive: true });
-  await fs.mkdir(artifactDirectory, { recursive: true });
 
   const report = {
     accessibility_critical: 0,
@@ -305,7 +283,6 @@ async function run() {
     zoom_200_core: false,
     reduced_motion_core: true,
     external_asset_requests: 0,
-    pdf_failures: 0,
     undersized_touch_targets: 0,
     filter_sync: false,
     mobile_priority_visible: false,
@@ -392,7 +369,6 @@ async function run() {
         if (profile.name === "desktop") {
           report.state_matrix_complete = await captureStateMatrix(page, baselineDirectory, finalUrl);
           report.peak_memory_bytes = await testThirtyDayMemory(page);
-          report.pdf_failures += await writePrintArtifacts(page, artifactDirectory);
         }
       } catch (error) {
         report.errors.push(`${profile.name}: ${error.message}`);

@@ -60,7 +60,7 @@ def test_print_keeps_both_scenarios_and_removes_interactive_chrome(
 
 
 def test_print_removes_the_fixed_page_decoration(japan_view: ItineraryView) -> None:
-    """Catch the fixed background layer generating a mostly blank trailing PDF page."""
+    """Catch the fixed background layer generating a mostly blank trailing print page."""
     html = render_html(japan_view, media={}, options=DEFAULTS)
     print_css = html[html.index("@media print") :]
 
