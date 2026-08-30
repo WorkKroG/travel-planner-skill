@@ -1,21 +1,28 @@
 {
   "name": "travel-planner",
   "version": "0.1.0",
-  "description": "Evidence-aware, multi-stage travel planning for Codex.",
+  "description": "Plan complex trips with evidence, constraints, readiness, and shared HTML.",
   "author": {
-    "name": "Travel Planner Skill contributors"
+    "name": "WorkKroG",
+    "url": "https://github.com/WorkKroG/travel-planner-skill"
   },
+  "homepage": "https://github.com/WorkKroG/travel-planner-skill",
+  "repository": "https://github.com/WorkKroG/travel-planner-skill",
   "license": "MIT",
   "keywords": ["travel", "itinerary", "planning"],
   "skills": "./skills/",
   "interface": {
     "displayName": "Travel Planner",
     "shortDescription": "Plan complex trips with evidence and clear decisions.",
-    "longDescription": "A structured Codex workflow for researching, challenging, refining, and exporting multi-stage travel itineraries.",
-    "developerName": "Travel Planner Skill contributors",
+    "longDescription": "A skills-only workflow for researching, comparing, checking, and sharing complex itineraries with honest uncertainty.",
+    "developerName": "WorkKroG",
     "category": "Productivity",
     "capabilities": ["Research", "Write"],
-    "defaultPrompt": "Help me plan a new trip step by step."
+    "websiteURL": "https://github.com/WorkKroG/travel-planner-skill",
+    "defaultPrompt": [
+      "Plan a complex trip with me, one decision at a time.",
+      "Review this trip bundle for blockers and readiness gaps.",
+      "Render this checked trip as a self-contained itinerary."
+    ]
   }
 }
-
