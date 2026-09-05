@@ -7,11 +7,12 @@ import os
 import tempfile
 from collections.abc import Mapping
 from dataclasses import dataclass
+from decimal import Decimal
 from pathlib import Path
 from typing import Any
 
 import yaml
-from jsonschema import Draft202012Validator, FormatChecker
+from jsonschema import Draft202012Validator, FormatChecker, validators
 
 from .resources import resource_path
 
@@ -21,6 +22,51 @@ STATE_SCHEMA_FILES = {
     "itinerary.yaml": "itinerary.schema.json",
     "readiness.yaml": "readiness.schema.json",
 }
+
+
+class _StateLoader(yaml.SafeLoader):
+    """Keep recorded decimal digits before validation or budget arithmetic."""
+
+
+class _StateDumper(yaml.SafeDumper):
+    """Write decimal values as ordinary YAML numbers, without float conversion."""
+
+
+def _decimal_scalar(loader: _StateLoader, node: yaml.ScalarNode) -> Decimal | float:
+    text = loader.construct_scalar(node).replace("_", "").lower()
+    if text.lstrip("+-") in (".inf", ".nan"):
+        # Preserve the existing non-finite diagnostics, including schema checks.
+        return loader.construct_yaml_float(node)
+    if ":" in text:
+        # YAML 1.1 also accepts base-60 decimals. Convert the integer portion
+        # exactly, without rounding the fractional digits through a context.
+        whole, _, fraction = text.partition(".")
+        sign = "-" if whole.startswith("-") else ""
+        total = 0
+        for part in whole.lstrip("+-").split(":"):
+            total = total * 60 + int(part)
+        text = f"{sign}{total}.{fraction}"
+    return Decimal(text)
+
+
+def _represent_decimal(dumper: _StateDumper, value: Decimal) -> yaml.ScalarNode:
+    if not value.is_finite():
+        return dumper.represent_float(float(value))
+    return dumper.represent_scalar("tag:yaml.org,2002:float", str(value))
+
+
+def _is_integer(checker: Any, value: Any) -> bool:
+    if isinstance(value, Decimal):
+        return value.is_finite() and value == value.to_integral_value()
+    return Draft202012Validator.TYPE_CHECKER.is_type(value, "integer")
+
+
+_StateLoader.add_constructor("tag:yaml.org,2002:float", _decimal_scalar)
+_StateDumper.add_representer(Decimal, _represent_decimal)
+_StateValidator = validators.extend(
+    Draft202012Validator,
+    type_checker=Draft202012Validator.TYPE_CHECKER.redefine("integer", _is_integer),
+)
 
 
 @dataclass
@@ -51,7 +97,7 @@ class ValidationReport:
 
 
 def _load_yaml(path: Path) -> dict[str, Any]:
-    value = yaml.safe_load(path.read_text(encoding="utf-8"))
+    value = yaml.load(path.read_text(encoding="utf-8"), Loader=_StateLoader)
     if not isinstance(value, dict):
         raise TypeError(f"Expected a YAML mapping in {path}")
     return value
@@ -89,7 +135,7 @@ def _validate_structure(root: Path) -> tuple[list[ValidationIssue], dict[str, An
             issues.append(ValidationIssue(file_name, file_name, str(error)))
             continue
         trip_ids[file_name] = value.get("trip_id")
-        validator = Draft202012Validator(schema, format_checker=FormatChecker())
+        validator = _StateValidator(schema, format_checker=FormatChecker())
         for error in sorted(validator.iter_errors(value), key=lambda item: list(item.absolute_path)):
             issues.append(
                 ValidationIssue(
@@ -108,7 +154,7 @@ def validate_structure(root: Path) -> ValidationReport:
 
 
 def validate_trip(root: Path) -> ValidationReport:
-    """Validate file structure and the temporary cross-file trip_id check."""
+    """Validate file structure, recorded formats, and shared trip identity."""
     issues, trip_ids = _validate_structure(root)
     expected_trip_id = trip_ids.get("brief.yaml")
     for file_name, value in trip_ids.items():
@@ -133,7 +179,7 @@ def write_state_file(path: Path, value: Mapping[str, Any]) -> None:
     temporary = Path(temporary_name)
     try:
         with os.fdopen(descriptor, "w", encoding="utf-8") as stream:
-            yaml.safe_dump(dict(value), stream, allow_unicode=True, sort_keys=False)
+            yaml.dump(dict(value), stream, Dumper=_StateDumper, allow_unicode=True, sort_keys=False)
             stream.flush()
             os.fsync(stream.fileno())
         temporary.replace(destination)

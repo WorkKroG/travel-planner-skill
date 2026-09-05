@@ -45,7 +45,7 @@ def test_html_exposes_lifecycle_and_blocker_groups_without_disclosure(
     html = render_html(build_view(state, japan_report, generated_at), media={}, options=DEFAULTS)
 
     assert "Draft — AI-review" in html
-    assert "AI-review — менее точная проверка" in html
+    assert "AI-review — вероятностный разбор" in html
     assert 'id="blockers"' in html
     assert "Непринятые блокеры" in html
     blockers = _blocker_section(html)
@@ -97,22 +97,19 @@ def test_blocker_section_keeps_an_accepted_blocker_unresolved_and_visible(
     )
     view = build_view(
         state,
-        CheckReport((), (blocker,), (), (blocker.id,)),
+        CheckReport((), (), (), (blocker.id,), (blocker,)),
         datetime(2026, 8, 28, 12, tzinfo=UTC),
     )
 
     blockers = _blocker_section(render_html(view, media={}, options=DEFAULTS))
 
     assert (
-        "Blockers remain unresolved and blocking until the canonical trip state changes."
+        "Recorded blockers remain unresolved and blocking for their decisions. Preparing this document does not resolve or accept them."
         in blockers
     )
     assert "SCHEDULE_UNRELEASED · Blocking · Unresolved" in blockers
     assert "Принят пользователем — остаётся блокирующим" in blockers
-    assert (
-        "Accepted at: 2026-08-30T09:00:00+00:00 · Rationale: Accepted explicitly."
-        in blockers
-    )
+    assert "Accepted at: 2026-08-30T09:00:00+00:00 · Rationale: Accepted explicitly." in blockers
     assert "No unaccepted blockers." in blockers
 
 
@@ -137,7 +134,7 @@ def test_blocker_section_keeps_an_unaccepted_blocker_unresolved_and_visible(
     blockers = _blocker_section(render_html(view, media={}, options=DEFAULTS))
 
     assert (
-        "Blockers remain unresolved and blocking until the canonical trip state changes."
+        "Recorded blockers remain unresolved and blocking for their decisions. Preparing this document does not resolve or accept them."
         in blockers
     )
     assert "SCHEDULE_UNRELEASED · Blocking · Unresolved" in blockers
@@ -154,13 +151,13 @@ def test_blocker_section_keeps_an_unaccepted_blocker_unresolved_and_visible(
             "final",
             "codex_validated",
             "codex_validated",
-            "Final — проверено в Codex",
+            "Prepared copy — данные проверены в Codex",
         ),
         (
             "final",
             "ai_reviewed",
             "user_confirmed",
-            "Final — подтверждено пользователем",
+            "Prepared copy — по запросу пользователя",
         ),
     ],
 )
@@ -197,7 +194,7 @@ def test_html_preserves_all_canonical_lifecycle_dimensions(
                 "rationale": "Accepted explicitly.",
             }
         ]
-        report = CheckReport((), (blocker,), (), (blocker.id,))
+        report = CheckReport((), (), (), (blocker.id,), (blocker,))
 
     html = render_html(
         build_view(state, report, datetime(2026, 8, 28, 12, tzinfo=UTC)),
@@ -217,7 +214,7 @@ def test_html_preserves_all_canonical_lifecycle_dimensions(
         assert "Accepted explicitly." in html
 
 
-def test_html_marks_a_blocked_codex_final_as_inconsistent(japan_state) -> None:
+def test_html_marks_a_recorded_data_error_as_inconsistent(japan_state) -> None:
     """Catch contradictory Codex Final input retaining reassuring status presentation."""
     state = deepcopy(japan_state)
     state.itinerary.update(
@@ -227,11 +224,11 @@ def test_html_marks_a_blocked_codex_final_as_inconsistent(japan_state) -> None:
     )
     blocker = Finding(
         "blocker-rail",
-        "SCHEDULE_UNRELEASED",
+        "LINK_ROUTE_NOT_FOUND",
         "blocking",
         "itinerary.yaml.days[1]",
         ("day-2",),
-        "The final timetable is not released.",
+        "Recorded route reference does not resolve.",
     )
     html = render_html(
         build_view(
@@ -244,9 +241,9 @@ def test_html_marks_a_blocked_codex_final_as_inconsistent(japan_state) -> None:
     )
 
     assert "document-status--unsafe" in html
-    assert "Final — несогласованное состояние" in html
+    assert "Prepared copy — несогласованное состояние" in html
     assert 'class="lifecycle-warning" role="alert"' in html
-    assert "не следует считать безопасным Final" in html
+    assert "нельзя считать согласованной подготовленной копией" in html
 
 
 def test_day_filter_source_exposes_overview_and_empty_state_hooks(
@@ -257,9 +254,9 @@ def test_day_filter_source_exposes_overview_and_empty_state_hooks(
 
     for day in japan_view.days:
         assert f'data-day-overview="{day.day_id}"' in html
-    assert 'data-filter-results' in html
-    assert 'data-filter-empty' in html
-    assert 'data-reset-filters' in html
+    assert "data-filter-results" in html
+    assert "data-filter-empty" in html
+    assert "data-reset-filters" in html
 
 
 def test_html_is_self_contained_but_keeps_labelled_external_actions(
@@ -314,8 +311,8 @@ def test_optional_media_has_a_visible_failure_fallback(japan_view: ItineraryView
 
     html = render_html(japan_view, media={"day-3": media}, options=DEFAULTS)
 
-    assert 'data-optional-media' in html
-    assert 'data-media-fallback' in html
+    assert "data-optional-media" in html
+    assert "data-media-fallback" in html
     assert "Photo unavailable; the day plan remains complete." in html
 
 
@@ -333,10 +330,8 @@ def test_critical_constraints_precede_optional_media_in_the_document_order(
     ]
     no_javascript = re.sub(r"<script\b[^>]*>.*?</script>", "", day, flags=re.DOTALL)
 
-    assert day.index("Critical constraints") < day.index('data-optional-media')
-    assert no_javascript.index("Critical constraints") < no_javascript.index(
-        'data-optional-media'
-    )
+    assert day.index("Critical constraints") < day.index("data-optional-media")
+    assert no_javascript.index("Critical constraints") < no_javascript.index("data-optional-media")
     assert 'class="print-images"' in html
 
 
@@ -396,10 +391,14 @@ def test_html_is_deterministic_and_write_helper_uses_exact_bytes(
 def test_japan_reference_matches_reviewable_html_snapshot(japan_view: ItineraryView) -> None:
     """Catch an unreviewed whole-document change across the self-contained renderer boundary."""
     expected = (
-        Path(__file__).parent / "snapshots" / "japan.html.sha256"
-    ).read_text(encoding="utf-8").strip()
+        (Path(__file__).parent / "snapshots" / "japan.html.sha256")
+        .read_text(encoding="utf-8")
+        .strip()
+    )
 
-    actual = hashlib.sha256(render_html(japan_view, media={}, options=DEFAULTS).encode()).hexdigest()
+    actual = hashlib.sha256(
+        render_html(japan_view, media={}, options=DEFAULTS).encode()
+    ).hexdigest()
 
     assert actual == expected
 
@@ -442,4 +441,4 @@ def test_render_cli_preserves_the_canonical_valid_final_label(tmp_path: Path) ->
     )
 
     assert exit_code == 0
-    assert "Final — проверено в Codex" in output.read_text(encoding="utf-8")
+    assert "Prepared copy — данные проверены в Codex" in output.read_text(encoding="utf-8")

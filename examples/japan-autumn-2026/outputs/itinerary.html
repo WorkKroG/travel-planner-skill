@@ -1344,13 +1344,14 @@ button[aria-pressed="true"] {
         <span>2026-11-02 — 2026-11-13</span>
         <span>2 travellers</span>
       </div>
-      <p class="verification-line" lang="ru"><strong>Уровень проверки:</strong> Не проверено</p>
+      <p class="verification-line" lang="ru"><strong>Уровень проверки:</strong> Данные не проверены</p>
       <dl class="lifecycle-details" aria-label="Canonical lifecycle values">
         <div><dt>document_status</dt><dd>draft</dd></div>
         <div><dt>verification_level</dt><dd>none</dd></div>
         <div><dt>finalization_basis</dt><dd>none</dd></div>
       </dl>
       <h1>Japan autumn 2026 — anonymized planning example</h1>
+      <p>Document preparation and recorded data checks do not confirm that the trip is feasible. Open decisions and recorded concerns remain below.</p>
       <p class="trip-thesis">A measured three-region autumn route with flexible arrival, rail-transfer buffers, and local weather backups rather than live operational claims.</p>
       <p class="route-ribbon"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg> Tokyo → Kyoto → Kanazawa</p>
       <div class="summary-counts">
@@ -1373,11 +1374,10 @@ button[aria-pressed="true"] {
         <a href="#preparation">Review preparation</a>
       </div>
       <div class="budget-panel">
-        <span>Known budget range</span>
-        <strong>
-330,000          —
-330,000 JPY        </strong>
-        <span>Low confidence · 0 unknown</span>
+        <span>Recorded expenses</span>
+        <strong>330,000 JPY</strong>
+        <span>per group · 2 recorded rows</span>
+        <a href="#budget">0 excluded rows · Review recorded expenses</a>
       </div>
     </aside>
   </header>
@@ -1410,7 +1410,7 @@ button[aria-pressed="true"] {
 
       <section class="document-section blocker-section" id="blockers" aria-labelledby="blockers-title">
         <h2 id="blockers-title">Blockers</h2>
-        <p>No blockers are recorded in the canonical trip state.</p>
+        <p>No blockers are recorded in the canonical trip state. This does not confirm trip feasibility.</p>
 
         <section aria-labelledby="unaccepted-blockers-title">
           <h3 id="unaccepted-blockers-title" lang="ru">Непринятые блокеры</h3>
@@ -2291,28 +2291,28 @@ button[aria-pressed="true"] {
       </section>
 
       <section class="document-section" id="budget" aria-labelledby="budget-title">
-        <h2 id="budget-title">Budget</h2>
+        <h2 id="budget-title">Recorded expenses</h2>
+        <p>Subtotals keep currencies and price bases separate. No currency conversion or multiplication by traveller count is applied. These recorded expenses are not a complete trip budget.</p>
         <div class="budget-summary">
-          <div><span>Known minimum</span><strong>330,000 JPY</strong></div>
-          <div><span>Known maximum</span><strong>330,000 JPY</strong></div>
-          <div><span>Estimate quality</span><strong>Low</strong><span>0 unknown amounts</span></div>
+          <div><span>JPY · per group</span><strong>330,000 JPY</strong><span>2 recorded rows</span></div>
         </div>
+        <p>0 rows excluded from subtotals; their recorded values and reasons remain below.</p>
         <table class="budget-table">
-          <thead><tr><th>Category</th><th>Range</th><th>Type</th><th>Basis</th><th>Confidence</th></tr></thead>
+          <thead><tr><th>Category</th><th>Recorded amount</th><th>Type</th><th>Basis</th><th>Subtotal inclusion</th></tr></thead>
           <tbody>
             <tr>
               <td data-label="Category">lodging</td>
-              <td data-label="Range">240,000 — 240,000 JPY</td>
+              <td data-label="Recorded amount">240,000 JPY</td>
               <td data-label="Type">estimate</td>
               <td data-label="Basis">per group</td>
-              <td data-label="Confidence">medium</td>
+              <td data-label="Subtotal inclusion">Included</td>
             </tr>
             <tr>
               <td data-label="Category">transport</td>
-              <td data-label="Range">90,000 — 90,000 JPY</td>
+              <td data-label="Recorded amount">90,000 JPY</td>
               <td data-label="Type">estimate</td>
               <td data-label="Basis">per group</td>
-              <td data-label="Confidence">low</td>
+              <td data-label="Subtotal inclusion">Included</td>
             </tr>
           </tbody>
         </table>
@@ -2321,14 +2321,14 @@ button[aria-pressed="true"] {
       <section class="document-section" id="risks" aria-labelledby="risks-title">
         <h2 id="risks-title">Risks and backup plans</h2>
         <ul class="risk-list">
-<li>No open findings.</li>        </ul>
+<li>No recorded concerns. Unknowns may still remain.</li>        </ul>
       </section>
 
       <section class="document-section" id="sources" aria-labelledby="sources-title">
         <h2 id="sources-title">Sources and document version</h2>
         <p class="document-version" id="document-version">
           <strong>Document version</strong> · japan-autumn-2026-example ·
-          <span lang="ru">Draft — без проверки · Не проверено</span> ·
+          <span lang="ru">Draft — без проверки · Данные не проверены</span> ·
           Generated 2026-08-28T12:00:00+00:00 · Artefact v0.1
         </p>
         <ul class="source-list">
@@ -2353,7 +2353,7 @@ button[aria-pressed="true"] {
   </div>
 
   <footer class="document-footer">
-    <strong>Japan autumn 2026 — anonymized planning example</strong> · japan-autumn-2026-example · <span lang="ru">Draft — без проверки · Не проверено</span> · Generated 2026-08-28T12:00:00+00:00 · Artefact v0.1
+    <strong>Japan autumn 2026 — anonymized planning example</strong> · japan-autumn-2026-example · <span lang="ru">Draft — без проверки · Данные не проверены</span> · Generated 2026-08-28T12:00:00+00:00 · Artefact v0.1
   </footer>
   <script>(() => {
   "use strict";

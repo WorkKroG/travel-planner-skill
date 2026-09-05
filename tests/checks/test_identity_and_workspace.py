@@ -109,9 +109,9 @@ def test_initialized_workspace_runs_checks_on_canonical_timeline(
     exit_code = main(["check", str(root)])
     payload = json.loads(capsys.readouterr().out)
 
-    assert exit_code == 3
+    assert exit_code == 0
     assert payload["structural_errors"] == []
-    assert "CALENDAR_INTERVAL_OVERLAP" in [item["code"] for item in payload["findings"]]
+    assert payload["findings"] == []
 
 
 def test_malformed_stored_blocker_is_a_structural_cli_error(

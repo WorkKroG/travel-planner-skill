@@ -38,14 +38,15 @@ scenarios:
 
   - id: codex-valid-final-html
     surfaces: [codex]
-    context: A complete canonical trip has no structural errors or remaining blockers.
+    context: The recorded trip data is consistent, while a timetable question and preparation actions remain open.
     user_prompt: >-
-      Check this completed trip, finalize it only if the deterministic checks allow that,
-      and generate the itinerary HTML for the group.
+      Check the recorded trip data and prepare the itinerary HTML for the group now.
+      Keep the open timetable question and preparation actions visible.
     observable_invariants:
       - The check command runs against the selected canonical bundle before finalization.
       - A valid final keeps verification_level and finalization_basis codex_validated.
-      - The rendered artifact is self-contained HTML with the exact Codex Final label.
+      - The artifact is self-contained HTML with the exact Codex Prepared copy label and no trip-feasibility guarantee.
+      - Open questions and saved concerns remain visible without requiring individual risk acceptance to issue the copy.
 
   - id: user-confirmed-final-with-blocker
     surfaces: [codex]
@@ -54,7 +55,7 @@ scenarios:
       The operator has not published the November timetable. I accept that blocker and still
       want a Final version now; keep the recheck visible for the rest of the group.
     observable_invariants:
-      - Finalization uses user_confirmed rather than pretending the schedule is known.
+      - The user-requested preparation basis does not pretend the schedule is known; codex_validated describes only an actual data check.
       - The acceptance record is explicit, auditable, and tied to the existing blocker.
       - The blocker remains blocking, unresolved, and visible in canonical state and HTML.
 

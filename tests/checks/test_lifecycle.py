@@ -52,13 +52,11 @@ def test_draft_reports_unaccepted_saved_blocker_without_mutating_state(
 
     report = run_checks(state)
 
-    assert report.ok is False
+    assert report.ok is True
     assert report.lifecycle_consistent is True
     assert [finding.id for finding in report.blocking_findings] == ["blocker-rail"]
     assert report.accepted_blocking_findings == ()
-    assert [finding.id for finding in report.unaccepted_blocking_findings] == [
-        "blocker-rail"
-    ]
+    assert [finding.id for finding in report.unaccepted_blocking_findings] == ["blocker-rail"]
     assert state.itinerary == before
 
 
@@ -78,15 +76,13 @@ def test_user_confirmed_final_accepts_but_does_not_resolve_saved_blocker(
 
     assert report.ok is True
     assert report.lifecycle_consistent is True
-    assert [finding.id for finding in report.accepted_blocking_findings] == [
-        "blocker-rail"
-    ]
+    assert [finding.id for finding in report.accepted_blocking_findings] == ["blocker-rail"]
     assert report.unaccepted_blocking_findings == ()
-    assert report.findings[0].severity == "blocking"
+    assert report.saved_findings[0].severity == "blocking"
     assert state.itinerary["challenge_findings"][0]["status"] == "unresolved"
 
 
-def test_codex_validated_final_with_blocker_is_inconsistent(
+def test_codex_prepared_copy_keeps_an_unaccepted_recorded_concern(
     japan_state: TripState,
 ) -> None:
     report = run_checks(
@@ -100,13 +96,13 @@ def test_codex_validated_final_with_blocker_is_inconsistent(
         )
     )
 
-    assert report.ok is False
-    assert report.lifecycle_consistent is False
+    assert report.ok is True
+    assert report.lifecycle_consistent is True
     assert report.unaccepted_blocking_findings
-    assert any(finding.code == "FINAL_CODEX_HAS_BLOCKERS" for finding in report.lifecycle_findings)
+    assert report.lifecycle_findings == ()
 
 
-def test_user_confirmed_final_requires_acceptance_for_each_remaining_blocker(
+def test_user_requested_copy_does_not_require_acceptance_of_each_concern(
     japan_state: TripState,
 ) -> None:
     report = run_checks(
@@ -120,13 +116,13 @@ def test_user_confirmed_final_requires_acceptance_for_each_remaining_blocker(
         )
     )
 
-    assert report.lifecycle_consistent is False
-    assert [finding.code for finding in report.lifecycle_findings] == [
-        "FINAL_USER_BLOCKERS_UNACCEPTED"
-    ]
-    assert [finding.id for finding in report.unaccepted_blocking_findings if finding.code == "SCHEDULE_UNRELEASED"] == [
-        "blocker-rail"
-    ]
+    assert report.lifecycle_consistent is True
+    assert report.lifecycle_findings == ()
+    assert [
+        finding.id
+        for finding in report.unaccepted_blocking_findings
+        if finding.code == "SCHEDULE_UNRELEASED"
+    ] == ["blocker-rail"]
 
 
 def test_ai_reviewed_never_satisfies_codex_validation(japan_state: TripState) -> None:
@@ -170,9 +166,7 @@ def test_invalid_lifecycle_combinations_and_unknown_acceptance_are_reported(
         )
     )
 
-    assert [finding.code for finding in draft.lifecycle_findings] == [
-        "DRAFT_FINALIZATION_BASIS"
-    ]
+    assert [finding.code for finding in draft.lifecycle_findings] == ["DRAFT_FINALIZATION_BASIS"]
     assert {finding.code for finding in final_without_basis.lifecycle_findings} == {
         "FINAL_BASIS_REQUIRED",
         "ACCEPTED_BLOCKER_NOT_FOUND",
@@ -196,20 +190,12 @@ def test_computed_and_stored_finding_id_collision_is_inconsistent(
 
     report = run_checks(state)
 
-    assert "FINDING_ID_COLLISION" in [
-        finding.code for finding in report.lifecycle_findings
-    ]
+    assert "FINDING_ID_COLLISION" in [finding.code for finding in report.lifecycle_findings]
     assert report.ok is False
-    assert len(
-        [
-            finding
-            for finding in report.blocking_findings
-            if finding.id == collision_id
-        ]
-    ) == 2
+    assert len([finding for finding in report.blocking_findings if finding.id == collision_id]) == 2
 
 
-def test_codex_final_is_not_blocked_by_a_nonblocking_unknown_budget_note(
+def test_codex_copy_is_not_blocked_by_an_unknown_expense(
     japan_state: TripState,
 ) -> None:
     report = run_checks(
@@ -231,6 +217,6 @@ def test_codex_final_is_not_blocked_by_a_nonblocking_unknown_budget_note(
         )
     )
 
-    assert [finding.code for finding in report.findings] == ["BUDGET_AMOUNT_UNKNOWN"]
+    assert report.findings == ()
     assert report.blocking_findings == ()
     assert report.ok is True

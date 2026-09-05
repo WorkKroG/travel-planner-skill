@@ -20,11 +20,11 @@ Availability of a source or local marketplace can vary by surface. The table des
 
 | Surface | Workflow and output | Verification limit |
 | --- | --- | --- |
-| Codex | Complete workflow, canonical bundle, deterministic schema/hard checks, document QA, and shared HTML | `none`, `ai_reviewed`, or `codex_validated`, but only after the bundled helper actually runs |
+| Codex | Complete workflow, canonical bundle, recorded-data checks, exact expense subtotals, and shared HTML | `codex_validated` requires an actual successful data check; it does not confirm trip feasibility |
 | ChatGPT Chat/Work | Core planning workflow and the same self-contained HTML template | `none` or explicitly limited `ai_reviewed`; never claim Codex validation without the helper |
 | Mobile | Core planning workflow and the same self-contained HTML template, subject to file capabilities on the device | `none` or explicitly limited `ai_reviewed`; manual bundle transfer and human review required |
 
-In v0.1, Final badges retain the exact Russian labels `Final — проверено в Codex` and `Final — подтверждено пользователем`; the surrounding planning conversation follows the user's language.
+Prepared copies use the exact labels `Prepared copy — данные проверены в Codex` and `Prepared copy — по запросу пользователя`; the surrounding planning conversation follows the user's language. They describe document preparation, not a verified trip.
 
 ## Package and trip data
 
@@ -47,7 +47,9 @@ Each trip has five canonical files:
 
 `sources.md` and `outputs/` are generated and can be rebuilt.
 
-Draft and Final are document lifecycle labels, independent of verification. Final is either `codex_validated` or `user_confirmed`. A user-confirmed Final may retain accepted blockers, but every such blocker remains visible, blocking, unresolved, and auditable in state, HTML, and print.
+Draft and Prepared copy are document lifecycle labels, independent of verification. The internal value `document_status: final` retains the `codex_validated` or `user_confirmed` preparation basis. Open decisions, unknowns, and saved concerns remain visible in either copy; individual risk acceptance is not required to issue it. Any actual acceptance stays auditable and never erases the original concern.
+
+Recorded expense subtotals stay separate by currency and per-person/per-group basis. No FX conversion or multiplication by traveller count is performed. Incomplete rows retain their known values and explain why they were excluded from arithmetic; unknown amounts never become zero.
 
 ## Get the source and validate it locally
 
@@ -79,7 +81,7 @@ These commands are internal to the plugin and may change before a stable public 
 .venv/bin/travel-planner render /path/to/trip --output /path/to/trip/outputs/itinerary.html --at 2026-08-30T09:00:00+00:00
 ```
 
-`init` never overwrites an existing trip. `check` performs schema and hard checks. `render` creates the shared self-contained HTML. If a PDF is needed, open the HTML and use Browser/System Print → Save as PDF; the plugin has no built-in PDF pipeline.
+`init` never overwrites an existing trip. `check` verifies recorded dates, IDs, declared references, present monetary values, and document-status consistency. It does not evaluate overall trip feasibility. `render` reads the same valid data and creates the shared self-contained HTML, including unknowns and saved concerns. If a PDF is needed, open the HTML and use Browser/System Print → Save as PDF; the plugin has no built-in PDF pipeline.
 
 See the [Japan autumn 2026 example](examples/japan-autumn-2026/README.md) for a deterministic draft-quality workspace.
 

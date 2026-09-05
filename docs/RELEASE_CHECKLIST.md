@@ -8,6 +8,8 @@ This is a checklist and evidence index, not a runner or an eval framework. Catal
 
 Run every command on the final PR head and record the exact commit in the PR body:
 
+The checkmarks below record the PR 7 baseline. The September recorded-data integration reruns the applicable gates on its own exact head; its results belong in that PR. The local 30-attempt research archive is separate evidence and does not validate this integration.
+
 - [x] full Python suite;
 - [x] Ruff;
 - [x] focused package, skill, catalog, render, and CLI tests;
@@ -22,11 +24,11 @@ Run every command on the final PR head and record the exact commit in the PR bod
 - [x] historical-file deletion, no duplicate normative docs, and no reintroduced Node/Playwright/axe/MCP/backend/PDF/offline/eval framework;
 - [x] `git diff --check`, clean worktree, and exact base/head confirmation.
 
-## Independent model review
+## Historical independent model review
 
 - [x] A separate reviewer evaluated all eight entries in `evals/skill-scenarios.yaml` against their observable invariants.
 
-External evidence recorded 2026-08-30 against exact reviewed head `e3ca14c0951b6e4254932095cfb0fdd361f2de7a`: two-phase blind isolation was preserved, the result was 8/8 Pass, and invariant violations were 0. The implementation owner did not self-grade them. The review also reported one Important UX defect and two taxonomy/spec ambiguities; this focused follow-up addresses only those findings.
+External evidence recorded 2026-08-30 against exact reviewed head `e3ca14c0951b6e4254932095cfb0fdd361f2de7a`: two-phase blind isolation was preserved, the result was 8/8 Pass, and invariant violations were 0. The implementation owner did not self-grade them. That result does not validate the September changes to the workflow and scenario invariants.
 
 Both catalogs remain data-only with `execution_status: not_executed`. Here `not_executed` means the catalog embeds no runner or result; it does not erase separately recorded external review evidence. Catalog structure tests alone are not execution evidence.
 
@@ -41,7 +43,7 @@ Record date, exact PR head, browser/version, artifact hash, result, and failures
 - [ ] An induced enhancement failure leaves complete core content, both scenarios, and normal links readable with a concise notice.
 - [ ] Opening through `file://` causes no automatic HTTP(S) asset/fetch request; labelled external links are checked separately as user-initiated connectivity actions.
 - [ ] 320 px, 390×844, 768×1024, and 1440×900 layouts have no horizontal page scroll or hidden critical content.
-- [ ] Keyboard/focus, 200% zoom, reduced motion, contrast, readable typography, and representative Draft/Final/conflict/stale/media states are reviewed.
+- [ ] Keyboard/focus, 200% zoom, reduced motion, contrast, readable typography, and representative Draft/Prepared copy/conflict/stale/media states are reviewed.
 - [ ] A4 and Letter print previews keep lifecycle labels, blockers, critical events, sources, and readable pagination.
 
 No screenshots, baselines, device automation, or automated accessibility/layout claims are required or implied.

@@ -2,6 +2,8 @@
 
 When meaningful choices exist, present up to three genuinely different alternatives in geography, bases, pace, cost, or experience mix. Reject alternatives that violate hard constraints, then compare travel time, lodging changes, physical load, weather resilience, cost basis, and preference fit. If only one route is sensible, explain why.
 
+At each route choice and day decision, connect the fact or unknown to its applicability, consequence, and next action. Assess conflicts in context; the data helper does not decide whether a route works. Retain a conditional alternative when the missing fact could change the choice. Do not request scores, required markers, or invented timestamps just to satisfy a program.
+
 Show trade-offs and a recommendation before asking the user to choose. Record the selected option, rejected alternatives, and reasons in `decisions.md`. Store alternatives and the selection in `itinerary.yaml`; a view-only primary/backup switch in HTML does not alter that selection.
 
 Detail only the chosen route. Use `route_stops` and `days[].timeline[]`; every day and timeline event has an ID. Keep human time labels, and add offset-bearing timestamps, operating/service cutoffs, component durations, connection minimums, and buffer markers only when supported. Link days/events to canonical route, overnight, readiness, source, and claim IDs. Unknown stays unknown.
