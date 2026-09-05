@@ -11,6 +11,7 @@ from urllib.parse import urlparse
 from jinja2 import Environment, FileSystemLoader, StrictUndefined, select_autoescape
 from markupsafe import Markup
 
+from ..budget import format_money
 from ..resources import resource_path
 from .viewmodel import ItineraryView
 
@@ -97,6 +98,7 @@ def render_html(
     template = environment.get_template(template_path.name)
     optional_media = embed_media(media) if options.include_optional_media else {}
     rendered = template.render(
+        money=format_money,
         view=view,
         media=optional_media,
         options=options,

@@ -1,66 +1,37 @@
 # Travel Planner — статус проекта
 
-**Дата среза:** 2026-08-30
+**Дата среза:** 2026-09-05
 
-**Текущий этап:** PR 7 проходит focused follow-up по независимому review; публикация и пользовательские cross-surface gates не выполнены
+**Текущий этап:** интеграция согласованного упрощения проверок от `main` `6473b5f82622587b7f5e3dd6962da11b6e7207d2`; PR и слияние выполняются после проверки интеграционного diff. Продукт остаётся source release candidate.
 
-Этот документ фиксирует проверяемые факты. Data-only catalogs, checklist items и будущие ручные наблюдения не считаются выполненным evidence.
+## Актуальное решение
 
-## Проверенный baseline PR 7
+Общий вердикт о выполнимости поездки заменён конкретным разбором ограничений при выборе маршрута и планировании дней. Программа проверяет только целостность записанных данных и точно складывает расходы раздельно по валюте и основанию цены. Неизвестность, неполные расходы и сохранённые замечания не запрещают подготовленную копию; известные значения, сроки и следующие действия остаются видимыми.
 
-PR 6 завершён и squash-merged в `main` на `3e2ec67deebeb73ab1872cc1f0a88be6c4b2ff22`. PR 7 создан строго от этого commit в чистом isolated worktree после совпадения `origin/main` и public GitHub REST `main`.
+Поля `document_status`, `verification_level`, `finalization_basis` и команды `init`, `check`, `render` сохраняются. Видимое `Prepared copy` описывает документ. Узкая проверка не подтверждает источники, расписания, бронирования или реальность маршрута.
 
-До изменений PR 7 выполнены:
+Канонические определения обновлены в [PRODUCT.md](../PRODUCT.md), [ARCHITECTURE.md](../ARCHITECTURE.md) и семи [операционных references](../skills/travel-planner/SKILL.md). Остальные ограничения текущего `main` сохранены: один source-only plugin, общий HTML, пользовательская browser print, без встроенного PDF, route/impact/migration, отдельного Markdown renderer, browser automation или eval runner.
 
-- clean Python 3.12 install из source checkout;
-- полный suite — `154 passed`;
-- Ruff и `pip check` — без замечаний;
-- skill `quick_validate` — passed;
-- plugin validator — passed на staged root с именем `travel-planner`;
-- внутренние CLI `init`, `check`, `render` — passed во временных workspace/output paths;
-- два fixed-time Japan renders — byte-identical друг другу и committed example;
-- catalogs — ровно восемь targeted prompts и три release scenarios, оба `not_executed`;
-- `git diff --check` — clean.
+## Сохранённое исследование и границы вывода
 
-Первый пробный запуск через reused окружение не был baseline: в нём отсутствовал объявленный `rfc3339-validator`. Чистая установка восстановила ожидаемые 154 tests без изменения production code.
+Предыдущая локальная исследовательская ветка `codex/checks-simplification` сохранена на **`41a6e559eb72e66136a0bfe6e379de6d9c792081`**. Её код и большой архив доказательств не сливаются в эту интеграцию. Ветка и исходные журналы существуют локально; этот идентификатор не обещает их доступность в публичном GitHub.
 
-## Последовательность PR 1–7
+В том отдельном опыте проведены 30 фактических попыток: 22 обычных завершения, семь остановок по времени, один отказ доступности модели; 25 полных комплектов. Преимущества помощников в точности на небольшой выборке пяти вымышленных задач не обнаружено. Старое независимое принятие данных `085d48b` не проверяет текущую интеграцию и не служит её тестовым результатом. Дорогие прогоны не повторяются: интеграция принимается по актуальным проверкам кода и отдельному ревью diff от `main`.
 
-| PR | Scope | Статус |
-| --- | --- | --- |
-| 1 | Product contract | Завершён; `3db333f` |
-| 2 | State and validation contract | Завершён; `5f41d58` |
-| 3 | Internal helpers and CLI | Завершён; `91773e1` |
-| 4 | Shared HTML and browser print | Завершён; `289111e` |
-| 5 | Skill workflow | Завершён; `51c26f8` |
-| 6 | QA and eval reduction | Завершён; `3e2ec67` |
-| 7 | Packaging, canonical docs, cleanup, and release evidence | Реализуется в `codex/simplify-07-release-package`; не merged |
+## Проверка интеграции
 
-## Источники истины
+Свежая чистая установка исходного `main` перед изменениями: **157 tests passed**, `pip check` без замечаний. Новые регрессии сначала воспроизвели проблемы неполных сумм, точности вывода, сроков, записанных дат/ссылок и общего запрета на подготовленную копию.
 
-| Документ | Роль |
-| --- | --- |
-| [`PRODUCT.md`](../PRODUCT.md) | Продукт, пользователи, поверхности, lifecycle и non-goals |
-| [`ARCHITECTURE.md`](../ARCHITECTURE.md) | Skills-only package, internal helpers, rendering и QA boundaries |
-| [Approved interactive HTML spec](superpowers/specs/2026-08-28-interactive-itinerary-html-design.md) | UX, responsive, accessibility, progressive enhancement, local-open и print requirements |
-| [`skills/travel-planner/SKILL.md`](../skills/travel-planner/SKILL.md) и семь references | Операционный workflow plugin |
-| [`docs/RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md) | Automated exact-head gates и pending manual evidence |
-| [`LICENSE`](../LICENSE) | MIT License |
+Финальные exact-head результаты полного и focused suites, Ruff, чистой установки, CLI/render, ресурсов/ссылок, упаковки и независимого ревью будут указаны в PR. Статические HTML-тесты не объявляются наблюдениями браузерной раскладки или устройства. Исходные расходы и canonical YAML не переписываются ради проверок.
 
-Исторические market/research/design/implementation документы удалены по решению владельца продукта; они не являются нормативными источниками и не пересказываются в репозитории.
+## Предыдущая поставка и оставшиеся release gates
 
-## PR 7: completed и pending
+PR 1–7 завершены в `main`; последний — `6473b5f` (упаковка и документация). Предыдущая внешняя модельная проверка восьми сценариев относится только к `e3ca14c0951b6e4254932095cfb0fdd361f2de7a`: 8/8 Pass, invariant violations 0. Изменённые сейчас инструкции и каталоги этим результатом не принимаются.
 
-В текущем PR реализованы public README, краткий contributor guide, truthful manifest metadata, один release checklist, исправление Japan commands, удаление historical/orphaned residue и cleanup активных ссылок. Focused follow-up исправляет только misleading empty-blocker copy, нормализует operational surface identifier на `chat_web` и уточняет фиксированный язык lifecycle badges. Production state, checks, CLI, schemas и catalogs не расширяются.
+[RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md) сохраняет обязательные наблюдения, которые ещё не выполнены:
 
-Независимый двухфазный blind review выполнен 2026-08-30 на exact head `e3ca14c0951b6e4254932095cfb0fdd361f2de7a`: isolation clean/preserved, результат — 8/8 Pass, invariant violations — 0. Это external model evidence; catalog-level `not_executed` сохраняется, потому что catalogs не содержат embedded runner или result.
+- локальная ручная проверка HTML: прежний in-app browser не загрузил `file://` из-за своей URL policy; pass не заявлен;
+- ровно две пользовательские проверки: Chat web и mobile;
+- внешняя submission/review публичного каталога plugin.
 
-Свежая verification текущего follow-up tree: полный suite — `157 passed`; focused package/skill/catalog/render/CLI — `66 passed`, включая отдельные три blocker-state regressions; Ruff, `pip check`, `quick_validate` и staged plugin validation — passed; fresh temp CLI и fixed-time Japan determinism — passed. Exact новый PR head и clean-worktree evidence фиксируются в PR body после commit и повторной проверки.
-
-Отдельно остаются pending:
-
-- local desktop manual HTML checklist: доступный in-app browser заблокировал `file://` до загрузки по своей URL security policy, поэтому manual pass не заявлен;
-- ровно два пользовательских cross-surface observations: Chat web и mobile;
-- внешняя submission/review в universal plugin directory.
-
-До выполнения требуемых manual gates проект остаётся source release candidate, а не опубликованным universal plugin.
+Оба каталога остаются data-only: восемь targeted prompts и три release scenarios, `not_executed`, без runner и оценок. Слияние PR не означает прохождение этих ручных или внешних release gates.

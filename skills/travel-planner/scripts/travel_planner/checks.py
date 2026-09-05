@@ -6,17 +6,16 @@ import hashlib
 import re
 from collections import Counter
 from dataclasses import asdict, dataclass
-from datetime import UTC, datetime
-from decimal import Decimal, InvalidOperation
+from datetime import UTC, date, datetime
+from decimal import Decimal
 from typing import Any, Literal
 
-from .evidence import HIGH_STAKES_TOPICS
+from .budget import budget_item_errors
 from .state import TripState, ValidationIssue
 
 Severity = Literal["blocking", "warning", "note"]
 Entry = tuple[dict[str, Any], str]
 _SEVERITY_ORDER = {"blocking": 0, "warning": 1, "note": 2}
-_CURRENCY = re.compile(r"^[A-Z]{3}$")
 
 
 @dataclass(frozen=True)
@@ -35,10 +34,15 @@ class CheckReport:
     findings: tuple[Finding, ...]
     lifecycle_findings: tuple[Finding, ...]
     accepted_blocker_ids: tuple[str, ...]
+    saved_findings: tuple[Finding, ...] = ()
 
     @property
     def all_findings(self) -> tuple[Finding, ...]:
-        return tuple(sorted((*self.findings, *self.lifecycle_findings), key=_finding_key))
+        return tuple(
+            sorted(
+                (*self.findings, *self.saved_findings, *self.lifecycle_findings), key=_finding_key
+            )
+        )
 
     @property
     def blocking_findings(self) -> tuple[Finding, ...]:
@@ -47,7 +51,7 @@ class CheckReport:
     @property
     def accepted_blocking_findings(self) -> tuple[Finding, ...]:
         accepted = set(self.accepted_blocker_ids)
-        return tuple(filter(lambda item: item.id in accepted, self.findings))
+        return tuple(filter(lambda item: item.id in accepted, self.saved_findings))
 
     @property
     def unaccepted_blocking_findings(self) -> tuple[Finding, ...]:
@@ -68,12 +72,14 @@ class CheckReport:
         return (
             not self.structural_errors
             and self.lifecycle_consistent
-            and not self.unaccepted_blocking_findings
+            and not any(item.severity == "blocking" for item in self.findings)
         )
 
     def as_dict(self) -> dict[str, Any]:
         return {
+            "scope": "recorded_data_integrity",
             "ok": self.ok,
+            "saved_findings": list(map(asdict, self.saved_findings)),
             "structural_errors": list(map(asdict, self.structural_errors)),
             "lifecycle_consistent": self.lifecycle_consistent,
             "lifecycle_findings": list(map(asdict, self.lifecycle_findings)),
@@ -184,148 +190,56 @@ def _timestamp(value: Any) -> datetime | None:
     return parsed.astimezone(UTC)
 
 
-def _calendar_checks(timeline: tuple[Entry, ...]) -> tuple[Finding, ...]:
+def _date_checks(state: TripState, timeline: tuple[Entry, ...]) -> tuple[Finding, ...]:
+    """Check recorded date order, without interpreting travel feasibility."""
     findings: list[Finding] = []
-    intervals: list[tuple[datetime, datetime, str, str]] = []
-    cutoff_fields = (
+    dates = state.brief.get("travel_dates", {})
+    try:
+        start_date, end_date = (date.fromisoformat(dates[key]) for key in ("start", "end"))
+    except (TypeError, ValueError, KeyError):
+        pass  # Missing dates are allowed; schemas diagnose malformed present dates.
+    else:
+        if end_date < start_date:
+            findings.append(
+                _finding(
+                    "DATE_ORDER_INVALID",
+                    "brief.yaml.travel_dates",
+                    "Recorded end date precedes start date.",
+                )
+            )
+    fields = (
+        "start_at",
+        "end_at",
         "operating_start_at",
         "operating_end_at",
         "last_admission_at",
         "last_service_at",
     )
     for event, path in timeline:
-        event_id = str(event.get("id", "unknown-event"))
-        if "start_at" not in event and "end_at" not in event:
-            continue
-        start, end = _timestamp(event.get("start_at")), _timestamp(event.get("end_at"))
-        cutoffs = {key: _timestamp(event.get(key)) for key in cutoff_fields}
-        if start is None or end is None or any(
-            key in event and cutoffs[key] is None for key in cutoff_fields
-        ):
-            findings.append(
-                _finding(
-                    "CALENDAR_TIMESTAMP_INVALID",
-                    path,
-                    "Structured timeline timestamps require ISO 8601 UTC offsets.",
-                    event_id,
-                )
-            )
-            continue
-        if end <= start:
-            findings.append(
-                _finding(
-                    "CALENDAR_INTERVAL_INVALID",
-                    path,
-                    "Structured timeline end must be later than start.",
-                    event_id,
-                )
-            )
-            continue
-        intervals.append((start, end, event_id, path))
-        if (
-            cutoffs["operating_start_at"] is not None
-            and start < cutoffs["operating_start_at"]
-        ) or (
-            cutoffs["operating_end_at"] is not None
-            and end > cutoffs["operating_end_at"]
-        ):
-            findings.append(
-                _finding(
-                    "CALENDAR_OUTSIDE_OPERATING_WINDOW",
-                    path,
-                    "Timeline event falls outside explicit operating timestamps.",
-                    event_id,
-                )
-            )
-        if cutoffs["last_admission_at"] is not None and start > cutoffs["last_admission_at"]:
-            findings.append(
-                _finding(
-                    "CALENDAR_LAST_ADMISSION",
-                    path,
-                    "Timeline start is after the explicit last-admission timestamp.",
-                    event_id,
-                )
-            )
-        if cutoffs["last_service_at"] is not None and start > cutoffs["last_service_at"]:
-            findings.append(
-                _finding(
-                    "CALENDAR_LAST_SERVICE",
-                    path,
-                    "Timeline start is after the explicit last-service timestamp.",
-                    event_id,
-                )
-            )
-    ordered = sorted(intervals)
-    for left_position, left in enumerate(ordered):
-        for right in ordered[left_position + 1 :]:
-            if right[0] >= left[1]:
-                break
-            findings.append(
-                _finding(
-                    "CALENDAR_INTERVAL_OVERLAP",
-                    right[3],
-                    "Structured timeline intervals overlap.",
-                    left[2],
-                    right[2],
-                )
-            )
-    return tuple(findings)
-
-
-def _number(value: Any, *, positive: bool = False) -> Decimal | None:
-    if value is None or isinstance(value, bool):
-        return None
-    try:
-        number = Decimal(str(value))
-    except (InvalidOperation, ValueError):
-        return None
-    if not number.is_finite() or number < 0 or (positive and number <= 0):
-        return None
-    return number
-
-
-def _buffer_checks(timeline: tuple[Entry, ...]) -> tuple[Finding, ...]:
-    findings: list[Finding] = []
-    for event, path in timeline:
-        event_id = str(event.get("id", "unknown-event"))
-        components = event.get("components_minutes")
-        allocated = _number(event.get("allocated_minutes"))
-        if isinstance(components, dict) and allocated is not None:
-            values = [_number(value) for value in components.values()]
-            if values and all(value is not None for value in values) and sum(values) > allocated:
+        owner = str(event.get("id", "unknown-event"))
+        recorded = {field: _timestamp(event.get(field)) for field in fields}
+        for field in fields:
+            if event.get(field) is not None and recorded[field] is None:
                 findings.append(
                     _finding(
-                        "BUFFER_DOOR_TO_DOOR_SHORTFALL",
-                        path,
-                        "Allocated minutes are below the explicit component sum.",
-                        event_id,
+                        "CALENDAR_TIMESTAMP_INVALID",
+                        f"{path}.{field}",
+                        "Recorded timestamps require a valid UTC offset.",
+                        owner,
                     )
                 )
-        required = event.get("required_buffer_markers")
-        if isinstance(required, list):
-            markers = event.get("buffer_markers")
-            present = {str(value) for value in markers} if isinstance(markers, list) else set()
-            missing = sorted(str(value) for value in required if str(value) not in present)
-            if missing:
+        for first, last in (("start_at", "end_at"), ("operating_start_at", "operating_end_at")):
+            if (
+                recorded[first] is not None
+                and recorded[last] is not None
+                and recorded[last] < recorded[first]
+            ):
                 findings.append(
                     _finding(
-                        "BUFFER_MARKER_MISSING",
-                        path,
-                        "Missing required buffer markers: " + ", ".join(missing) + ".",
-                        event_id,
-                    )
-                )
-        connection = event.get("connection")
-        if isinstance(connection, dict):
-            available = _number(connection.get("available_minutes"))
-            minimum = _number(connection.get("minimum_minutes"))
-            if available is not None and minimum is not None and available < minimum:
-                findings.append(
-                    _finding(
-                        "CONNECTION_MINIMUM_SHORTFALL",
-                        f"{path}.connection",
-                        "Available connection minutes are below the explicit minimum.",
-                        event_id,
+                        "CALENDAR_INTERVAL_INVALID",
+                        f"{path}.{last}",
+                        "Recorded end precedes its start.",
+                        owner,
                     )
                 )
     return tuple(findings)
@@ -343,7 +257,9 @@ def _reference_findings(
     if isinstance(value, str):
         references = ((value, f"{path}.{key}"),)
     elif isinstance(value, list):
-        references = tuple((str(item), f"{path}.{key}[{position}]") for position, item in enumerate(value))
+        references = tuple(
+            (str(item), f"{path}.{key}[{position}]") for position, item in enumerate(value)
+        )
     else:
         return ()
     return tuple(
@@ -392,11 +308,26 @@ def _link_checks(state: TripState, days: tuple[Entry, ...]) -> tuple[Finding, ..
     )
     event_specs = day_specs[:4]
     readiness_specs = (
+        (
+            "owner_id",
+            _unique_ids(_records(state.brief.get("travelers"), "brief.yaml.travelers")),
+            "LINK_OWNER_NOT_FOUND",
+        ),
         ("dependencies", readiness_ids, "LINK_READINESS_NOT_FOUND"),
         ("source_ids", source_ids, "LINK_SOURCE_NOT_FOUND"),
         ("claim_ids", claim_ids, "LINK_CLAIM_NOT_FOUND"),
     )
-    for entries, specs in ((days, day_specs), (timeline, event_specs), (readiness, readiness_specs)):
+    for entries, specs in (
+        (days, day_specs),
+        (timeline, event_specs),
+        (readiness, readiness_specs),
+        (alternatives, day_specs[1:4]),
+        (stops, day_specs[1:4]),
+        (
+            _records(state.itinerary.get("budget_items"), "itinerary.yaml.budget_items"),
+            day_specs[2:4],
+        ),
+    ):
         for record, path in entries:
             owner = str(record.get("id", "unknown-item"))
             for key, known, code in specs:
@@ -412,209 +343,51 @@ def _link_checks(state: TripState, days: tuple[Entry, ...]) -> tuple[Finding, ..
                 str(claim.get("id", "unknown-claim")),
             )
         )
+    summary = state.itinerary.get("budget_summary")
+    if isinstance(summary, dict) and isinstance(summary.get("fx"), dict):
+        findings.extend(
+            _reference_findings(
+                summary["fx"],
+                "itinerary.yaml.budget_summary.fx",
+                "source_id",
+                source_ids,
+                "LINK_SOURCE_NOT_FOUND",
+                "budget-summary",
+            )
+        )
     return tuple(findings)
-
-
-def _budget_value(item: dict[str, Any]) -> tuple[Decimal, Decimal] | Literal["unknown"] | None:
-    amount_type = item.get("amount_type")
-    if amount_type == "unknown":
-        return "unknown"
-    if amount_type == "range":
-        minimum, maximum = _number(item.get("amount_min")), _number(item.get("amount_max"))
-        if minimum is not None and maximum is not None and minimum <= maximum:
-            return minimum, maximum
-        return None
-    amount = _number(item.get("amount"))
-    return (amount, amount) if amount is not None else None
-
-
-def _valid_fx(
-    summary: Any, currencies: set[str], source_ids: set[str]
-) -> dict[str, Any] | None:
-    if not isinstance(summary, dict) or not isinstance(summary.get("fx"), dict):
-        return None
-    fx = summary["fx"]
-    base, rates = fx.get("base_currency"), fx.get("rates")
-    if (
-        base != summary.get("currency")
-        or base not in currencies
-        or _timestamp(fx.get("observed_at")) is None
-        or fx.get("source_id") not in source_ids
-        or not isinstance(rates, dict)
-        or any(_number(rate, positive=True) is None for rate in rates.values())
-        or not currencies - {str(base)} <= set(rates)
-    ):
-        return None
-    return fx
-
-
-def _summary_value(summary: Any) -> tuple[Decimal, Decimal] | None:
-    if not isinstance(summary, dict) or summary.get("basis") != "per_group":
-        return None
-    keys = {key for key in ("amount", "amount_min", "amount_max") if key in summary}
-    if keys == {"amount"}:
-        amount = _number(summary.get("amount"))
-        return (amount, amount) if amount is not None else None
-    if keys == {"amount_min", "amount_max"}:
-        minimum, maximum = _number(summary.get("amount_min")), _number(summary.get("amount_max"))
-        if minimum is not None and maximum is not None and minimum <= maximum:
-            return minimum, maximum
-    return None
 
 
 def _budget_checks(state: TripState) -> tuple[Finding, ...]:
-    entries = _records(state.itinerary.get("budget_items"), "itinerary.yaml.budget_items")
     findings: list[Finding] = []
-    known: list[tuple[dict[str, Any], tuple[Decimal, Decimal]]] = []
-    unknown = False
-    for item, path in entries:
-        value = _budget_value(item)
-        item_id = str(item.get("id", "unknown-budget-item"))
-        if value is None:
+    for item, path in _records(state.itinerary.get("budget_items"), "itinerary.yaml.budget_items"):
+        errors = budget_item_errors(item)
+        if errors:
             findings.append(
-                _finding("BUDGET_ITEM_INVALID", path, "Budget item fields are incoherent.", item_id)
+                _finding("BUDGET_ITEM_INVALID", path, "; ".join(errors), str(item["id"]))
             )
-        elif value == "unknown":
-            unknown = True
-            findings.append(
-                _finding(
-                    "BUDGET_AMOUNT_UNKNOWN",
-                    path,
-                    "Unknown budget amount remains excluded from arithmetic.",
-                    item_id,
-                    severity="note",
-                )
-            )
-        else:
-            known.append((item, value))
-    traveler_entries = _records(state.brief.get("travelers"), "brief.yaml.travelers")
-    traveler_count = len(traveler_entries) if traveler_entries and len(_unique_ids(traveler_entries)) == len(traveler_entries) else 0
-    if any(item.get("basis") == "per_person" for item, _ in known) and traveler_count == 0:
-        findings.append(
-            _finding(
-                "BUDGET_TRAVELER_COUNT_REQUIRED",
-                "brief.yaml.travelers",
-                "Per-person arithmetic requires a positive unambiguous traveler count.",
-            )
-        )
-    currencies = {str(item["currency"]) for item, _ in known}
     summary = state.itinerary.get("budget_summary")
-    source_ids = _unique_ids(_records(state.candidates.get("sources"), "candidates.yaml.sources"))
-    fx_present = isinstance(summary, dict) and "fx" in summary
-    fx = _valid_fx(summary, currencies, source_ids) if fx_present else None
-    if len(currencies) > 1 and fx is None:
-        findings.append(
-            _finding(
-                "BUDGET_FX_REQUIRED",
-                "itinerary.yaml.budget_summary.fx",
-                "Mixed currencies require finite positive dated FX linked to one source.",
-            )
-        )
-    elif fx_present and fx is None:
-        findings.append(
-            _finding(
-                "BUDGET_FX_INVALID",
-                "itinerary.yaml.budget_summary.fx",
-                "FX metadata must use the summary currency, one source, and finite positive rates.",
-            )
-        )
-    if summary is not None:
-        declared = _summary_value(summary)
-        if unknown:
+    if isinstance(summary, dict):
+        errors = budget_item_errors(summary)
+        if errors:
             findings.append(
-                _finding(
-                    "BUDGET_TOTAL_WITH_UNKNOWN",
-                    "itinerary.yaml.budget_summary",
-                    "A numeric budget summary cannot represent unknown amounts.",
-                )
+                _finding("BUDGET_VALUE_INVALID", "itinerary.yaml.budget_summary", "; ".join(errors))
             )
-        if declared is None or not _CURRENCY.fullmatch(str(summary.get("currency", ""))):
-            findings.append(
-                _finding(
-                    "BUDGET_TOTAL_INVALID",
-                    "itinerary.yaml.budget_summary",
-                    "Budget summary requires a coherent nonnegative per-group amount or range.",
-                )
-            )
-        elif known and len(known) == len(entries) and not unknown and (len(currencies) <= 1 or fx is not None) and not (any(item.get("basis") == "per_person" for item, _ in known) and traveler_count == 0):
-            base = str(fx["base_currency"]) if fx is not None else next(iter(currencies))
-            minimum = maximum = Decimal(0)
-            for item, amounts in known:
-                multiplier = Decimal(traveler_count) if item["basis"] == "per_person" else Decimal(1)
-                if fx is not None and item["currency"] != base:
-                    multiplier *= _number(fx["rates"][item["currency"]], positive=True) or Decimal(0)
-                minimum += amounts[0] * multiplier
-                maximum += amounts[1] * multiplier
-            if summary.get("currency") != base or declared != (minimum, maximum):
-                findings.append(
-                    _finding(
-                        "BUDGET_TOTAL_MISMATCH",
-                        "itinerary.yaml.budget_summary",
-                        "Declared budget summary does not match all summable known items.",
+        fx = summary.get("fx")
+        if isinstance(fx, dict) and isinstance(fx.get("rates"), dict):
+            for currency, value in fx["rates"].items():
+                if (
+                    budget_item_errors({"amount": value})
+                    or value is None
+                    or Decimal(str(value)) <= 0
+                ):
+                    findings.append(
+                        _finding(
+                            "BUDGET_FX_INVALID",
+                            f"itinerary.yaml.budget_summary.fx.rates.{currency}",
+                            "Recorded FX rates must be finite positive numbers.",
+                        )
                     )
-                )
-    return tuple(findings)
-
-
-def _readiness_checks(state: TripState) -> tuple[Finding, ...]:
-    entries = _records(state.readiness.get("items"), "readiness.yaml.items")
-    unique = _unique_ids(entries)
-    graph = {
-        str(item["id"]): tuple(value for value in item.get("dependencies", []) if value in unique)
-        for item, _ in entries
-        if item.get("id") in unique and isinstance(item.get("dependencies", []), list)
-    }
-    visiting: list[str] = []
-    visited: set[str] = set()
-
-    def visit(node: str) -> tuple[str, ...] | None:
-        if node in visiting:
-            start = visiting.index(node)
-            return (*visiting[start:], node)
-        if node in visited:
-            return None
-        visiting.append(node)
-        for dependency in graph.get(node, ()):
-            if (cycle := visit(dependency)) is not None:
-                return cycle
-        visiting.pop()
-        visited.add(node)
-        return None
-
-    for node in sorted(graph):
-        if (cycle := visit(node)) is not None:
-            return (
-                _finding(
-                    "READINESS_CYCLE",
-                    "readiness.yaml.items",
-                    "Readiness dependency graph contains a cycle.",
-                    *cycle,
-                ),
-            )
-    return ()
-
-
-def _source_checks(state: TripState) -> tuple[Finding, ...]:
-    entries = _records(state.candidates.get("sources"), "candidates.yaml.sources")
-    unique = _unique_ids(entries)
-    sources = {str(item["id"]): item for item, _ in entries if item.get("id") in unique}
-    findings: list[Finding] = []
-    for claim, path in _claim_entries(state):
-        if claim.get("status") != "verified" or claim.get("topic") not in HIGH_STAKES_TOPICS:
-            continue
-        references = claim.get("source_ids") if isinstance(claim.get("source_ids"), list) else []
-        if not any(
-            source_id in sources and sources[source_id].get("source_type") == "official"
-            for source_id in references
-        ):
-            findings.append(
-                _finding(
-                    "SOURCE_OFFICIAL_REQUIRED",
-                    path,
-                    "Verified high-stakes claim must reference one unambiguous official source.",
-                    str(claim.get("id", "unknown-claim")),
-                )
-            )
     return tuple(findings)
 
 
@@ -639,8 +412,6 @@ def _effective_acceptances(
     state: TripState, blockers: tuple[Finding, ...], collided: set[str]
 ) -> tuple[str, ...]:
     itinerary = state.itinerary
-    if itinerary.get("document_status") != "final" or itinerary.get("finalization_basis") != "user_confirmed":
-        return ()
     blocker_counts = Counter(item.id for item in blockers)
     entries = _records(itinerary.get("accepted_blockers"), "itinerary.yaml.accepted_blockers")
     acceptance_counts = Counter(str(item.get("blocker_id", "")) for item, _ in entries)
@@ -657,7 +428,6 @@ def _lifecycle_checks(
     state: TripState,
     blockers: tuple[Finding, ...],
     collided: set[str],
-    accepted: tuple[str, ...],
 ) -> tuple[Finding, ...]:
     itinerary = state.itinerary
     status, verification, basis = (
@@ -667,49 +437,74 @@ def _lifecycle_checks(
     )
     findings: list[Finding] = []
     if status == "draft" and basis is not None:
-        findings.append(_finding("DRAFT_FINALIZATION_BASIS", "itinerary.yaml.finalization_basis", "Draft requires finalization_basis=null."))
+        findings.append(
+            _finding(
+                "DRAFT_FINALIZATION_BASIS",
+                "itinerary.yaml.finalization_basis",
+                "Draft requires finalization_basis=null.",
+            )
+        )
     if status == "final" and basis not in {"codex_validated", "user_confirmed"}:
-        findings.append(_finding("FINAL_BASIS_REQUIRED", "itinerary.yaml.finalization_basis", "Final requires a valid finalization basis."))
+        findings.append(
+            _finding(
+                "FINAL_BASIS_REQUIRED",
+                "itinerary.yaml.finalization_basis",
+                "Final requires a valid finalization basis.",
+            )
+        )
     if basis == "codex_validated" and verification != "codex_validated":
-        findings.append(_finding("FINAL_CODEX_VERIFICATION_REQUIRED", "itinerary.yaml.verification_level", "Codex finalization requires verification_level=codex_validated."))
-    if basis == "codex_validated" and blockers:
-        findings.append(_finding("FINAL_CODEX_HAS_BLOCKERS", "itinerary.yaml.finalization_basis", "Codex-validated Final cannot contain blockers.", *sorted(item.id for item in blockers)))
-    if basis == "user_confirmed":
-        remaining = sorted({item.id for item in blockers} - set(accepted))
-        if remaining:
-            findings.append(_finding("FINAL_USER_BLOCKERS_UNACCEPTED", "itinerary.yaml.accepted_blockers", "User-confirmed Final requires one valid acceptance per blocker.", *remaining))
+        findings.append(
+            _finding(
+                "FINAL_CODEX_VERIFICATION_REQUIRED",
+                "itinerary.yaml.verification_level",
+                "Codex finalization requires verification_level=codex_validated.",
+            )
+        )
     blocker_ids = {item.id for item in blockers}
-    for acceptance, path in _records(itinerary.get("accepted_blockers"), "itinerary.yaml.accepted_blockers"):
+    for acceptance, path in _records(
+        itinerary.get("accepted_blockers"), "itinerary.yaml.accepted_blockers"
+    ):
         identifier = acceptance.get("blocker_id")
         if not isinstance(identifier, str) or identifier not in blocker_ids:
-            findings.append(_finding("ACCEPTED_BLOCKER_NOT_FOUND", f"{path}.blocker_id", "Accepted blocker_id must reference an existing blocker.", str(identifier)))
+            findings.append(
+                _finding(
+                    "ACCEPTED_BLOCKER_NOT_FOUND",
+                    f"{path}.blocker_id",
+                    "Accepted blocker_id must reference an existing blocker.",
+                    str(identifier),
+                )
+            )
     for identifier in sorted(collided):
-        findings.append(_finding("FINDING_ID_COLLISION", "itinerary.yaml.challenge_findings", "Stored and computed findings must not share an ID.", identifier))
+        findings.append(
+            _finding(
+                "FINDING_ID_COLLISION",
+                "itinerary.yaml.challenge_findings",
+                "Stored and computed findings must not share an ID.",
+                identifier,
+            )
+        )
     return tuple(findings)
 
 
 def run_checks(state: TripState) -> CheckReport:
-    """Run hard checks without mutating canonical state."""
+    """Check recorded data; saved trip concerns never decide the result."""
     days = _records(state.itinerary.get("days"), "itinerary.yaml.days")
     timeline = _timeline_entries(days)
     stored = _stored_blockers(state)
     computed = (
         *_identity_checks(state, days),
-        *_calendar_checks(timeline),
-        *_buffer_checks(timeline),
+        *_date_checks(state, timeline),
         *_link_checks(state, days),
         *_budget_checks(state),
-        *_readiness_checks(state),
-        *_source_checks(state),
     )
     collided = {item.id for item in computed} & {item.id for item in stored}
-    findings = tuple(sorted((*stored, *computed), key=_finding_key))
-    blockers = tuple(item for item in findings if item.severity == "blocking")
+    findings = tuple(sorted(computed, key=_finding_key))
+    blockers = stored
     accepted = _effective_acceptances(state, blockers, collided)
     lifecycle = tuple(
         sorted(
-            _lifecycle_checks(state, blockers, collided, accepted),
+            _lifecycle_checks(state, blockers, collided),
             key=_finding_key,
         )
     )
-    return CheckReport((), findings, lifecycle, accepted)
+    return CheckReport((), findings, lifecycle, accepted, stored)

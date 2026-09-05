@@ -108,7 +108,7 @@ def validate_structure(root: Path) -> ValidationReport:
 
 
 def validate_trip(root: Path) -> ValidationReport:
-    """Validate file structure and the temporary cross-file trip_id check."""
+    """Validate file structure, recorded formats, and shared trip identity."""
     issues, trip_ids = _validate_structure(root)
     expected_trip_id = trip_ids.get("brief.yaml")
     for file_name, value in trip_ids.items():

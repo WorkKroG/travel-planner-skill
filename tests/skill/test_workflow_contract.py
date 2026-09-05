@@ -234,14 +234,15 @@ def test_surface_contract_requires_honest_verification_gates() -> None:
     codex = by_surface["codex"]
     assert "check" in _code_values(codex["Deterministic helpers"])
     assert "codex_validated" in _code_values(codex["Allowed verification"])
-    assert {"successful_check", "no_blockers"} <= _code_values(codex["Codex validation gate"])
+    assert {"successful_check", "valid_recorded_data"} <= _code_values(codex["Codex validation gate"])
+    assert "no_blockers" not in _code_values(codex["Codex validation gate"])
 
     for surface in ("chat_web", "mobile"):
         row = by_surface[surface]
         assert _code_values(row["Deterministic helpers"]) == {"unavailable"}
         assert _code_values(row["Allowed verification"]) == {"none", "ai_reviewed"}
         assert _code_values(row["Codex validation gate"]) == {"never"}
-        assert {"less_precise", "careful_human_review"} <= _code_values(row["Required disclosure"])
+        assert {"probabilistic", "careful_human_review"} <= _code_values(row["Required disclosure"])
 
 
 def test_material_change_contract_preserves_consent_and_affected_scope() -> None:
@@ -329,8 +330,7 @@ def test_user_confirmed_final_keeps_every_accepted_blocker_visible() -> None:
     assert {
         "blocker_id",
         "itinerary.yaml.accepted_blockers",
-        "one_per_blocker",
-        "partial_forbidden",
+        "optional_record",
         "duplicate_forbidden",
         "orphan_forbidden",
         "challenge_findings",
@@ -339,6 +339,7 @@ def test_user_confirmed_final_keeps_every_accepted_blocker_visible() -> None:
         "unresolved",
         "visible",
     } <= _code_values(user_confirmed["Remaining blockers"])
+    assert "partial_forbidden" not in _code_values(user_confirmed["Remaining blockers"])
 
 
 def test_source_routing_keeps_yandex_and_official_high_stakes_sources() -> None:

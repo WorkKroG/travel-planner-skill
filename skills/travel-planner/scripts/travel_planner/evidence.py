@@ -7,18 +7,6 @@ from typing import Any
 
 from .state import TripState
 
-HIGH_STAKES_TOPICS = frozenset(
-    {
-        "entry",
-        "transit",
-        "medication_legality",
-        "health",
-        "safety_advisory",
-        "emergency",
-        "transport_operations",
-    }
-)
-
 
 def source_index(state: TripState) -> dict[str, dict[str, Any]]:
     """Index explicitly identified source metadata without assessing its truth."""

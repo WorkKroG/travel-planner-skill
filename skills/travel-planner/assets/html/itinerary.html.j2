@@ -40,6 +40,7 @@
       </div>
       {% endif %}
       <h1>{{ view.title }}</h1>
+      <p>Document preparation and recorded data checks do not confirm that the trip is feasible. Open decisions and recorded concerns remain below.</p>
       <p class="trip-thesis">{{ view.summary.thesis }}</p>
       <p class="route-ribbon"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg> {{ view.summary.route_text }}</p>
       <div class="summary-counts">
@@ -62,13 +63,12 @@
         <a href="#preparation">Review preparation</a>
       </div>
       <div class="budget-panel">
-        <span>Known budget range</span>
-        <strong>
-          {% if view.budget.minimum is not none %}{{ "{:,.0f}".format(view.budget.minimum) }}{% else %}Unknown{% endif %}
-          —
-          {% if view.budget.maximum is not none %}{{ "{:,.0f}".format(view.budget.maximum) }} {{ view.budget.currency }}{% else %}Unknown{% endif %}
-        </strong>
-        <span>{{ view.budget.confidence|capitalize }} confidence · {{ view.budget.unknown_count }} unknown</span>
+        <span>Recorded expenses</span>
+        {% for subtotal in view.budget.subtotals %}
+        <strong>{{ money(subtotal.minimum, subtotal.currency) }}{% if subtotal.maximum != subtotal.minimum %} — {{ money(subtotal.maximum, subtotal.currency) }}{% endif %}</strong>
+        <span>{{ subtotal.basis|replace('_', ' ') }} · {{ subtotal.item_count }} recorded rows</span>
+        {% else %}<strong>No summable amounts recorded</strong>{% endfor %}
+        <a href="#budget">{{ view.budget.excluded_count }} excluded rows · Review recorded expenses</a>
       </div>
       {% for finding in (view.unaccepted_blockers + view.accepted_blockers)[:3] %}
       <div class="warning-block">
@@ -110,9 +110,9 @@
       <section class="document-section blocker-section" id="blockers" aria-labelledby="blockers-title">
         <h2 id="blockers-title">Blockers</h2>
         {% if view.unaccepted_blockers or view.accepted_blockers %}
-        <p>Blockers remain unresolved and blocking until the canonical trip state changes.</p>
+        <p>Recorded blockers remain unresolved and blocking for their decisions. Preparing this document does not resolve or accept them.</p>
         {% else %}
-        <p>No blockers are recorded in the canonical trip state.</p>
+        <p>No blockers are recorded in the canonical trip state. This does not confirm trip feasibility.</p>
         {% endif %}
 
         <section aria-labelledby="unaccepted-blockers-title">
@@ -303,29 +303,33 @@
           {% for item in view.readiness %}
           <li class="readiness-item">
             <p class="status-with-icon"><svg class="icon" aria-hidden="true"><use href="#icon-{% if item.status == 'confirmed' %}check{% elif item.status == 'recheck' %}recheck{% else %}square{% endif %}"></use></svg><strong>{{ item.title }}</strong></p>
-            <p><span class="status status--{{ item.status|replace('_', '-') }}">{{ item.status|replace('_', ' ') }}</span> {{ item.category }} · Owner: {{ item.owner_id }} · Next check: {{ item.next_check_at }}</p>
+            <p><span class="status status--{{ item.status|replace('_', '-') }}">{{ item.status|replace('_', ' ') }}</span> {{ item.category }} · Owner: {{ item.owner_id }}{% if item.due_at %} · Due: {{ item.due_at }}{% endif %}{% if item.next_check_at %} · Next check: {{ item.next_check_at }}{% endif %}</p>
+            {% if item.issue %}<p>{{ item.issue }}</p>{% endif %}
+            {% if item.next_action %}<p>Next action: {{ item.next_action }}</p>{% endif %}
           </li>
           {% else %}<li>No readiness items recorded.</li>{% endfor %}
         </ul>
       </section>
 
       <section class="document-section" id="budget" aria-labelledby="budget-title">
-        <h2 id="budget-title">Budget</h2>
+        <h2 id="budget-title">Recorded expenses</h2>
+        <p>Subtotals keep currencies and price bases separate. No currency conversion or multiplication by traveller count is applied. These recorded expenses are not a complete trip budget.</p>
         <div class="budget-summary">
-          <div><span>Known minimum</span><strong>{% if view.budget.minimum is not none %}{{ "{:,.0f}".format(view.budget.minimum) }} {{ view.budget.currency }}{% else %}Unknown{% endif %}</strong></div>
-          <div><span>Known maximum</span><strong>{% if view.budget.maximum is not none %}{{ "{:,.0f}".format(view.budget.maximum) }} {{ view.budget.currency }}{% else %}Unknown{% endif %}</strong></div>
-          <div><span>Estimate quality</span><strong>{{ view.budget.confidence|capitalize }}</strong><span>{{ view.budget.unknown_count }} unknown amounts</span></div>
+          {% for subtotal in view.budget.subtotals %}
+          <div><span>{{ subtotal.currency }} · {{ subtotal.basis|replace('_', ' ') }}</span><strong>{{ money(subtotal.minimum, subtotal.currency) }}{% if subtotal.maximum != subtotal.minimum %} — {{ money(subtotal.maximum, subtotal.currency) }}{% endif %}</strong><span>{{ subtotal.item_count }} recorded rows</span></div>
+          {% else %}<p>No summable amounts recorded.</p>{% endfor %}
         </div>
+        <p>{{ view.budget.excluded_count }} rows excluded from subtotals; their recorded values and reasons remain below.</p>
         <table class="budget-table">
-          <thead><tr><th>Category</th><th>Range</th><th>Type</th><th>Basis</th><th>Confidence</th></tr></thead>
+          <thead><tr><th>Category</th><th>Recorded amount</th><th>Type</th><th>Basis</th><th>Subtotal inclusion</th></tr></thead>
           <tbody>
             {% for category in view.budget.categories %}
             <tr>
               <td data-label="Category">{{ category.category }}</td>
-              <td data-label="Range">{% if category.minimum is not none %}{{ "{:,.0f}".format(category.minimum) }} — {{ "{:,.0f}".format(category.maximum) }} {{ category.currency }}{% else %}Unknown{% endif %}</td>
+              <td data-label="Recorded amount">{{ money(category.minimum, category.currency) }}{% if category.maximum != category.minimum %} — {{ money(category.maximum, category.currency) }}{% endif %}</td>
               <td data-label="Type">{{ category.amount_type|replace('_', ' ') }}</td>
               <td data-label="Basis">{{ category.basis|replace('_', ' ') }}</td>
-              <td data-label="Confidence">{{ category.confidence }}</td>
+              <td data-label="Subtotal inclusion">{{ category.exclusion_reason or 'Included' }}</td>
             </tr>
             {% else %}<tr><td colspan="5">No budget items recorded.</td></tr>{% endfor %}
           </tbody>
@@ -341,7 +345,7 @@
             <p>{{ finding.message }}</p>
             <p>Affects: {{ finding.affected_ids|join(', ') or 'Unknown' }} · Path: {{ finding.path }}</p>
           </li>
-          {% else %}<li>No open findings.</li>{% endfor %}
+          {% else %}<li>No recorded concerns. Unknowns may still remain.</li>{% endfor %}
         </ul>
       </section>
 

@@ -69,7 +69,12 @@
     "identified": {
       "type": "object",
       "required": ["id"],
-      "properties": {"id": {"$ref": "#/$defs/id"}},
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "readiness_ids": {"$ref": "#/$defs/id_list"},
+        "source_ids": {"$ref": "#/$defs/id_list"},
+        "claim_ids": {"$ref": "#/$defs/id_list"}
+      },
       "additionalProperties": true
     },
     "day": {
@@ -77,6 +82,7 @@
       "required": ["id", "timeline"],
       "properties": {
         "id": {"$ref": "#/$defs/id"},
+        "date": {"type": ["string", "null"], "format": "date"},
         "route_id": {"$ref": "#/$defs/id"},
         "overnight_stop_id": {"$ref": "#/$defs/id"},
         "readiness_ids": {"$ref": "#/$defs/id_list"},
@@ -91,18 +97,18 @@
     },
     "timeline_event": {
       "type": "object",
-      "required": ["id", "time", "title", "detail"],
+      "required": ["id", "title", "detail"],
       "properties": {
         "id": {"$ref": "#/$defs/id"},
-        "time": {"type": "string"},
+        "time": {"type": ["string", "null"]},
         "title": {"type": "string", "minLength": 1},
         "detail": {"type": "string"},
-        "start_at": {"type": "string"},
-        "end_at": {"type": "string"},
-        "operating_start_at": {"type": "string"},
-        "operating_end_at": {"type": "string"},
-        "last_admission_at": {"type": "string"},
-        "last_service_at": {"type": "string"},
+        "start_at": {"type": ["string", "null"], "format": "date-time"},
+        "end_at": {"type": ["string", "null"], "format": "date-time"},
+        "operating_start_at": {"type": ["string", "null"], "format": "date-time"},
+        "operating_end_at": {"type": ["string", "null"], "format": "date-time"},
+        "last_admission_at": {"type": ["string", "null"], "format": "date-time"},
+        "last_service_at": {"type": ["string", "null"], "format": "date-time"},
         "allocated_minutes": {"type": "number", "minimum": 0},
         "components_minutes": {
           "type": "object",
@@ -128,44 +134,18 @@
     },
     "budget_item": {
       "type": "object",
-      "required": ["id", "amount_type", "currency", "basis"],
+      "required": ["id", "amount_type"],
       "properties": {
         "id": {"$ref": "#/$defs/id"},
         "amount_type": {"enum": ["exact", "estimate", "range", "unknown"]},
-        "amount": {"type": "number", "minimum": 0},
-        "amount_min": {"type": "number", "minimum": 0},
-        "amount_max": {"type": "number", "minimum": 0},
-        "currency": {"type": "string", "pattern": "^[A-Z]{3}$"},
-        "basis": {"enum": ["per_person", "per_group"]}
+        "amount": {"type": ["number", "null"], "minimum": 0},
+        "amount_min": {"type": ["number", "null"], "minimum": 0},
+        "amount_max": {"type": ["number", "null"], "minimum": 0},
+        "currency": {"type": ["string", "null"], "pattern": "^[A-Z]{3}$"},
+        "basis": {"enum": [null, "per_person", "per_group"]},
+        "source_ids": {"$ref": "#/$defs/id_list"},
+        "claim_ids": {"$ref": "#/$defs/id_list"}
       },
-      "allOf": [
-        {
-          "if": {"properties": {"amount_type": {"enum": ["exact", "estimate"]}}},
-          "then": {
-            "required": ["amount"],
-            "not": {"anyOf": [{"required": ["amount_min"]}, {"required": ["amount_max"]}]}
-          }
-        },
-        {
-          "if": {"properties": {"amount_type": {"const": "range"}}},
-          "then": {
-            "required": ["amount_min", "amount_max"],
-            "not": {"required": ["amount"]}
-          }
-        },
-        {
-          "if": {"properties": {"amount_type": {"const": "unknown"}}},
-          "then": {
-            "not": {
-              "anyOf": [
-                {"required": ["amount"]},
-                {"required": ["amount_min"]},
-                {"required": ["amount_max"]}
-              ]
-            }
-          }
-        }
-      ],
       "additionalProperties": true
     },
     "budget_summary": {

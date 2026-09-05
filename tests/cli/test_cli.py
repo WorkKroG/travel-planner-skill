@@ -10,9 +10,7 @@ from travel_planner.state import write_state_file
 
 def _commands() -> tuple[str, ...]:
     parser = _parser()
-    action = next(
-        item for item in parser._actions if isinstance(item, argparse._SubParsersAction)
-    )
+    action = next(item for item in parser._actions if isinstance(item, argparse._SubParsersAction))
     return tuple(action.choices)
 
 
@@ -45,7 +43,7 @@ def test_check_returns_2_and_structural_errors_for_invalid_state(
     assert payload["findings"] == []
 
 
-def test_check_returns_3_and_keeps_draft_blocker_visible(
+def test_check_returns_0_and_keeps_draft_blocker_visible(
     minimal_trip: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
     _update_itinerary(
@@ -66,7 +64,7 @@ def test_check_returns_3_and_keeps_draft_blocker_visible(
     exit_code = main(["check", str(minimal_trip)])
     payload = json.loads(capsys.readouterr().out)
 
-    assert exit_code == 3
+    assert exit_code == 0
     assert payload["lifecycle_consistent"] is True
     assert payload["unaccepted_blocking_findings"][0]["id"] == "blocker-rail"
 

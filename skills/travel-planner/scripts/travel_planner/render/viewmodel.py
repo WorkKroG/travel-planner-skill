@@ -8,6 +8,7 @@ from datetime import date, datetime
 from decimal import Decimal, InvalidOperation
 from typing import Any, Literal
 
+from ..budget import BudgetSubtotal, calculate_budget
 from ..checks import CheckReport, Finding
 from ..state import TripState
 
@@ -93,6 +94,8 @@ class ReadinessView:
     owner_id: str
     due_at: str
     next_check_at: str
+    next_action: str
+    issue: str
     source_ids: tuple[str, ...]
     claim_ids: tuple[str, ...]
 
@@ -105,16 +108,13 @@ class BudgetCategoryView:
     currency: str
     amount_type: str
     basis: str
-    confidence: str
+    exclusion_reason: str | None
 
 
 @dataclass(frozen=True)
 class BudgetView:
-    currency: str
-    minimum: Decimal | None
-    maximum: Decimal | None
-    unknown_count: int
-    confidence: str
+    subtotals: tuple[BudgetSubtotal, ...]
+    excluded_count: int
     categories: tuple[BudgetCategoryView, ...]
 
 
@@ -202,7 +202,8 @@ def _decimal(value: Any) -> Decimal | None:
     if value is None or isinstance(value, bool):
         return None
     try:
-        return Decimal(str(value))
+        amount = Decimal(str(value))
+        return amount if amount.is_finite() and amount >= 0 else None
     except (InvalidOperation, ValueError):
         return None
 
@@ -343,8 +344,10 @@ def _readiness(state: TripState) -> tuple[ReadinessView, ...]:
             category=_text(item.get("category")),
             status=_text(item.get("status")),
             owner_id=_text(item.get("owner_id")),
-            due_at=_text(item.get("due_at")),
-            next_check_at=_text(item.get("next_check_at")),
+            due_at=_text(item.get("due_at"), ""),
+            next_check_at=_text(item.get("next_check_at"), ""),
+            next_action=_text(item.get("next_action"), ""),
+            issue=_text(item.get("issue"), ""),
             source_ids=_strings(item.get("source_ids")),
             claim_ids=_strings(item.get("claim_ids")),
         )
@@ -354,65 +357,33 @@ def _readiness(state: TripState) -> tuple[ReadinessView, ...]:
 
 
 def _budget(state: TripState) -> BudgetView:
-    default_currency = _text(state.brief.get("budget", {}).get("currency"), "Unknown")
-    categories: list[BudgetCategoryView] = []
-    currencies: set[str] = set()
-    bases: set[str] = set()
-    minimum = Decimal(0)
-    maximum = Decimal(0)
-    known_count = 0
-    unknown_count = 0
-    confidences: list[str] = []
-    for item in _mapping_items(state.itinerary.get("budget_items")):
+    items = tuple(_mapping_items(state.itinerary.get("budget_items")))
+    calculated = calculate_budget(items)
+    exclusions = {item.index: item.reason for item in calculated.excluded}
+    categories = []
+    for index, item in enumerate(items):
         amount_type = _text(item.get("amount_type"), "unknown")
-        item_minimum = _decimal(item.get("amount_min", item.get("amount")))
-        item_maximum = _decimal(item.get("amount_max", item.get("amount")))
-        if item_minimum is None or item_maximum is None:
-            unknown_count += 1
+        if amount_type == "range":
+            minimum, maximum = _decimal(item.get("amount_min")), _decimal(item.get("amount_max"))
+        elif amount_type in {"exact", "estimate"}:
+            minimum = maximum = _decimal(item.get("amount"))
         else:
-            minimum += item_minimum
-            maximum += item_maximum
-            known_count += 1
-        confidence = _text(item.get("confidence"), "unknown")
-        confidences.append(confidence)
-        item_currency = _text(item.get("currency"), default_currency)
-        item_basis = _text(item.get("basis"), "unknown")
-        currencies.add(item_currency)
-        bases.add(item_basis)
+            minimum = maximum = None
         categories.append(
             BudgetCategoryView(
                 category=_text(item.get("category"), _text(item.get("id"))),
-                minimum=item_minimum,
-                maximum=item_maximum,
-                currency=item_currency,
+                minimum=minimum,
+                maximum=maximum,
+                currency=_text(item.get("currency")),
                 amount_type=amount_type,
-                basis=item_basis,
-                confidence=confidence,
+                basis=_text(item.get("basis")),
+                exclusion_reason=exclusions.get(index),
             )
         )
-    confidence = "low" if "low" in confidences or unknown_count else "unknown"
-    if confidences and not unknown_count and "low" not in confidences:
-        confidence = "medium" if "medium" in confidences else "high"
-    summary = state.itinerary.get("budget_summary")
-    summary_minimum: Decimal | None = None
-    summary_maximum: Decimal | None = None
-    summary_currency: str | None = None
-    if isinstance(summary, Mapping):
-        summary_currency = _text(summary.get("currency"), default_currency)
-        amount = _decimal(summary.get("amount"))
-        summary_minimum = amount if amount is not None else _decimal(summary.get("amount_min"))
-        summary_maximum = amount if amount is not None else _decimal(summary.get("amount_max"))
-    comparable = len(currencies) <= 1 and bases <= {"per_group"}
     return BudgetView(
-        currency=(
-            summary_currency
-            or (next(iter(currencies), default_currency) if comparable else "Multiple currencies")
-        ),
-        minimum=summary_minimum if summary_currency else (minimum if known_count and comparable else None),
-        maximum=summary_maximum if summary_currency else (maximum if known_count and comparable else None),
-        unknown_count=unknown_count,
-        confidence=confidence,
-        categories=tuple(sorted(categories, key=lambda item: item.category)),
+        calculated.subtotals,
+        len(calculated.excluded),
+        tuple(sorted(categories, key=lambda item: item.category)),
     )
 
 
@@ -467,9 +438,9 @@ def _sources(state: TripState) -> tuple[SourceView, ...]:
 
 def _verification_label(level: str) -> str:
     return {
-        "none": "Не проверено",
-        "ai_reviewed": "AI-review — менее точная проверка",
-        "codex_validated": "Проверено в Codex",
+        "none": "Данные не проверены",
+        "ai_reviewed": "AI-review — вероятностный разбор",
+        "codex_validated": "Целостность данных проверена в Codex",
     }.get(level, "Неизвестный уровень проверки")
 
 
@@ -477,8 +448,8 @@ def _declared_final_label(status: str, basis: Any) -> str | None:
     if status != "final":
         return None
     return {
-        "codex_validated": "Final — проверено в Codex",
-        "user_confirmed": "Final — подтверждено пользователем",
+        "codex_validated": "Prepared copy — данные проверены в Codex",
+        "user_confirmed": "Prepared copy — по запросу пользователя",
     }.get(basis)
 
 
@@ -489,13 +460,15 @@ def _status_label(
     lifecycle_safe: bool,
 ) -> str:
     if status == "final":
-        return declared_final_label if lifecycle_safe and declared_final_label else (
-            "Final — несогласованное состояние"
+        return (
+            declared_final_label
+            if lifecycle_safe and declared_final_label
+            else ("Prepared copy — несогласованное состояние")
         )
     if verification == "ai_reviewed":
         return "Draft — AI-review"
     if verification == "codex_validated":
-        return "Draft — проверено в Codex"
+        return "Draft — данные проверены в Codex"
     return "Draft — без проверки"
 
 
@@ -588,7 +561,7 @@ def build_view(
             if lifecycle_safe
             else (
                 "Статус и отчёт проверки противоречат друг другу; "
-                "этот документ не следует считать безопасным Final."
+                "этот документ нельзя считать согласованной подготовленной копией."
             )
         ),
         accepted_blockers=accepted_blockers,

@@ -10,11 +10,11 @@ scenarios:
       - A reviewable complex-trip input and fixed generation timestamp are available.
     steps:
       - Create or copy the canonical bundle into an explicitly selected trip workspace.
-      - Complete the trip state, run check, and proceed only with a valid Codex Final.
+      - Run check on the recorded data and prepare a copy that keeps remaining unknowns and actions visible.
       - Render the self-contained Japan-style HTML and open the generated file locally.
     required_evidence:
       - Command transcript showing init, check exit code 0, and render without hidden state mutation.
-      - Final HTML containing the exact lifecycle label, route, blockers section, days, budget, readiness, and sources.
+      - Prepared HTML containing the exact document label, route, saved concerns, days, separate expense subtotals, readiness, and sources.
       - Stable Japan reference hash and static evidence that no required remote asset exists.
 
   - id: user-confirmed-final
@@ -28,7 +28,7 @@ scenarios:
       - Inspect the screen and print source treatment of the accepted blocker.
     required_evidence:
       - Check output distinguishes the accepted blocker from unaccepted blockers.
-      - HTML shows Final confirmed by the user while the blocker stays blocking and unresolved.
+      - HTML shows Prepared copy requested by the user while the concern stays blocking and unresolved; acceptance is recorded only when explicitly supplied.
       - Browser print observation keeps the blocker, lifecycle label, timestamp, and rationale visible.
 
   - id: cross-surface-portability

@@ -27,7 +27,8 @@ def japan_state(tmp_path: Path) -> TripState:
 def japan_report() -> CheckReport:
     return CheckReport(
         structural_errors=(),
-        findings=(
+        findings=(),
+        saved_findings=(
             Finding(
                 id="booking-window-rail-release",
                 code="BOOK-001",

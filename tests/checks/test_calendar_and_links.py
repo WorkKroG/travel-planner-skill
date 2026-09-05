@@ -26,7 +26,7 @@ def _state(japan_state: TripState) -> TripState:
     return state
 
 
-def test_calendar_uses_canonical_timeline_and_detects_cross_day_overlap(
+def test_overlapping_planned_events_do_not_create_a_trip_verdict(
     japan_state: TripState,
 ) -> None:
     state = _state(japan_state)
@@ -61,11 +61,8 @@ def test_calendar_uses_canonical_timeline_and_detects_cross_day_overlap(
 
     report = run_checks(state)
 
-    overlap = next(
-        finding for finding in report.findings if finding.code == "CALENDAR_INTERVAL_OVERLAP"
-    )
-    assert overlap.path == "itinerary.yaml.days[1].timeline[0]"
-    assert overlap.affected_ids == ("overnight-ride", "early-transfer")
+    assert report.findings == ()
+    assert report.ok
 
 
 def test_calendar_reports_naive_timestamps_instead_of_raising_type_error(
@@ -98,14 +95,15 @@ def test_calendar_reports_naive_timestamps_instead_of_raising_type_error(
 
     report = run_checks(state)
 
-    finding = next(
-        finding for finding in report.findings if finding.code == "CALENDAR_TIMESTAMP_INVALID"
-    )
-    assert finding.path == "itinerary.yaml.days[0].timeline[1]"
-    assert finding.affected_ids == ("naive",)
+    findings = [item for item in report.findings if item.code == "CALENDAR_TIMESTAMP_INVALID"]
+    assert {item.path for item in findings} == {
+        "itinerary.yaml.days[0].timeline[1].start_at",
+        "itinerary.yaml.days[0].timeline[1].end_at",
+    }
+    assert all(item.affected_ids == ("naive",) for item in findings)
 
 
-def test_calendar_checks_only_structured_operating_and_service_cutoffs(
+def test_operating_cutoffs_are_recorded_constraints_for_planning_review(
     japan_state: TripState,
 ) -> None:
     state = _state(japan_state)
@@ -135,14 +133,10 @@ def test_calendar_checks_only_structured_operating_and_service_cutoffs(
         }
     ]
 
-    assert [finding.code for finding in run_checks(state).findings] == [
-        "CALENDAR_LAST_ADMISSION",
-        "CALENDAR_LAST_SERVICE",
-        "CALENDAR_OUTSIDE_OPERATING_WINDOW",
-    ]
+    assert run_checks(state).findings == ()
 
 
-def test_timeline_travel_fields_expose_buffer_and_connection_shortfalls(
+def test_recorded_buffers_do_not_create_a_computed_trip_gate(
     japan_state: TripState,
 ) -> None:
     state = _state(japan_state)
@@ -165,11 +159,7 @@ def test_timeline_travel_fields_expose_buffer_and_connection_shortfalls(
         }
     ]
 
-    assert [finding.code for finding in run_checks(state).findings] == [
-        "BUFFER_DOOR_TO_DOOR_SHORTFALL",
-        "BUFFER_MARKER_MISSING",
-        "CONNECTION_MINIMUM_SHORTFALL",
-    ]
+    assert run_checks(state).findings == ()
 
 
 def test_canonical_references_resolve_and_array_findings_include_the_index(

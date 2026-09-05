@@ -31,7 +31,7 @@ def _parser() -> argparse.ArgumentParser:
     init.add_argument("--trip-id")
     init.add_argument("--confirm-path", action="store_true")
 
-    check = commands.add_parser("check", help="Validate state and run explicit hard checks")
+    check = commands.add_parser("check", help="Check recorded data integrity")
     check.add_argument("path", type=Path)
 
     render = commands.add_parser("render", help="Render the shared HTML itinerary")
@@ -93,6 +93,9 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 2
         state = load_trip(args.path)
         report = run_checks(state)
+        if not report.ok:
+            _print_report(report)
+            return 3
         write_html(build_view(state, report, args.at), args.output, HTML_DEFAULTS)
         print(f"Rendered HTML: {args.output}")
         return 0

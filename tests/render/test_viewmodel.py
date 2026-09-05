@@ -30,9 +30,7 @@ def test_view_orders_days_by_number_independent_of_yaml_sequence(
     """Keep all render adapters chronological when canonical day records are reordered."""
     reordered = deepcopy(japan_state)
     reordered.itinerary["days"] = list(reversed(reordered.itinerary["days"]))
-    expected = sorted(
-        (day["number"], day["id"]) for day in japan_state.itinerary["days"]
-    )
+    expected = sorted((day["number"], day["id"]) for day in japan_state.itinerary["days"])
 
     view = build_view(reordered, japan_report, GENERATED_AT)
 
@@ -55,11 +53,11 @@ def test_view_does_not_mutate_canonical_state(
 @pytest.mark.parametrize(
     ("verification_level", "status_label", "verification_label"),
     [
-        ("none", "Draft — без проверки", "Не проверено"),
+        ("none", "Draft — без проверки", "Данные не проверены"),
         (
             "ai_reviewed",
             "Draft — AI-review",
-            "AI-review — менее точная проверка",
+            "AI-review — вероятностный разбор",
         ),
     ],
 )
@@ -94,7 +92,7 @@ def test_codex_validated_final_uses_exact_product_label() -> None:
     assert view.document_status == "final"
     assert view.verification_level == "codex_validated"
     assert view.finalization_basis == "codex_validated"
-    assert view.status_label == "Final — проверено в Codex"
+    assert view.status_label == "Prepared copy — данные проверены в Codex"
     assert view.lifecycle_safe is True
 
 
@@ -124,11 +122,11 @@ def test_user_confirmed_final_keeps_accepted_blocker_blocking_and_visible(
             }
         ],
     )
-    report = CheckReport((), (blocker,), (), ("blocker-rail",))
+    report = CheckReport((), (), (), ("blocker-rail",), (blocker,))
 
     view = build_view(state, report, GENERATED_AT)
 
-    assert view.status_label == "Final — подтверждено пользователем"
+    assert view.status_label == "Prepared copy — по запросу пользователя"
     assert view.lifecycle_safe is True
     assert view.unaccepted_blockers == ()
     assert len(view.accepted_blockers) == 1
@@ -162,12 +160,12 @@ def test_view_uses_check_report_as_the_lifecycle_classification_boundary(
 
     view = build_view(
         state,
-        CheckReport((), (blocker,), (), (blocker.id,)),
+        CheckReport((), (), (), (blocker.id,), (blocker,)),
         GENERATED_AT,
     )
 
     assert view.lifecycle_safe is True
-    assert view.status_label == "Final — подтверждено пользователем"
+    assert view.status_label == "Prepared copy — по запросу пользователя"
     assert [item.id for item in view.accepted_blockers] == [blocker.id]
     assert view.accepted_blockers[0].acceptance_label == (
         "Принят пользователем — остаётся блокирующим"
@@ -204,7 +202,7 @@ def test_unaccepted_and_accepted_blockers_are_normalized_separately(
             "rationale": "Accepted explicitly.",
         }
     ]
-    report = CheckReport((), (accepted, unaccepted), (), ("accepted-one",))
+    report = CheckReport((), (), (), ("accepted-one",), (accepted, unaccepted))
 
     view = build_view(state, report, GENERATED_AT)
 
@@ -212,7 +210,7 @@ def test_unaccepted_and_accepted_blockers_are_normalized_separately(
     assert [item.id for item in view.unaccepted_blockers] == ["open-one"]
 
 
-def test_inconsistent_codex_final_is_never_presented_as_safe(
+def test_invalid_data_is_never_presented_as_a_consistent_prepared_copy(
     japan_state: TripState,
 ) -> None:
     """Catch a contradictory Final/report combination retaining success styling and copy."""
@@ -224,19 +222,19 @@ def test_inconsistent_codex_final_is_never_presented_as_safe(
     )
     blocker = Finding(
         "blocker-rail",
-        "SCHEDULE_UNRELEASED",
+        "LINK_ROUTE_NOT_FOUND",
         "blocking",
         "itinerary.yaml.days[1]",
         ("day-2",),
-        "The final timetable is not released.",
+        "Recorded route reference does not resolve.",
     )
     view = build_view(state, CheckReport((), (blocker,), (), ()), GENERATED_AT)
 
     assert view.document_status == "final"
-    assert view.declared_final_label == "Final — проверено в Codex"
-    assert view.status_label == "Final — несогласованное состояние"
+    assert view.declared_final_label == "Prepared copy — данные проверены в Codex"
+    assert view.status_label == "Prepared copy — несогласованное состояние"
     assert view.lifecycle_safe is False
-    assert "не следует считать безопасным" in view.lifecycle_warning
+    assert "нельзя считать согласованной" in view.lifecycle_warning
 
 
 def test_source_and_readiness_uncertainty_remain_explicit(
@@ -279,9 +277,10 @@ def test_budget_does_not_invent_a_cross_currency_total(
 
     view = build_view(state, CheckReport((), (), (), ()), GENERATED_AT)
 
-    assert view.budget.minimum is None
-    assert view.budget.maximum is None
-    assert view.budget.currency == "Multiple currencies"
+    assert [(item.currency, item.basis, item.minimum) for item in view.budget.subtotals] == [
+        ("JPY", "per_group", Decimal(10000)),
+        ("USD", "per_group", Decimal(100)),
+    ]
     assert [(item.minimum, item.currency) for item in view.budget.categories] == [
         (Decimal(100), "USD"),
         (Decimal(10000), "JPY"),
@@ -289,20 +288,21 @@ def test_budget_does_not_invent_a_cross_currency_total(
     assert {item.basis for item in view.budget.categories} == {"per_group"}
 
 
-def test_budget_uses_the_checked_canonical_summary_when_present(
-    japan_state: TripState,
-) -> None:
-    """Catch the renderer recalculating or discarding the canonical checked total."""
+def test_budget_ignores_a_saved_overall_summary_without_changing_it(japan_state: TripState) -> None:
     state = deepcopy(japan_state)
-    state.itinerary["budget_summary"] = {
-        "currency": "JPY",
-        "basis": "per_group",
-        "amount_min": 250000,
-        "amount_max": 330000,
-    }
-
+    recorded = {"currency": "JPY", "basis": "per_group", "amount_min": 250000, "amount_max": 330000}
+    state.itinerary["budget_summary"] = recorded
+    state.itinerary["budget_items"] = [
+        {
+            "id": "one-row",
+            "amount_type": "exact",
+            "amount": 7.25,
+            "currency": "USD",
+            "basis": "per_person",
+        }
+    ]
     view = build_view(state, CheckReport((), (), (), ()), GENERATED_AT)
-
-    assert view.budget.minimum == Decimal(250000)
-    assert view.budget.maximum == Decimal(330000)
-    assert view.budget.currency == "JPY"
+    assert len(view.budget.subtotals) == 1
+    assert view.budget.subtotals[0].minimum == Decimal("7.25")
+    assert view.budget.subtotals[0].currency == "USD"
+    assert state.itinerary["budget_summary"] == recorded
