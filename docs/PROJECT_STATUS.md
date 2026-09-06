@@ -24,7 +24,7 @@ HTML-маршрут перестроен из dashboard-композиции в 
 - временные `init`, `check` и `render` проходят как из editable install, так и из собранного wheel;
 - wheel содержит актуальные schemas, HTML template, CSS, JavaScript, icons и trip template;
 - committed Japan HTML совпадает со свежим fixed-time render; SHA-256: `6f1ee3a9dee08289bbe42ded422dd9bed2ef7fa27906ced342113be8e42d15ed`;
-- независимый skill forward-test завершён с `Pass`; Impeccable finish-review дал `Pass with limitations`; замечания отдельного независимого code review исправлены и ожидают повторной проверки exact head.
+- независимый skill forward-test завершён с `Pass`; Impeccable finish-review дал `Pass with limitations`; отдельный независимый code review повторно проверил exact head после исправлений и завершился с `Ready to merge: Yes`, без Critical или Important замечаний.
 
 Статические тесты подтверждают source contracts, а не реальную браузерную раскладку или поведение assistive technology.
 

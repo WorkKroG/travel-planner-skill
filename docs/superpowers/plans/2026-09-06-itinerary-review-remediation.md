@@ -49,6 +49,6 @@
 ### Task 4: Verify, commit, and independently re-review
 
 - [x] Run fresh focused and full Python tests, Ruff, package checks, JavaScript syntax, deterministic rendering, temporary workspace smoke, and diff hygiene.
-- [ ] Commit the remediation on `codex/readable-itinerary-days`.
-- [ ] Send the exact new head to the same independent review task and wait for a `Ready to merge: Yes` verdict.
+- [x] Commit the remediation on `codex/readable-itinerary-days`.
+- [x] Send the exact new head to an independent review task and wait for a `Ready to merge: Yes` verdict.
 - [ ] Only after that verdict, run final exact-head verification, push the feature branch, and create a PR against `main`; never merge it.
