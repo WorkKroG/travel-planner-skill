@@ -18,6 +18,15 @@
   -->
   {{ icons }}
 
+  {% set event_icons = {
+    'transport': 'route',
+    'activity': 'activity',
+    'meal': 'meal',
+    'lodging': 'lodging',
+    'rest': 'rest',
+    'checkpoint': 'stop'
+  } %}
+
   {% macro render_timeline(timeline, panel_id) -%}
   <ol class="timeline">
     {% for event in timeline %}
@@ -25,7 +34,7 @@
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">{{ tr('time') }}</span><span>{{ event.time }}</span></div>
       <div class="event-body">
-        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-{% if event.kind == 'checkpoint' %}stop{% elif event.kind == 'transport' %}route{% else %}square{% endif %}"></use></svg>{{ enum_label(event.kind) }}</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-{{ event_icons[event.kind] }}"></use></svg>{{ enum_label(event.kind) }}</p>
         <h5>{{ event.title }}</h5>
         {% if event.detail %}<p>{{ event.detail }}</p>{% endif %}
 

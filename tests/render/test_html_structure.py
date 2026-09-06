@@ -1,6 +1,7 @@
 import hashlib
 import re
 from copy import deepcopy
+from dataclasses import replace
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -296,6 +297,35 @@ def test_day_chapter_owns_timeline_links_checkpoints_and_local_alternatives(
     assert "Food in context" not in day
     assert "Contextual actions" not in day
     assert "Critical constraints" not in day
+
+
+def test_each_timeline_event_kind_uses_a_specific_available_icon(
+    japan_view: ItineraryView,
+) -> None:
+    """Catch valid event kinds collapsing into one generic or missing icon."""
+    icons = {
+        "transport": "route",
+        "activity": "activity",
+        "meal": "meal",
+        "lodging": "lodging",
+        "rest": "rest",
+        "checkpoint": "stop",
+    }
+    day = japan_view.days[0]
+    seed = day.timeline[0]
+    timeline = tuple(
+        replace(seed, event_id=f"event-icon-{kind}", kind=kind, title=kind)
+        for kind in icons
+    )
+    view = replace(japan_view, days=(replace(day, timeline=timeline, scenarios=()),))
+
+    html = render_html(view, media={}, options=DEFAULTS)
+
+    for kind, icon in icons.items():
+        assert f'<symbol id="icon-{icon}"' in html
+        event_start = html.index(f'data-event-id="event-icon-{kind}"')
+        event_kind_end = html.index("</p>", event_start)
+        assert f'href="#icon-{icon}"' in html[event_start:event_kind_end]
 
 
 def test_material_day_scenarios_are_tabs_over_complete_timelines(
