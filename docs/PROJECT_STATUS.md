@@ -8,7 +8,7 @@
 
 HTML-маршрут перестроен из dashboard-композиции в спокойный одноколоночный документ. Встроенное оглавление закрыто по умолчанию, каждый день читается как отдельная глава, а основной `days[].timeline` объединяет переезды, активности, еду, заселение, отдых и контрольные точки в одной хронологии.
 
-Контекст принадлежит событию: HTTPS-ссылки и локальные замены хранятся в `timeline[].links[]` и `timeline[].alternatives[]`. Контрольная точка явно записывает, что проверить и как изменить план. `days[].scenarios[]` содержит только полноценные альтернативные timelines; основной план остаётся в `days[].timeline`. Все шесть типов событий используют отдельные SVG-иконки. JavaScript улучшает фильтры и ARIA tabs, но без него все сценарии остаются читаемыми. Полнотекстового поиска в документе нет. Print CSS восстанавливает скрытые дни, сценарии и закрытые event-альтернативы, начинает каждый день с новой страницы и повторяет day/date-контекст на продолжениях.
+Контекст принадлежит событию: HTTPS-ссылки и локальные замены хранятся в `timeline[].links[]` и `timeline[].alternatives[]`. Контрольная точка явно записывает, что проверить и как изменить план. `days[].scenarios[]` содержит только полноценные альтернативные timelines; основной план остаётся в `days[].timeline`. Все шесть типов событий используют отдельные SVG-иконки. JavaScript улучшает фильтры и ARIA tabs, но без него все сценарии и event-альтернативы остаются читаемыми. Полнотекстового поиска в документе нет. Print CSS восстанавливает скрытые дни и сценарии, JavaScript раскрывает event-альтернативы перед печатью, каждый день начинается с новой страницы, а каждое печатное событие повторяет day/date/region-контекст. Полные URL источников и действий перечислены в печатном аппендиксе.
 
 `brief.yaml.document_language` выбирает английские или русские системные подписи, даты, weekday/enum/unknown labels и объявления JavaScript; отсутствие поля сохраняет английский default. Renderer не переводит пользовательский контент. Текущий 12-дневный Japan example записан по-русски и явно использует `document_language: ru`.
 
@@ -18,13 +18,13 @@ HTML-маршрут перестроен из dashboard-композиции в 
 
 На текущем рабочем дереве получены следующие результаты:
 
-- **186 tests passed** в основной Python 3.12 environment; clean-install и package smoke были отдельно подтверждены в чистой временной environment;
+- **189 tests passed** в основной Python 3.12 environment; clean-install и package smoke были отдельно подтверждены в чистой временной environment;
 - Ruff, `pip check`, JavaScript syntax и `git diff --check` проходят;
 - skill `quick_validate` и plugin validation из staged root `travel-planner` проходят;
 - временные `init`, `check` и `render` проходят как из editable install, так и из собранного wheel;
 - wheel содержит актуальные schemas, HTML template, CSS, JavaScript, icons и trip template;
-- committed Japan HTML совпадает со свежим fixed-time render; SHA-256: `5454e65ea05ad67713aed40aa988843e2dbfa1067c4a7ee5c5540282463cf59d`;
-- независимый skill forward-test завершён с `Pass`; Impeccable finish-review дал `Pass with limitations`, а три найденных source-level дефекта исправлены.
+- committed Japan HTML совпадает со свежим fixed-time render; SHA-256: `102299b77c814edea66f3cc70e4bb7b71d573ea779d899abe23af7abd7924fcb`;
+- независимый skill forward-test завершён с `Pass`; Impeccable finish-review дал `Pass with limitations`; замечания отдельного независимого code review исправлены и ожидают повторной проверки exact head.
 
 Статические тесты подтверждают source contracts, а не реальную браузерную раскладку или поведение assistive technology.
 

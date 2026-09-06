@@ -16,6 +16,9 @@
   };
 
   root.classList.add("js-enabled");
+  const alternativeDisclosures = Array.from(
+    document.querySelectorAll(".event-alternatives"),
+  );
 
   try {
     const days = Array.from(document.querySelectorAll("[data-day]"));
@@ -100,6 +103,23 @@
           selectScenario(tabs[targetIndex], { focus: true });
         });
       });
+      tablist.hidden = false;
+    });
+
+    alternativeDisclosures.forEach((disclosure) => {
+      disclosure.open = false;
+    });
+    let disclosureOpenState = [];
+    window.addEventListener("beforeprint", () => {
+      disclosureOpenState = alternativeDisclosures.map((disclosure) => disclosure.open);
+      alternativeDisclosures.forEach((disclosure) => {
+        disclosure.open = true;
+      });
+    });
+    window.addEventListener("afterprint", () => {
+      alternativeDisclosures.forEach((disclosure, index) => {
+        disclosure.open = disclosureOpenState[index] ?? false;
+      });
     });
 
     document.querySelectorAll("[data-optional-media]").forEach((figure) => {
@@ -124,6 +144,12 @@
     if (notice) notice.hidden = false;
     document.querySelectorAll("[data-scenario]").forEach((panel) => {
       panel.hidden = false;
+    });
+    document.querySelectorAll("[data-scenario-tabs]").forEach((tablist) => {
+      tablist.hidden = true;
+    });
+    alternativeDisclosures.forEach((disclosure) => {
+      disclosure.open = true;
     });
     console.warn("Itinerary enhancements unavailable; core document remains readable.", error);
   }

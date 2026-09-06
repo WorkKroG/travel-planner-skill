@@ -713,8 +713,11 @@ def build_view(
         for finding in check_report.unaccepted_blocking_findings
     )
     dates = state.brief.get("travel_dates", {})
+    unknown = _unknown(language)
     summary = SummaryView(
-        date_range=f"{_text(dates.get('start'))} — {_text(dates.get('end'))}",
+        date_range=(
+            f"{_text(dates.get('start'), unknown)} — {_text(dates.get('end'), unknown)}"
+        ),
         traveler_count=len(state.brief.get("travelers", [])),
         thesis=_text(state.brief.get("trip_thesis"), _unknown(language)),
         route_text=" → ".join(stop.name for stop in route)

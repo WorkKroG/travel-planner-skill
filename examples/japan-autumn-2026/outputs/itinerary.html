@@ -895,6 +895,12 @@ button[aria-selected="true"] {
   font-size: 0.82rem;
 }
 
+.print-url,
+.event-print-context,
+.print-link-appendix {
+  display: none;
+}
+
 .event-alternatives {
   margin-top: var(--space-2);
   border-top: 1px solid color-mix(in srgb, var(--chapter-accent) 35%, transparent);
@@ -1246,9 +1252,6 @@ button[aria-selected="true"] {
   @page {
     size: A4 portrait;
     margin: 16mm 14mm 18mm;
-    @top-right { content: string(day-title) " · " string(day-date); }
-    @bottom-left { content: string(trip-title) " · " string(trip-status); }
-    @bottom-right { content: counter(page) " / " counter(pages); }
   }
 
   :root,
@@ -1264,22 +1267,6 @@ button[aria-selected="true"] {
 
   body::before {
     display: none !important;
-  }
-
-  h1 {
-    string-set: trip-title content();
-  }
-
-  .document-status {
-    string-set: trip-status content();
-  }
-
-  .day-title-group h3 {
-    string-set: day-title content();
-  }
-
-  .day-date {
-    string-set: day-date content();
   }
 
   .trip-hero,
@@ -1316,8 +1303,12 @@ button[aria-selected="true"] {
     display: block !important;
   }
 
-  .event-alternatives > :not(summary) {
-    display: block !important;
+  .event-print-context {
+    display: block;
+    margin: 0 0 1.5mm;
+    color: #333;
+    font-size: 8pt;
+    font-weight: 700;
   }
 
   article[data-day][hidden] {
@@ -1389,10 +1380,19 @@ button[aria-selected="true"] {
     display: none;
   }
 
-  a[href^="http"]::after {
-    content: " [" attr(data-source-id) "]";
+  .print-url {
+    display: inline;
     color: #333;
     font-size: 8pt;
+  }
+
+  .print-link-appendix {
+    display: block;
+  }
+
+  .print-link-appendix .print-url {
+    display: block;
+    overflow-wrap: anywhere;
   }
 }
 </style>
@@ -1421,6 +1421,7 @@ button[aria-selected="true"] {
   <symbol id="icon-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
   <symbol id="icon-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5"/></symbol>
 </svg>
+
 
 
 
@@ -1557,9 +1558,9 @@ button[aria-selected="true"] {
             <dl class="day-meta"><div><dt>Ночёвка</dt><dd>Tokyo</dd></div><div><dt>Переезды</dt><dd>Трансфер после прилёта</dd></div><div><dt>Нагрузка</dt><dd>лёгкая</dd></div><div><dt>Проверено</dt><dd>2026-08-28</dd></div></dl>
           </header>
 
-          <div class="scenario-tabs interactive-controls" data-scenario-tabs role="tablist" aria-label="Сценарий дня 1">
+          <div class="scenario-tabs interactive-controls" data-scenario-tabs hidden role="tablist" aria-label="Сценарий дня 1">
             <button type="button" id="day-1-tab-primary" role="tab" aria-selected="true" aria-controls="day-1-panel-primary" tabindex="0" data-show-scenario="primary">Основной</button>
-<button type="button" id="day-1-tab-low-load" role="tab" aria-selected="false" aria-controls="day-1-panel-low-load" tabindex="-1" data-show-scenario="low-load">Низкая нагрузка</button>          </div>
+<button type="button" id="day-1-tab-alternative-low-load" role="tab" aria-selected="false" aria-controls="day-1-panel-alternative-low-load" tabindex="-1" data-show-scenario="alternative-low-load">Низкая нагрузка</button>          </div>
 
           <div class="scenario-stack">
             <section class="scenario-panel scenario-panel--primary" id="day-1-panel-primary" data-scenario="primary" role="tabpanel" aria-labelledby="day-1-tab-primary" tabindex="0">
@@ -1568,13 +1569,14 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>После прилёта</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 1 · 2 ноября 2026 · Tokyo</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg>Переезд</p>
         <h5>Трансфер до отеля</h5>
 <p>Точное время зависит от выбранного рейса; не добавлять жёстких планов.</p>
 
         <ul class="event-actions" aria-label="Трансфер до отеля">
           <li>
-            <a class="external-link" href="https://www.google.com/maps/search/?api=1&amp;query=Tokyo" data-source-id="event-day-1-arrival"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg>Построить маршрут в Google Maps</a>
+            <a class="external-link" href="https://www.google.com/maps/search/?api=1&amp;query=Tokyo"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg>Построить маршрут в Google Maps</a>
 <span class="network-label"><svg class="icon" aria-hidden="true"><use href="#icon-cloud"></use></svg>Требуется интернет</span>          </li>
         </ul>
 
@@ -1584,6 +1586,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>Около 17:00</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 1 · 2 ноября 2026 · Tokyo</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-lodging"></use></svg>Заселение</p>
         <h5>Заселение и пауза</h5>
 <p>Сначала завершить заселение и оценить силы после дороги.</p>
@@ -1595,6 +1598,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>До 18:30</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 1 · 2 ноября 2026 · Tokyo</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-stop"></use></svg>Контрольная точка</p>
         <h5>Решить, выходить ли на прогулку</h5>
 <p>Контрольная точка защищает первый вечер от перегрузки.</p>
@@ -1610,12 +1614,13 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>19:00</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 1 · 2 ноября 2026 · Tokyo</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-meal"></use></svg>Еда</p>
         <h5>Ужин рядом с отелем</h5>
 <p>Выбрать место только после заселения, не обещая наличие столика.</p>
 
 
-        <details class="event-alternatives" id="day-1-primary-event-day-1-dinner-alternatives">
+        <details class="event-alternatives" id="day-1-primary-event-day-1-dinner-alternatives" open>
           <summary>Альтернативы (1)</summary>
           <div class="alternative-list">
             <article class="event-alternative">
@@ -1630,13 +1635,14 @@ button[aria-selected="true"] {
     </li>
   </ol>
             </section>
-            <section class="scenario-panel scenario-panel--alternative" id="day-1-panel-low-load" data-scenario="low-load" role="tabpanel" aria-labelledby="day-1-tab-low-load" tabindex="0">
+            <section class="scenario-panel scenario-panel--alternative" id="day-1-panel-alternative-low-load" data-scenario="alternative-low-load" role="tabpanel" aria-labelledby="day-1-tab-alternative-low-load" tabindex="0">
               <h4 class="scenario-heading">Альтернативный сценарий · Низкая нагрузка</h4>
 <p class="scenario-summary">Полностью убрать прогулку и завершить день после заселения.</p>              <ol class="timeline">
     <li class="timeline-event timeline-event--transport" data-event-id="event-day-1-low-transfer">
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>После прилёта</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 1 · 2 ноября 2026 · Tokyo</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg>Переезд</p>
         <h5>Прямой трансфер</h5>
 <p>Ехать сразу в отель.</p>
@@ -1648,6 +1654,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>Около 17:00</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 1 · 2 ноября 2026 · Tokyo</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-lodging"></use></svg>Заселение</p>
         <h5>Заселение</h5>
 <p>После заселения больше никуда не ехать.</p>
@@ -1659,6 +1666,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>19:00</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 1 · 2 ноября 2026 · Tokyo</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-meal"></use></svg>Еда</p>
         <h5>Ужин и отдых</h5>
 <p>Выбрать самый близкий доступный вариант.</p>
@@ -1689,6 +1697,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>08:30</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 2 · 3 ноября 2026 · Tokyo</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-meal"></use></svg>Еда</p>
         <h5>Завтрак рядом с отелем</h5>
 <p>Начать день без отдельного переезда.</p>
@@ -1700,13 +1709,14 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>10:00</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 2 · 3 ноября 2026 · Tokyo</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-activity"></use></svg>Активность</p>
         <h5>Прогулка по району</h5>
 <p>Держать маршрут компактным и закончить до вечернего часа пик.</p>
 
         <ul class="event-actions" aria-label="Прогулка по району">
           <li>
-            <a class="external-link" href="https://www.google.com/maps/search/?api=1&amp;query=Tokyo" data-source-id="event-day-2-orientation"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg>Открыть район на карте</a>
+            <a class="external-link" href="https://www.google.com/maps/search/?api=1&amp;query=Tokyo"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg>Открыть район на карте</a>
 <span class="network-label"><svg class="icon" aria-hidden="true"><use href="#icon-cloud"></use></svg>Требуется интернет</span>          </li>
         </ul>
 
@@ -1716,6 +1726,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>13:00</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 2 · 3 ноября 2026 · Tokyo</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-meal"></use></svg>Еда</p>
         <h5>Обед по ходу маршрута</h5>
 <p>Выбрать место в том же районе.</p>
@@ -1727,6 +1738,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>16:00</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 2 · 3 ноября 2026 · Tokyo</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-rest"></use></svg>Отдых</p>
         <h5>Свободный вечер</h5>
 <p>Оставить запас для восстановления.</p>
@@ -1757,6 +1769,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>До выхода</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 3 · 4 ноября 2026 · Tokyo</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-stop"></use></svg>Контрольная точка</p>
         <h5>Перепроверить часы работы</h5>
 <p>Записанный источник не обещает актуальный режим на дату поездки.</p>
@@ -1772,12 +1785,13 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>09:30</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 3 · 4 ноября 2026 · Tokyo</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-activity"></use></svg>Активность</p>
         <h5>Утреннее посещение</h5>
 <p>Прийти раньше основного потока и не удлинять визит при очереди.</p>
 
 
-        <details class="event-alternatives" id="day-3-primary-event-day-3-site-alternatives">
+        <details class="event-alternatives" id="day-3-primary-event-day-3-site-alternatives" open>
           <summary>Альтернативы (1)</summary>
           <div class="alternative-list">
             <article class="event-alternative">
@@ -1787,7 +1801,7 @@ button[aria-selected="true"] {
 <div><dt>Нагрузка</dt><dd>низкая</dd></div><div><dt>Расстояние</dt><dd>в пределах текущего района</dd></div><div><dt>Бронирование</dt><dd>проверить вход перед выходом</dd></div>              </dl>
               <ul class="event-actions">
                 <li>
-                  <a class="external-link" href="https://www.google.com/maps/search/?api=1&amp;query=Tokyo" data-source-id="alt-day-3-museum"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg>Открыть район на карте</a>
+                  <a class="external-link" href="https://www.google.com/maps/search/?api=1&amp;query=Tokyo"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg>Открыть район на карте</a>
 <span class="network-label">Требуется интернет</span>                </li>
               </ul>
             </article>
@@ -1799,6 +1813,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>13:00</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 3 · 4 ноября 2026 · Tokyo</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-meal"></use></svg>Еда</p>
         <h5>Обед</h5>
 <p>Выбрать место рядом с утренней точкой.</p>
@@ -1810,6 +1825,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>15:00</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 3 · 4 ноября 2026 · Tokyo</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-rest"></use></svg>Отдых</p>
         <h5>Тихая вторая половина дня</h5>
 <p>Не добавлять ещё одну главную достопримечательность.</p>
@@ -1832,9 +1848,9 @@ button[aria-selected="true"] {
             <dl class="day-meta"><div><dt>Ночёвка</dt><dd>Kyoto</dd></div><div><dt>Переезды</dt><dd>Междугородний поезд; итоговое время ещё не опубликовано</dd></div><div><dt>Нагрузка</dt><dd>лёгкая</dd></div><div><dt>Проверено</dt><dd>2026-08-28</dd></div></dl>
           </header>
 
-          <div class="scenario-tabs interactive-controls" data-scenario-tabs role="tablist" aria-label="Сценарий дня 4">
+          <div class="scenario-tabs interactive-controls" data-scenario-tabs hidden role="tablist" aria-label="Сценарий дня 4">
             <button type="button" id="day-4-tab-primary" role="tab" aria-selected="true" aria-controls="day-4-panel-primary" tabindex="0" data-show-scenario="primary">Основной</button>
-<button type="button" id="day-4-tab-later-train" role="tab" aria-selected="false" aria-controls="day-4-panel-later-train" tabindex="-1" data-show-scenario="later-train">Поздний поезд</button>          </div>
+<button type="button" id="day-4-tab-alternative-later-train" role="tab" aria-selected="false" aria-controls="day-4-panel-alternative-later-train" tabindex="-1" data-show-scenario="alternative-later-train">Поздний поезд</button>          </div>
 
           <div class="scenario-stack">
             <section class="scenario-panel scenario-panel--primary" id="day-4-panel-primary" data-scenario="primary" role="tabpanel" aria-labelledby="day-4-tab-primary" tabindex="0">
@@ -1843,6 +1859,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>До покупки билета</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 4 · 5 ноября 2026 · Tokyo → Kyoto</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-stop"></use></svg>Контрольная точка</p>
         <h5>Проверить итоговое расписание</h5>
 <p>Не использовать оценочное время как подтверждённое отправление.</p>
@@ -1858,13 +1875,14 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>В середине дня</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 4 · 5 ноября 2026 · Tokyo → Kyoto</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg>Переезд</p>
         <h5>Переезд Tokyo — Kyoto</h5>
 <p>Сохранить время на багаж и навигацию внутри вокзала.</p>
 
         <ul class="event-actions" aria-label="Переезд Tokyo — Kyoto">
           <li>
-            <a class="external-link" href="https://example.invalid/kyoto-official" data-source-id="event-day-4-rail"><svg class="icon" aria-hidden="true"><use href="#icon-arrow"></use></svg>Открыть источник расписания</a>
+            <a class="external-link" href="https://example.invalid/kyoto-official"><svg class="icon" aria-hidden="true"><use href="#icon-arrow"></use></svg>Открыть источник расписания</a>
 <span class="network-label"><svg class="icon" aria-hidden="true"><use href="#icon-cloud"></use></svg>Требуется интернет</span>          </li>
         </ul>
 
@@ -1874,6 +1892,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>После прибытия</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 4 · 5 ноября 2026 · Tokyo → Kyoto</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-lodging"></use></svg>Заселение</p>
         <h5>Заселение в Kyoto</h5>
 <p>Сначала завершить заселение.</p>
@@ -1885,6 +1904,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>Вечером</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 4 · 5 ноября 2026 · Tokyo → Kyoto</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-meal"></use></svg>Еда</p>
         <h5>Ужин рядом с отелем</h5>
 <p>Не планировать дальний район после переезда.</p>
@@ -1894,13 +1914,14 @@ button[aria-selected="true"] {
     </li>
   </ol>
             </section>
-            <section class="scenario-panel scenario-panel--alternative" id="day-4-panel-later-train" data-scenario="later-train" role="tabpanel" aria-labelledby="day-4-tab-later-train" tabindex="0">
+            <section class="scenario-panel scenario-panel--alternative" id="day-4-panel-alternative-later-train" data-scenario="alternative-later-train" role="tabpanel" aria-labelledby="day-4-tab-alternative-later-train" tabindex="0">
               <h4 class="scenario-heading">Альтернативный сценарий · Поздний поезд</h4>
 <p class="scenario-summary">Сохранить Kyoto как место ночёвки, но полностью убрать вечернюю прогулку.</p>              <ol class="timeline">
     <li class="timeline-event timeline-event--checkpoint" data-event-id="event-day-4-late-check">
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>До покупки билета</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 4 · 5 ноября 2026 · Tokyo → Kyoto</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-stop"></use></svg>Контрольная точка</p>
         <h5>Проверить окно заселения</h5>
 <p>Поздний поезд должен сохранять возможность заселиться.</p>
@@ -1916,6 +1937,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>Во второй половине дня</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 4 · 5 ноября 2026 · Tokyo → Kyoto</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg>Переезд</p>
         <h5>Поздний переезд в Kyoto</h5>
 <p>Ехать напрямую без дополнительных остановок.</p>
@@ -1927,6 +1949,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>Вечером</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 4 · 5 ноября 2026 · Tokyo → Kyoto</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-lodging"></use></svg>Заселение</p>
         <h5>Заселение и отдых</h5>
 <p>Завершить день в отеле.</p>
@@ -1949,9 +1972,9 @@ button[aria-selected="true"] {
             <dl class="day-meta"><div><dt>Ночёвка</dt><dd>Kyoto</dd></div><div><dt>Переезды</dt><dd>Пешком и на городском транспорте</dd></div><div><dt>Нагрузка</dt><dd>средняя</dd></div><div><dt>Проверено</dt><dd>2026-08-28</dd></div></dl>
           </header>
 <p class="weather-note"><svg class="icon" aria-hidden="true"><use href="#icon-recheck"></use></svg>Зависит от погоды</p>
-          <div class="scenario-tabs interactive-controls" data-scenario-tabs role="tablist" aria-label="Сценарий дня 5">
+          <div class="scenario-tabs interactive-controls" data-scenario-tabs hidden role="tablist" aria-label="Сценарий дня 5">
             <button type="button" id="day-5-tab-primary" role="tab" aria-selected="true" aria-controls="day-5-panel-primary" tabindex="0" data-show-scenario="primary">Основной</button>
-<button type="button" id="day-5-tab-day-5-rain" role="tab" aria-selected="false" aria-controls="day-5-panel-day-5-rain" tabindex="-1" data-show-scenario="day-5-rain">Дождь</button>          </div>
+<button type="button" id="day-5-tab-alternative-day-5-rain" role="tab" aria-selected="false" aria-controls="day-5-panel-alternative-day-5-rain" tabindex="-1" data-show-scenario="alternative-day-5-rain">Дождь</button>          </div>
 
           <div class="scenario-stack">
             <section class="scenario-panel scenario-panel--primary" id="day-5-panel-primary" data-scenario="primary" role="tabpanel" aria-labelledby="day-5-tab-primary" tabindex="0">
@@ -1960,6 +1983,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>08:30</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 5 · 6 ноября 2026 · Kyoto</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-meal"></use></svg>Еда</p>
         <h5>Завтрак</h5>
 <p>Поесть перед продолжительной прогулкой.</p>
@@ -1971,6 +1995,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>10:00</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 5 · 6 ноября 2026 · Kyoto</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-activity"></use></svg>Активность</p>
         <h5>Исторический район</h5>
 <p>Следовать компактному маршруту без лишних возвратов.</p>
@@ -1982,6 +2007,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>13:00</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 5 · 6 ноября 2026 · Kyoto</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-meal"></use></svg>Еда</p>
         <h5>Обед в районе</h5>
 <p>Не менять географию дня ради ресторана.</p>
@@ -1993,6 +2019,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>16:30</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 5 · 6 ноября 2026 · Kyoto</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-rest"></use></svg>Отдых</p>
         <h5>Возвращение и отдых</h5>
 <p>Оставить вечер свободным.</p>
@@ -2002,13 +2029,14 @@ button[aria-selected="true"] {
     </li>
   </ol>
             </section>
-            <section class="scenario-panel scenario-panel--alternative" id="day-5-panel-day-5-rain" data-scenario="day-5-rain" role="tabpanel" aria-labelledby="day-5-tab-day-5-rain" tabindex="0">
+            <section class="scenario-panel scenario-panel--alternative" id="day-5-panel-alternative-day-5-rain" data-scenario="alternative-day-5-rain" role="tabpanel" aria-labelledby="day-5-tab-alternative-day-5-rain" tabindex="0">
               <h4 class="scenario-heading">Альтернативный сценарий · Дождь</h4>
 <p class="scenario-summary">Заменить прогулку ремесленным музеем в том же районе.</p>              <ol class="timeline">
     <li class="timeline-event timeline-event--meal" data-event-id="event-day-5-rain-breakfast">
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>08:30</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 5 · 6 ноября 2026 · Kyoto</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-meal"></use></svg>Еда</p>
         <h5>Завтрак</h5>
 <p>Начать день рядом с отелем.</p>
@@ -2020,6 +2048,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>10:30</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 5 · 6 ноября 2026 · Kyoto</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-activity"></use></svg>Активность</p>
         <h5>Ремесленный музей</h5>
 <p>Проверить доступ перед выходом.</p>
@@ -2031,6 +2060,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>13:00</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 5 · 6 ноября 2026 · Kyoto</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-meal"></use></svg>Еда</p>
         <h5>Обед рядом с музеем</h5>
 <p>Сохранить короткие переходы под дождём.</p>
@@ -2053,9 +2083,9 @@ button[aria-selected="true"] {
             <dl class="day-meta"><div><dt>Ночёвка</dt><dd>Kyoto</dd></div><div><dt>Переезды</dt><dd>Городской транспорт</dd></div><div><dt>Нагрузка</dt><dd>средняя</dd></div><div><dt>Проверено</dt><dd>2026-08-28</dd></div></dl>
           </header>
 <p class="weather-note"><svg class="icon" aria-hidden="true"><use href="#icon-recheck"></use></svg>Зависит от погоды</p>
-          <div class="scenario-tabs interactive-controls" data-scenario-tabs role="tablist" aria-label="Сценарий дня 6">
+          <div class="scenario-tabs interactive-controls" data-scenario-tabs hidden role="tablist" aria-label="Сценарий дня 6">
             <button type="button" id="day-6-tab-primary" role="tab" aria-selected="true" aria-controls="day-6-panel-primary" tabindex="0" data-show-scenario="primary">Основной</button>
-<button type="button" id="day-6-tab-day-6-rain" role="tab" aria-selected="false" aria-controls="day-6-panel-day-6-rain" tabindex="-1" data-show-scenario="day-6-rain">Дождь</button>          </div>
+<button type="button" id="day-6-tab-alternative-day-6-rain" role="tab" aria-selected="false" aria-controls="day-6-panel-alternative-day-6-rain" tabindex="-1" data-show-scenario="alternative-day-6-rain">Дождь</button>          </div>
 
           <div class="scenario-stack">
             <section class="scenario-panel scenario-panel--primary" id="day-6-panel-primary" data-scenario="primary" role="tabpanel" aria-labelledby="day-6-tab-primary" tabindex="0">
@@ -2064,6 +2094,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>08:00</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 6 · 7 ноября 2026 · Kyoto</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-stop"></use></svg>Контрольная точка</p>
         <h5>Проверить погоду и доступ</h5>
 <p>Не считать сезонный пик и часы работы подтверждёнными заранее.</p>
@@ -2079,13 +2110,14 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>09:30</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 6 · 7 ноября 2026 · Kyoto</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-activity"></use></svg>Активность</p>
         <h5>Утро в саду</h5>
 <p>Прийти рано и ограничить время при сильной загруженности.</p>
 
         <ul class="event-actions" aria-label="Утро в саду">
           <li>
-            <a class="external-link" href="https://example.invalid/kyoto-official" data-source-id="event-day-6-garden"><svg class="icon" aria-hidden="true"><use href="#icon-arrow"></use></svg>Открыть официальный источник</a>
+            <a class="external-link" href="https://example.invalid/kyoto-official"><svg class="icon" aria-hidden="true"><use href="#icon-arrow"></use></svg>Открыть официальный источник</a>
 <span class="network-label"><svg class="icon" aria-hidden="true"><use href="#icon-cloud"></use></svg>Требуется интернет</span>          </li>
         </ul>
 
@@ -2095,6 +2127,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>13:00</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 6 · 7 ноября 2026 · Kyoto</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-meal"></use></svg>Еда</p>
         <h5>Обед поблизости</h5>
 <p>Выбрать место после утренней активности.</p>
@@ -2106,6 +2139,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>15:00</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 6 · 7 ноября 2026 · Kyoto</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-rest"></use></svg>Отдых</p>
         <h5>Свободная вторая половина дня</h5>
 <p>Не перегружать день второй большой точкой.</p>
@@ -2115,13 +2149,14 @@ button[aria-selected="true"] {
     </li>
   </ol>
             </section>
-            <section class="scenario-panel scenario-panel--alternative" id="day-6-panel-day-6-rain" data-scenario="day-6-rain" role="tabpanel" aria-labelledby="day-6-tab-day-6-rain" tabindex="0">
+            <section class="scenario-panel scenario-panel--alternative" id="day-6-panel-alternative-day-6-rain" data-scenario="alternative-day-6-rain" role="tabpanel" aria-labelledby="day-6-tab-alternative-day-6-rain" tabindex="0">
               <h4 class="scenario-heading">Альтернативный сценарий · Дождь</h4>
 <p class="scenario-summary">Весь активный блок дня проходит в помещении.</p>              <ol class="timeline">
     <li class="timeline-event timeline-event--checkpoint" data-event-id="event-day-6-rain-check">
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>08:00</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 6 · 7 ноября 2026 · Kyoto</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-stop"></use></svg>Контрольная точка</p>
         <h5>Подтвердить переключение</h5>
 <p>Проверить прогноз и доступ музея.</p>
@@ -2137,6 +2172,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>10:00</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 6 · 7 ноября 2026 · Kyoto</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-activity"></use></svg>Активность</p>
         <h5>Городской музей</h5>
 <p>Выбрать закрытую площадку с опубликованным доступом.</p>
@@ -2148,6 +2184,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>13:00</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 6 · 7 ноября 2026 · Kyoto</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-meal"></use></svg>Еда</p>
         <h5>Обед рядом с музеем</h5>
 <p>Сохранить компактную географию.</p>
@@ -2170,9 +2207,9 @@ button[aria-selected="true"] {
             <dl class="day-meta"><div><dt>Ночёвка</dt><dd>Kyoto</dd></div><div><dt>Переезды</dt><dd>Городской транспорт</dd></div><div><dt>Нагрузка</dt><dd>средняя</dd></div><div><dt>Проверено</dt><dd>2026-08-28</dd></div></dl>
           </header>
 <p class="weather-note"><svg class="icon" aria-hidden="true"><use href="#icon-recheck"></use></svg>Зависит от погоды</p>
-          <div class="scenario-tabs interactive-controls" data-scenario-tabs role="tablist" aria-label="Сценарий дня 7">
+          <div class="scenario-tabs interactive-controls" data-scenario-tabs hidden role="tablist" aria-label="Сценарий дня 7">
             <button type="button" id="day-7-tab-primary" role="tab" aria-selected="true" aria-controls="day-7-panel-primary" tabindex="0" data-show-scenario="primary">Основной</button>
-<button type="button" id="day-7-tab-day-7-low-load" role="tab" aria-selected="false" aria-controls="day-7-panel-day-7-low-load" tabindex="-1" data-show-scenario="day-7-low-load">Низкая нагрузка</button>          </div>
+<button type="button" id="day-7-tab-alternative-day-7-low-load" role="tab" aria-selected="false" aria-controls="day-7-panel-alternative-day-7-low-load" tabindex="-1" data-show-scenario="alternative-day-7-low-load">Низкая нагрузка</button>          </div>
 
           <div class="scenario-stack">
             <section class="scenario-panel scenario-panel--primary" id="day-7-panel-primary" data-scenario="primary" role="tabpanel" aria-labelledby="day-7-tab-primary" tabindex="0">
@@ -2181,6 +2218,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>Утро</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 7 · 8 ноября 2026 · Kyoto</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-rest"></use></svg>Отдых</p>
         <h5>Медленное начало</h5>
 <p>Сохранить запас после предыдущих дней.</p>
@@ -2192,6 +2230,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>13:00</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 7 · 8 ноября 2026 · Kyoto</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-activity"></use></svg>Активность</p>
         <h5>Культурный визит</h5>
 <p>Подтвердить доступ ближе к поездке.</p>
@@ -2203,6 +2242,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>18:30</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 7 · 8 ноября 2026 · Kyoto</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-meal"></use></svg>Еда</p>
         <h5>Ужин в Kyoto</h5>
 <p>Не обещать наличие мест без бронирования.</p>
@@ -2212,13 +2252,14 @@ button[aria-selected="true"] {
     </li>
   </ol>
             </section>
-            <section class="scenario-panel scenario-panel--alternative" id="day-7-panel-day-7-low-load" data-scenario="day-7-low-load" role="tabpanel" aria-labelledby="day-7-tab-day-7-low-load" tabindex="0">
+            <section class="scenario-panel scenario-panel--alternative" id="day-7-panel-alternative-day-7-low-load" data-scenario="alternative-day-7-low-load" role="tabpanel" aria-labelledby="day-7-tab-alternative-day-7-low-load" tabindex="0">
               <h4 class="scenario-heading">Альтернативный сценарий · Низкая нагрузка</h4>
 <p class="scenario-summary">Оставить только одну короткую культурную точку возле базы.</p>              <ol class="timeline">
     <li class="timeline-event timeline-event--rest" data-event-id="event-day-7-low-rest">
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>До обеда</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 7 · 8 ноября 2026 · Kyoto</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-rest"></use></svg>Отдых</p>
         <h5>Отдых</h5>
 <p>Не назначать утреннюю активность.</p>
@@ -2230,6 +2271,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>14:00</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 7 · 8 ноября 2026 · Kyoto</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-activity"></use></svg>Активность</p>
         <h5>Короткий локальный визит</h5>
 <p>Выбрать место рядом с отелем.</p>
@@ -2241,6 +2283,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>18:30</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 7 · 8 ноября 2026 · Kyoto</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-meal"></use></svg>Еда</p>
         <h5>Ранний ужин</h5>
 <p>Завершить день без вечерней программы.</p>
@@ -2271,6 +2314,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>Утро</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 8 · 9 ноября 2026 · Kyoto → Kanazawa</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-lodging"></use></svg>Заселение</p>
         <h5>Выселение</h5>
 <p>Оставить время на багаж и дорогу до вокзала.</p>
@@ -2282,13 +2326,14 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>В середине дня</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 8 · 9 ноября 2026 · Kyoto → Kanazawa</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg>Переезд</p>
         <h5>Переезд Kyoto — Kanazawa</h5>
 <p>Подтвердить расписание у перевозчика и сохранить станционный запас.</p>
 
         <ul class="event-actions" aria-label="Переезд Kyoto — Kanazawa">
           <li>
-            <a class="external-link" href="https://example.invalid/kanazawa-official" data-source-id="event-day-8-rail"><svg class="icon" aria-hidden="true"><use href="#icon-arrow"></use></svg>Открыть источник расписания</a>
+            <a class="external-link" href="https://example.invalid/kanazawa-official"><svg class="icon" aria-hidden="true"><use href="#icon-arrow"></use></svg>Открыть источник расписания</a>
 <span class="network-label"><svg class="icon" aria-hidden="true"><use href="#icon-cloud"></use></svg>Требуется интернет</span>          </li>
         </ul>
 
@@ -2298,6 +2343,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>После прибытия</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 8 · 9 ноября 2026 · Kyoto → Kanazawa</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-lodging"></use></svg>Заселение</p>
         <h5>Заселение в Kanazawa</h5>
 <p>Завершить обязательную часть дня.</p>
@@ -2309,6 +2355,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>Вечером</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 8 · 9 ноября 2026 · Kyoto → Kanazawa</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-meal"></use></svg>Еда</p>
         <h5>Ужин рядом с отелем</h5>
 <p>Выбрать место по фактическому времени прибытия.</p>
@@ -2339,13 +2386,14 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>09:30</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 9 · 10 ноября 2026 · Kanazawa</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-activity"></use></svg>Активность</p>
         <h5>Исторический район</h5>
 <p>Следовать локальному маршруту без дальних переездов.</p>
 
         <ul class="event-actions" aria-label="Исторический район">
           <li>
-            <a class="external-link" href="https://www.google.com/maps/search/?api=1&amp;query=Kanazawa" data-source-id="event-day-9-district"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg>Открыть район на карте</a>
+            <a class="external-link" href="https://www.google.com/maps/search/?api=1&amp;query=Kanazawa"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg>Открыть район на карте</a>
 <span class="network-label"><svg class="icon" aria-hidden="true"><use href="#icon-cloud"></use></svg>Требуется интернет</span>          </li>
         </ul>
 
@@ -2355,6 +2403,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>12:30</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 9 · 10 ноября 2026 · Kanazawa</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-meal"></use></svg>Еда</p>
         <h5>Обед на рынке</h5>
 <p>Выбрать по фактической доступности.</p>
@@ -2366,6 +2415,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>14:30</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 9 · 10 ноября 2026 · Kanazawa</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-activity"></use></svg>Активность</p>
         <h5>Продолжение прогулки</h5>
 <p>Сократить маршрут при усталости.</p>
@@ -2388,9 +2438,9 @@ button[aria-selected="true"] {
             <dl class="day-meta"><div><dt>Ночёвка</dt><dd>Kanazawa</dd></div><div><dt>Переезды</dt><dd>Местный транспорт</dd></div><div><dt>Нагрузка</dt><dd>средняя</dd></div><div><dt>Проверено</dt><dd>2026-08-28</dd></div></dl>
           </header>
 <p class="weather-note"><svg class="icon" aria-hidden="true"><use href="#icon-recheck"></use></svg>Зависит от погоды</p>
-          <div class="scenario-tabs interactive-controls" data-scenario-tabs role="tablist" aria-label="Сценарий дня 10">
+          <div class="scenario-tabs interactive-controls" data-scenario-tabs hidden role="tablist" aria-label="Сценарий дня 10">
             <button type="button" id="day-10-tab-primary" role="tab" aria-selected="true" aria-controls="day-10-panel-primary" tabindex="0" data-show-scenario="primary">Основной</button>
-<button type="button" id="day-10-tab-day-10-rain" role="tab" aria-selected="false" aria-controls="day-10-panel-day-10-rain" tabindex="-1" data-show-scenario="day-10-rain">Дождь</button>          </div>
+<button type="button" id="day-10-tab-alternative-day-10-rain" role="tab" aria-selected="false" aria-controls="day-10-panel-alternative-day-10-rain" tabindex="-1" data-show-scenario="alternative-day-10-rain">Дождь</button>          </div>
 
           <div class="scenario-stack">
             <section class="scenario-panel scenario-panel--primary" id="day-10-panel-primary" data-scenario="primary" role="tabpanel" aria-labelledby="day-10-tab-primary" tabindex="0">
@@ -2399,6 +2449,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>08:00</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 10 · 11 ноября 2026 · Kanazawa</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-stop"></use></svg>Контрольная точка</p>
         <h5>Оценить условия</h5>
 <p>Решение принимается до выхода.</p>
@@ -2414,6 +2465,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>09:30</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 10 · 11 ноября 2026 · Kanazawa</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-activity"></use></svg>Активность</p>
         <h5>Сад</h5>
 <p>Подтвердить условия перед отправлением.</p>
@@ -2425,6 +2477,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>13:00</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 10 · 11 ноября 2026 · Kanazawa</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-meal"></use></svg>Еда</p>
         <h5>Обед</h5>
 <p>Оставаться в выбранном районе.</p>
@@ -2434,13 +2487,14 @@ button[aria-selected="true"] {
     </li>
   </ol>
             </section>
-            <section class="scenario-panel scenario-panel--alternative" id="day-10-panel-day-10-rain" data-scenario="day-10-rain" role="tabpanel" aria-labelledby="day-10-tab-day-10-rain" tabindex="0">
+            <section class="scenario-panel scenario-panel--alternative" id="day-10-panel-alternative-day-10-rain" data-scenario="alternative-day-10-rain" role="tabpanel" aria-labelledby="day-10-tab-alternative-day-10-rain" tabindex="0">
               <h4 class="scenario-heading">Альтернативный сценарий · Дождь</h4>
 <p class="scenario-summary">Заменить сад закрытой коллекцией и сохранить темп дня.</p>              <ol class="timeline">
     <li class="timeline-event timeline-event--checkpoint" data-event-id="event-day-10-rain-check">
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>08:00</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 10 · 11 ноября 2026 · Kanazawa</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-stop"></use></svg>Контрольная точка</p>
         <h5>Подтвердить переключение</h5>
 <p>Проверить доступ музея.</p>
@@ -2456,6 +2510,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>10:00</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 10 · 11 ноября 2026 · Kanazawa</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-activity"></use></svg>Активность</p>
         <h5>Музей</h5>
 <p>Провести активную часть дня в помещении.</p>
@@ -2467,6 +2522,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>13:00</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 10 · 11 ноября 2026 · Kanazawa</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-meal"></use></svg>Еда</p>
         <h5>Обед рядом с музеем</h5>
 <p>Не добавлять дальний переезд.</p>
@@ -2497,6 +2553,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>Утро</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 11 · 12 ноября 2026 · Kanazawa</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-rest"></use></svg>Отдых</p>
         <h5>Свободное утро</h5>
 <p>Не назначать обязательную программу.</p>
@@ -2508,6 +2565,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>14:00</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 11 · 12 ноября 2026 · Kanazawa</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-activity"></use></svg>Активность</p>
         <h5>Возврат к пропущенному месту</h5>
 <p>Использовать только если предыдущие планы изменились.</p>
@@ -2519,6 +2577,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>18:30</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 11 · 12 ноября 2026 · Kanazawa</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-meal"></use></svg>Еда</p>
         <h5>Финальный ужин</h5>
 <p>Сохранить честный статус бронирования.</p>
@@ -2549,6 +2608,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>Утро</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 12 · 13 ноября 2026 · Kanazawa — отъезд</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-lodging"></use></svg>Заселение</p>
         <h5>Выселение</h5>
 <p>Завершить сборы с запасом.</p>
@@ -2560,6 +2620,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>После выселения</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 12 · 13 ноября 2026 · Kanazawa — отъезд</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg>Переезд</p>
         <h5>Трансфер к месту отправления</h5>
 <p>Подтвердить транспорт незадолго до поездки.</p>
@@ -2571,6 +2632,7 @@ button[aria-selected="true"] {
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">Время</span><span>Если останется время</span></div>
       <div class="event-body">
+        <p class="event-print-context">День 12 · 13 ноября 2026 · Kanazawa — отъезд</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-meal"></use></svg>Еда</p>
         <h5>Еда в пути</h5>
 <p>Не задерживать отправление ради отдельной остановки.</p>
@@ -2607,7 +2669,24 @@ button[aria-selected="true"] {
       <section class="document-section" id="sources" aria-labelledby="sources-title">
         <h2 id="sources-title">Источники и версия документа</h2>
         <p class="document-version" id="document-version"><strong>Версия документа</strong> · japan-autumn-2026-example · Черновик — без проверки · Данные не проверены · Создан 2026-09-06T12:00:00+03:00 · Артефакт v0.1</p>
-        <ul class="source-list"><li class="source-item"><p><strong>official-kanazawa-fixture · Тестовый официальный источник Kanazawa</strong> <span class="status status--reported">по сообщению источника</span> <span class="status status--aging">требует скорой перепроверки</span></p><div class="source-meta"><span>Тип: Официальный</span><span>Проверено: 2026-08-28T12:00:00+00:00</span><span>Получение: неизвестно</span></div><a class="source-link external-link" href="https://example.invalid/kanazawa-official" data-source-id="official-kanazawa-fixture">Открыть источник: Тестовый официальный источник Kanazawa</a> <span class="network-label">Требуется интернет</span></li><li class="source-item"><p><strong>official-kyoto-fixture · Тестовый официальный источник Kyoto</strong> <span class="status status--reported">по сообщению источника</span> <span class="status status--aging">требует скорой перепроверки</span></p><div class="source-meta"><span>Тип: Официальный</span><span>Проверено: 2026-08-28T12:00:00+00:00</span><span>Получение: неизвестно</span></div><a class="source-link external-link" href="https://example.invalid/kyoto-official" data-source-id="official-kyoto-fixture">Открыть источник: Тестовый официальный источник Kyoto</a> <span class="network-label">Требуется интернет</span></li><li class="source-item"><p><strong>official-tokyo-fixture · Тестовый официальный источник Tokyo</strong> <span class="status status--reported">по сообщению источника</span> <span class="status status--aging">требует скорой перепроверки</span></p><div class="source-meta"><span>Тип: Официальный</span><span>Проверено: 2026-08-28T12:00:00+00:00</span><span>Получение: неизвестно</span></div><a class="source-link external-link" href="https://example.invalid/tokyo-official" data-source-id="official-tokyo-fixture">Открыть источник: Тестовый официальный источник Tokyo</a> <span class="network-label">Требуется интернет</span></li></ul>
+        <ul class="source-list"><li class="source-item"><p><strong>official-kanazawa-fixture · Тестовый официальный источник Kanazawa</strong> <span class="status status--reported">по сообщению источника</span> <span class="status status--aging">требует скорой перепроверки</span></p><div class="source-meta"><span>Тип: Официальный</span><span>Проверено: 2026-08-28T12:00:00+00:00</span><span>Получение: неизвестно</span></div><a class="source-link external-link" href="https://example.invalid/kanazawa-official" data-source-id="official-kanazawa-fixture">Открыть источник: Тестовый официальный источник Kanazawa</a> <span class="print-url">https://example.invalid/kanazawa-official</span> <span class="network-label">Требуется интернет</span></li><li class="source-item"><p><strong>official-kyoto-fixture · Тестовый официальный источник Kyoto</strong> <span class="status status--reported">по сообщению источника</span> <span class="status status--aging">требует скорой перепроверки</span></p><div class="source-meta"><span>Тип: Официальный</span><span>Проверено: 2026-08-28T12:00:00+00:00</span><span>Получение: неизвестно</span></div><a class="source-link external-link" href="https://example.invalid/kyoto-official" data-source-id="official-kyoto-fixture">Открыть источник: Тестовый официальный источник Kyoto</a> <span class="print-url">https://example.invalid/kyoto-official</span> <span class="network-label">Требуется интернет</span></li><li class="source-item"><p><strong>official-tokyo-fixture · Тестовый официальный источник Tokyo</strong> <span class="status status--reported">по сообщению источника</span> <span class="status status--aging">требует скорой перепроверки</span></p><div class="source-meta"><span>Тип: Официальный</span><span>Проверено: 2026-08-28T12:00:00+00:00</span><span>Получение: неизвестно</span></div><a class="source-link external-link" href="https://example.invalid/tokyo-official" data-source-id="official-tokyo-fixture">Открыть источник: Тестовый официальный источник Tokyo</a> <span class="print-url">https://example.invalid/tokyo-official</span> <span class="network-label">Требуется интернет</span></li></ul>
+        <section class="print-link-appendix" aria-labelledby="print-links-title">
+          <h3 id="print-links-title">Ссылки действий и полные URL</h3>
+          <ol>
+<li><strong>День 1 · Трансфер до отеля · Построить маршрут в Google Maps</strong><span class="print-url">https://www.google.com/maps/search/?api=1&amp;query=Tokyo</span></li>
+<li><strong>День 2 · Прогулка по району · Открыть район на карте</strong><span class="print-url">https://www.google.com/maps/search/?api=1&amp;query=Tokyo</span></li>
+<li><strong>День 3 · Утреннее посещение · Локальный музей · Открыть район на карте</strong><span class="print-url">https://www.google.com/maps/search/?api=1&amp;query=Tokyo</span></li>
+<li><strong>День 4 · Переезд Tokyo — Kyoto · Открыть источник расписания</strong><span class="print-url">https://example.invalid/kyoto-official</span></li>
+
+<li><strong>День 6 · Утро в саду · Открыть официальный источник</strong><span class="print-url">https://example.invalid/kyoto-official</span></li>
+
+<li><strong>День 8 · Переезд Kyoto — Kanazawa · Открыть источник расписания</strong><span class="print-url">https://example.invalid/kanazawa-official</span></li>
+<li><strong>День 9 · Исторический район · Открыть район на карте</strong><span class="print-url">https://www.google.com/maps/search/?api=1&amp;query=Kanazawa</span></li>
+
+
+
+</ol>
+        </section>
       </section>
     </main>
   </div>
@@ -2631,6 +2710,9 @@ button[aria-selected="true"] {
   };
 
   root.classList.add("js-enabled");
+  const alternativeDisclosures = Array.from(
+    document.querySelectorAll(".event-alternatives"),
+  );
 
   try {
     const days = Array.from(document.querySelectorAll("[data-day]"));
@@ -2715,6 +2797,23 @@ button[aria-selected="true"] {
           selectScenario(tabs[targetIndex], { focus: true });
         });
       });
+      tablist.hidden = false;
+    });
+
+    alternativeDisclosures.forEach((disclosure) => {
+      disclosure.open = false;
+    });
+    let disclosureOpenState = [];
+    window.addEventListener("beforeprint", () => {
+      disclosureOpenState = alternativeDisclosures.map((disclosure) => disclosure.open);
+      alternativeDisclosures.forEach((disclosure) => {
+        disclosure.open = true;
+      });
+    });
+    window.addEventListener("afterprint", () => {
+      alternativeDisclosures.forEach((disclosure, index) => {
+        disclosure.open = disclosureOpenState[index] ?? false;
+      });
     });
 
     document.querySelectorAll("[data-optional-media]").forEach((figure) => {
@@ -2739,6 +2838,12 @@ button[aria-selected="true"] {
     if (notice) notice.hidden = false;
     document.querySelectorAll("[data-scenario]").forEach((panel) => {
       panel.hidden = false;
+    });
+    document.querySelectorAll("[data-scenario-tabs]").forEach((tablist) => {
+      tablist.hidden = true;
+    });
+    alternativeDisclosures.forEach((disclosure) => {
+      disclosure.open = true;
     });
     console.warn("Itinerary enhancements unavailable; core document remains readable.", error);
   }

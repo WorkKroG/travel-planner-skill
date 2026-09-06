@@ -27,13 +27,14 @@
     'checkpoint': 'stop'
   } %}
 
-  {% macro render_timeline(timeline, panel_id) -%}
+  {% macro render_timeline(timeline, panel_id, day) -%}
   <ol class="timeline">
     {% for event in timeline %}
     <li class="timeline-event timeline-event--{{ event.kind }}" data-event-id="{{ event.event_id }}">
       <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">{{ tr('time') }}</span><span>{{ event.time }}</span></div>
       <div class="event-body">
+        <p class="event-print-context">{{ tr('day') }} {{ day.number }} · {{ day.date_label }} · {{ day.region }}</p>
         <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-{{ event_icons[event.kind] }}"></use></svg>{{ enum_label(event.kind) }}</p>
         <h5>{{ event.title }}</h5>
         {% if event.detail %}<p>{{ event.detail }}</p>{% endif %}
@@ -49,7 +50,7 @@
         <ul class="event-actions" aria-label="{{ event.title }}">
           {% for link in event.links %}
           <li>
-            <a class="external-link" href="{{ link.url }}" data-source-id="{{ event.event_id }}"><svg class="icon" aria-hidden="true"><use href="#icon-{% if link.kind in ['map', 'route'] %}route{% else %}arrow{% endif %}"></use></svg>{{ link.label }}</a>
+            <a class="external-link" href="{{ link.url }}"><svg class="icon" aria-hidden="true"><use href="#icon-{% if link.kind in ['map', 'route'] %}route{% else %}arrow{% endif %}"></use></svg>{{ link.label }}</a>
             {% if link.requires_internet %}<span class="network-label"><svg class="icon" aria-hidden="true"><use href="#icon-cloud"></use></svg>{{ tr('internet') }}</span>{% endif %}
           </li>
           {% endfor %}
@@ -57,7 +58,7 @@
         {% endif %}
 
         {% if event.alternatives %}
-        <details class="event-alternatives" id="{{ panel_id }}-{{ event.event_id }}-alternatives">
+        <details class="event-alternatives" id="{{ panel_id }}-{{ event.event_id }}-alternatives" open>
           <summary>{{ tr('alternatives', count=event.alternatives|length) }}</summary>
           <div class="alternative-list">
             {% for alternative in event.alternatives %}
@@ -77,7 +78,7 @@
               <ul class="event-actions">
                 {% for link in alternative.links %}
                 <li>
-                  <a class="external-link" href="{{ link.url }}" data-source-id="{{ alternative.alternative_id }}"><svg class="icon" aria-hidden="true"><use href="#icon-{% if link.kind in ['map', 'route'] %}route{% else %}arrow{% endif %}"></use></svg>{{ link.label }}</a>
+                  <a class="external-link" href="{{ link.url }}"><svg class="icon" aria-hidden="true"><use href="#icon-{% if link.kind in ['map', 'route'] %}route{% else %}arrow{% endif %}"></use></svg>{{ link.label }}</a>
                   {% if link.requires_internet %}<span class="network-label">{{ tr('internet') }}</span>{% endif %}
                 </li>
                 {% endfor %}
@@ -92,6 +93,15 @@
     </li>
     {% else %}<li class="empty-state">{{ tr('no_days') }}</li>{% endfor %}
   </ol>
+  {%- endmacro %}
+
+  {% macro render_link_appendix(timeline, day, scenario_label='') -%}
+{% for event in timeline -%}
+{% for link in event.links -%}<li><strong>{{ tr('day') }} {{ day.number }} · {% if scenario_label %}{{ scenario_label }} · {% endif %}{{ event.title }} · {{ link.label }}</strong><span class="print-url">{{ link.url }}</span></li>{% endfor -%}
+{% for alternative in event.alternatives -%}
+{% for link in alternative.links -%}<li><strong>{{ tr('day') }} {{ day.number }} · {% if scenario_label %}{{ scenario_label }} · {% endif %}{{ event.title }} · {{ alternative.title }} · {{ link.label }}</strong><span class="print-url">{{ link.url }}</span></li>{% endfor -%}
+{% endfor -%}
+{% endfor -%}
   {%- endmacro %}
 
   <a class="skip-link" href="#main-content">{{ tr('skip') }}</a>
@@ -255,22 +265,22 @@
           {% if day.weather_sensitive %}<p class="weather-note"><svg class="icon" aria-hidden="true"><use href="#icon-recheck"></use></svg>{{ tr('weather_sensitive') }}</p>{% endif %}
 
           {% if day.scenarios %}
-          <div class="scenario-tabs interactive-controls" data-scenario-tabs role="tablist" aria-label="{{ tr('scenario_view', number=day.number) }}">
+          <div class="scenario-tabs interactive-controls" data-scenario-tabs hidden role="tablist" aria-label="{{ tr('scenario_view', number=day.number) }}">
             <button type="button" id="{{ day.day_id }}-tab-primary" role="tab" aria-selected="true" aria-controls="{{ day.day_id }}-panel-primary" tabindex="0" data-show-scenario="primary">{{ tr('primary') }}</button>
-            {% for scenario in day.scenarios %}<button type="button" id="{{ day.day_id }}-tab-{{ scenario.scenario_id }}" role="tab" aria-selected="false" aria-controls="{{ day.day_id }}-panel-{{ scenario.scenario_id }}" tabindex="-1" data-show-scenario="{{ scenario.scenario_id }}">{{ scenario.label }}</button>{% endfor %}
+            {% for scenario in day.scenarios %}<button type="button" id="{{ day.day_id }}-tab-alternative-{{ scenario.scenario_id }}" role="tab" aria-selected="false" aria-controls="{{ day.day_id }}-panel-alternative-{{ scenario.scenario_id }}" tabindex="-1" data-show-scenario="alternative-{{ scenario.scenario_id }}">{{ scenario.label }}</button>{% endfor %}
           </div>
           {% endif %}
 
           <div class="scenario-stack">
             <section class="scenario-panel scenario-panel--primary"{% if day.scenarios %} id="{{ day.day_id }}-panel-primary" data-scenario="primary" role="tabpanel" aria-labelledby="{{ day.day_id }}-tab-primary" tabindex="0"{% endif %}>
               {% if day.scenarios %}<h4 class="scenario-heading">{{ tr('primary_scenario') }}</h4>{% else %}<h4 class="scenario-heading scenario-heading--primary-only">{{ tr('timeline') }}</h4>{% endif %}
-              {{ render_timeline(day.timeline, day.day_id ~ '-primary') }}
+              {{ render_timeline(day.timeline, day.day_id ~ '-primary', day) }}
             </section>
             {% for scenario in day.scenarios %}
-            <section class="scenario-panel scenario-panel--alternative" id="{{ day.day_id }}-panel-{{ scenario.scenario_id }}" data-scenario="{{ scenario.scenario_id }}" role="tabpanel" aria-labelledby="{{ day.day_id }}-tab-{{ scenario.scenario_id }}" tabindex="0">
+            <section class="scenario-panel scenario-panel--alternative" id="{{ day.day_id }}-panel-alternative-{{ scenario.scenario_id }}" data-scenario="alternative-{{ scenario.scenario_id }}" role="tabpanel" aria-labelledby="{{ day.day_id }}-tab-alternative-{{ scenario.scenario_id }}" tabindex="0">
               <h4 class="scenario-heading">{{ tr('alternative_scenario') }} · {{ scenario.label }}</h4>
               {% if scenario.summary %}<p class="scenario-summary">{{ scenario.summary }}</p>{% endif %}
-              {{ render_timeline(scenario.timeline, day.day_id ~ '-' ~ scenario.scenario_id) }}
+              {{ render_timeline(scenario.timeline, day.day_id ~ '-alternative-' ~ scenario.scenario_id, day) }}
             </section>
             {% endfor %}
           </div>
@@ -308,7 +318,16 @@
       <section class="document-section" id="sources" aria-labelledby="sources-title">
         <h2 id="sources-title">{{ tr('sources_version') }}</h2>
         <p class="document-version" id="document-version"><strong>{{ tr('document_version') }}</strong> · {{ view.trip_id }} · {{ view.status_label }} · {{ view.verification_label }} · {{ tr('generated') }} {{ view.generated_at.isoformat() }} · {{ tr('artefact') }}</p>
-        <ul class="source-list">{% for source in view.sources %}<li class="source-item"><p><strong>{{ source.source_id }} · {{ source.title }}</strong> <span class="status status--{{ source.claim_status|replace('_', '-') }}">{{ enum_label(source.claim_status) }}</span> <span class="status status--{{ source.freshness_status }}">{{ enum_label(source.freshness_status) }}</span></p><div class="source-meta"><span>{{ tr('source_type') }}: {{ enum_label(source.source_type) }}</span><span>{{ tr('last_checked') }}: {{ source.last_checked }}</span><span>{{ tr('retrieval') }}: {{ enum_label(source.retrieval_status) }}</span></div><a class="source-link external-link" href="{{ source.url }}" data-source-id="{{ source.source_id }}">{{ tr('open_source', title=source.title) }}</a> <span class="network-label">{{ tr('internet') }}</span></li>{% else %}<li>{{ tr('no_sources') }}</li>{% endfor %}</ul>
+        <ul class="source-list">{% for source in view.sources %}<li class="source-item"><p><strong>{{ source.source_id }} · {{ source.title }}</strong> <span class="status status--{{ source.claim_status|replace('_', '-') }}">{{ enum_label(source.claim_status) }}</span> <span class="status status--{{ source.freshness_status }}">{{ enum_label(source.freshness_status) }}</span></p><div class="source-meta"><span>{{ tr('source_type') }}: {{ enum_label(source.source_type) }}</span><span>{{ tr('last_checked') }}: {{ source.last_checked }}</span><span>{{ tr('retrieval') }}: {{ enum_label(source.retrieval_status) }}</span></div><a class="source-link external-link" href="{{ source.url }}" data-source-id="{{ source.source_id }}">{{ tr('open_source', title=source.title) }}</a> <span class="print-url">{{ source.url }}</span> <span class="network-label">{{ tr('internet') }}</span></li>{% else %}<li>{{ tr('no_sources') }}</li>{% endfor %}</ul>
+        <section class="print-link-appendix" aria-labelledby="print-links-title">
+          <h3 id="print-links-title">{{ tr('linked_actions') }}</h3>
+          <ol>
+{% for day in view.days -%}
+{{ render_link_appendix(day.timeline, day) }}
+{% for scenario in day.scenarios -%}{{ render_link_appendix(scenario.timeline, day, scenario.label) }}{% endfor -%}
+{% endfor -%}
+          </ol>
+        </section>
       </section>
     </main>
   </div>

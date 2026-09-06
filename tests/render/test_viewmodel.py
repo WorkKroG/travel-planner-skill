@@ -401,6 +401,7 @@ def test_russian_document_language_localizes_renderer_owned_copy(
     state = deepcopy(japan_state)
     state.brief["document_language"] = "ru"
     state.itinerary["verification_level"] = "ai_reviewed"
+    state.brief["travel_dates"] = {"start": None, "end": None}
     state.itinerary["days"][0]["overnight"] = None
     state.itinerary["budget_items"][0]["amount_type"] = "unknown"
 
@@ -409,6 +410,7 @@ def test_russian_document_language_localizes_renderer_owned_copy(
     assert view.language == "ru"
     assert view.status_label == "Черновик — AI-проверка"
     assert view.verification_label == "AI-проверка — вероятностный разбор"
+    assert view.summary.date_range == "Неизвестно — Неизвестно"
     assert view.days[0].weekday == "понедельник"
     assert view.days[0].date_label == "2 ноября 2026"
     assert view.days[0].overnight == "Неизвестно"

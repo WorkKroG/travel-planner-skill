@@ -324,8 +324,9 @@ def test_each_timeline_event_kind_uses_a_specific_available_icon(
     for kind, icon in icons.items():
         assert f'<symbol id="icon-{icon}"' in html
         event_start = html.index(f'data-event-id="event-icon-{kind}"')
-        event_kind_end = html.index("</p>", event_start)
-        assert f'href="#icon-{icon}"' in html[event_start:event_kind_end]
+        event_kind_start = html.index('<p class="event-kind">', event_start)
+        event_kind_end = html.index("</p>", event_kind_start)
+        assert f'href="#icon-{icon}"' in html[event_kind_start:event_kind_end]
 
 
 def test_material_day_scenarios_are_tabs_over_complete_timelines(
@@ -339,9 +340,29 @@ def test_material_day_scenarios_are_tabs_over_complete_timelines(
     assert 'role="tab"' in day
     assert 'aria-selected="true"' in day
     assert 'data-scenario="primary"' in day
-    assert 'data-scenario="direct-rest"' in day
+    assert 'data-scenario="alternative-direct-rest"' in day
     assert "Arrival and direct transfer" in day
     assert "Simple nearby meal" in day
+
+
+def test_valid_scenario_named_primary_has_unique_rendered_identity(
+    japan_view: ItineraryView,
+) -> None:
+    """Catch a valid scenario ID colliding with the renderer-owned primary panel."""
+    day = japan_view.days[0]
+    scenario = replace(day.scenarios[0], scenario_id="primary")
+    view = replace(
+        japan_view,
+        days=(replace(day, scenarios=(scenario,)), *japan_view.days[1:]),
+    )
+
+    html = render_html(view, media={}, options=DEFAULTS)
+    rendered_ids = re.findall(r'\bid="(day-1-(?:tab|panel)-[^"]+)"', html)
+
+    assert len(rendered_ids) == len(set(rendered_ids))
+    assert 'data-show-scenario="primary"' in html
+    assert 'data-show-scenario="alternative-primary"' in html
+    assert 'data-scenario="alternative-primary"' in html
 
 
 def test_day_without_alternatives_has_no_orphan_tabpanel_reference(

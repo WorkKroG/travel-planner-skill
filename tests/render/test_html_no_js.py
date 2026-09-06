@@ -29,10 +29,22 @@ def test_primary_and_backup_exist_without_javascript(japan_view: ItineraryView) 
     html = _without_javascript(render_html(japan_view, media={}, options=DEFAULTS))
 
     assert 'data-scenario="primary"' in html
-    assert 'data-scenario="direct-rest"' in html
+    assert 'data-scenario="alternative-direct-rest"' in html
     assert "Arrival and transfer" in html
     assert "Arrival and direct transfer" in html
-    assert 'data-scenario="direct-rest" hidden' not in html
+    assert 'data-scenario="alternative-direct-rest" hidden' not in html
+
+
+def test_no_javascript_keeps_controls_hidden_and_event_alternatives_expanded(
+    japan_view: ItineraryView,
+) -> None:
+    """Catch enhancement-only controls leaking into or hiding content in the fallback."""
+    html = _without_javascript(render_html(japan_view, media={}, options=DEFAULTS))
+
+    assert 'class="scenario-tabs interactive-controls" data-scenario-tabs hidden' in html
+    assert '<details class="event-alternatives"' in html
+    assert re.search(r'<details class="event-alternatives"[^>]* open>', html)
+    assert "Simple meal at the lodging" in html
 
 
 def test_scenario_tabs_include_keyboard_and_failure_recovery_logic(
@@ -47,6 +59,11 @@ def test_scenario_tabs_include_keyboard_and_failure_recovery_logic(
     assert "panel.hidden = panel.dataset.scenario !== selected" in html
     assert 'root.classList.add("enhancement-failed")' in html
     assert "panel.hidden = false" in html
+    assert "tablist.hidden = false" in html
+    assert "tablist.hidden = true" in html
+    assert "disclosure.open = true" in html
+    assert 'window.addEventListener("beforeprint"' in html
+    assert 'window.addEventListener("afterprint"' in html
 
 
 def test_contents_and_all_core_sections_remain_linked_without_javascript(
@@ -100,16 +117,35 @@ def test_print_static_css_keeps_both_scenarios_and_removes_interactive_chrome(
     assert_css_rule(print_css, (".day-chapter",), {"break-before": "page"})
     assert_css_rule(
         print_css,
-        (".day-title-group h3",),
-        {"string-set": "day-title content()"},
+        (".event-print-context",),
+        {"display": "block"},
     )
-    assert_css_rule(print_css, (".day-date",), {"string-set": "day-date content()"})
-    assert '@top-right { content: string(day-title) " · " string(day-date); }' in print_css
     assert_css_rule(
         print_css,
-        (".event-alternatives > :not(summary)",),
-        {"display": "block !important"},
+        (".print-url",),
+        {"display": "inline"},
     )
+    assert "string-set" not in print_css
+    assert "string(day-title)" not in print_css
+
+
+def test_print_document_contains_event_context_and_full_external_urls(
+    japan_view: ItineraryView,
+) -> None:
+    """Catch printed continuations and links losing their human-readable context."""
+    html = render_html(japan_view, media={}, options=DEFAULTS)
+    appendix_start = html.index('class="print-link-appendix"')
+    appendix = html[
+        appendix_start : html.index("</section>", appendix_start)
+    ]
+
+    assert "Day 1 · November 2, 2026 · Tokyo" in html
+    assert '<span class="print-url">https://example.jp/rail</span>' in html
+    assert (
+        '<span class="print-url">https://www.google.com/maps/search/?api=1&amp;query=Tokyo</span>'
+        in appendix
+    )
+    assert "Arrival and transfer · Build route in Google Maps" in appendix
 
 
 def test_print_critical_group_contract_rejects_auto_mutation(

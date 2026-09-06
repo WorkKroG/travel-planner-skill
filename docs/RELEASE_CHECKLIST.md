@@ -36,7 +36,6 @@ Both catalogs remain data-only with `execution_status: not_executed`. Here `not_
 
 Record date, exact PR head, browser/version, artifact hash, result, and failures for each item. Static source tests do not satisfy this checklist.
 
-- [ ] Search: match, no match, and reset restore the complete itinerary.
 - [ ] Every filter—All days, unresolved, weather-sensitive, transfers, warnings—keeps detailed days and overview synchronized; reset works.
 - [ ] Contents opens; a section link and day link land without obscured heading or focus.
 - [ ] Primary/alternative scenario switching works in both directions, supports Arrow/Home/End keys, and announces each state.
