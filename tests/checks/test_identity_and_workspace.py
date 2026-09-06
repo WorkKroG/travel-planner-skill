@@ -96,8 +96,8 @@ def test_initialized_workspace_runs_checks_on_canonical_timeline(
                     "overnight": "City",
                     "overnight_stop_id": "stop-one",
                     "timeline": [
-                        {"id": "event-one", "time": "09:00", "title": "First", "detail": "First event.", "start_at": "2026-11-02T09:00:00+00:00", "end_at": "2026-11-02T10:00:00+00:00"},
-                        {"id": "event-two", "time": "09:30", "title": "Second", "detail": "Overlapping event.", "start_at": "2026-11-02T09:30:00+00:00", "end_at": "2026-11-02T10:30:00+00:00"},
+                            {"id": "event-one", "kind": "activity", "time": "09:00", "title": "First", "detail": "First event.", "start_at": "2026-11-02T09:00:00+00:00", "end_at": "2026-11-02T10:00:00+00:00"},
+                            {"id": "event-two", "kind": "activity", "time": "09:30", "title": "Second", "detail": "Overlapping event.", "start_at": "2026-11-02T09:30:00+00:00", "end_at": "2026-11-02T10:30:00+00:00"},
                     ],
                 }
             ],
@@ -112,6 +112,52 @@ def test_initialized_workspace_runs_checks_on_canonical_timeline(
     assert exit_code == 0
     assert payload["structural_errors"] == []
     assert payload["findings"] == []
+
+
+def test_duplicate_event_ids_include_alternative_scenario_timelines(
+    minimal_trip: Path,
+) -> None:
+    """Catch scenario events escaping the canonical identity boundary."""
+    state = load_trip(minimal_trip)
+    state.itinerary["days"] = [
+        {
+            "id": "day-one",
+            "timeline": [
+                {
+                    "id": "shared-event",
+                    "kind": "activity",
+                    "time": "09:00",
+                    "title": "Primary",
+                    "detail": "Primary event.",
+                }
+            ],
+            "scenarios": [
+                {
+                    "id": "rain",
+                    "label": "Rain",
+                    "timeline": [
+                        {
+                            "id": "shared-event",
+                            "kind": "activity",
+                            "time": "09:00",
+                            "title": "Alternative",
+                            "detail": "Alternative event.",
+                        }
+                    ],
+                }
+            ],
+        }
+    ]
+
+    duplicate_paths = {
+        finding.path
+        for finding in run_checks(state).all_findings
+        if finding.code == "ID_DUPLICATE"
+    }
+
+    assert duplicate_paths == {
+        "itinerary.yaml.days[0].scenarios[0].timeline[0].id"
+    }
 
 
 def test_malformed_stored_blocker_is_a_structural_cli_error(

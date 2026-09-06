@@ -5,6 +5,8 @@
 **Design process:** Impeccable `shape`  
 **Reference case:** Japan, 2–13 November 2026
 
+> **Superseded details:** [Readable Itinerary Days — HTML Design Specification](2026-09-06-itinerary-readable-days-design.md) replaces this document's navigation model, detailed-day layout, event context, scenario representation, and localization details. All other scope, lifecycle, accessibility, self-contained, responsive, print, and visual-direction requirements remain active.
+
 ## 1. Purpose and scope
 
 This document specifies the user experience and visual design of the self-contained interactive HTML itinerary produced by Travel Planner Skill. It is a design input for a later implementation plan, not an implementation plan itself.
@@ -40,7 +42,7 @@ The dominant task is to understand and evaluate a complex itinerary. Content ord
 Lightweight operations help the reader inspect the document:
 
 - navigate to a day or section;
-- search locally;
+- filter days locally;
 - filter days by meaningful planning conditions;
 - expand supporting detail;
 - compare the primary and backup scenarios;
@@ -164,7 +166,7 @@ Immediately after the first screen, show all days in a compact overview. Each it
 
 On desktop this may use a compact table-like composition. On phones it becomes a stacked list with the same information and no horizontal overflow.
 
-The overview must remain useful for a 30-day route. It supports fast search and filtering rather than shrinking text or creating a long horizontal control strip.
+The overview must remain useful for a 30-day route. It supports fast filtering rather than shrinking text or creating a long horizontal control strip.
 
 ## 9. Detailed day anatomy
 
@@ -244,7 +246,6 @@ Rules:
 ### Included
 
 - anchor navigation by section and day;
-- local full-text search over visible itinerary content;
 - filters for all days, unresolved items, weather-sensitive items, transfers and warnings;
 - semantic disclosure controls;
 - view-only primary/backup scenario switching;
@@ -252,11 +253,11 @@ Rules:
 
 ### Persistence
 
-Search text, active filters, open disclosures and selected scenario are session-level view state. The first version does not persist them between browser launches and does not require `localStorage`. Any later persistence remains explicitly non-canonical and must offer an obvious reset.
+Active filters, open disclosures and selected scenario are session-level view state. The first version does not persist them between browser launches and does not require `localStorage`. Any later persistence remains explicitly non-canonical and must offer an obvious reset.
 
 ### Progressive enhancement
 
-Core reading order, all primary itinerary information, links and print content remain available when JavaScript is absent or fails. JavaScript enhances filtering, search, disclosures and scenario presentation; it does not gate the document.
+Core reading order, all primary itinerary information, links and print content remain available when JavaScript is absent or fails. JavaScript enhances filtering, disclosures and scenario presentation; it does not gate the document.
 
 ## 13. Responsive behaviour
 
@@ -402,7 +403,7 @@ The self-contained core document has no application loading shell or skeleton sc
 
 ### Error
 
-A generation or validation error prevents Final status and produces an explicit build report outside the artefact. At runtime, failure of search, filtering or another enhancement leaves the full document readable and may show a concise inline notice near the failed control. Do not replace the itinerary with a generic error screen.
+A generation or validation error prevents Final status and produces an explicit build report outside the artefact. At runtime, failure of filtering or another enhancement leaves the full document readable and may show a concise inline notice near the failed control. Do not replace the itinerary with a generic error screen.
 
 ### Optional media failure
 
@@ -422,7 +423,7 @@ Render the core document and all primary/backup content in readable order. Enhan
 - WCAG 2.2 AA contrast for text and functional graphics.
 - Status is communicated through text plus icon/shape, not colour alone.
 - Native controls and disclosure semantics are preferred; custom controls expose name, role, value and state.
-- Search results, filter changes and scenario changes receive restrained screen-reader announcements.
+- Filter changes and scenario changes receive restrained screen-reader announcements.
 - Timeline order is meaningful in the DOM and does not depend on a visual line.
 - Images have appropriate alt text; decorative stamp art is hidden from assistive technology.
 - At 200% zoom, no content or operation is lost.
@@ -444,7 +445,7 @@ Browser print uses the same information model with dedicated print CSS. There is
 
 ### Print transformations
 
-- hide interactive navigation, search, filters and button chrome;
+- hide interactive navigation, filters and button chrome;
 - print primary and backup scenarios together;
 - prevent critical blocks, timeline events and compact tables from splitting where possible;
 - repeat table headers;
@@ -506,8 +507,6 @@ The following shared PR7 interaction and local-open checklist is entirely
 confirm that the necessary source hooks and fallback content exist, but do not satisfy or
 partially execute any item in this checklist:
 
-- Search: record a query with matches, a query with no matches and reset; confirm the
-  expected result/empty state and restoration of the complete itinerary.
 - Filters: exercise All days, unresolved items, weather-sensitive items, transfers and
   warnings one at a time; for every filter, record that detailed days and the day overview
   remain synchronized, then reset.

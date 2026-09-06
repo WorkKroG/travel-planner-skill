@@ -32,26 +32,43 @@ days:
     travel: Airport arrival
     weather_sensitive: false
     booking_state: confirmed
-    critical_constraints: []
     timeline:
       - id: event-day-1-arrival
+        kind: transport
         time: "16:00"
         title: Confirmed arrival transfer
         detail: Follow the booked transfer to the confirmed lodging.
+        links:
+          - label: Build route in Google Maps
+            url: https://www.google.com/maps/search/?api=1&query=Tokyo
+            kind: route
+            requires_internet: true
+      - id: event-day-1-check-in
+        kind: lodging
+        time: "18:00"
+        title: Confirmed lodging check-in
+        detail: Complete check-in before the short neighbourhood walk.
+      - id: event-day-1-dinner
+        kind: meal
+        time: "20:00"
+        title: Dinner near the lodging
+        detail: Keep the evening within walking distance.
     scenarios:
-      - kind: primary
-        title: Neighbourhood walk
-        description: Take a short walk after check-in.
-      - kind: backup
-        title: Direct rest
-        description: Rest at the lodging if arrival is delayed.
-    food: []
+      - id: direct-rest
+        label: Direct rest
+        summary: Skip the walk only if arrival is delayed.
+        timeline:
+          - id: event-day-1-rest-transfer
+            kind: transport
+            time: "16:00"
+            title: Confirmed arrival transfer
+            detail: Follow the booked transfer to the lodging.
+          - id: event-day-1-rest-check-in
+            kind: lodging
+            time: "18:00"
+            title: Check in and rest
+            detail: End the day's movement after arrival.
     readiness_ids: [lodging-final]
-    links:
-      - label: Google Maps
-        url: https://www.google.com/maps/search/?api=1&query=Tokyo
-        kind: map
-        requires_internet: true
     source_ids: []
     last_checked: "2026-08-28T10:00:00+00:00"
   - id: day-2
@@ -65,30 +82,44 @@ days:
     travel: Intercity rail
     weather_sensitive: true
     booking_state: confirmed
-    critical_constraints: []
     timeline:
       - id: event-day-2-rail
+        kind: transport
         time: "09:00"
         title: Confirmed rail departure
         detail: Use the booked seats and protected connection buffer.
       - id: event-day-2-garden
+        kind: activity
         time: "14:00"
         title: Garden visit
         detail: Arrive within the verified operating hours.
+        source_ids: [source-garden]
+        links:
+          - label: Official garden site
+            url: https://example.jp/garden
+            kind: official
+            requires_internet: true
+      - id: event-day-2-dinner
+        kind: meal
+        time: "19:00"
+        title: Kyoto dinner
+        detail: Eat near the confirmed lodging.
     scenarios:
-      - kind: primary
-        title: Garden visit
-        description: Follow the verified outdoor plan.
-      - kind: backup
-        title: Indoor cultural visit
-        description: Keep the same city and lodging if weather changes.
-    food: []
+      - id: indoor
+        label: Rain
+        summary: Keep the same city and lodging if weather changes.
+        timeline:
+          - id: event-day-2-indoor-rail
+            kind: transport
+            time: "09:00"
+            title: Confirmed rail departure
+            detail: Use the booked seats and protected connection buffer.
+          - id: event-day-2-museum
+            kind: activity
+            time: "14:00"
+            title: Indoor cultural visit
+            detail: Replace the garden with a weather-safe local visit.
     readiness_ids: [rail-final, garden-final]
-    links:
-      - label: Official garden site
-        url: https://example.jp/garden
-        kind: official
-        requires_internet: true
     source_ids: [source-garden]
     last_checked: "2026-08-28T10:00:00+00:00"
 budget_items:

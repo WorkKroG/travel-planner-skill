@@ -1,15 +1,16 @@
 schema_version: 1
 trip_id: japan-autumn-2026-example
 updated_at: "2026-08-28T12:00:00+00:00"
-title: Japan autumn 2026 — anonymized planning example
-trip_thesis: A measured three-region autumn route with flexible arrival, rail-transfer buffers, and local weather backups rather than live operational claims.
+title: Япония осенью 2026 — пример маршрута
+trip_thesis: Спокойный маршрут по трём регионам с бережным приездом, запасом на переезды и локальными сценариями на случай дождя.
 travel_dates: {start: "2026-11-02", end: "2026-11-13"}
 travelers:
   - {id: traveler-a, age_group: adult, pace: moderate}
   - {id: traveler-b, age_group: adult, pace: moderate}
-priorities: [autumn foliage, public transport, cultural sites]
-hard_constraints: [preserve confirmed bases, do not invent unreleased schedules]
-soft_preferences: [early popular-site visits, weather backups]
-assumptions: [seasonal conditions and final provider schedules require recheck]
+priorities: [осенняя листва, общественный транспорт, культурные места]
+hard_constraints: [сохранить выбранные базы, не выдумывать неопубликованное расписание]
+soft_preferences: [приходить в популярные места утром, иметь запасные планы на дождь]
+assumptions: [сезонные условия и итоговое расписание перевозчиков нужно перепроверить]
 map_provider: auto
+document_language: ru
 budget: {currency: JPY}

@@ -18,6 +18,7 @@ soft_preferences: []
 assumptions:
   - This is synthetic final-state renderer data, not a real itinerary.
 map_provider: auto
+document_language: en
 trip_thesis: A fully checked reference route for validating the Final document state.
 budget:
   currency: JPY

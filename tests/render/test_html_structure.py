@@ -1,6 +1,7 @@
 import hashlib
 import re
 from copy import deepcopy
+from dataclasses import replace
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -21,6 +22,14 @@ from tests.render.css_contracts import assert_css_rule
 
 def _blocker_section(html: str) -> str:
     return html[html.index('id="blockers"') : html.index('id="route-overview"')]
+
+
+def _day_section(html: str, day_id: str, next_day_id: str | None = None) -> str:
+    start = html.index(f'<article class="day-chapter" id="{day_id}"')
+    end_marker = (
+        f'<article class="day-chapter" id="{next_day_id}"' if next_day_id else "</section>"
+    )
+    return html[start : html.index(end_marker, start)]
 
 
 def test_html_contains_required_semantic_reading_order(japan_view: ItineraryView) -> None:
@@ -45,9 +54,9 @@ def test_html_exposes_lifecycle_and_blocker_groups_without_disclosure(
     html = render_html(build_view(state, japan_report, generated_at), media={}, options=DEFAULTS)
 
     assert "Draft — AI-review" in html
-    assert "AI-review — вероятностный разбор" in html
+    assert "AI-review — probabilistic review" in html
     assert 'id="blockers"' in html
-    assert "Непринятые блокеры" in html
+    assert "Unaccepted blockers" in html
     blockers = _blocker_section(html)
     assert "Rail booking window is not open yet." in blockers
     assert "<details" not in blockers
@@ -108,7 +117,7 @@ def test_blocker_section_keeps_an_accepted_blocker_unresolved_and_visible(
         in blockers
     )
     assert "SCHEDULE_UNRELEASED · Blocking · Unresolved" in blockers
-    assert "Принят пользователем — остаётся блокирующим" in blockers
+    assert "Accepted by user — remains blocking" in blockers
     assert "Accepted at: 2026-08-30T09:00:00+00:00 · Rationale: Accepted explicitly." in blockers
     assert "No unaccepted blockers." in blockers
 
@@ -145,19 +154,19 @@ def test_blocker_section_keeps_an_unaccepted_blocker_unresolved_and_visible(
 @pytest.mark.parametrize(
     ("document_status", "verification_level", "finalization_basis", "label"),
     [
-        ("draft", "none", None, "Draft — без проверки"),
+        ("draft", "none", None, "Draft — unchecked"),
         ("draft", "ai_reviewed", None, "Draft — AI-review"),
         (
             "final",
             "codex_validated",
             "codex_validated",
-            "Prepared copy — данные проверены в Codex",
+            "Prepared copy — checked in Codex",
         ),
         (
             "final",
             "ai_reviewed",
             "user_confirmed",
-            "Prepared copy — по запросу пользователя",
+            "Prepared copy — requested by user",
         ),
     ],
 )
@@ -208,9 +217,9 @@ def test_html_preserves_all_canonical_lifecycle_dimensions(
     basis = finalization_basis or "none"
     assert f"<dt>finalization_basis</dt><dd>{basis}</dd>" in html
     if finalization_basis == "user_confirmed":
-        assert "Принятые блокеры" in html
+        assert "Accepted blockers" in html
         assert "SCHEDULE_UNRELEASED · Blocking · Unresolved" in html
-        assert "Принят пользователем — остаётся блокирующим" in html
+        assert "Accepted by user — remains blocking" in html
         assert "Accepted explicitly." in html
 
 
@@ -241,15 +250,15 @@ def test_html_marks_a_recorded_data_error_as_inconsistent(japan_state) -> None:
     )
 
     assert "document-status--unsafe" in html
-    assert "Prepared copy — несогласованное состояние" in html
+    assert "Prepared copy — inconsistent state" in html
     assert 'class="lifecycle-warning" role="alert"' in html
-    assert "нельзя считать согласованной подготовленной копией" in html
+    assert "cannot be treated as a consistent prepared copy" in html
 
 
-def test_day_filter_source_exposes_overview_and_empty_state_hooks(
+def test_day_filters_expose_overview_and_empty_state_without_search(
     japan_view: ItineraryView,
 ) -> None:
-    """Catch missing source hooks needed for PR7's manual synchronization checks."""
+    """Catch filters regressing into an unnecessary full-text search interface."""
     html = render_html(japan_view, media={}, options=DEFAULTS)
 
     for day in japan_view.days:
@@ -257,6 +266,155 @@ def test_day_filter_source_exposes_overview_and_empty_state_hooks(
     assert "data-filter-results" in html
     assert "data-filter-empty" in html
     assert "data-reset-filters" in html
+    assert 'type="search"' not in html
+    assert "data-day-search" not in html
+
+
+def test_day_chapter_owns_timeline_links_checkpoints_and_local_alternatives(
+    japan_view: ItineraryView,
+) -> None:
+    """Catch the readable timeline regressing into detached context columns."""
+    html = render_html(japan_view, media={}, options=DEFAULTS)
+    day = _day_section(html, "day-1", "day-2")
+
+    assert '<details class="contents">' in html
+    assert '<details class="contents" open>' not in html
+    assert 'class="timeline-event timeline-event--transport"' in day
+    assert 'data-event-id="event-day-1-arrival"' in day
+    arrival = day[
+        day.index('data-event-id="event-day-1-arrival"') : day.index(
+            'data-event-id="event-day-1-check-in"'
+        )
+    ]
+    assert "Build route in Google Maps" in arrival
+    assert 'class="event-actions"' in arrival
+    assert 'class="checkpoint-contract"' in day
+    assert "What to check" in day
+    assert "How to change the plan" in day
+    dinner = day[day.index('data-event-id="event-day-1-dinner"') :]
+    assert "Alternatives (1)" in dinner
+    assert "Simple meal at the lodging" in dinner
+    assert "Food in context" not in day
+    assert "Contextual actions" not in day
+    assert "Critical constraints" not in day
+
+
+def test_each_timeline_event_kind_uses_a_specific_available_icon(
+    japan_view: ItineraryView,
+) -> None:
+    """Catch valid event kinds collapsing into one generic or missing icon."""
+    icons = {
+        "transport": "route",
+        "activity": "activity",
+        "meal": "meal",
+        "lodging": "lodging",
+        "rest": "rest",
+        "checkpoint": "stop",
+    }
+    day = japan_view.days[0]
+    seed = day.timeline[0]
+    timeline = tuple(
+        replace(seed, event_id=f"event-icon-{kind}", kind=kind, title=kind)
+        for kind in icons
+    )
+    view = replace(japan_view, days=(replace(day, timeline=timeline, scenarios=()),))
+
+    html = render_html(view, media={}, options=DEFAULTS)
+
+    for kind, icon in icons.items():
+        assert f'<symbol id="icon-{icon}"' in html
+        event_start = html.index(f'data-event-id="event-icon-{kind}"')
+        event_kind_start = html.index('<p class="event-kind">', event_start)
+        event_kind_end = html.index("</p>", event_kind_start)
+        assert f'href="#icon-{icon}"' in html[event_kind_start:event_kind_end]
+
+
+def test_material_day_scenarios_are_tabs_over_complete_timelines(
+    japan_view: ItineraryView,
+) -> None:
+    """Catch scenario tabs switching summaries instead of the full day timeline."""
+    html = render_html(japan_view, media={}, options=DEFAULTS)
+    day = _day_section(html, "day-1", "day-2")
+
+    assert 'role="tablist"' in day
+    assert 'role="tab"' in day
+    assert 'aria-selected="true"' in day
+    assert 'data-scenario="primary"' in day
+    assert 'data-scenario="alternative-direct-rest"' in day
+    assert "Arrival and direct transfer" in day
+    assert "Simple nearby meal" in day
+
+
+def test_valid_scenario_named_primary_has_unique_rendered_identity(
+    japan_view: ItineraryView,
+) -> None:
+    """Catch a valid scenario ID colliding with the renderer-owned primary panel."""
+    day = japan_view.days[0]
+    scenario = replace(day.scenarios[0], scenario_id="primary")
+    view = replace(
+        japan_view,
+        days=(replace(day, scenarios=(scenario,)), *japan_view.days[1:]),
+    )
+
+    html = render_html(view, media={}, options=DEFAULTS)
+    rendered_ids = re.findall(r'\bid="(day-1-(?:tab|panel)-[^"]+)"', html)
+
+    assert len(rendered_ids) == len(set(rendered_ids))
+    assert 'data-show-scenario="primary"' in html
+    assert 'data-show-scenario="alternative-primary"' in html
+    assert 'data-scenario="alternative-primary"' in html
+
+
+def test_day_without_alternatives_has_no_orphan_tabpanel_reference(
+    japan_view: ItineraryView,
+) -> None:
+    """Catch a primary-only day claiming a tab that does not exist."""
+    from dataclasses import replace
+
+    primary_only_day = replace(japan_view.days[1], scenarios=())
+    primary_only_view = replace(
+        japan_view,
+        days=(japan_view.days[0], primary_only_day, *japan_view.days[2:]),
+    )
+    html = render_html(primary_only_view, media={}, options=DEFAULTS)
+    day = _day_section(html, "day-2", "day-3")
+
+    assert 'role="tabpanel"' not in day
+    assert 'aria-labelledby="day-2-tab-primary"' not in day
+    assert (
+        '<h4 class="scenario-heading scenario-heading--primary-only">Timeline</h4>'
+        in day
+    )
+
+
+def test_russian_document_uses_russian_renderer_labels(japan_state) -> None:
+    """Catch localized user content being framed by another language's controls."""
+    state = deepcopy(japan_state)
+    state.brief["document_language"] = "ru"
+    state.brief["title"] = "Япония осенью"
+    state.itinerary["days"][0]["region"] = "Токио"
+    state.itinerary["budget_items"][0]["amount_type"] = "unknown"
+    view = build_view(
+        state,
+        CheckReport((), (), (), ()),
+        datetime(2026, 8, 28, 12, tzinfo=UTC),
+    )
+
+    html = render_html(view, media={}, options=DEFAULTS)
+
+    assert '<html lang="ru">' in html
+    assert "Перейти к маршруту" in html
+    assert "Содержание" in html
+    assert "День 1" in html
+    assert "Основной" in html
+    assert "Время" in html
+    assert "Требуется интернет" in html
+    assert "Мероприятия" in html
+    assert "Сумма неизвестна" in html
+    assert "Неизвестно" in html
+    assert "Skip to itinerary" not in html
+    assert "Contents" not in html
+    assert ">activities<" not in html
 
 
 def test_html_is_self_contained_but_keeps_labelled_external_actions(
@@ -316,7 +474,7 @@ def test_optional_media_has_a_visible_failure_fallback(japan_view: ItineraryView
     assert "Photo unavailable; the day plan remains complete." in html
 
 
-def test_critical_constraints_precede_optional_media_in_the_document_order(
+def test_checkpoints_precede_optional_media_in_the_document_order(
     japan_view: ItineraryView,
 ) -> None:
     """Catch optional imagery pushing a day's critical warning later on mobile or in print."""
@@ -324,14 +482,16 @@ def test_critical_constraints_precede_optional_media_in_the_document_order(
 
     html = render_html(japan_view, media={"day-1": media}, options=HtmlOptions(print_images=True))
     day = html[
-        html.index('<article class="day-article" id="day-1"') : html.index(
-            '<article class="day-article" id="day-2"'
+        html.index('<article class="day-chapter" id="day-1"') : html.index(
+            '<article class="day-chapter" id="day-2"'
         )
     ]
     no_javascript = re.sub(r"<script\b[^>]*>.*?</script>", "", day, flags=re.DOTALL)
 
-    assert day.index("Critical constraints") < day.index("data-optional-media")
-    assert no_javascript.index("Critical constraints") < no_javascript.index("data-optional-media")
+    assert day.index("What to check") < day.index("data-optional-media")
+    assert no_javascript.index("What to check") < no_javascript.index(
+        "data-optional-media"
+    )
     assert 'class="print-images"' in html
 
 
@@ -346,7 +506,7 @@ def test_static_css_declares_long_content_wrapping_contract(
     assert_css_rule(css, ("body",), {"overflow-wrap": "anywhere"})
     assert_css_rule(
         css,
-        (".trip-hero *", ".document-grid *", ".document-footer *"),
+        (".trip-hero *", ".document-shell *", ".document-footer *"),
         {"min-width": "0"},
     )
     assert_css_rule(
@@ -356,24 +516,53 @@ def test_static_css_declares_long_content_wrapping_contract(
     )
 
 
+def test_static_css_declares_reading_column_and_nonsticky_contents(
+    japan_view: ItineraryView,
+) -> None:
+    """Catch the page returning to a permanent sidebar or multi-column day dashboard."""
+    html = render_html(japan_view, media={}, options=DEFAULTS)
+    css = html[html.index("<style>") : html.index("</style>")]
+
+    assert_css_rule(
+        css,
+        (".document-shell",),
+        {"width": "min(100% - 2rem, 76rem)", "margin-inline": "auto"},
+    )
+    assert_css_rule(css, (".contents",), {"position": "static"})
+    assert_css_rule(
+        css,
+        ("main",),
+        {"width": "min(100%, 68rem)", "margin-inline": "auto"},
+    )
+    assert_css_rule(
+        css,
+        ("button", ".external-link", ".day-nav a"),
+        {"min-height": "var(--control)"},
+    )
+    assert_css_rule(
+        css,
+        (".day-chapter",),
+        {"border-top": "0.25rem solid var(--chapter-accent)"},
+    )
+
+
 def test_scenarios_and_day_metadata_keep_semantic_source_wrappers(
     japan_view: ItineraryView,
 ) -> None:
     """Catch print-oriented heading and metadata groups being flattened in source HTML."""
     html = render_html(japan_view, media={}, options=DEFAULTS)
     scenario_groups = re.findall(
-        r'<section class="scenario-panel".*?'
-        r'<header class="scenario-heading">.*?</header>\s*<p>.*?</p>\s*</section>',
+        r'<section class="scenario-panel [^"]+".*?data-scenario="[^"]+".*?</section>',
         html,
         flags=re.DOTALL,
     )
-    metadata_groups = re.findall(
-        r'<div class="metadata-pair"><dt>.*?</dt><dd>.*?</dd></div>',
-        html,
-    )
+    metadata_groups = re.findall(r'<dl class="day-meta">(.*?)</dl>', html, re.DOTALL)
 
-    assert len(scenario_groups) == sum(len(day.scenarios) for day in japan_view.days)
-    assert len(metadata_groups) == len(japan_view.days) * 4
+    expected_scenarios = len(japan_view.days) + sum(
+        len(day.scenarios) for day in japan_view.days
+    )
+    assert len(scenario_groups) == expected_scenarios
+    assert all(group.count("<dt>") == 4 for group in metadata_groups)
 
 
 def test_html_is_deterministic_and_write_helper_uses_exact_bytes(
@@ -441,4 +630,4 @@ def test_render_cli_preserves_the_canonical_valid_final_label(tmp_path: Path) ->
     )
 
     assert exit_code == 0
-    assert "Prepared copy — данные проверены в Codex" in output.read_text(encoding="utf-8")
+    assert "Prepared copy — checked in Codex" in output.read_text(encoding="utf-8")

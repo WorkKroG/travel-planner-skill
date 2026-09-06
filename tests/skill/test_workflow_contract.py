@@ -276,9 +276,9 @@ def test_day_contract_applies_to_initial_detail_and_material_change() -> None:
     expected = {
         "intent": {"thesis"},
         "summary": {"load", "travel"},
-        "cutoffs": {"critical_cutoffs", "latest_switch_point"},
-        "scenarios": {"primary", "realistic_backup"},
-        "context": {"meal", "booking"},
+        "checkpoints": {"checkpoint.check", "checkpoint.adjust_plan"},
+        "scenarios": {"days[].timeline", "days[].scenarios[].timeline"},
+        "context": {"meal", "booking", "links", "alternatives"},
         "evidence": {"linked_sources", "claim_status"},
         "transport": {
             "local_time",

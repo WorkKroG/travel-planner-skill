@@ -36,10 +36,9 @@ Both catalogs remain data-only with `execution_status: not_executed`. Here `not_
 
 Record date, exact PR head, browser/version, artifact hash, result, and failures for each item. Static source tests do not satisfy this checklist.
 
-- [ ] Search: match, no match, and reset restore the complete itinerary.
 - [ ] Every filter—All days, unresolved, weather-sensitive, transfers, warnings—keeps detailed days and overview synchronized; reset works.
 - [ ] Contents opens; a section link and day link land without obscured heading or focus.
-- [ ] Primary/backup switching works in both directions and announces each state.
+- [ ] Primary/alternative scenario switching works in both directions, supports Arrow/Home/End keys, and announces each state.
 - [ ] An induced enhancement failure leaves complete core content, both scenarios, and normal links readable with a concise notice.
 - [ ] Opening through `file://` causes no automatic HTTP(S) asset/fetch request; labelled external links are checked separately as user-initiated connectivity actions.
 - [ ] 320 px, 390×844, 768×1024, and 1440×900 layouts have no horizontal page scroll or hidden critical content.
@@ -48,9 +47,10 @@ Record date, exact PR head, browser/version, artifact hash, result, and failures
 
 No screenshots, baselines, device automation, or automated accessibility/layout claims are required or implied.
 
-Availability note (2026-08-30): the available in-app browser rejected the local `file://`
-artifact before page load under its URL security policy and prohibited an alternate-browser
-workaround. No exact-head desktop observation was therefore performed or marked passed.
+Availability note (reconfirmed 2026-09-06): the available in-app browser rejected the local
+`file://` artifact before page load under its URL security policy and prohibited an
+alternate-browser workaround. No exact-head desktop or mobile observation was therefore
+performed or marked passed.
 
 ## Cross-surface user observations
 

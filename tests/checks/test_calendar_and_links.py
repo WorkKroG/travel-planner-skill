@@ -218,3 +218,43 @@ def test_canonical_references_resolve_and_array_findings_include_the_index(
         and finding.path == "itinerary.yaml.days[0].overnight_stop_id"
         for finding in report.findings
     )
+
+
+def test_scenario_timeline_references_and_timestamps_use_exact_paths(
+    japan_state: TripState,
+) -> None:
+    """Catch alternative day plans bypassing recorded-data integrity checks."""
+    state = _state(japan_state)
+    state.itinerary["days"] = [
+        {
+            "id": "day-one",
+            "timeline": [],
+            "scenarios": [
+                {
+                    "id": "rain",
+                    "label": "Rain",
+                    "timeline": [
+                        {
+                            "id": "rain-event",
+                            "kind": "activity",
+                            "time": "09:00",
+                            "title": "Museum",
+                            "detail": "Alternative event.",
+                            "start_at": "2026-11-02T09:00:00",
+                            "source_ids": ["missing-source"],
+                        }
+                    ],
+                }
+            ],
+        }
+    ]
+
+    report = run_checks(state)
+
+    paths = {finding.path for finding in report.findings}
+    assert (
+        "itinerary.yaml.days[0].scenarios[0].timeline[0].start_at" in paths
+    )
+    assert (
+        "itinerary.yaml.days[0].scenarios[0].timeline[0].source_ids[0]" in paths
+    )

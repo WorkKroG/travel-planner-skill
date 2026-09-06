@@ -44,6 +44,6 @@ scenarios:
     required_evidence:
       - Chat web manual observation records successful HTML download and open.
       - Mobile manual observation records successful HTML download and open.
-      - The evidence record references the shared PR7 checklist for search, filters and synchronized overview, Contents navigation, scenario switching and announcements, enhancement failure, and the file-local network boundary.
+      - The evidence record references the shared PR7 checklist for filters and synchronized overview, Contents navigation, scenario switching and announcements, enhancement failure, and the file-local network boundary.
       - The two manual surface observations belong to one release scenario and remain pending until PR7 execution.
       - Neither observation claims Codex validation, automatic synchronization, or automated device coverage.

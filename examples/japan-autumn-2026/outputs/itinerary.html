@@ -1,20 +1,23 @@
 <!doctype html>
-<html lang="en">
+<html lang="ru">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="light">
-  <title>Japan autumn 2026 — anonymized planning example · Draft — без проверки itinerary</title>
+  <title>Япония осенью 2026 — пример маршрута · Черновик — без проверки · маршрут</title>
   <style>:root {
   --mineral: #edf1ec;
   --paper: #fffdf7;
   --teal: #173c44;
-  --maple: #bd4a36;
-  --brass: #d1a044;
+  --maple: #a93f2e;
+  --brass: #9b6b12;
   --moss: #496b58;
   --ink-soft: #456068;
   --line: #bdcac6;
-  --focus: #0b67b2;
+  --focus: #075fa8;
+  --maple-wash: #fff0ea;
+  --brass-wash: #fff7da;
+  --moss-wash: #edf5ed;
   --serif: "Source Serif 4", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
   --sans: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --space-1: 0.5rem;
@@ -23,6 +26,7 @@
   --space-4: 2rem;
   --space-6: 3rem;
   --space-8: 4rem;
+  --space-10: 5rem;
   --control: 2.75rem;
   color-scheme: light;
   font-family: var(--sans);
@@ -37,7 +41,7 @@
 
 html {
   min-width: 20rem;
-  scroll-padding-top: 5rem;
+  scroll-padding-top: 1.5rem;
 }
 
 body {
@@ -54,13 +58,17 @@ body::before {
   position: fixed;
   inset: 0;
   z-index: -1;
-  background:
-    linear-gradient(90deg, transparent 0 6%, rgb(23 60 68 / 4%) 6% 6.1%, transparent 6.1%),
-    var(--mineral);
+  background: var(--mineral);
+}
+
+.trip-hero *,
+.document-shell *,
+.document-footer * {
+  min-width: 0;
 }
 
 a {
-  color: #8c2d20;
+  color: #842b1f;
   text-decoration-thickness: 0.08em;
   text-underline-offset: 0.2em;
 }
@@ -86,14 +94,27 @@ a:hover {
 }
 
 .icon {
-  width: 1.15rem;
-  height: 1.15rem;
+  width: 1.1rem;
+  height: 1.1rem;
   flex: 0 0 auto;
   fill: none;
   stroke: currentColor;
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-width: 1.8;
+}
+
+.visually-hidden,
+.screen-reader-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .skip-link {
@@ -112,29 +133,74 @@ a:hover {
   transform: translateY(0);
 }
 
-.trip-hero,
-.document-grid,
-.document-footer {
-  width: min(100% - 2rem, 90rem);
-  margin-inline: auto;
-  background: var(--paper);
+h1,
+h2,
+h3,
+.trip-thesis,
+.route-ribbon,
+.decision-question {
+  font-family: var(--serif);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
 }
 
-.trip-hero *,
-.document-grid *,
-.document-footer * {
-  min-width: 0;
+h1 {
+  max-width: 13ch;
+  margin: var(--space-3) 0 var(--space-2);
+  font-size: clamp(3rem, 7vw, 5.8rem);
+  line-height: 0.98;
+}
+
+h2 {
+  margin: 0 0 var(--space-3);
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  line-height: 1.08;
+}
+
+h3 {
+  margin: 0 0 var(--space-1);
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  line-height: 1.05;
+}
+
+h4 {
+  margin: var(--space-4) 0 var(--space-2);
+  font-size: 1rem;
+  line-height: 1.3;
+}
+
+h5,
+h6 {
+  margin: 0;
+  font: 700 1.08rem/1.35 var(--sans);
+}
+
+h6 {
+  font-size: 1rem;
+}
+
+p,
+li {
+  max-width: 72ch;
+}
+
+.trip-hero,
+.document-footer {
+  width: min(100% - 2rem, 88rem);
+  margin-inline: auto;
+  background: var(--paper);
 }
 
 .trip-hero {
   position: relative;
   min-height: min(48rem, calc(100vh - 2rem));
   margin-top: var(--space-2);
-  padding: clamp(2rem, 6vw, 6rem);
+  padding: clamp(2rem, 6vw, 5.5rem);
   border-top: 0.5rem solid var(--teal);
   display: grid;
-  grid-template-columns: minmax(0, 1.6fr) minmax(17rem, 0.7fr);
-  gap: clamp(2rem, 6vw, 6rem);
+  grid-template-columns: minmax(0, 1.55fr) minmax(16rem, 0.65fr);
+  gap: clamp(2rem, 6vw, 5rem);
   align-items: center;
 }
 
@@ -143,9 +209,7 @@ a:hover {
 }
 
 .status-line,
-.meta-line,
-.summary-counts,
-.day-meta,
+.summary-links,
 .status-with-icon {
   display: flex;
   flex-wrap: wrap;
@@ -154,12 +218,11 @@ a:hover {
 }
 
 .document-status,
-.status,
-.filter-button {
+.status {
   display: inline-flex;
   min-height: 2rem;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.35rem;
   padding: 0.2rem 0.7rem;
   border: 1px solid currentColor;
   border-radius: 999px;
@@ -167,20 +230,39 @@ a:hover {
   font-weight: 750;
   line-height: 1.2;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.055em;
 }
 
 .document-status--draft,
 .document-status--unsafe,
 .status--blocking,
 .status--conflicting {
-  color: #8c2d20;
-  background: #fff1ec;
+  color: #7a281d;
+  background: var(--maple-wash);
+}
+
+.document-status--final,
+.status--confirmed,
+.status--ready {
+  color: #355442;
+  background: var(--moss-wash);
+}
+
+.status--stale,
+.status--recheck,
+.status--unknown,
+.status--not-released-yet {
+  color: #65470f;
+  background: var(--brass-wash);
+}
+
+.verification-line,
+.feasibility-note {
+  color: var(--ink-soft);
 }
 
 .verification-line {
-  margin: var(--space-2) 0 0;
-  color: var(--ink-soft);
+  margin-top: var(--space-2);
 }
 
 .lifecycle-details {
@@ -189,7 +271,7 @@ a:hover {
   gap: var(--space-1) var(--space-3);
   margin: var(--space-1) 0 0;
   color: var(--ink-soft);
-  font-size: 0.875rem;
+  font-size: 0.82rem;
 }
 
 .lifecycle-details div {
@@ -208,115 +290,68 @@ a:hover {
 .lifecycle-warning {
   margin-block: var(--space-3);
   padding: var(--space-2) var(--space-3);
-  border: 2px solid #8c2d20;
-  background: #fff1ec;
-  color: #6f2017;
+  border: 2px solid #7a281d;
+  background: var(--maple-wash);
+  color: #642016;
 }
 
 .lifecycle-warning p {
   margin: 0.25rem 0 0;
 }
 
-.document-status--final,
-.status--confirmed,
-.status--ready {
-  color: #355442;
-  background: #edf5ed;
-}
-
-.status--stale,
-.status--recheck,
-.status--unknown,
-.status--not-released-yet {
-  color: #68501a;
-  background: #fff7db;
-}
-
-h1,
-h2,
-h3,
-.route-ribbon,
-.day-thesis,
-.decision-question {
-  font-family: var(--serif);
-  font-weight: 600;
-  letter-spacing: -0.025em;
-  text-wrap: balance;
-}
-
-h1 {
-  max-width: 13ch;
-  margin: var(--space-3) 0 var(--space-2);
-  font-size: clamp(3rem, 7vw, 6rem);
-  line-height: 0.98;
-}
-
-h2 {
-  margin: 0 0 var(--space-3);
-  font-size: clamp(2rem, 4vw, 3.5rem);
-  line-height: 1.08;
-}
-
-h3 {
-  margin: var(--space-4) 0 var(--space-2);
-  font-size: clamp(1.4rem, 2.5vw, 2rem);
-  line-height: 1.2;
-}
-
-h4 {
-  margin: var(--space-4) 0 var(--space-1);
-  font-size: 0.88rem;
-  line-height: 1.3;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-p,
-li {
-  max-width: 72ch;
-}
-
 .trip-thesis {
   max-width: 58ch;
   margin: var(--space-2) 0 var(--space-4);
-  font-family: var(--serif);
   font-size: clamp(1.25rem, 2.2vw, 1.65rem);
   line-height: 1.45;
 }
 
 .route-ribbon {
+  display: flex;
+  gap: var(--space-1);
   margin: var(--space-4) 0;
   padding-block: var(--space-3);
   border-block: 1px solid var(--teal);
-  font-size: clamp(1.15rem, 2.2vw, 1.75rem);
+  font-size: clamp(1.1rem, 2.2vw, 1.65rem);
 }
 
-.hero-aside {
+.summary-links a,
+.hero-fact a {
+  display: inline-flex;
+  min-height: var(--control);
+  align-items: center;
+}
+
+.hero-facts {
   align-self: stretch;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: var(--space-3);
 }
 
-.readiness-panel,
-.budget-panel {
-  padding: var(--space-3);
-  border-radius: 12px;
-  background: var(--mineral);
-  box-shadow: 0 0.8rem 2.4rem rgb(23 60 68 / 10%);
+.hero-fact {
+  padding: var(--space-3) 0;
+  border-top: 1px solid var(--line);
 }
 
-.readiness-panel strong,
-.budget-panel strong {
-  display: block;
-  font-family: var(--serif);
-  font-size: 1.5rem;
+.hero-fact h2 {
+  margin: 0 0 0.25rem;
+  font: 750 0.78rem/1.2 var(--sans);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.hero-fact p {
+  margin: 0.25rem 0;
+}
+
+.hero-fact-value {
+  font: 600 1.35rem/1.25 var(--serif);
 }
 
 .stamp {
-  width: 7rem;
-  margin-left: auto;
+  width: 5.5rem;
+  margin: 0 0 var(--space-3) auto;
   color: var(--maple);
   transform: rotate(3deg);
 }
@@ -328,59 +363,49 @@ li {
 }
 
 .warning-block {
-  margin: var(--space-2) 0;
-  padding: var(--space-2) var(--space-3);
-  border-left: 4px solid var(--maple);
-  background: #fff4ef;
+  margin: var(--space-2) 0 0;
+  padding: var(--space-2);
+  border: 1px solid color-mix(in srgb, var(--maple) 55%, var(--line));
+  border-top: 3px solid var(--maple);
+  background: var(--maple-wash);
 }
 
 .warning-block p {
   margin: 0.25rem 0;
 }
 
-.document-grid {
-  display: grid;
-  grid-template-columns: 16rem minmax(0, 1fr);
-  gap: clamp(2rem, 5vw, 5rem);
-  padding: var(--space-6) clamp(1.5rem, 5vw, 5rem) var(--space-8);
+.document-shell {
+  width: min(100% - 2rem, 76rem);
+  margin-inline: auto;
+  padding: var(--space-4) clamp(1rem, 4vw, 4rem) var(--space-10);
+  background: var(--paper);
 }
 
 .contents {
-  position: sticky;
-  top: var(--space-2);
-  height: max-content;
-  border-top: 2px solid var(--teal);
+  position: static;
+  margin-bottom: var(--space-6);
+  border-block: 1px solid var(--teal);
 }
 
-.contents summary {
+.contents summary,
+.event-alternatives summary {
   min-height: var(--control);
   padding: var(--space-2) 0;
   cursor: pointer;
   font-weight: 750;
-  list-style: none;
 }
 
-.contents summary::-webkit-details-marker {
-  display: none;
-}
-
-.contents summary::before {
-  content: "";
-  display: inline-block;
-  width: 0.8rem;
-  height: 0.8rem;
-  margin-right: 0.6rem;
-  border: solid currentColor;
-  border-width: 0 1px 1px 0;
-  transform: rotate(-45deg);
-}
-
-.contents[open] summary::before {
-  transform: rotate(45deg) translateY(-0.2rem);
+.contents summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
 }
 
 .contents ol {
-  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0 var(--space-3);
+  margin: 0 0 var(--space-2);
   padding: 0;
   list-style: none;
 }
@@ -394,28 +419,24 @@ li {
   text-decoration: none;
 }
 
-.contents a:hover {
-  color: var(--maple);
-}
-
-.day-links {
-  padding-left: var(--space-2) !important;
+.contents .day-link {
   font-size: 0.9rem;
 }
 
-.document-main {
-  min-width: 0;
+main {
+  width: min(100%, 68rem);
+  margin-inline: auto;
 }
 
-.document-section {
+.document-section,
+.days-section {
   padding: var(--space-8) 0;
   border-top: 1px solid var(--teal);
-  scroll-margin-top: 5rem;
+  scroll-margin-top: var(--space-3);
 }
 
-.document-section:first-child {
-  padding-top: 0;
-  border-top: 0;
+.blocker-section {
+  padding-top: var(--space-4);
 }
 
 .route-sequence {
@@ -445,16 +466,74 @@ li {
   transform: rotate(45deg);
 }
 
-.route-stop strong {
+.route-stop strong,
+.route-stop span {
   display: block;
-  font-family: var(--serif);
-  font-size: 1.4rem;
+}
+
+.route-stop strong {
+  font: 600 1.35rem/1.25 var(--serif);
 }
 
 .route-stop span {
-  display: block;
   color: var(--ink-soft);
   font-size: 0.9rem;
+}
+
+.interactive-controls {
+  display: none;
+}
+
+.js-enabled .interactive-controls {
+  display: flex;
+}
+
+.interactive-controls:not(.scenario-tabs) {
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: var(--space-4) 0 var(--space-2);
+}
+
+.filters,
+.scenario-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+button,
+.external-link,
+.day-nav a {
+  min-height: var(--control);
+}
+
+button {
+  padding: 0.55rem 0.9rem;
+  border: 1px solid var(--teal);
+  border-radius: 8px;
+  background: var(--paper);
+  color: var(--teal);
+  font: 700 0.9rem/1.2 var(--sans);
+  cursor: pointer;
+}
+
+button:hover,
+button[aria-pressed="true"],
+button[aria-selected="true"] {
+  background: var(--teal);
+  color: var(--paper);
+}
+
+.filter-feedback {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+.filter-feedback p {
+  margin: 0;
 }
 
 .day-overview {
@@ -466,7 +545,7 @@ li {
 
 .day-overview a {
   display: grid;
-  grid-template-columns: 4rem minmax(7rem, 0.8fr) minmax(12rem, 1.8fr) minmax(7rem, 0.7fr);
+  grid-template-columns: 4rem minmax(8rem, 0.8fr) minmax(14rem, 1.7fr) minmax(8rem, 0.7fr);
   gap: var(--space-2);
   min-height: var(--control);
   align-items: center;
@@ -482,89 +561,6 @@ li {
 
 .day-overview small {
   color: var(--ink-soft);
-}
-
-.interactive-controls {
-  display: none;
-}
-
-.js-enabled .interactive-controls {
-  display: block;
-}
-
-.search-row {
-  display: flex;
-  gap: var(--space-1);
-  margin: var(--space-4) 0 var(--space-2);
-}
-
-.search-row label {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-}
-
-.search-row input {
-  width: min(100%, 32rem);
-  min-height: var(--control);
-  padding: 0.65rem 0.9rem;
-  border: 1px solid var(--teal);
-  border-radius: 8px;
-  background: var(--paper);
-  color: var(--teal);
-  font: inherit;
-}
-
-.filters,
-.scenario-switch {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-1);
-}
-
-.filter-feedback {
-  display: flex;
-  min-height: var(--control);
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-2);
-  color: var(--ink-soft);
-  font-size: 0.9rem;
-}
-
-.filter-feedback p {
-  margin: var(--space-1) 0 var(--space-2);
-}
-
-.filter-empty {
-  color: #8c2d20;
-}
-
-.filter-empty button {
-  margin-left: var(--space-1);
-}
-
-button {
-  min-height: var(--control);
-  padding: 0.55rem 0.9rem;
-  border: 1px solid var(--teal);
-  border-radius: 8px;
-  background: var(--paper);
-  color: var(--teal);
-  font: 700 0.9rem/1.2 var(--sans);
-  cursor: pointer;
-}
-
-.filter-button {
-  min-height: var(--control);
-}
-
-button:hover,
-button[aria-pressed="true"] {
-  background: var(--teal);
-  color: var(--paper);
 }
 
 .decision-list,
@@ -588,8 +584,9 @@ button[aria-pressed="true"] {
 
 .blocker-item {
   padding-inline: var(--space-2);
-  border-left: 4px solid var(--maple);
-  background: #fff4ef;
+  border: 1px solid color-mix(in srgb, var(--maple) 55%, var(--line));
+  border-top: 3px solid var(--maple);
+  background: var(--maple-wash);
 }
 
 .blocker-item + .blocker-item {
@@ -597,13 +594,13 @@ button[aria-pressed="true"] {
 }
 
 .blocker-item--accepted {
-  border-left-color: var(--brass);
-  background: #fff7db;
+  border-top-color: var(--brass);
+  background: var(--brass-wash);
 }
 
 .acceptance-label {
+  color: #642016;
   font-weight: 750;
-  color: #6f2017;
 }
 
 .decision-question {
@@ -621,139 +618,321 @@ button[aria-pressed="true"] {
   font-size: 0.9rem;
 }
 
-.day-article {
-  padding: var(--space-8) 0;
-  border-top: 2px solid var(--teal);
-  scroll-margin-top: 5rem;
+.days-section > h2 {
+  margin-bottom: var(--space-6);
+}
+
+.day-chapter {
+  --chapter-accent: var(--teal);
+  --chapter-field: var(--mineral);
+  margin-inline: clamp(-2rem, -3vw, -1rem);
+  padding: clamp(2rem, 5vw, 4.5rem) clamp(1rem, 4vw, 3rem);
+  border-top: 0.25rem solid var(--chapter-accent);
+  background: var(--chapter-field);
+  scroll-margin-top: var(--space-3);
+}
+
+.day-chapter:nth-of-type(3n + 2) {
+  --chapter-accent: #8f3b2d;
+  --chapter-field: #fff5f0;
+}
+
+.day-chapter:nth-of-type(3n) {
+  --chapter-accent: #89600f;
+  --chapter-field: #fff8e1;
+}
+
+.day-chapter + .day-chapter {
+  margin-top: var(--space-8);
 }
 
 .day-heading {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: var(--space-3);
+  grid-template-columns: 5.5rem minmax(0, 1fr);
+  gap: 0 var(--space-3);
   align-items: start;
 }
 
 .day-number {
-  display: block;
-  color: var(--maple);
-  font: 750 0.82rem/1.2 var(--sans);
-  letter-spacing: 0.08em;
+  grid-row: 1 / span 2;
+  display: flex;
+  flex-direction: column;
+  color: var(--chapter-accent);
+  font-weight: 750;
+  line-height: 1;
   text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.day-number span {
+  font-size: 0.75rem;
+}
+
+.day-number strong {
+  font: 600 clamp(3.5rem, 7vw, 5.5rem)/0.9 var(--serif);
+  letter-spacing: -0.035em;
+}
+
+.day-title-group > p:first-child {
+  margin: 0 0 var(--space-1);
+  color: var(--ink-soft);
+  font-weight: 700;
 }
 
 .day-thesis {
-  max-width: 48ch;
-  margin: var(--space-2) 0 var(--space-3);
-  font-size: 1.3rem;
+  max-width: 54ch;
+  margin: var(--space-2) 0 0;
+  font-size: 1.25rem;
   line-height: 1.45;
 }
 
-.day-layout {
+.day-meta {
+  grid-column: 2;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(14rem, 0.34fr);
-  gap: clamp(2rem, 4vw, 4rem);
-  margin-top: var(--space-4);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-1) var(--space-3);
+  margin: var(--space-3) 0 0;
+  padding-top: var(--space-2);
+  border-top: 1px solid color-mix(in srgb, var(--chapter-accent) 42%, transparent);
 }
 
-.day-context {
-  order: 2;
+.day-meta div {
+  display: grid;
+  grid-template-columns: minmax(5rem, 0.45fr) minmax(0, 1fr);
+  gap: var(--space-1);
 }
 
-.constraint-list {
+.day-meta dt {
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.day-meta dd {
   margin: 0;
-  padding: 0;
-  list-style: none;
 }
 
-.constraint-list li {
-  margin-bottom: var(--space-1);
-  padding: var(--space-2);
-  border-left: 4px solid var(--maple);
-  background: #fff4ef;
-  font-weight: 650;
+.weather-note {
+  display: flex;
+  gap: var(--space-1);
+  align-items: center;
+  margin: var(--space-3) 0 0 7rem;
+  color: #65470f;
+  font-weight: 700;
+}
+
+.scenario-tabs {
+  margin: var(--space-6) 0 var(--space-2) 7rem;
+}
+
+.scenario-stack {
+  margin-left: 7rem;
+}
+
+.scenario-panel {
+  padding-top: var(--space-2);
+}
+
+.scenario-panel--alternative {
+  margin-top: var(--space-4);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--chapter-accent);
+}
+
+.scenario-heading {
+  margin-top: 0;
+}
+
+.scenario-summary {
+  max-width: 60ch;
+  margin: calc(-1 * var(--space-1)) 0 var(--space-3);
+  color: var(--ink-soft);
 }
 
 .timeline {
-  margin: var(--space-2) 0 0;
+  margin: 0;
   padding: 0;
   list-style: none;
 }
 
 .timeline-event {
+  position: relative;
   display: grid;
   grid-template-columns: 6rem minmax(0, 1fr);
   gap: var(--space-2);
-  padding: var(--space-2) 0;
-  border-top: 1px solid var(--line);
+  padding: var(--space-3) 0 var(--space-3) var(--space-2);
+  border-top: 1px solid color-mix(in srgb, var(--chapter-accent) 32%, transparent);
+}
+
+.timeline-event::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 1px;
+  background: color-mix(in srgb, var(--chapter-accent) 55%, transparent);
+}
+
+.timeline-marker {
+  position: absolute;
+  top: 1.9rem;
+  left: -0.28rem;
+  width: 0.62rem;
+  height: 0.62rem;
+  border: 2px solid var(--chapter-accent);
+  border-radius: 50%;
+  background: var(--chapter-field);
 }
 
 .timeline-time {
-  font-weight: 750;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  color: var(--chapter-accent);
+  font-size: 1rem;
+  font-weight: 800;
   font-variant-numeric: tabular-nums;
 }
 
-.timeline-event strong,
-.scenario-panel strong,
-.food-list strong {
-  display: block;
+.timeline-time-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
 }
 
-.timeline-event p,
-.scenario-panel p {
-  margin: 0.25rem 0 0;
-}
-
-.scenario-switch {
-  margin-bottom: var(--space-2);
-}
-
-.scenario-panel {
-  min-height: 8rem;
-  padding: var(--space-3) 0;
-  border-block: 1px solid var(--teal);
-}
-
-.scenario-panel + .scenario-panel {
-  border-top: 0;
-}
-
-.scenario-kind {
+.event-kind {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  margin: 0 0 0.25rem;
   color: var(--ink-soft);
   font-size: 0.78rem;
   font-weight: 750;
-  letter-spacing: 0.07em;
   text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
-.food-list,
-.link-list {
-  margin: 0;
+.event-body > p:not(.event-kind) {
+  margin: 0.35rem 0 0;
+}
+
+.timeline-event--checkpoint {
+  margin-block: var(--space-2);
+  padding: var(--space-3) var(--space-3) var(--space-3) var(--space-2);
+  border-block: 2px solid var(--maple);
+  background: var(--maple-wash);
+  color: #541b13;
+}
+
+.timeline-event--checkpoint::before {
+  background: var(--maple);
+}
+
+.timeline-event--checkpoint .timeline-time,
+.timeline-event--checkpoint .event-kind {
+  color: #7a281d;
+}
+
+.checkpoint-contract {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+  margin: var(--space-2) 0 0;
+  padding-top: var(--space-2);
+  border-top: 1px solid #c77e70;
+}
+
+.checkpoint-contract dt,
+.alternative-meta dt {
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.checkpoint-contract dd,
+.alternative-meta dd {
+  margin: 0.2rem 0 0;
+}
+
+.event-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-2);
+  margin: var(--space-2) 0 0;
   padding: 0;
   list-style: none;
 }
 
-.food-list li,
-.link-list li {
-  padding: 0.7rem 0;
-  border-top: 1px solid var(--line);
+.event-actions li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--space-1);
+  align-items: center;
 }
 
 .external-link {
   display: inline-flex;
-  min-height: var(--control);
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.45rem;
   font-weight: 700;
 }
 
 .network-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
   color: var(--ink-soft);
   font-size: 0.82rem;
 }
 
+.print-url,
+.event-print-context,
+.event-alternatives-print,
+.print-link-appendix {
+  display: none;
+}
+
+.event-alternatives {
+  margin-top: var(--space-2);
+  border-top: 1px solid color-mix(in srgb, var(--chapter-accent) 35%, transparent);
+}
+
+.alternative-list {
+  padding: 0 0 var(--space-2) var(--space-2);
+}
+
+.event-alternative {
+  padding: var(--space-2) 0;
+  border-top: 1px solid color-mix(in srgb, var(--chapter-accent) 25%, transparent);
+}
+
+.event-alternative:first-child {
+  border-top: 0;
+}
+
+.event-alternative p {
+  margin: 0.4rem 0 0;
+}
+
+.alternative-meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-1) var(--space-2);
+  margin: var(--space-2) 0 0;
+}
+
 .day-photo {
-  margin: var(--space-4) 0;
+  margin: var(--space-6) 0 0 7rem;
 }
 
 .day-photo img {
@@ -765,7 +944,7 @@ button[aria-pressed="true"] {
 }
 
 .day-photo:not(.media-loaded, .media-unavailable) img {
-  opacity: 0.72;
+  opacity: 0.76;
 }
 
 .day-photo.media-unavailable img {
@@ -773,17 +952,15 @@ button[aria-pressed="true"] {
 }
 
 .day-photo.media-unavailable {
-  margin-block: var(--space-2);
+  margin-top: var(--space-2);
 }
 
 .media-fallback {
-  display: block;
-  min-height: 0;
   margin: 0;
   padding: 0.65rem 0.8rem;
-  border-left: 3px solid var(--brass);
-  background: var(--mineral);
-  color: var(--ink-soft);
+  border-top: 2px solid var(--brass);
+  background: var(--brass-wash);
+  color: #65470f;
   font-size: 0.875rem;
 }
 
@@ -797,14 +974,13 @@ button[aria-pressed="true"] {
   display: flex;
   justify-content: space-between;
   gap: var(--space-2);
-  margin-top: var(--space-6);
+  margin: var(--space-6) 0 0 7rem;
   padding-top: var(--space-2);
-  border-top: 1px solid var(--teal);
+  border-top: 1px solid var(--chapter-accent);
 }
 
 .day-nav a {
   display: inline-flex;
-  min-height: var(--control);
   align-items: center;
 }
 
@@ -837,18 +1013,14 @@ button[aria-pressed="true"] {
 }
 
 .budget-table th {
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.045em;
 }
 
 .risk-item--blocking {
-  border-left: 4px solid var(--maple);
-  padding-left: var(--space-2);
-}
-
-.source-url {
-  overflow-wrap: anywhere;
+  padding-inline: var(--space-2);
+  border-top: 3px solid var(--maple);
 }
 
 .document-version {
@@ -866,70 +1038,24 @@ button[aria-pressed="true"] {
   font-size: 0.85rem;
 }
 
-.screen-reader-live {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-}
-
 .enhancement-error {
   padding: var(--space-2);
   border: 1px solid var(--brass);
-  background: #fff7db;
+  background: var(--brass-wash);
+  color: #65470f;
 }
 
 .enhancement-failed .interactive-controls {
   display: none !important;
 }
 
-@media (max-width: 1023px) {
-  .trip-hero {
-    grid-template-columns: minmax(0, 1.3fr) minmax(15rem, 0.7fr);
-    padding: clamp(2rem, 5vw, 4rem);
-  }
-
-  .document-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .contents {
-    position: static;
-    z-index: 20;
-    background: var(--paper);
-  }
-
-  .contents ol {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0 var(--space-2);
-  }
-
-  .day-links {
-    display: none !important;
-  }
-
-  .day-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .day-context {
-    order: -1;
-  }
+.enhancement-failed .scenario-panel[hidden] {
+  display: block !important;
 }
 
-@media (max-width: 639px) {
-  :root {
-    scroll-padding-top: var(--space-2);
-  }
-
-  body {
-    padding-bottom: calc(4.5rem + env(safe-area-inset-bottom));
-  }
-
+@media (max-width: 760px) {
   .trip-hero,
-  .document-grid,
+  .document-shell,
   .document-footer {
     width: 100%;
     margin: 0;
@@ -937,123 +1063,30 @@ button[aria-pressed="true"] {
 
   .trip-hero {
     min-height: 0;
-    padding: var(--space-2);
+    padding: var(--space-3) var(--space-2) var(--space-6);
     grid-template-columns: 1fr;
-    gap: 0.75rem;
-    align-items: start;
+    gap: var(--space-3);
   }
 
   h1 {
-    max-width: calc(100% - 3.5rem);
-    margin: 0.75rem 0 var(--space-1);
-    font-size: clamp(2.25rem, 11vw, 3rem);
-    line-height: 0.96;
-  }
-
-  .status-line {
-    max-width: calc(100% - 3.5rem);
-    gap: 0.25rem 0.75rem;
-    font-size: 0.875rem;
-    line-height: 1.35;
-  }
-
-  .trip-thesis {
-    margin: var(--space-1) 0 0.75rem;
-    font-size: 1rem;
-    line-height: 1.35;
-  }
-
-  .route-ribbon {
-    margin: 0.75rem 0;
-    padding-block: 0.7rem;
-    font-size: 1rem;
-  }
-
-  .summary-counts {
-    gap: var(--space-1);
-  }
-
-  .summary-counts a,
-  .readiness-panel a {
-    display: inline-flex;
-    min-block-size: var(--control);
-    align-items: center;
-  }
-
-  .hero-aside {
-    display: contents;
+    max-width: calc(100% - 4rem);
+    font-size: clamp(2.45rem, 12vw, 4rem);
   }
 
   .stamp {
     position: absolute;
-    top: 0.8rem;
+    top: var(--space-3);
     right: var(--space-2);
-    width: 3.25rem;
+    width: 3.5rem;
   }
 
-  .readiness-panel,
-  .budget-panel {
-    min-height: 0;
-    padding: 0.65rem 0.8rem;
-    border-radius: 8px;
-    box-shadow: 0 0.6rem 1.8rem rgb(23 60 68 / 8%);
+  .hero-facts {
+    display: grid;
+    grid-template-columns: 1fr;
   }
 
-  .readiness-panel strong,
-  .budget-panel strong {
-    font-size: 1.05rem;
-    line-height: 1.2;
-  }
-
-  .hero-aside .warning-block {
-    margin: 0;
-    padding: 0.55rem 0.8rem;
-    font-size: 0.875rem;
-    line-height: 1.4;
-  }
-
-  .document-grid {
-    padding: var(--space-3) var(--space-2) var(--space-6);
-  }
-
-  .js-enabled .contents {
-    position: fixed;
-    inset: auto var(--space-1) calc(var(--space-1) + env(safe-area-inset-bottom));
-    z-index: 50;
-    border: 0;
-    background: transparent;
-    visibility: hidden;
-    pointer-events: none;
-    transform: translateY(calc(100% + var(--space-2)));
-    transition: transform 160ms ease, visibility 160ms;
-  }
-
-  .js-enabled .contents.contents--available {
-    visibility: visible;
-    pointer-events: auto;
-    transform: translateY(0);
-  }
-
-  .js-enabled .contents summary {
-    width: 100%;
-    min-height: 3.25rem;
-    padding: 0.8rem 1rem;
-    border: 1px solid var(--teal);
-    border-radius: 8px;
-    background: var(--teal);
-    color: var(--paper);
-    box-shadow: 0 0.7rem 2rem rgb(23 60 68 / 24%);
-    text-align: center;
-  }
-
-  .js-enabled .contents[open] ol {
-    max-height: min(70vh, 32rem);
-    margin-bottom: var(--space-1);
-    padding: var(--space-1) var(--space-2);
-    overflow: auto;
-    border: 1px solid var(--teal);
-    background: var(--paper);
-    box-shadow: 0 0.7rem 2rem rgb(23 60 68 / 18%);
+  .document-shell {
+    padding: var(--space-3) var(--space-2) var(--space-8);
   }
 
   .contents ol {
@@ -1068,7 +1101,7 @@ button[aria-pressed="true"] {
     min-height: 0;
     padding: var(--space-2) 0 var(--space-3) var(--space-3);
     border-top: 0;
-    border-left: 3px solid var(--teal);
+    box-shadow: inset 3px 0 0 var(--teal);
   }
 
   .route-stop::before {
@@ -1078,9 +1111,9 @@ button[aria-pressed="true"] {
     left: -0.42rem;
     width: 0.7rem;
     height: 0.7rem;
+    border: 2px solid var(--maple);
     border-radius: 50%;
     background: var(--paper);
-    border: 2px solid var(--maple);
   }
 
   .route-stop:not(:last-child)::after {
@@ -1088,35 +1121,7 @@ button[aria-pressed="true"] {
   }
 
   .day-overview a {
-    grid-template-columns: 3.2rem minmax(0, 1fr);
-  }
-
-  .document-status,
-  .status,
-  .filter-button,
-  .scenario-kind,
-  .day-number,
-  .network-label,
-  .day-photo figcaption,
-  .budget-table th,
-  .document-footer {
-    font-size: 0.875rem;
-  }
-
-  .readiness-panel a,
-  .source-url {
-    min-block-size: var(--control);
-    align-items: center;
-  }
-
-  .source-url {
-    display: flex;
-  }
-
-  .filter-feedback {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 0;
+    grid-template-columns: 3.4rem minmax(0, 1fr);
   }
 
   .day-overview span:nth-child(3),
@@ -1125,13 +1130,35 @@ button[aria-pressed="true"] {
   }
 
   .document-section,
-  .day-article {
-    padding: var(--space-6) 0;
-    scroll-margin-top: var(--space-2);
+  .days-section {
+    padding-block: var(--space-6);
+  }
+
+  .day-chapter {
+    margin-inline: calc(-1 * var(--space-2));
+    padding: var(--space-4) var(--space-2);
   }
 
   .day-heading {
+    grid-template-columns: 4rem minmax(0, 1fr);
+    gap: var(--space-2);
+  }
+
+  .day-number strong {
+    font-size: 3.5rem;
+  }
+
+  .day-meta {
+    grid-column: 1 / -1;
     grid-template-columns: 1fr;
+  }
+
+  .weather-note,
+  .scenario-tabs,
+  .scenario-stack,
+  .day-photo,
+  .day-nav {
+    margin-left: 0;
   }
 
   .timeline-event {
@@ -1139,10 +1166,45 @@ button[aria-pressed="true"] {
     gap: 0.25rem;
   }
 
+  .timeline-time {
+    padding-right: var(--space-2);
+  }
+
+  .timeline-time-label {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0 0 0.15rem;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+    color: var(--ink-soft);
+    font-size: 0.7rem;
+    font-weight: 750;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+  }
+
+  .checkpoint-contract,
+  .alternative-meta,
   .decision-details,
   .source-meta,
   .budget-summary {
     grid-template-columns: 1fr;
+  }
+
+  .event-actions,
+  .event-actions li {
+    display: block;
+  }
+
+  .external-link {
+    width: fit-content;
+  }
+
+  .network-label {
+    display: flex;
+    margin-top: -0.35rem;
   }
 
   .budget-table,
@@ -1182,7 +1244,7 @@ button[aria-pressed="true"] {
     scroll-behavior: auto !important;
   }
 
-  .contents {
+  .skip-link {
     transition: none;
   }
 }
@@ -1191,7 +1253,6 @@ button[aria-pressed="true"] {
   @page {
     size: A4 portrait;
     margin: 16mm 14mm 18mm;
-    @bottom-left { content: string(trip-title) " · " string(trip-status); }
     @bottom-right { content: counter(page) " / " counter(pages); }
   }
 
@@ -1210,16 +1271,8 @@ button[aria-pressed="true"] {
     display: none !important;
   }
 
-  h1 {
-    string-set: trip-title content();
-  }
-
-  .document-status {
-    string-set: trip-status content();
-  }
-
   .trip-hero,
-  .document-grid,
+  .document-shell,
   .document-footer {
     width: 100%;
     margin: 0;
@@ -1238,22 +1291,48 @@ button[aria-pressed="true"] {
     transform: none;
   }
 
-  .document-grid {
-    display: block;
-  }
-
   .contents,
   .interactive-controls,
   .day-nav,
   .skip-link,
   .screen-reader-live,
-  .enhancement-error,
-  .document-footer {
+  .enhancement-error {
     display: none !important;
+  }
+
+  .event-alternatives {
+    display: none !important;
+  }
+
+  .document-footer {
+    position: fixed;
+    right: 25mm;
+    bottom: -13mm;
+    left: 0;
+    display: block !important;
+    width: auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: #fff;
+    color: #333;
+    font-size: 7pt;
   }
 
   .scenario-panel[hidden] {
     display: block !important;
+  }
+
+  .event-print-context {
+    display: block;
+    margin: 0 0 1.5mm;
+    color: #333;
+    font-size: 8pt;
+    font-weight: 700;
+  }
+
+  .event-alternatives-print {
+    display: block;
   }
 
   article[data-day][hidden] {
@@ -1264,19 +1343,37 @@ button[aria-pressed="true"] {
     display: list-item !important;
   }
 
-  .document-section {
+  .document-section,
+  .days-section {
     padding: 8mm 0 0;
   }
 
-  .day-article {
+  .day-chapter {
+    margin: 0;
     padding: 8mm 0 0;
+    border-top-color: #222;
+    background: #fff;
+    break-before: page;
+  }
+
+  .scenario-stack,
+  .day-photo {
+    margin-left: 0;
+  }
+
+  .scenario-panel--alternative {
+    margin-top: 5mm;
+    padding: 3mm;
+    border: 1px solid #777;
+    font-size: 9pt;
   }
 
   .warning-block,
   .blocker-item,
-  .constraint-list li,
-  .metadata-pair,
+  .checkpoint-contract,
+  .day-meta,
   .timeline-event,
+  .event-alternative,
   .decision-item,
   .readiness-item,
   .risk-item,
@@ -1289,14 +1386,16 @@ button[aria-pressed="true"] {
     break-inside: avoid;
   }
 
-  .scenario-panel > p {
+  .scenario-summary {
     orphans: 2;
     widows: 2;
   }
 
   h2,
   h3,
-  h4 {
+  h4,
+  h5,
+  h6 {
     break-after: avoid;
   }
 
@@ -1305,22 +1404,31 @@ button[aria-pressed="true"] {
     display: none;
   }
 
-  a[href^="http"]::after {
-    content: " [" attr(data-source-id) "]";
+  .print-url {
+    display: inline;
     color: #333;
     font-size: 8pt;
+  }
+
+  .print-link-appendix {
+    display: block;
+  }
+
+  .print-link-appendix .print-url {
+    display: block;
+    overflow-wrap: anywhere;
   }
 }
 </style>
 </head>
-<body class="print-images">
+<body class="print-images" data-days-shown-copy="Показано дней: {count}." data-scenario-shown-copy="Показан сценарий «{label}».">
   <!--
-  THESIS: Curated Route makes feasibility legible before decoration and refuses the generic metric-dashboard itinerary.
-  OWN-WORLD: Mineral paper, deep-teal document rules, maple warnings, brass uncertainty, moss readiness; editorial sections and precise native controls.
-  STORY: Readers identify the trip, judge route and blockers, compare days and backups, then verify preparation, budget, risks, and sources.
-  FIRST VIEWPORT: Large trip title and text route lead on warm paper; readiness, budget, blockers, and a small decorative stamp form the supporting rail.
-  FORM: Approved Curated Route direction; pinned design specification; seed approved-curated-route-2026-08-28.
-  FINISH: the approved interactive itinerary specification owns the review and acceptance criteria.
+  THESIS: Readable Days turns the itinerary into consecutive visual chapters and refuses permanent dashboard rails around the route.
+  OWN-WORLD: Warm paper, mineral margins, deep-teal rules, quiet chapter tints, maple reserved for checkpoints, and precise document controls.
+  STORY: Readers understand the trip, scan unresolved choices, then follow one chronological timeline per day and open context only where it belongs.
+  FIRST VIEWPORT: Trip identity and text route lead inside a bounded reading sheet; readiness, expenses, and saved blockers follow as calm document facts.
+  FORM: Curated Route reading document, first-ranked approved direction; seed readable-days-2026-09-06.
+  FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
   -->
   <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="icon-sprite">
   <symbol id="icon-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
@@ -1329,1064 +1437,1336 @@ button[aria-pressed="true"] {
   <symbol id="icon-conflict" viewBox="0 0 24 24"><path d="M7 7h12m0 0-4-4m4 4-4 4M17 17H5m0 0 4-4m-4 4 4 4"/></symbol>
   <symbol id="icon-cloud" viewBox="0 0 24 24"><path d="M7 18h10a4 4 0 0 0 .5-8A6 6 0 0 0 6 9a4.5 4.5 0 0 0 1 9Z"/></symbol>
   <symbol id="icon-stop" viewBox="0 0 24 24"><path d="M8 3h8l5 5v8l-5 5H8l-5-5V8Z"/><path d="M12 7v6m0 4h.01"/></symbol>
-  <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m16 16 4 4"/></symbol>
   <symbol id="icon-route" viewBox="0 0 24 24"><circle cx="6" cy="18" r="2"/><circle cx="18" cy="6" r="2"/><path d="M8 18h3a3 3 0 0 0 3-3V9a3 3 0 0 1 3-3"/></symbol>
+  <symbol id="icon-activity" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="m14.5 9.5-1.8 4.2-4.2 1.8 1.8-4.2 4.2-1.8Z"/></symbol>
+  <symbol id="icon-meal" viewBox="0 0 24 24"><path d="M6 3v7m-2-7v4a2 2 0 0 0 4 0V3M6 10v11M15 3v18m0-18c3 1 4 3 4 6s-1 5-4 6"/></symbol>
+  <symbol id="icon-lodging" viewBox="0 0 24 24"><path d="M3 19v-8m18 8v-5a3 3 0 0 0-3-3H9a3 3 0 0 0-3 3v1m-3 0h18M6 11V7h5a3 3 0 0 1 3 3v1"/></symbol>
+  <symbol id="icon-rest" viewBox="0 0 24 24"><path d="M18 15.5A7 7 0 0 1 8.5 6 8 8 0 1 0 18 15.5Z"/></symbol>
   <symbol id="icon-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
   <symbol id="icon-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5"/></symbol>
 </svg>
 
-  <a class="skip-link" href="#main-content">Skip to itinerary</a>
+
+
+
+
+
+  <a class="skip-link" href="#main-content">Перейти к маршруту</a>
 
   <header class="trip-hero" id="trip-summary">
     <div class="hero-copy">
       <div class="status-line">
-        <span class="document-status document-status--draft" lang="ru">Draft — без проверки</span>
+        <span class="document-status document-status--draft">Черновик — без проверки</span>
         <span>2026-11-02 — 2026-11-13</span>
-        <span>2 travellers</span>
+        <span>2 путешественников</span>
       </div>
-      <p class="verification-line" lang="ru"><strong>Уровень проверки:</strong> Данные не проверены</p>
-      <dl class="lifecycle-details" aria-label="Canonical lifecycle values">
+      <p class="verification-line"><strong>Уровень проверки:</strong> Данные не проверены</p>
+      <dl class="lifecycle-details" aria-label="Канонические поля состояния документа">
         <div><dt>document_status</dt><dd>draft</dd></div>
         <div><dt>verification_level</dt><dd>none</dd></div>
         <div><dt>finalization_basis</dt><dd>none</dd></div>
       </dl>
-      <h1>Japan autumn 2026 — anonymized planning example</h1>
-      <p>Document preparation and recorded data checks do not confirm that the trip is feasible. Open decisions and recorded concerns remain below.</p>
-      <p class="trip-thesis">A measured three-region autumn route with flexible arrival, rail-transfer buffers, and local weather backups rather than live operational claims.</p>
-      <p class="route-ribbon"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg> Tokyo → Kyoto → Kanazawa</p>
-      <div class="summary-counts">
-        <a href="#route-overview">Review all days</a>
-        <a href="#open-decisions">1 open decision</a>
+      <h1>Япония осенью 2026 — пример маршрута</h1>
+      <p class="feasibility-note">Подготовка документа и проверка записанных данных не подтверждают выполнимость поездки. Открытые решения и замечания сохранены ниже.</p>
+      <p class="trip-thesis">Спокойный маршрут по трём регионам с бережным приездом, запасом на переезды и локальными сценариями на случай дождя.</p>
+      <p class="route-ribbon"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg>Tokyo → Kyoto → Kanazawa</p>
+      <div class="summary-links">
+        <a href="#route-overview">Посмотреть все дни</a>
+        <a href="#open-decisions">1 открытых решений</a>
       </div>
     </div>
-    <aside class="hero-aside" aria-label="Trip readiness summary">
+    <aside class="hero-facts" aria-label="Готовность">
       <div class="stamp" aria-hidden="true">
-        <svg viewBox="0 0 112 132" role="img">
+        <svg viewBox="0 0 112 132">
           <path d="M8 8h96v116H8z" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="3 4"/>
           <path d="M57 24c-2 13-10 16-20 12 5 8 2 15-6 20 10 0 15 5 15 14 6-6 12-7 19-1-1-9 4-14 14-15-8-5-10-12-5-20-10 4-16 0-17-10Z" fill="none" stroke="currentColor" stroke-width="2.5"/>
           <path d="M55 45v49M39 97h34" fill="none" stroke="currentColor" stroke-width="2"/>
-          <text x="56" y="113" text-anchor="middle" fill="currentColor" font-size="8" font-family="sans-serif">CURATED ROUTE</text>
         </svg>
       </div>
-      <div class="readiness-panel">
-        <span>Readiness</span>
-        <strong>0 of 2 confirmed</strong>
-        <a href="#preparation">Review preparation</a>
-      </div>
-      <div class="budget-panel">
-        <span>Recorded expenses</span>
-        <strong>330,000 JPY</strong>
-        <span>per group · 2 recorded rows</span>
-        <a href="#budget">0 excluded rows · Review recorded expenses</a>
-      </div>
+      <section class="hero-fact">
+        <h2>Готовность</h2>
+        <p class="hero-fact-value">Подтверждено: 0 из 2</p>
+        <a href="#preparation">Проверить подготовку</a>
+      </section>
+      <section class="hero-fact">
+        <h2>Записанные расходы</h2>
+        <p class="hero-fact-value">330,000 JPY</p>
+        <p>на группу · 2 строк расходов</p>
+        <a href="#budget">Исключено строк: 0 · Проверить расходы</a>
+      </section>
     </aside>
   </header>
 
-  <div class="document-grid">
-    <nav aria-label="Itinerary contents">
-      <details class="contents" open>
-        <summary><svg class="icon" aria-hidden="true"><use href="#icon-menu"></use></svg> Contents</summary>
+  <div class="document-shell">
+    <nav aria-label="Содержание">
+      <details class="contents">
+        <summary><svg class="icon" aria-hidden="true"><use href="#icon-menu"></use></svg>Содержание</summary>
         <ol>
-          <li><a href="#trip-summary">Trip summary</a></li>
-          <li><a href="#blockers">Blockers</a></li>
-          <li><a href="#route-overview">Route and days</a></li>
-          <li><a href="#open-decisions">Open decisions</a></li>
-          <li><a href="#detailed-days">Detailed days</a></li>
-          <li>
-            <ol class="day-links">
-<li><a href="#day-1">Day 1 · Tokyo</a></li><li><a href="#day-2">Day 2 · Tokyo</a></li><li><a href="#day-3">Day 3 · Tokyo</a></li><li><a href="#day-4">Day 4 · Tokyo to Kyoto</a></li><li><a href="#day-5">Day 5 · Kyoto</a></li><li><a href="#day-6">Day 6 · Kyoto</a></li><li><a href="#day-7">Day 7 · Kyoto</a></li><li><a href="#day-8">Day 8 · Kyoto to Kanazawa</a></li><li><a href="#day-9">Day 9 · Kanazawa</a></li><li><a href="#day-10">Day 10 · Kanazawa</a></li><li><a href="#day-11">Day 11 · Kanazawa</a></li><li><a href="#day-12">Day 12 · Kanazawa departure</a></li>            </ol>
-          </li>
-          <li><a href="#preparation">Preparation</a></li>
-          <li><a href="#budget">Budget</a></li>
-          <li><a href="#risks">Risks and backups</a></li>
-          <li><a href="#sources">Sources</a></li>
+          <li><a href="#trip-summary">О поездке</a></li>
+          <li><a href="#blockers">Блокеры</a></li>
+          <li><a href="#route-overview">Маршрут и дни</a></li>
+          <li><a href="#open-decisions">Открытые решения</a></li>
+          <li><a href="#detailed-days">Дни подробно</a></li>
+<li class="day-link"><a href="#day-1">День 1 · Tokyo</a></li><li class="day-link"><a href="#day-2">День 2 · Tokyo</a></li><li class="day-link"><a href="#day-3">День 3 · Tokyo</a></li><li class="day-link"><a href="#day-4">День 4 · Tokyo → Kyoto</a></li><li class="day-link"><a href="#day-5">День 5 · Kyoto</a></li><li class="day-link"><a href="#day-6">День 6 · Kyoto</a></li><li class="day-link"><a href="#day-7">День 7 · Kyoto</a></li><li class="day-link"><a href="#day-8">День 8 · Kyoto → Kanazawa</a></li><li class="day-link"><a href="#day-9">День 9 · Kanazawa</a></li><li class="day-link"><a href="#day-10">День 10 · Kanazawa</a></li><li class="day-link"><a href="#day-11">День 11 · Kanazawa</a></li><li class="day-link"><a href="#day-12">День 12 · Kanazawa — отъезд</a></li>          <li><a href="#preparation">Подготовка</a></li>
+          <li><a href="#budget">Расходы</a></li>
+          <li><a href="#risks">Риски и запасные планы</a></li>
+          <li><a href="#sources">Источники</a></li>
         </ol>
       </details>
     </nav>
 
-    <main class="document-main" id="main-content">
-      <p class="enhancement-error" data-enhancement-error hidden>Interactive controls are unavailable. The complete itinerary remains below.</p>
+    <main id="main-content">
+      <p class="enhancement-error" data-enhancement-error hidden>Интерактивные элементы недоступны. Полный маршрут остаётся ниже.</p>
       <p class="screen-reader-live" aria-live="polite" aria-atomic="true" data-live-region></p>
 
       <section class="document-section blocker-section" id="blockers" aria-labelledby="blockers-title">
-        <h2 id="blockers-title">Blockers</h2>
-        <p>No blockers are recorded in the canonical trip state. This does not confirm trip feasibility.</p>
-
+        <h2 id="blockers-title">Блокеры</h2>
+        <p>В каноническом состоянии нет записанных блокеров. Это не подтверждает выполнимость поездки.</p>
         <section aria-labelledby="unaccepted-blockers-title">
-          <h3 id="unaccepted-blockers-title" lang="ru">Непринятые блокеры</h3>
+          <h3 id="unaccepted-blockers-title">Непринятые блокеры</h3>
           <ul class="blocker-list">
-<li>No unaccepted blockers.</li>          </ul>
+<li>Нет непринятых блокеров.</li>          </ul>
         </section>
-
         <section aria-labelledby="accepted-blockers-title">
-          <h3 id="accepted-blockers-title" lang="ru">Принятые блокеры</h3>
+          <h3 id="accepted-blockers-title">Принятые блокеры</h3>
           <ul class="blocker-list">
-<li>No accepted blockers.</li>          </ul>
+<li>Нет принятых блокеров.</li>          </ul>
         </section>
       </section>
 
       <section class="document-section" id="route-overview" aria-labelledby="route-title">
-        <h2 id="route-title">Route and day overview</h2>
+        <h2 id="route-title">Обзор маршрута и дней</h2>
         <ol class="route-sequence">
-          <li class="route-stop">
-            <strong>Tokyo</strong>
-            <span>2–5 Nov · 3 nights</span>
-<span>Arrival base</span>          </li>
-          <li class="route-stop">
-            <strong>Kyoto</strong>
-            <span>5–9 Nov · 4 nights</span>
-<span>Rail transfer — recheck final timetable</span>          </li>
-          <li class="route-stop">
-            <strong>Kanazawa</strong>
-            <span>9–13 Nov · 4 nights</span>
-<span>Rail transfer</span>          </li>
+          <li class="route-stop"><strong>Tokyo</strong><span>2–5 ноября · 3 ночей</span><span>База после прилёта</span></li>
+          <li class="route-stop"><strong>Kyoto</strong><span>5–9 ноября · 4 ночей</span><span>Переезд на поезде — расписание перепроверить</span></li>
+          <li class="route-stop"><strong>Kanazawa</strong><span>9–13 ноября · 4 ночей</span><span>Переезд на поезде</span></li>
         </ol>
-
-        <div class="interactive-controls" aria-label="Day search and filters">
-          <div class="search-row">
-            <label for="day-search">Search itinerary days</label>
-            <input id="day-search" type="search" placeholder="Search days, places, constraints" data-day-search>
+        <div class="interactive-controls" aria-label="Фильтр дней">
+          <div class="filters" aria-label="Фильтр дней">
+            <button type="button" data-filter="all" aria-pressed="true">Все дни</button>
+            <button type="button" data-filter="unresolved" aria-pressed="false">Не решено</button>
+            <button type="button" data-filter="weather" aria-pressed="false">Зависит от погоды</button>
+            <button type="button" data-filter="transfer" aria-pressed="false">Переезды</button>
+            <button type="button" data-filter="warning" aria-pressed="false">Контрольные точки</button>
           </div>
-          <div class="filters" aria-label="Filter days">
-            <button type="button" class="filter-button" data-filter="all" aria-pressed="true">All days</button>
-            <button type="button" class="filter-button" data-filter="unresolved" aria-pressed="false">Unresolved</button>
-            <button type="button" class="filter-button" data-filter="weather" aria-pressed="false">Weather-sensitive</button>
-            <button type="button" class="filter-button" data-filter="transfer" aria-pressed="false">Transfers</button>
-            <button type="button" class="filter-button" data-filter="warning" aria-pressed="false">Warnings</button>
-          </div>
-          <div class="filter-feedback">
-            <p data-filter-results>12 days shown.</p>
-            <p class="filter-empty" data-filter-empty hidden>No matching days. <button type="button" data-reset-filters>Reset filters</button></p>
-          </div>
+          <div class="filter-feedback"><p data-filter-results>Показано дней: 12.</p><p data-filter-empty hidden>Подходящих дней нет. <button type="button" data-reset-filters>Сбросить фильтры</button></p></div>
         </div>
-
         <ol class="day-overview">
-          <li data-day-overview="day-1"><a href="#day-1">
-            <strong>Day 1</strong>
-            <span>2026-11-02 · Monday</span>
-            <span>Tokyo — Arrival, recovery and a low-commitment neighbourhood walk.</span>
-            <small>Arrival transfer is intentionally flexible. · Light load · Selected</small>
-          </a></li>
-          <li data-day-overview="day-2"><a href="#day-2">
-            <strong>Day 2</strong>
-            <span>2026-11-03 · Tuesday</span>
-            <span>Tokyo — Gentle city orientation and one cultural neighbourhood.</span>
-            <small>Walk and local transit. · Moderate load · Selected</small>
-          </a></li>
-          <li data-day-overview="day-3"><a href="#day-3">
-            <strong>Day 3</strong>
-            <span>2026-11-04 · Wednesday</span>
-            <span>Tokyo — Popular-site morning with a quieter afternoon.</span>
-            <small>Local transit with buffer. · Moderate load · Recheck</small>
-          </a></li>
-          <li data-day-overview="day-4"><a href="#day-4">
-            <strong>Day 4</strong>
-            <span>2026-11-05 · Thursday</span>
-            <span>Tokyo to Kyoto — Rail transfer day with no stacked headline activity.</span>
-            <small>Confirm final rail timing with provider before departure. · Light load · Recheck</small>
-          </a></li>
-          <li data-day-overview="day-5"><a href="#day-5">
-            <strong>Day 5</strong>
-            <span>2026-11-06 · Friday</span>
-            <span>Kyoto — Cultural district at an intentionally moderate pace.</span>
-            <small>Walk and local transit. · Moderate load · Selected</small>
-          </a></li>
-          <li data-day-overview="day-6"><a href="#day-6">
-            <strong>Day 6</strong>
-            <span>2026-11-07 · Saturday</span>
-            <span>Kyoto — Garden morning with a local indoor alternative for rain.</span>
-            <small>Local transit only. · Moderate load · Recheck</small>
-          </a></li>
-          <li data-day-overview="day-7"><a href="#day-7">
-            <strong>Day 7</strong>
-            <span>2026-11-08 · Sunday</span>
-            <span>Kyoto — Flexible cultural day that can absorb a weather swap.</span>
-            <small>Local transit only. · Moderate load · Recheck</small>
-          </a></li>
-          <li data-day-overview="day-8"><a href="#day-8">
-            <strong>Day 8</strong>
-            <span>2026-11-09 · Monday</span>
-            <span>Kyoto to Kanazawa — Second rail transfer with an unhurried arrival evening.</span>
-            <small>Confirm provider timetable; retain station buffer. · Light load · Recheck</small>
-          </a></li>
-          <li data-day-overview="day-9"><a href="#day-9">
-            <strong>Day 9</strong>
-            <span>2026-11-10 · Tuesday</span>
-            <span>Kanazawa — Historic district and market-scale exploration.</span>
-            <small>Walk and local bus. · Moderate load · Selected</small>
-          </a></li>
-          <li data-day-overview="day-10"><a href="#day-10">
-            <strong>Day 10</strong>
-            <span>2026-11-11 · Wednesday</span>
-            <span>Kanazawa — Garden or indoor collection according to conditions.</span>
-            <small>Local transit. · Moderate load · Recheck</small>
-          </a></li>
-          <li data-day-overview="day-11"><a href="#day-11">
-            <strong>Day 11</strong>
-            <span>2026-11-12 · Thursday</span>
-            <span>Kanazawa — Slow final full day with room for missed priorities.</span>
-            <small>Local walking. · Light load · Selected</small>
-          </a></li>
-          <li data-day-overview="day-12"><a href="#day-12">
-            <strong>Day 12</strong>
-            <span>2026-11-13 · Friday</span>
-            <span>Kanazawa departure — Departure buffer and handoff rather than new commitments.</span>
-            <small>Leave time for station or airport transfer. · Light load · Recheck</small>
-          </a></li>
+          <li data-day-overview="day-1"><a href="#day-1"><strong>День 1</strong><span>2 ноября 2026 · понедельник</span><span>Tokyo — Приехать без спешки, заселиться и оставить вечер гибким.</span><small>Трансфер после прилёта · лёгкая нагрузка · выбрано</small></a></li>
+          <li data-day-overview="day-2"><a href="#day-2"><strong>День 2</strong><span>3 ноября 2026 · вторник</span><span>Tokyo — Мягко сориентироваться в городе и исследовать один культурный район.</span><small>Пешком и на городском транспорте · средняя нагрузка · выбрано</small></a></li>
+          <li data-day-overview="day-3"><a href="#day-3"><strong>День 3</strong><span>4 ноября 2026 · среда</span><span>Tokyo — Посетить популярное место утром и оставить вторую половину дня спокойной.</span><small>Городской транспорт с запасом · средняя нагрузка · перепроверить</small></a></li>
+          <li data-day-overview="day-4"><a href="#day-4"><strong>День 4</strong><span>5 ноября 2026 · четверг</span><span>Tokyo → Kyoto — Защитить железнодорожный переезд и не ставить после него обязательную активность.</span><small>Междугородний поезд; итоговое время ещё не опубликовано · лёгкая нагрузка · перепроверить</small></a></li>
+          <li data-day-overview="day-5"><a href="#day-5"><strong>День 5</strong><span>6 ноября 2026 · пятница</span><span>Kyoto — Пройти культурный район в умеренном темпе и держать закрытую альтернативу рядом.</span><small>Пешком и на городском транспорте · средняя нагрузка · выбрано</small></a></li>
+          <li data-day-overview="day-6"><a href="#day-6"><strong>День 6</strong><span>7 ноября 2026 · суббота</span><span>Kyoto — Начать с сада и переключиться на закрытый маршрут, если условия не подходят.</span><small>Городской транспорт · средняя нагрузка · перепроверить</small></a></li>
+          <li data-day-overview="day-7"><a href="#day-7"><strong>День 7</strong><span>8 ноября 2026 · воскресенье</span><span>Kyoto — Оставить культурный день гибким и при необходимости снизить нагрузку.</span><small>Городской транспорт · средняя нагрузка · перепроверить</small></a></li>
+          <li data-day-overview="day-8"><a href="#day-8"><strong>День 8</strong><span>9 ноября 2026 · понедельник</span><span>Kyoto → Kanazawa — Спокойно сменить базу и не превращать вечер прибытия в экскурсионный блок.</span><small>Междугородний поезд; расписание перепроверить · лёгкая нагрузка · перепроверить</small></a></li>
+          <li data-day-overview="day-9"><a href="#day-9"><strong>День 9</strong><span>10 ноября 2026 · вторник</span><span>Kanazawa — Исследовать исторический район и рынок в масштабе пешего дня.</span><small>Пешком и на местном автобусе · средняя нагрузка · выбрано</small></a></li>
+          <li data-day-overview="day-10"><a href="#day-10"><strong>День 10</strong><span>11 ноября 2026 · среда</span><span>Kanazawa — Выбрать сад или закрытую коллекцию по фактическим условиям.</span><small>Местный транспорт · средняя нагрузка · перепроверить</small></a></li>
+          <li data-day-overview="day-11"><a href="#day-11"><strong>День 11</strong><span>12 ноября 2026 · четверг</span><span>Kanazawa — Сохранить последний полный день медленным и оставить место для пропущенного приоритета.</span><small>Пешком · лёгкая нагрузка · выбрано</small></a></li>
+          <li data-day-overview="day-12"><a href="#day-12"><strong>День 12</strong><span>13 ноября 2026 · пятница</span><span>Kanazawa — отъезд — Защитить время отъезда и не добавлять новые обязательства после выселения.</span><small>Трансфер до вокзала или аэропорта · лёгкая нагрузка · перепроверить</small></a></li>
         </ol>
       </section>
 
       <section class="document-section" id="open-decisions" aria-labelledby="decisions-title">
-        <h2 id="decisions-title">Open decisions</h2>
+        <h2 id="decisions-title">Открытые решения</h2>
         <ul class="decision-list">
-          <li class="decision-item">
-            <p class="status status--warning"><svg class="icon" aria-hidden="true"><use href="#icon-square"></use></svg>warning</p>
-            <p class="decision-question">Are seasonal conditions and garden access suitable for 7 November?</p>
-            <p>The example intentionally has no live weather or seasonal claim.</p>
-            <div class="decision-details">
-              <span><strong>Affects:</strong> day-6, kyoto-garden</span>
-              <span><strong>Deadline:</strong> 2026-10-31</span>
-              <span><strong>Next action:</strong> Check the official provider information before final packing.</span>
-            </div>
-          </li>
+          <li class="decision-item"><p class="status status--warning">предупреждение</p><p class="decision-question">Подходят ли сезонные условия и доступ в сад для 7 ноября?</p><p>В примере намеренно нет актуального прогноза и подтверждения сезонного пика.</p><div class="decision-details"><span><strong>Затрагивает:</strong> day-6, kyoto-garden</span><span><strong>Срок:</strong> 2026-10-31</span><span><strong>Следующее действие:</strong> Проверить официальный источник перед окончательной сборкой маршрута.</span></div></li>
         </ul>
       </section>
 
-      <section class="document-section" id="detailed-days" aria-labelledby="days-title">
-        <h2 id="days-title">Detailed days</h2>
-        <article class="day-article" id="day-1" data-day data-weather="false" data-transfer="true" data-unresolved="true" data-warning="false" aria-labelledby="day-1-title">
+      <section class="days-section" id="detailed-days" aria-labelledby="days-title">
+        <h2 id="days-title">Дни подробно</h2>
+        <article class="day-chapter" id="day-1" data-day data-weather="false" data-transfer="true" data-unresolved="true" data-warning="true" aria-labelledby="day-1-title">
           <header class="day-heading">
-            <div>
-              <span class="day-number">Day 1</span>
-              <h3 id="day-1-title">2026-11-02 · Monday · Tokyo</h3>
-              <p class="day-thesis">Arrival, recovery and a low-commitment neighbourhood walk.</p>
-            </div>
-            <div class="day-meta">
-              <span class="status status--selected">selected</span>
-            </div>
+            <div class="day-number"><span>День</span><strong>1</strong></div>
+            <div class="day-title-group"><p class="day-date">2 ноября 2026 · понедельник</p><h3 id="day-1-title">Tokyo</h3><p class="day-thesis">Приехать без спешки, заселиться и оставить вечер гибким.</p></div>
+            <dl class="day-meta"><div><dt>Ночёвка</dt><dd>Tokyo</dd></div><div><dt>Переезды</dt><dd>Трансфер после прилёта</dd></div><div><dt>Нагрузка</dt><dd>лёгкая</dd></div><div><dt>Проверено</dt><dd>2026-08-28</dd></div></dl>
           </header>
 
-          <div class="day-layout">
-            <div class="day-primary">
-              <h4>Timeline</h4>
-              <ol class="timeline">
-                <li class="timeline-event">
-                  <span class="timeline-time">afternoon</span>
-                  <div><strong>Arrival and check-in</strong><p>Keep the first afternoon unscheduled.</p></div>
-                </li>
-              </ol>
+          <div class="scenario-tabs interactive-controls" data-scenario-tabs hidden role="tablist" aria-label="Сценарий дня 1">
+            <button type="button" id="day-1-tab-primary" role="tab" aria-selected="true" aria-controls="day-1-panel-primary" tabindex="0" data-show-scenario="primary">Основной</button>
+<button type="button" id="day-1-tab-alternative-low-load" role="tab" aria-selected="false" aria-controls="day-1-panel-alternative-low-load" tabindex="-1" data-show-scenario="alternative-low-load">Низкая нагрузка</button>          </div>
 
-              <h4>Primary and backup scenarios</h4>
-              <div class="scenario-switch interactive-controls" data-scenario-switch aria-label="Scenario view for day 1">
-                <button type="button" data-show-scenario="primary" aria-pressed="true">Primary</button>
-                <button type="button" data-show-scenario="backup" aria-pressed="false">Backup</button>
-              </div>
-              <section class="scenario-panel" data-scenario="primary" aria-label="Primary scenario">
-                <header class="scenario-heading">
-                  <span class="scenario-kind">primary</span>
-                  <strong>Neighbourhood walk</strong>
-                </header>
-                <p>Walk only if energy and weather allow.</p>
-              </section>
+          <div class="scenario-stack">
+            <section class="scenario-panel scenario-panel--primary" id="day-1-panel-primary" data-scenario="primary" role="tabpanel" aria-labelledby="day-1-tab-primary" tabindex="0">
+<h4 class="scenario-heading">Основной сценарий</h4>              <ol class="timeline">
+    <li class="timeline-event timeline-event--transport" data-event-id="event-day-1-arrival">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>После прилёта</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 1 · 2 ноября 2026 · Tokyo</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg>Переезд</p>
+        <h5>Трансфер до отеля</h5>
+<p>Точное время зависит от выбранного рейса; не добавлять жёстких планов.</p>
 
-              <h4>Food in context</h4>
-              <ul class="food-list">
-<li><strong>Local dinner</strong><span>Flexible · Choose near lodging.</span></li>              </ul>
-            </div>
+        <ul class="event-actions" aria-label="Трансфер до отеля">
+          <li>
+            <a class="external-link" href="https://www.google.com/maps/search/?api=1&amp;query=Tokyo"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg>Построить маршрут в Google Maps</a>
+<span class="network-label"><svg class="icon" aria-hidden="true"><use href="#icon-cloud"></use></svg>Требуется интернет</span>          </li>
+        </ul>
 
-            <aside class="day-context" aria-label="Day 1 constraints and links">
-              <h4>Critical constraints</h4>
-              <ul class="constraint-list">
-<li>No critical constraints recorded.</li>              </ul>
-              <dl>
-                <div class="metadata-pair"><dt>Overnight</dt><dd>Tokyo</dd></div>
-                <div class="metadata-pair"><dt>Travel</dt><dd>Arrival transfer is intentionally flexible.</dd></div>
-                <div class="metadata-pair"><dt>Load</dt><dd>Light</dd></div>
-                <div class="metadata-pair"><dt>Last checked</dt><dd>2026-08-28</dd></div>
-              </dl>
-            </aside>
+      </div>
+    </li>
+    <li class="timeline-event timeline-event--lodging" data-event-id="event-day-1-check-in">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>Около 17:00</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 1 · 2 ноября 2026 · Tokyo</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-lodging"></use></svg>Заселение</p>
+        <h5>Заселение и пауза</h5>
+<p>Сначала завершить заселение и оценить силы после дороги.</p>
+
+
+      </div>
+    </li>
+    <li class="timeline-event timeline-event--checkpoint" data-event-id="event-day-1-checkpoint">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>До 18:30</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 1 · 2 ноября 2026 · Tokyo</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-stop"></use></svg>Контрольная точка</p>
+        <h5>Решить, выходить ли на прогулку</h5>
+<p>Контрольная точка защищает первый вечер от перегрузки.</p>
+        <dl class="checkpoint-contract">
+          <div><dt>Что проверить</dt><dd>Заселение прошло без задержки и у всех остались силы?</dd></div>
+          <div><dt>Как изменить план</dt><dd>Отменить прогулку, поужинать рядом и закончить день.</dd></div>
+        </dl>
+
+
+      </div>
+    </li>
+    <li class="timeline-event timeline-event--meal" data-event-id="event-day-1-dinner">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>19:00</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 1 · 2 ноября 2026 · Tokyo</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-meal"></use></svg>Еда</p>
+        <h5>Ужин рядом с отелем</h5>
+<p>Выбрать место только после заселения, не обещая наличие столика.</p>
+
+
+        <details class="event-alternatives" id="day-1-primary-event-day-1-dinner-alternatives" open>
+          <summary>Альтернативы (1)</summary>
+          <div class="alternative-list">
+    <article class="event-alternative">
+      <h6>Простой ужин в отеле</h6>
+      <p><strong>Когда выбрать:</strong> Если прилёт задержался или дорога утомила сильнее ожидаемого.</p>
+<p>Не добавляет нового переезда и сохраняет ранний отдых.</p>      <dl class="alternative-meta">
+<div><dt>Нагрузка</dt><dd>очень низкая</dd></div><div><dt>Бронирование</dt><dd>бронирование не предполагается</dd></div>      </dl>
+    </article>
+  </div>
+        </details>
+        <div class="event-alternatives-print" aria-label="Альтернативы (1)">
+          <p><strong>Альтернативы (1)</strong></p>
+          <div class="alternative-list">
+    <article class="event-alternative">
+      <h6>Простой ужин в отеле</h6>
+      <p><strong>Когда выбрать:</strong> Если прилёт задержался или дорога утомила сильнее ожидаемого.</p>
+<p>Не добавляет нового переезда и сохраняет ранний отдых.</p>      <dl class="alternative-meta">
+<div><dt>Нагрузка</dt><dd>очень низкая</dd></div><div><dt>Бронирование</dt><dd>бронирование не предполагается</dd></div>      </dl>
+    </article>
+  </div>
+        </div>
+      </div>
+    </li>
+  </ol>
+            </section>
+            <section class="scenario-panel scenario-panel--alternative" id="day-1-panel-alternative-low-load" data-scenario="alternative-low-load" role="tabpanel" aria-labelledby="day-1-tab-alternative-low-load" tabindex="0">
+              <h4 class="scenario-heading">Альтернативный сценарий · Низкая нагрузка</h4>
+<p class="scenario-summary">Полностью убрать прогулку и завершить день после заселения.</p>              <ol class="timeline">
+    <li class="timeline-event timeline-event--transport" data-event-id="event-day-1-low-transfer">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>После прилёта</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 1 · 2 ноября 2026 · Tokyo</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg>Переезд</p>
+        <h5>Прямой трансфер</h5>
+<p>Ехать сразу в отель.</p>
+
+
+      </div>
+    </li>
+    <li class="timeline-event timeline-event--lodging" data-event-id="event-day-1-low-check-in">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>Около 17:00</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 1 · 2 ноября 2026 · Tokyo</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-lodging"></use></svg>Заселение</p>
+        <h5>Заселение</h5>
+<p>После заселения больше никуда не ехать.</p>
+
+
+      </div>
+    </li>
+    <li class="timeline-event timeline-event--meal" data-event-id="event-day-1-low-dinner">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>19:00</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 1 · 2 ноября 2026 · Tokyo</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-meal"></use></svg>Еда</p>
+        <h5>Ужин и отдых</h5>
+<p>Выбрать самый близкий доступный вариант.</p>
+
+
+      </div>
+    </li>
+  </ol>
+            </section>
           </div>
 
 
-          <nav class="day-nav" aria-label="Adjacent days">
-<span></span><a href="#day-2">Next day →</a>          </nav>
+          <nav class="day-nav" aria-label="Дни подробно">
+<span></span><a href="#day-2">Следующий день →</a>          </nav>
         </article>
-        <article class="day-article" id="day-2" data-day data-weather="false" data-transfer="false" data-unresolved="true" data-warning="false" aria-labelledby="day-2-title">
+        <article class="day-chapter" id="day-2" data-day data-weather="false" data-transfer="false" data-unresolved="true" data-warning="false" aria-labelledby="day-2-title">
           <header class="day-heading">
-            <div>
-              <span class="day-number">Day 2</span>
-              <h3 id="day-2-title">2026-11-03 · Tuesday · Tokyo</h3>
-              <p class="day-thesis">Gentle city orientation and one cultural neighbourhood.</p>
-            </div>
-            <div class="day-meta">
-              <span class="status status--selected">selected</span>
-            </div>
+            <div class="day-number"><span>День</span><strong>2</strong></div>
+            <div class="day-title-group"><p class="day-date">3 ноября 2026 · вторник</p><h3 id="day-2-title">Tokyo</h3><p class="day-thesis">Мягко сориентироваться в городе и исследовать один культурный район.</p></div>
+            <dl class="day-meta"><div><dt>Ночёвка</dt><dd>Tokyo</dd></div><div><dt>Переезды</dt><dd>Пешком и на городском транспорте</dd></div><div><dt>Нагрузка</dt><dd>средняя</dd></div><div><dt>Проверено</dt><dd>2026-08-28</dd></div></dl>
           </header>
 
-          <div class="day-layout">
-            <div class="day-primary">
-              <h4>Timeline</h4>
-              <ol class="timeline">
-                <li class="timeline-event">
-                  <span class="timeline-time">morning</span>
-                  <div><strong>Neighbourhood orientation</strong><p>Keep choices local to the base.</p></div>
-                </li>
-              </ol>
 
-              <h4>Primary and backup scenarios</h4>
-              <div class="scenario-switch interactive-controls" data-scenario-switch aria-label="Scenario view for day 2">
-                <button type="button" data-show-scenario="primary" aria-pressed="true">Primary</button>
-                <button type="button" data-show-scenario="backup" aria-pressed="false">Backup</button>
-              </div>
-              <section class="scenario-panel" data-scenario="primary" aria-label="Primary scenario">
-                <header class="scenario-heading">
-                  <span class="scenario-kind">primary</span>
-                  <strong>Tokyo walk</strong>
-                </header>
-                <p>Choose a nearby cultural area.</p>
-              </section>
+          <div class="scenario-stack">
+            <section class="scenario-panel scenario-panel--primary">
+<h4 class="scenario-heading scenario-heading--primary-only">Расписание</h4>              <ol class="timeline">
+    <li class="timeline-event timeline-event--meal" data-event-id="event-day-2-breakfast">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>08:30</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 2 · 3 ноября 2026 · Tokyo</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-meal"></use></svg>Еда</p>
+        <h5>Завтрак рядом с отелем</h5>
+<p>Начать день без отдельного переезда.</p>
 
-              <h4>Food in context</h4>
-              <ul class="food-list">
-<li><strong>Tokyo lunch</strong><span>Flexible · No reservation claim.</span></li>              </ul>
-            </div>
 
-            <aside class="day-context" aria-label="Day 2 constraints and links">
-              <h4>Critical constraints</h4>
-              <ul class="constraint-list">
-<li>No critical constraints recorded.</li>              </ul>
-              <dl>
-                <div class="metadata-pair"><dt>Overnight</dt><dd>Tokyo</dd></div>
-                <div class="metadata-pair"><dt>Travel</dt><dd>Walk and local transit.</dd></div>
-                <div class="metadata-pair"><dt>Load</dt><dd>Moderate</dd></div>
-                <div class="metadata-pair"><dt>Last checked</dt><dd>2026-08-28</dd></div>
-              </dl>
-            </aside>
+      </div>
+    </li>
+    <li class="timeline-event timeline-event--activity" data-event-id="event-day-2-orientation">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>10:00</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 2 · 3 ноября 2026 · Tokyo</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-activity"></use></svg>Активность</p>
+        <h5>Прогулка по району</h5>
+<p>Держать маршрут компактным и закончить до вечернего часа пик.</p>
+
+        <ul class="event-actions" aria-label="Прогулка по району">
+          <li>
+            <a class="external-link" href="https://www.google.com/maps/search/?api=1&amp;query=Tokyo"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg>Открыть район на карте</a>
+<span class="network-label"><svg class="icon" aria-hidden="true"><use href="#icon-cloud"></use></svg>Требуется интернет</span>          </li>
+        </ul>
+
+      </div>
+    </li>
+    <li class="timeline-event timeline-event--meal" data-event-id="event-day-2-lunch">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>13:00</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 2 · 3 ноября 2026 · Tokyo</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-meal"></use></svg>Еда</p>
+        <h5>Обед по ходу маршрута</h5>
+<p>Выбрать место в том же районе.</p>
+
+
+      </div>
+    </li>
+    <li class="timeline-event timeline-event--rest" data-event-id="event-day-2-rest">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>16:00</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 2 · 3 ноября 2026 · Tokyo</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-rest"></use></svg>Отдых</p>
+        <h5>Свободный вечер</h5>
+<p>Оставить запас для восстановления.</p>
+
+
+      </div>
+    </li>
+  </ol>
+            </section>
           </div>
 
 
-          <nav class="day-nav" aria-label="Adjacent days">
-<a href="#day-1">← Previous day</a><a href="#day-3">Next day →</a>          </nav>
+          <nav class="day-nav" aria-label="Дни подробно">
+<a href="#day-1">← Предыдущий день</a><a href="#day-3">Следующий день →</a>          </nav>
         </article>
-        <article class="day-article" id="day-3" data-day data-weather="false" data-transfer="false" data-unresolved="true" data-warning="false" aria-labelledby="day-3-title">
+        <article class="day-chapter" id="day-3" data-day data-weather="false" data-transfer="false" data-unresolved="true" data-warning="true" aria-labelledby="day-3-title">
           <header class="day-heading">
-            <div>
-              <span class="day-number">Day 3</span>
-              <h3 id="day-3-title">2026-11-04 · Wednesday · Tokyo</h3>
-              <p class="day-thesis">Popular-site morning with a quieter afternoon.</p>
-            </div>
-            <div class="day-meta">
-              <span class="status status--recheck">recheck</span>
-            </div>
+            <div class="day-number"><span>День</span><strong>3</strong></div>
+            <div class="day-title-group"><p class="day-date">4 ноября 2026 · среда</p><h3 id="day-3-title">Tokyo</h3><p class="day-thesis">Посетить популярное место утром и оставить вторую половину дня спокойной.</p></div>
+            <dl class="day-meta"><div><dt>Ночёвка</dt><dd>Tokyo</dd></div><div><dt>Переезды</dt><dd>Городской транспорт с запасом</dd></div><div><dt>Нагрузка</dt><dd>средняя</dd></div><div><dt>Проверено</dt><dd>2026-08-28</dd></div></dl>
           </header>
 
-          <div class="day-layout">
-            <div class="day-primary">
-              <h4>Timeline</h4>
-              <ol class="timeline">
-                <li class="timeline-event">
-                  <span class="timeline-time">morning</span>
-                  <div><strong>Popular-site window</strong><p>Recheck provider hours before travel.</p></div>
-                </li>
-              </ol>
 
-              <h4>Primary and backup scenarios</h4>
-              <div class="scenario-switch interactive-controls" data-scenario-switch aria-label="Scenario view for day 3">
-                <button type="button" data-show-scenario="primary" aria-pressed="true">Primary</button>
-                <button type="button" data-show-scenario="backup" aria-pressed="false">Backup</button>
-              </div>
-              <section class="scenario-panel" data-scenario="primary" aria-label="Primary scenario">
-                <header class="scenario-heading">
-                  <span class="scenario-kind">primary</span>
-                  <strong>Early visit</strong>
-                </header>
-                <p>Use an early arrival to reduce crowd risk.</p>
-              </section>
-              <section class="scenario-panel" data-scenario="backup" aria-label="Backup scenario">
-                <header class="scenario-heading">
-                  <span class="scenario-kind">backup</span>
-                  <strong>Local museum</strong>
-                </header>
-                <p>Weather-independent fallback.</p>
-              </section>
+          <div class="scenario-stack">
+            <section class="scenario-panel scenario-panel--primary">
+<h4 class="scenario-heading scenario-heading--primary-only">Расписание</h4>              <ol class="timeline">
+    <li class="timeline-event timeline-event--checkpoint" data-event-id="event-day-3-check">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>До выхода</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 3 · 4 ноября 2026 · Tokyo</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-stop"></use></svg>Контрольная точка</p>
+        <h5>Перепроверить часы работы</h5>
+<p>Записанный источник не обещает актуальный режим на дату поездки.</p>
+        <dl class="checkpoint-contract">
+          <div><dt>Что проверить</dt><dd>Официальный сайт подтверждает часы и правила входа?</dd></div>
+          <div><dt>Как изменить план</dt><dd>Перейти к локальному музею и не ехать через весь город.</dd></div>
+        </dl>
 
-              <h4>Food in context</h4>
-              <ul class="food-list">
-<li><strong>Tokyo dinner</strong><span>Flexible · Select near lodging.</span></li>              </ul>
-            </div>
 
-            <aside class="day-context" aria-label="Day 3 constraints and links">
-              <h4>Critical constraints</h4>
-              <ul class="constraint-list">
-<li>No critical constraints recorded.</li>              </ul>
-              <dl>
-                <div class="metadata-pair"><dt>Overnight</dt><dd>Tokyo</dd></div>
-                <div class="metadata-pair"><dt>Travel</dt><dd>Local transit with buffer.</dd></div>
-                <div class="metadata-pair"><dt>Load</dt><dd>Moderate</dd></div>
-                <div class="metadata-pair"><dt>Last checked</dt><dd>2026-08-28</dd></div>
-              </dl>
-            </aside>
+      </div>
+    </li>
+    <li class="timeline-event timeline-event--activity" data-event-id="event-day-3-site">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>09:30</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 3 · 4 ноября 2026 · Tokyo</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-activity"></use></svg>Активность</p>
+        <h5>Утреннее посещение</h5>
+<p>Прийти раньше основного потока и не удлинять визит при очереди.</p>
+
+
+        <details class="event-alternatives" id="day-3-primary-event-day-3-site-alternatives" open>
+          <summary>Альтернативы (1)</summary>
+          <div class="alternative-list">
+    <article class="event-alternative">
+      <h6>Локальный музей</h6>
+      <p><strong>Когда выбрать:</strong> Если часы изменились или очередь делает визит неразумным.</p>
+<p>Сохраняет культурный фокус и уменьшает время в пути.</p>      <dl class="alternative-meta">
+<div><dt>Нагрузка</dt><dd>низкая</dd></div><div><dt>Расстояние</dt><dd>в пределах текущего района</dd></div><div><dt>Бронирование</dt><dd>проверить вход перед выходом</dd></div>      </dl>
+      <ul class="event-actions">
+        <li>
+          <a class="external-link" href="https://www.google.com/maps/search/?api=1&amp;query=Tokyo"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg>Открыть район на карте</a>
+<span class="network-label">Требуется интернет</span>        </li>
+      </ul>
+    </article>
+  </div>
+        </details>
+        <div class="event-alternatives-print" aria-label="Альтернативы (1)">
+          <p><strong>Альтернативы (1)</strong></p>
+          <div class="alternative-list">
+    <article class="event-alternative">
+      <h6>Локальный музей</h6>
+      <p><strong>Когда выбрать:</strong> Если часы изменились или очередь делает визит неразумным.</p>
+<p>Сохраняет культурный фокус и уменьшает время в пути.</p>      <dl class="alternative-meta">
+<div><dt>Нагрузка</dt><dd>низкая</dd></div><div><dt>Расстояние</dt><dd>в пределах текущего района</dd></div><div><dt>Бронирование</dt><dd>проверить вход перед выходом</dd></div>      </dl>
+      <ul class="event-actions">
+        <li>
+          <a class="external-link" href="https://www.google.com/maps/search/?api=1&amp;query=Tokyo"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg>Открыть район на карте</a>
+<span class="network-label">Требуется интернет</span>        </li>
+      </ul>
+    </article>
+  </div>
+        </div>
+      </div>
+    </li>
+    <li class="timeline-event timeline-event--meal" data-event-id="event-day-3-lunch">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>13:00</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 3 · 4 ноября 2026 · Tokyo</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-meal"></use></svg>Еда</p>
+        <h5>Обед</h5>
+<p>Выбрать место рядом с утренней точкой.</p>
+
+
+      </div>
+    </li>
+    <li class="timeline-event timeline-event--rest" data-event-id="event-day-3-afternoon">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>15:00</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 3 · 4 ноября 2026 · Tokyo</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-rest"></use></svg>Отдых</p>
+        <h5>Тихая вторая половина дня</h5>
+<p>Не добавлять ещё одну главную достопримечательность.</p>
+
+
+      </div>
+    </li>
+  </ol>
+            </section>
           </div>
 
 
-          <nav class="day-nav" aria-label="Adjacent days">
-<a href="#day-2">← Previous day</a><a href="#day-4">Next day →</a>          </nav>
+          <nav class="day-nav" aria-label="Дни подробно">
+<a href="#day-2">← Предыдущий день</a><a href="#day-4">Следующий день →</a>          </nav>
         </article>
-        <article class="day-article" id="day-4" data-day data-weather="false" data-transfer="true" data-unresolved="true" data-warning="false" aria-labelledby="day-4-title">
+        <article class="day-chapter" id="day-4" data-day data-weather="false" data-transfer="true" data-unresolved="true" data-warning="true" aria-labelledby="day-4-title">
           <header class="day-heading">
-            <div>
-              <span class="day-number">Day 4</span>
-              <h3 id="day-4-title">2026-11-05 · Thursday · Tokyo to Kyoto</h3>
-              <p class="day-thesis">Rail transfer day with no stacked headline activity.</p>
-            </div>
-            <div class="day-meta">
-              <span class="status status--recheck">recheck</span>
-            </div>
+            <div class="day-number"><span>День</span><strong>4</strong></div>
+            <div class="day-title-group"><p class="day-date">5 ноября 2026 · четверг</p><h3 id="day-4-title">Tokyo → Kyoto</h3><p class="day-thesis">Защитить железнодорожный переезд и не ставить после него обязательную активность.</p></div>
+            <dl class="day-meta"><div><dt>Ночёвка</dt><dd>Kyoto</dd></div><div><dt>Переезды</dt><dd>Междугородний поезд; итоговое время ещё не опубликовано</dd></div><div><dt>Нагрузка</dt><dd>лёгкая</dd></div><div><dt>Проверено</dt><dd>2026-08-28</dd></div></dl>
           </header>
 
-          <div class="day-layout">
-            <div class="day-primary">
-              <h4>Timeline</h4>
-              <ol class="timeline">
-                <li class="timeline-event">
-                  <span class="timeline-time">midday</span>
-                  <div><strong>Tokyo to Kyoto transfer</strong><p>Preserve buffer and luggage handoff.</p></div>
-                </li>
-              </ol>
+          <div class="scenario-tabs interactive-controls" data-scenario-tabs hidden role="tablist" aria-label="Сценарий дня 4">
+            <button type="button" id="day-4-tab-primary" role="tab" aria-selected="true" aria-controls="day-4-panel-primary" tabindex="0" data-show-scenario="primary">Основной</button>
+<button type="button" id="day-4-tab-alternative-later-train" role="tab" aria-selected="false" aria-controls="day-4-panel-alternative-later-train" tabindex="-1" data-show-scenario="alternative-later-train">Поздний поезд</button>          </div>
 
-              <h4>Primary and backup scenarios</h4>
-              <div class="scenario-switch interactive-controls" data-scenario-switch aria-label="Scenario view for day 4">
-                <button type="button" data-show-scenario="primary" aria-pressed="true">Primary</button>
-                <button type="button" data-show-scenario="backup" aria-pressed="false">Backup</button>
-              </div>
-              <section class="scenario-panel" data-scenario="primary" aria-label="Primary scenario">
-                <header class="scenario-heading">
-                  <span class="scenario-kind">primary</span>
-                  <strong>Check-in and local walk</strong>
-                </header>
-                <p>Keep evening flexible after transfer.</p>
-              </section>
+          <div class="scenario-stack">
+            <section class="scenario-panel scenario-panel--primary" id="day-4-panel-primary" data-scenario="primary" role="tabpanel" aria-labelledby="day-4-tab-primary" tabindex="0">
+<h4 class="scenario-heading">Основной сценарий</h4>              <ol class="timeline">
+    <li class="timeline-event timeline-event--checkpoint" data-event-id="event-day-4-check">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>До покупки билета</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 4 · 5 ноября 2026 · Tokyo → Kyoto</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-stop"></use></svg>Контрольная точка</p>
+        <h5>Проверить итоговое расписание</h5>
+<p>Не использовать оценочное время как подтверждённое отправление.</p>
+        <dl class="checkpoint-contract">
+          <div><dt>Что проверить</dt><dd>Выбранный рейс опубликован перевозчиком и оставляет запас на вокзале?</dd></div>
+          <div><dt>Как изменить план</dt><dd>Выбрать более поздний поезд и оставить вечер полностью свободным.</dd></div>
+        </dl>
 
-              <h4>Food in context</h4>
-              <ul class="food-list">
-<li><strong>Kyoto dinner</strong><span>Flexible · Near lodging after arrival.</span></li>              </ul>
-            </div>
 
-            <aside class="day-context" aria-label="Day 4 constraints and links">
-              <h4>Critical constraints</h4>
-              <ul class="constraint-list">
-<li>No critical constraints recorded.</li>              </ul>
-              <dl>
-                <div class="metadata-pair"><dt>Overnight</dt><dd>Kyoto</dd></div>
-                <div class="metadata-pair"><dt>Travel</dt><dd>Confirm final rail timing with provider before departure.</dd></div>
-                <div class="metadata-pair"><dt>Load</dt><dd>Light</dd></div>
-                <div class="metadata-pair"><dt>Last checked</dt><dd>2026-08-28</dd></div>
-              </dl>
-            </aside>
+      </div>
+    </li>
+    <li class="timeline-event timeline-event--transport" data-event-id="event-day-4-rail">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>В середине дня</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 4 · 5 ноября 2026 · Tokyo → Kyoto</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg>Переезд</p>
+        <h5>Переезд Tokyo — Kyoto</h5>
+<p>Сохранить время на багаж и навигацию внутри вокзала.</p>
+
+        <ul class="event-actions" aria-label="Переезд Tokyo — Kyoto">
+          <li>
+            <a class="external-link" href="https://example.invalid/kyoto-official"><svg class="icon" aria-hidden="true"><use href="#icon-arrow"></use></svg>Открыть источник расписания</a>
+<span class="network-label"><svg class="icon" aria-hidden="true"><use href="#icon-cloud"></use></svg>Требуется интернет</span>          </li>
+        </ul>
+
+      </div>
+    </li>
+    <li class="timeline-event timeline-event--lodging" data-event-id="event-day-4-check-in">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>После прибытия</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 4 · 5 ноября 2026 · Tokyo → Kyoto</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-lodging"></use></svg>Заселение</p>
+        <h5>Заселение в Kyoto</h5>
+<p>Сначала завершить заселение.</p>
+
+
+      </div>
+    </li>
+    <li class="timeline-event timeline-event--meal" data-event-id="event-day-4-dinner">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>Вечером</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 4 · 5 ноября 2026 · Tokyo → Kyoto</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-meal"></use></svg>Еда</p>
+        <h5>Ужин рядом с отелем</h5>
+<p>Не планировать дальний район после переезда.</p>
+
+
+      </div>
+    </li>
+  </ol>
+            </section>
+            <section class="scenario-panel scenario-panel--alternative" id="day-4-panel-alternative-later-train" data-scenario="alternative-later-train" role="tabpanel" aria-labelledby="day-4-tab-alternative-later-train" tabindex="0">
+              <h4 class="scenario-heading">Альтернативный сценарий · Поздний поезд</h4>
+<p class="scenario-summary">Сохранить Kyoto как место ночёвки, но полностью убрать вечернюю прогулку.</p>              <ol class="timeline">
+    <li class="timeline-event timeline-event--checkpoint" data-event-id="event-day-4-late-check">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>До покупки билета</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 4 · 5 ноября 2026 · Tokyo → Kyoto</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-stop"></use></svg>Контрольная точка</p>
+        <h5>Проверить окно заселения</h5>
+<p>Поздний поезд должен сохранять возможность заселиться.</p>
+        <dl class="checkpoint-contract">
+          <div><dt>Что проверить</dt><dd>Поздний поезд прибывает до окончания заселения?</dd></div>
+          <div><dt>Как изменить план</dt><dd>Связаться с отелем или выбрать более ранний опубликованный поезд.</dd></div>
+        </dl>
+
+
+      </div>
+    </li>
+    <li class="timeline-event timeline-event--transport" data-event-id="event-day-4-late-rail">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>Во второй половине дня</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 4 · 5 ноября 2026 · Tokyo → Kyoto</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg>Переезд</p>
+        <h5>Поздний переезд в Kyoto</h5>
+<p>Ехать напрямую без дополнительных остановок.</p>
+
+
+      </div>
+    </li>
+    <li class="timeline-event timeline-event--lodging" data-event-id="event-day-4-late-check-in">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>Вечером</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 4 · 5 ноября 2026 · Tokyo → Kyoto</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-lodging"></use></svg>Заселение</p>
+        <h5>Заселение и отдых</h5>
+<p>Завершить день в отеле.</p>
+
+
+      </div>
+    </li>
+  </ol>
+            </section>
           </div>
 
 
-          <nav class="day-nav" aria-label="Adjacent days">
-<a href="#day-3">← Previous day</a><a href="#day-5">Next day →</a>          </nav>
+          <nav class="day-nav" aria-label="Дни подробно">
+<a href="#day-3">← Предыдущий день</a><a href="#day-5">Следующий день →</a>          </nav>
         </article>
-        <article class="day-article" id="day-5" data-day data-weather="true" data-transfer="false" data-unresolved="true" data-warning="false" aria-labelledby="day-5-title">
+        <article class="day-chapter" id="day-5" data-day data-weather="true" data-transfer="false" data-unresolved="true" data-warning="false" aria-labelledby="day-5-title">
           <header class="day-heading">
-            <div>
-              <span class="day-number">Day 5</span>
-              <h3 id="day-5-title">2026-11-06 · Friday · Kyoto</h3>
-              <p class="day-thesis">Cultural district at an intentionally moderate pace.</p>
-            </div>
-            <div class="day-meta">
-              <span class="status status--selected">selected</span>
-<span class="status status--recheck">Weather-sensitive</span>            </div>
+            <div class="day-number"><span>День</span><strong>5</strong></div>
+            <div class="day-title-group"><p class="day-date">6 ноября 2026 · пятница</p><h3 id="day-5-title">Kyoto</h3><p class="day-thesis">Пройти культурный район в умеренном темпе и держать закрытую альтернативу рядом.</p></div>
+            <dl class="day-meta"><div><dt>Ночёвка</dt><dd>Kyoto</dd></div><div><dt>Переезды</dt><dd>Пешком и на городском транспорте</dd></div><div><dt>Нагрузка</dt><dd>средняя</dd></div><div><dt>Проверено</dt><dd>2026-08-28</dd></div></dl>
           </header>
+<p class="weather-note"><svg class="icon" aria-hidden="true"><use href="#icon-recheck"></use></svg>Зависит от погоды</p>
+          <div class="scenario-tabs interactive-controls" data-scenario-tabs hidden role="tablist" aria-label="Сценарий дня 5">
+            <button type="button" id="day-5-tab-primary" role="tab" aria-selected="true" aria-controls="day-5-panel-primary" tabindex="0" data-show-scenario="primary">Основной</button>
+<button type="button" id="day-5-tab-alternative-day-5-rain" role="tab" aria-selected="false" aria-controls="day-5-panel-alternative-day-5-rain" tabindex="-1" data-show-scenario="alternative-day-5-rain">Дождь</button>          </div>
 
-          <div class="day-layout">
-            <div class="day-primary">
-              <h4>Timeline</h4>
-              <ol class="timeline">
-                <li class="timeline-event">
-                  <span class="timeline-time">morning</span>
-                  <div><strong>Historic district</strong><p>Keep a rain-friendly indoor stop nearby.</p></div>
-                </li>
-              </ol>
+          <div class="scenario-stack">
+            <section class="scenario-panel scenario-panel--primary" id="day-5-panel-primary" data-scenario="primary" role="tabpanel" aria-labelledby="day-5-tab-primary" tabindex="0">
+<h4 class="scenario-heading">Основной сценарий</h4>              <ol class="timeline">
+    <li class="timeline-event timeline-event--meal" data-event-id="event-day-5-breakfast">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>08:30</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 5 · 6 ноября 2026 · Kyoto</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-meal"></use></svg>Еда</p>
+        <h5>Завтрак</h5>
+<p>Поесть перед продолжительной прогулкой.</p>
 
-              <h4>Primary and backup scenarios</h4>
-              <div class="scenario-switch interactive-controls" data-scenario-switch aria-label="Scenario view for day 5">
-                <button type="button" data-show-scenario="primary" aria-pressed="true">Primary</button>
-                <button type="button" data-show-scenario="backup" aria-pressed="false">Backup</button>
-              </div>
-              <section class="scenario-panel" data-scenario="primary" aria-label="Primary scenario">
-                <header class="scenario-heading">
-                  <span class="scenario-kind">primary</span>
-                  <strong>District walk</strong>
-                </header>
-                <p>Follow the local route.</p>
-              </section>
-              <section class="scenario-panel" data-scenario="backup" aria-label="Backup scenario">
-                <header class="scenario-heading">
-                  <span class="scenario-kind">backup</span>
-                  <strong>Craft museum</strong>
-                </header>
-                <p>Indoor backup.</p>
-              </section>
 
-              <h4>Food in context</h4>
-              <ul class="food-list">
-<li><strong>Kyoto lunch</strong><span>Flexible · Select locally.</span></li>              </ul>
-            </div>
+      </div>
+    </li>
+    <li class="timeline-event timeline-event--activity" data-event-id="event-day-5-district">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>10:00</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 5 · 6 ноября 2026 · Kyoto</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-activity"></use></svg>Активность</p>
+        <h5>Исторический район</h5>
+<p>Следовать компактному маршруту без лишних возвратов.</p>
 
-            <aside class="day-context" aria-label="Day 5 constraints and links">
-              <h4>Critical constraints</h4>
-              <ul class="constraint-list">
-<li>No critical constraints recorded.</li>              </ul>
-              <dl>
-                <div class="metadata-pair"><dt>Overnight</dt><dd>Kyoto</dd></div>
-                <div class="metadata-pair"><dt>Travel</dt><dd>Walk and local transit.</dd></div>
-                <div class="metadata-pair"><dt>Load</dt><dd>Moderate</dd></div>
-                <div class="metadata-pair"><dt>Last checked</dt><dd>2026-08-28</dd></div>
-              </dl>
-            </aside>
+
+      </div>
+    </li>
+    <li class="timeline-event timeline-event--meal" data-event-id="event-day-5-lunch">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>13:00</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 5 · 6 ноября 2026 · Kyoto</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-meal"></use></svg>Еда</p>
+        <h5>Обед в районе</h5>
+<p>Не менять географию дня ради ресторана.</p>
+
+
+      </div>
+    </li>
+    <li class="timeline-event timeline-event--rest" data-event-id="event-day-5-rest">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>16:30</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 5 · 6 ноября 2026 · Kyoto</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-rest"></use></svg>Отдых</p>
+        <h5>Возвращение и отдых</h5>
+<p>Оставить вечер свободным.</p>
+
+
+      </div>
+    </li>
+  </ol>
+            </section>
+            <section class="scenario-panel scenario-panel--alternative" id="day-5-panel-alternative-day-5-rain" data-scenario="alternative-day-5-rain" role="tabpanel" aria-labelledby="day-5-tab-alternative-day-5-rain" tabindex="0">
+              <h4 class="scenario-heading">Альтернативный сценарий · Дождь</h4>
+<p class="scenario-summary">Заменить прогулку ремесленным музеем в том же районе.</p>              <ol class="timeline">
+    <li class="timeline-event timeline-event--meal" data-event-id="event-day-5-rain-breakfast">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>08:30</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 5 · 6 ноября 2026 · Kyoto</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-meal"></use></svg>Еда</p>
+        <h5>Завтрак</h5>
+<p>Начать день рядом с отелем.</p>
+
+
+      </div>
+    </li>
+    <li class="timeline-event timeline-event--activity" data-event-id="event-day-5-museum">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>10:30</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 5 · 6 ноября 2026 · Kyoto</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-activity"></use></svg>Активность</p>
+        <h5>Ремесленный музей</h5>
+<p>Проверить доступ перед выходом.</p>
+
+
+      </div>
+    </li>
+    <li class="timeline-event timeline-event--meal" data-event-id="event-day-5-rain-lunch">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>13:00</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 5 · 6 ноября 2026 · Kyoto</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-meal"></use></svg>Еда</p>
+        <h5>Обед рядом с музеем</h5>
+<p>Сохранить короткие переходы под дождём.</p>
+
+
+      </div>
+    </li>
+  </ol>
+            </section>
           </div>
 
 
-          <nav class="day-nav" aria-label="Adjacent days">
-<a href="#day-4">← Previous day</a><a href="#day-6">Next day →</a>          </nav>
+          <nav class="day-nav" aria-label="Дни подробно">
+<a href="#day-4">← Предыдущий день</a><a href="#day-6">Следующий день →</a>          </nav>
         </article>
-        <article class="day-article" id="day-6" data-day data-weather="true" data-transfer="false" data-unresolved="true" data-warning="true" aria-labelledby="day-6-title">
+        <article class="day-chapter" id="day-6" data-day data-weather="true" data-transfer="false" data-unresolved="true" data-warning="true" aria-labelledby="day-6-title">
           <header class="day-heading">
-            <div>
-              <span class="day-number">Day 6</span>
-              <h3 id="day-6-title">2026-11-07 · Saturday · Kyoto</h3>
-              <p class="day-thesis">Garden morning with a local indoor alternative for rain.</p>
-            </div>
-            <div class="day-meta">
-              <span class="status status--recheck">recheck</span>
-<span class="status status--recheck">Weather-sensitive</span>            </div>
+            <div class="day-number"><span>День</span><strong>6</strong></div>
+            <div class="day-title-group"><p class="day-date">7 ноября 2026 · суббота</p><h3 id="day-6-title">Kyoto</h3><p class="day-thesis">Начать с сада и переключиться на закрытый маршрут, если условия не подходят.</p></div>
+            <dl class="day-meta"><div><dt>Ночёвка</dt><dd>Kyoto</dd></div><div><dt>Переезды</dt><dd>Городской транспорт</dd></div><div><dt>Нагрузка</dt><dd>средняя</dd></div><div><dt>Проверено</dt><dd>2026-08-28</dd></div></dl>
           </header>
+<p class="weather-note"><svg class="icon" aria-hidden="true"><use href="#icon-recheck"></use></svg>Зависит от погоды</p>
+          <div class="scenario-tabs interactive-controls" data-scenario-tabs hidden role="tablist" aria-label="Сценарий дня 6">
+            <button type="button" id="day-6-tab-primary" role="tab" aria-selected="true" aria-controls="day-6-panel-primary" tabindex="0" data-show-scenario="primary">Основной</button>
+<button type="button" id="day-6-tab-alternative-day-6-rain" role="tab" aria-selected="false" aria-controls="day-6-panel-alternative-day-6-rain" tabindex="-1" data-show-scenario="alternative-day-6-rain">Дождь</button>          </div>
 
-          <div class="day-layout">
-            <div class="day-primary">
-              <h4>Timeline</h4>
-              <ol class="timeline">
-                <li class="timeline-event">
-                  <span class="timeline-time">morning</span>
-                  <div><strong>Garden visit</strong><p>Arrive early; do not assume seasonal peak.</p></div>
-                </li>
-              </ol>
+          <div class="scenario-stack">
+            <section class="scenario-panel scenario-panel--primary" id="day-6-panel-primary" data-scenario="primary" role="tabpanel" aria-labelledby="day-6-tab-primary" tabindex="0">
+<h4 class="scenario-heading">Основной сценарий</h4>              <ol class="timeline">
+    <li class="timeline-event timeline-event--checkpoint" data-event-id="event-day-6-check">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>08:00</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 6 · 7 ноября 2026 · Kyoto</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-stop"></use></svg>Контрольная точка</p>
+        <h5>Проверить погоду и доступ</h5>
+<p>Не считать сезонный пик и часы работы подтверждёнными заранее.</p>
+        <dl class="checkpoint-contract">
+          <div><dt>Что проверить</dt><dd>Погода и официальный режим подходят для сада?</dd></div>
+          <div><dt>Как изменить план</dt><dd>Переключить весь день на закрытый музейный сценарий.</dd></div>
+        </dl>
 
-              <h4>Primary and backup scenarios</h4>
-              <div class="scenario-switch interactive-controls" data-scenario-switch aria-label="Scenario view for day 6">
-                <button type="button" data-show-scenario="primary" aria-pressed="true">Primary</button>
-                <button type="button" data-show-scenario="backup" aria-pressed="false">Backup</button>
-              </div>
-              <section class="scenario-panel" data-scenario="primary" aria-label="Primary scenario">
-                <header class="scenario-heading">
-                  <span class="scenario-kind">primary</span>
-                  <strong>Garden visit</strong>
-                </header>
-                <p>Use only when weather and access remain suitable.</p>
-              </section>
-              <section class="scenario-panel" data-scenario="backup" aria-label="Backup scenario">
-                <header class="scenario-heading">
-                  <span class="scenario-kind">backup</span>
-                  <strong>Indoor museum</strong>
-                </header>
-                <p>Local rain fallback without changing lodging.</p>
-              </section>
 
-              <h4>Food in context</h4>
-              <ul class="food-list">
-<li><strong>Kyoto lunch</strong><span>Flexible · Select after the morning activity.</span></li>              </ul>
-            </div>
+      </div>
+    </li>
+    <li class="timeline-event timeline-event--activity" data-event-id="event-day-6-garden">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>09:30</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 6 · 7 ноября 2026 · Kyoto</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-activity"></use></svg>Активность</p>
+        <h5>Утро в саду</h5>
+<p>Прийти рано и ограничить время при сильной загруженности.</p>
 
-            <aside class="day-context" aria-label="Day 6 constraints and links">
-              <h4>Critical constraints</h4>
-              <ul class="constraint-list">
-<li>Confirm seasonal conditions close to travel.</li>              </ul>
-              <dl>
-                <div class="metadata-pair"><dt>Overnight</dt><dd>Kyoto</dd></div>
-                <div class="metadata-pair"><dt>Travel</dt><dd>Local transit only.</dd></div>
-                <div class="metadata-pair"><dt>Load</dt><dd>Moderate</dd></div>
-                <div class="metadata-pair"><dt>Last checked</dt><dd>2026-08-28</dd></div>
-              </dl>
-            </aside>
+        <ul class="event-actions" aria-label="Утро в саду">
+          <li>
+            <a class="external-link" href="https://example.invalid/kyoto-official"><svg class="icon" aria-hidden="true"><use href="#icon-arrow"></use></svg>Открыть официальный источник</a>
+<span class="network-label"><svg class="icon" aria-hidden="true"><use href="#icon-cloud"></use></svg>Требуется интернет</span>          </li>
+        </ul>
+
+      </div>
+    </li>
+    <li class="timeline-event timeline-event--meal" data-event-id="event-day-6-lunch">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>13:00</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 6 · 7 ноября 2026 · Kyoto</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-meal"></use></svg>Еда</p>
+        <h5>Обед поблизости</h5>
+<p>Выбрать место после утренней активности.</p>
+
+
+      </div>
+    </li>
+    <li class="timeline-event timeline-event--rest" data-event-id="event-day-6-afternoon">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>15:00</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 6 · 7 ноября 2026 · Kyoto</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-rest"></use></svg>Отдых</p>
+        <h5>Свободная вторая половина дня</h5>
+<p>Не перегружать день второй большой точкой.</p>
+
+
+      </div>
+    </li>
+  </ol>
+            </section>
+            <section class="scenario-panel scenario-panel--alternative" id="day-6-panel-alternative-day-6-rain" data-scenario="alternative-day-6-rain" role="tabpanel" aria-labelledby="day-6-tab-alternative-day-6-rain" tabindex="0">
+              <h4 class="scenario-heading">Альтернативный сценарий · Дождь</h4>
+<p class="scenario-summary">Весь активный блок дня проходит в помещении.</p>              <ol class="timeline">
+    <li class="timeline-event timeline-event--checkpoint" data-event-id="event-day-6-rain-check">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>08:00</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 6 · 7 ноября 2026 · Kyoto</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-stop"></use></svg>Контрольная точка</p>
+        <h5>Подтвердить переключение</h5>
+<p>Проверить прогноз и доступ музея.</p>
+        <dl class="checkpoint-contract">
+          <div><dt>Что проверить</dt><dd>Дождь или режим сада делают визит неразумным?</dd></div>
+          <div><dt>Как изменить план</dt><dd>Вернуться к основному сценарию сада.</dd></div>
+        </dl>
+
+
+      </div>
+    </li>
+    <li class="timeline-event timeline-event--activity" data-event-id="event-day-6-museum">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>10:00</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 6 · 7 ноября 2026 · Kyoto</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-activity"></use></svg>Активность</p>
+        <h5>Городской музей</h5>
+<p>Выбрать закрытую площадку с опубликованным доступом.</p>
+
+
+      </div>
+    </li>
+    <li class="timeline-event timeline-event--meal" data-event-id="event-day-6-rain-lunch">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>13:00</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 6 · 7 ноября 2026 · Kyoto</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-meal"></use></svg>Еда</p>
+        <h5>Обед рядом с музеем</h5>
+<p>Сохранить компактную географию.</p>
+
+
+      </div>
+    </li>
+  </ol>
+            </section>
           </div>
 
 
-          <nav class="day-nav" aria-label="Adjacent days">
-<a href="#day-5">← Previous day</a><a href="#day-7">Next day →</a>          </nav>
+          <nav class="day-nav" aria-label="Дни подробно">
+<a href="#day-5">← Предыдущий день</a><a href="#day-7">Следующий день →</a>          </nav>
         </article>
-        <article class="day-article" id="day-7" data-day data-weather="true" data-transfer="false" data-unresolved="true" data-warning="false" aria-labelledby="day-7-title">
+        <article class="day-chapter" id="day-7" data-day data-weather="true" data-transfer="false" data-unresolved="true" data-warning="false" aria-labelledby="day-7-title">
           <header class="day-heading">
-            <div>
-              <span class="day-number">Day 7</span>
-              <h3 id="day-7-title">2026-11-08 · Sunday · Kyoto</h3>
-              <p class="day-thesis">Flexible cultural day that can absorb a weather swap.</p>
-            </div>
-            <div class="day-meta">
-              <span class="status status--recheck">recheck</span>
-<span class="status status--recheck">Weather-sensitive</span>            </div>
+            <div class="day-number"><span>День</span><strong>7</strong></div>
+            <div class="day-title-group"><p class="day-date">8 ноября 2026 · воскресенье</p><h3 id="day-7-title">Kyoto</h3><p class="day-thesis">Оставить культурный день гибким и при необходимости снизить нагрузку.</p></div>
+            <dl class="day-meta"><div><dt>Ночёвка</dt><dd>Kyoto</dd></div><div><dt>Переезды</dt><dd>Городской транспорт</dd></div><div><dt>Нагрузка</dt><dd>средняя</dd></div><div><dt>Проверено</dt><dd>2026-08-28</dd></div></dl>
           </header>
+<p class="weather-note"><svg class="icon" aria-hidden="true"><use href="#icon-recheck"></use></svg>Зависит от погоды</p>
+          <div class="scenario-tabs interactive-controls" data-scenario-tabs hidden role="tablist" aria-label="Сценарий дня 7">
+            <button type="button" id="day-7-tab-primary" role="tab" aria-selected="true" aria-controls="day-7-panel-primary" tabindex="0" data-show-scenario="primary">Основной</button>
+<button type="button" id="day-7-tab-alternative-day-7-low-load" role="tab" aria-selected="false" aria-controls="day-7-panel-alternative-day-7-low-load" tabindex="-1" data-show-scenario="alternative-day-7-low-load">Низкая нагрузка</button>          </div>
 
-          <div class="day-layout">
-            <div class="day-primary">
-              <h4>Timeline</h4>
-              <ol class="timeline">
-                <li class="timeline-event">
-                  <span class="timeline-time">afternoon</span>
-                  <div><strong>Cultural visit</strong><p>Confirm provider access nearer travel.</p></div>
-                </li>
-              </ol>
+          <div class="scenario-stack">
+            <section class="scenario-panel scenario-panel--primary" id="day-7-panel-primary" data-scenario="primary" role="tabpanel" aria-labelledby="day-7-tab-primary" tabindex="0">
+<h4 class="scenario-heading">Основной сценарий</h4>              <ol class="timeline">
+    <li class="timeline-event timeline-event--rest" data-event-id="event-day-7-morning">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>Утро</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 7 · 8 ноября 2026 · Kyoto</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-rest"></use></svg>Отдых</p>
+        <h5>Медленное начало</h5>
+<p>Сохранить запас после предыдущих дней.</p>
 
-              <h4>Primary and backup scenarios</h4>
-              <div class="scenario-switch interactive-controls" data-scenario-switch aria-label="Scenario view for day 7">
-                <button type="button" data-show-scenario="primary" aria-pressed="true">Primary</button>
-                <button type="button" data-show-scenario="backup" aria-pressed="false">Backup</button>
-              </div>
-              <section class="scenario-panel" data-scenario="primary" aria-label="Primary scenario">
-                <header class="scenario-heading">
-                  <span class="scenario-kind">primary</span>
-                  <strong>Temple area</strong>
-                </header>
-                <p>Outdoor cultural plan.</p>
-              </section>
-              <section class="scenario-panel" data-scenario="backup" aria-label="Backup scenario">
-                <header class="scenario-heading">
-                  <span class="scenario-kind">backup</span>
-                  <strong>Indoor collection</strong>
-                </header>
-                <p>Rain fallback.</p>
-              </section>
 
-              <h4>Food in context</h4>
-              <ul class="food-list">
-<li><strong>Kyoto dinner</strong><span>Flexible · No live availability claim.</span></li>              </ul>
-            </div>
+      </div>
+    </li>
+    <li class="timeline-event timeline-event--activity" data-event-id="event-day-7-cultural">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>13:00</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 7 · 8 ноября 2026 · Kyoto</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-activity"></use></svg>Активность</p>
+        <h5>Культурный визит</h5>
+<p>Подтвердить доступ ближе к поездке.</p>
 
-            <aside class="day-context" aria-label="Day 7 constraints and links">
-              <h4>Critical constraints</h4>
-              <ul class="constraint-list">
-<li>No critical constraints recorded.</li>              </ul>
-              <dl>
-                <div class="metadata-pair"><dt>Overnight</dt><dd>Kyoto</dd></div>
-                <div class="metadata-pair"><dt>Travel</dt><dd>Local transit only.</dd></div>
-                <div class="metadata-pair"><dt>Load</dt><dd>Moderate</dd></div>
-                <div class="metadata-pair"><dt>Last checked</dt><dd>2026-08-28</dd></div>
-              </dl>
-            </aside>
+
+      </div>
+    </li>
+    <li class="timeline-event timeline-event--meal" data-event-id="event-day-7-dinner">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>18:30</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 7 · 8 ноября 2026 · Kyoto</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-meal"></use></svg>Еда</p>
+        <h5>Ужин в Kyoto</h5>
+<p>Не обещать наличие мест без бронирования.</p>
+
+
+      </div>
+    </li>
+  </ol>
+            </section>
+            <section class="scenario-panel scenario-panel--alternative" id="day-7-panel-alternative-day-7-low-load" data-scenario="alternative-day-7-low-load" role="tabpanel" aria-labelledby="day-7-tab-alternative-day-7-low-load" tabindex="0">
+              <h4 class="scenario-heading">Альтернативный сценарий · Низкая нагрузка</h4>
+<p class="scenario-summary">Оставить только одну короткую культурную точку возле базы.</p>              <ol class="timeline">
+    <li class="timeline-event timeline-event--rest" data-event-id="event-day-7-low-rest">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>До обеда</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 7 · 8 ноября 2026 · Kyoto</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-rest"></use></svg>Отдых</p>
+        <h5>Отдых</h5>
+<p>Не назначать утреннюю активность.</p>
+
+
+      </div>
+    </li>
+    <li class="timeline-event timeline-event--activity" data-event-id="event-day-7-low-visit">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>14:00</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 7 · 8 ноября 2026 · Kyoto</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-activity"></use></svg>Активность</p>
+        <h5>Короткий локальный визит</h5>
+<p>Выбрать место рядом с отелем.</p>
+
+
+      </div>
+    </li>
+    <li class="timeline-event timeline-event--meal" data-event-id="event-day-7-low-dinner">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>18:30</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 7 · 8 ноября 2026 · Kyoto</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-meal"></use></svg>Еда</p>
+        <h5>Ранний ужин</h5>
+<p>Завершить день без вечерней программы.</p>
+
+
+      </div>
+    </li>
+  </ol>
+            </section>
           </div>
 
 
-          <nav class="day-nav" aria-label="Adjacent days">
-<a href="#day-6">← Previous day</a><a href="#day-8">Next day →</a>          </nav>
+          <nav class="day-nav" aria-label="Дни подробно">
+<a href="#day-6">← Предыдущий день</a><a href="#day-8">Следующий день →</a>          </nav>
         </article>
-        <article class="day-article" id="day-8" data-day data-weather="false" data-transfer="false" data-unresolved="true" data-warning="false" aria-labelledby="day-8-title">
+        <article class="day-chapter" id="day-8" data-day data-weather="false" data-transfer="true" data-unresolved="true" data-warning="false" aria-labelledby="day-8-title">
           <header class="day-heading">
-            <div>
-              <span class="day-number">Day 8</span>
-              <h3 id="day-8-title">2026-11-09 · Monday · Kyoto to Kanazawa</h3>
-              <p class="day-thesis">Second rail transfer with an unhurried arrival evening.</p>
-            </div>
-            <div class="day-meta">
-              <span class="status status--recheck">recheck</span>
-            </div>
+            <div class="day-number"><span>День</span><strong>8</strong></div>
+            <div class="day-title-group"><p class="day-date">9 ноября 2026 · понедельник</p><h3 id="day-8-title">Kyoto → Kanazawa</h3><p class="day-thesis">Спокойно сменить базу и не превращать вечер прибытия в экскурсионный блок.</p></div>
+            <dl class="day-meta"><div><dt>Ночёвка</dt><dd>Kanazawa</dd></div><div><dt>Переезды</dt><dd>Междугородний поезд; расписание перепроверить</dd></div><div><dt>Нагрузка</dt><dd>лёгкая</dd></div><div><dt>Проверено</dt><dd>2026-08-28</dd></div></dl>
           </header>
 
-          <div class="day-layout">
-            <div class="day-primary">
-              <h4>Timeline</h4>
-              <ol class="timeline">
-                <li class="timeline-event">
-                  <span class="timeline-time">midday</span>
-                  <div><strong>Kyoto to Kanazawa transfer</strong><p>Do not infer final departure times.</p></div>
-                </li>
-              </ol>
 
-              <h4>Primary and backup scenarios</h4>
-              <div class="scenario-switch interactive-controls" data-scenario-switch aria-label="Scenario view for day 8">
-                <button type="button" data-show-scenario="primary" aria-pressed="true">Primary</button>
-                <button type="button" data-show-scenario="backup" aria-pressed="false">Backup</button>
-              </div>
-              <section class="scenario-panel" data-scenario="primary" aria-label="Primary scenario">
-                <header class="scenario-heading">
-                  <span class="scenario-kind">primary</span>
-                  <strong>Hotel check-in</strong>
-                </header>
-                <p>Keep evening unscheduled.</p>
-              </section>
+          <div class="scenario-stack">
+            <section class="scenario-panel scenario-panel--primary">
+<h4 class="scenario-heading scenario-heading--primary-only">Расписание</h4>              <ol class="timeline">
+    <li class="timeline-event timeline-event--lodging" data-event-id="event-day-8-checkout">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>Утро</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 8 · 9 ноября 2026 · Kyoto → Kanazawa</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-lodging"></use></svg>Заселение</p>
+        <h5>Выселение</h5>
+<p>Оставить время на багаж и дорогу до вокзала.</p>
 
-              <h4>Food in context</h4>
-              <ul class="food-list">
-<li><strong>Kanazawa dinner</strong><span>Flexible · Near lodging.</span></li>              </ul>
-            </div>
 
-            <aside class="day-context" aria-label="Day 8 constraints and links">
-              <h4>Critical constraints</h4>
-              <ul class="constraint-list">
-<li>No critical constraints recorded.</li>              </ul>
-              <dl>
-                <div class="metadata-pair"><dt>Overnight</dt><dd>Kanazawa</dd></div>
-                <div class="metadata-pair"><dt>Travel</dt><dd>Confirm provider timetable; retain station buffer.</dd></div>
-                <div class="metadata-pair"><dt>Load</dt><dd>Light</dd></div>
-                <div class="metadata-pair"><dt>Last checked</dt><dd>2026-08-28</dd></div>
-              </dl>
-            </aside>
+      </div>
+    </li>
+    <li class="timeline-event timeline-event--transport" data-event-id="event-day-8-rail">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>В середине дня</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 8 · 9 ноября 2026 · Kyoto → Kanazawa</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg>Переезд</p>
+        <h5>Переезд Kyoto — Kanazawa</h5>
+<p>Подтвердить расписание у перевозчика и сохранить станционный запас.</p>
+
+        <ul class="event-actions" aria-label="Переезд Kyoto — Kanazawa">
+          <li>
+            <a class="external-link" href="https://example.invalid/kanazawa-official"><svg class="icon" aria-hidden="true"><use href="#icon-arrow"></use></svg>Открыть источник расписания</a>
+<span class="network-label"><svg class="icon" aria-hidden="true"><use href="#icon-cloud"></use></svg>Требуется интернет</span>          </li>
+        </ul>
+
+      </div>
+    </li>
+    <li class="timeline-event timeline-event--lodging" data-event-id="event-day-8-check-in">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>После прибытия</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 8 · 9 ноября 2026 · Kyoto → Kanazawa</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-lodging"></use></svg>Заселение</p>
+        <h5>Заселение в Kanazawa</h5>
+<p>Завершить обязательную часть дня.</p>
+
+
+      </div>
+    </li>
+    <li class="timeline-event timeline-event--meal" data-event-id="event-day-8-dinner">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>Вечером</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 8 · 9 ноября 2026 · Kyoto → Kanazawa</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-meal"></use></svg>Еда</p>
+        <h5>Ужин рядом с отелем</h5>
+<p>Выбрать место по фактическому времени прибытия.</p>
+
+
+      </div>
+    </li>
+  </ol>
+            </section>
           </div>
 
 
-          <nav class="day-nav" aria-label="Adjacent days">
-<a href="#day-7">← Previous day</a><a href="#day-9">Next day →</a>          </nav>
+          <nav class="day-nav" aria-label="Дни подробно">
+<a href="#day-7">← Предыдущий день</a><a href="#day-9">Следующий день →</a>          </nav>
         </article>
-        <article class="day-article" id="day-9" data-day data-weather="false" data-transfer="false" data-unresolved="true" data-warning="false" aria-labelledby="day-9-title">
+        <article class="day-chapter" id="day-9" data-day data-weather="false" data-transfer="false" data-unresolved="true" data-warning="false" aria-labelledby="day-9-title">
           <header class="day-heading">
-            <div>
-              <span class="day-number">Day 9</span>
-              <h3 id="day-9-title">2026-11-10 · Tuesday · Kanazawa</h3>
-              <p class="day-thesis">Historic district and market-scale exploration.</p>
-            </div>
-            <div class="day-meta">
-              <span class="status status--selected">selected</span>
-            </div>
+            <div class="day-number"><span>День</span><strong>9</strong></div>
+            <div class="day-title-group"><p class="day-date">10 ноября 2026 · вторник</p><h3 id="day-9-title">Kanazawa</h3><p class="day-thesis">Исследовать исторический район и рынок в масштабе пешего дня.</p></div>
+            <dl class="day-meta"><div><dt>Ночёвка</dt><dd>Kanazawa</dd></div><div><dt>Переезды</dt><dd>Пешком и на местном автобусе</dd></div><div><dt>Нагрузка</dt><dd>средняя</dd></div><div><dt>Проверено</dt><dd>2026-08-28</dd></div></dl>
           </header>
 
-          <div class="day-layout">
-            <div class="day-primary">
-              <h4>Timeline</h4>
-              <ol class="timeline">
-                <li class="timeline-event">
-                  <span class="timeline-time">morning</span>
-                  <div><strong>Historic district</strong><p>Use the local base.</p></div>
-                </li>
-              </ol>
 
-              <h4>Primary and backup scenarios</h4>
-              <div class="scenario-switch interactive-controls" data-scenario-switch aria-label="Scenario view for day 9">
-                <button type="button" data-show-scenario="primary" aria-pressed="true">Primary</button>
-                <button type="button" data-show-scenario="backup" aria-pressed="false">Backup</button>
-              </div>
-              <section class="scenario-panel" data-scenario="primary" aria-label="Primary scenario">
-                <header class="scenario-heading">
-                  <span class="scenario-kind">primary</span>
-                  <strong>District route</strong>
-                </header>
-                <p>Cultural day at walkable scale.</p>
-              </section>
+          <div class="scenario-stack">
+            <section class="scenario-panel scenario-panel--primary">
+<h4 class="scenario-heading scenario-heading--primary-only">Расписание</h4>              <ol class="timeline">
+    <li class="timeline-event timeline-event--activity" data-event-id="event-day-9-district">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>09:30</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 9 · 10 ноября 2026 · Kanazawa</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-activity"></use></svg>Активность</p>
+        <h5>Исторический район</h5>
+<p>Следовать локальному маршруту без дальних переездов.</p>
 
-              <h4>Food in context</h4>
-              <ul class="food-list">
-<li><strong>Market lunch</strong><span>Flexible · Choose on the day.</span></li>              </ul>
-            </div>
+        <ul class="event-actions" aria-label="Исторический район">
+          <li>
+            <a class="external-link" href="https://www.google.com/maps/search/?api=1&amp;query=Kanazawa"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg>Открыть район на карте</a>
+<span class="network-label"><svg class="icon" aria-hidden="true"><use href="#icon-cloud"></use></svg>Требуется интернет</span>          </li>
+        </ul>
 
-            <aside class="day-context" aria-label="Day 9 constraints and links">
-              <h4>Critical constraints</h4>
-              <ul class="constraint-list">
-<li>No critical constraints recorded.</li>              </ul>
-              <dl>
-                <div class="metadata-pair"><dt>Overnight</dt><dd>Kanazawa</dd></div>
-                <div class="metadata-pair"><dt>Travel</dt><dd>Walk and local bus.</dd></div>
-                <div class="metadata-pair"><dt>Load</dt><dd>Moderate</dd></div>
-                <div class="metadata-pair"><dt>Last checked</dt><dd>2026-08-28</dd></div>
-              </dl>
-            </aside>
+      </div>
+    </li>
+    <li class="timeline-event timeline-event--meal" data-event-id="event-day-9-market">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>12:30</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 9 · 10 ноября 2026 · Kanazawa</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-meal"></use></svg>Еда</p>
+        <h5>Обед на рынке</h5>
+<p>Выбрать по фактической доступности.</p>
+
+
+      </div>
+    </li>
+    <li class="timeline-event timeline-event--activity" data-event-id="event-day-9-afternoon">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>14:30</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 9 · 10 ноября 2026 · Kanazawa</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-activity"></use></svg>Активность</p>
+        <h5>Продолжение прогулки</h5>
+<p>Сократить маршрут при усталости.</p>
+
+
+      </div>
+    </li>
+  </ol>
+            </section>
           </div>
 
 
-          <nav class="day-nav" aria-label="Adjacent days">
-<a href="#day-8">← Previous day</a><a href="#day-10">Next day →</a>          </nav>
+          <nav class="day-nav" aria-label="Дни подробно">
+<a href="#day-8">← Предыдущий день</a><a href="#day-10">Следующий день →</a>          </nav>
         </article>
-        <article class="day-article" id="day-10" data-day data-weather="true" data-transfer="false" data-unresolved="true" data-warning="false" aria-labelledby="day-10-title">
+        <article class="day-chapter" id="day-10" data-day data-weather="true" data-transfer="false" data-unresolved="true" data-warning="true" aria-labelledby="day-10-title">
           <header class="day-heading">
-            <div>
-              <span class="day-number">Day 10</span>
-              <h3 id="day-10-title">2026-11-11 · Wednesday · Kanazawa</h3>
-              <p class="day-thesis">Garden or indoor collection according to conditions.</p>
-            </div>
-            <div class="day-meta">
-              <span class="status status--recheck">recheck</span>
-<span class="status status--recheck">Weather-sensitive</span>            </div>
+            <div class="day-number"><span>День</span><strong>10</strong></div>
+            <div class="day-title-group"><p class="day-date">11 ноября 2026 · среда</p><h3 id="day-10-title">Kanazawa</h3><p class="day-thesis">Выбрать сад или закрытую коллекцию по фактическим условиям.</p></div>
+            <dl class="day-meta"><div><dt>Ночёвка</dt><dd>Kanazawa</dd></div><div><dt>Переезды</dt><dd>Местный транспорт</dd></div><div><dt>Нагрузка</dt><dd>средняя</dd></div><div><dt>Проверено</dt><dd>2026-08-28</dd></div></dl>
           </header>
+<p class="weather-note"><svg class="icon" aria-hidden="true"><use href="#icon-recheck"></use></svg>Зависит от погоды</p>
+          <div class="scenario-tabs interactive-controls" data-scenario-tabs hidden role="tablist" aria-label="Сценарий дня 10">
+            <button type="button" id="day-10-tab-primary" role="tab" aria-selected="true" aria-controls="day-10-panel-primary" tabindex="0" data-show-scenario="primary">Основной</button>
+<button type="button" id="day-10-tab-alternative-day-10-rain" role="tab" aria-selected="false" aria-controls="day-10-panel-alternative-day-10-rain" tabindex="-1" data-show-scenario="alternative-day-10-rain">Дождь</button>          </div>
 
-          <div class="day-layout">
-            <div class="day-primary">
-              <h4>Timeline</h4>
-              <ol class="timeline">
-                <li class="timeline-event">
-                  <span class="timeline-time">morning</span>
-                  <div><strong>Garden option</strong><p>Validate conditions before departure.</p></div>
-                </li>
-              </ol>
+          <div class="scenario-stack">
+            <section class="scenario-panel scenario-panel--primary" id="day-10-panel-primary" data-scenario="primary" role="tabpanel" aria-labelledby="day-10-tab-primary" tabindex="0">
+<h4 class="scenario-heading">Основной сценарий</h4>              <ol class="timeline">
+    <li class="timeline-event timeline-event--checkpoint" data-event-id="event-day-10-check">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>08:00</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 10 · 11 ноября 2026 · Kanazawa</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-stop"></use></svg>Контрольная точка</p>
+        <h5>Оценить условия</h5>
+<p>Решение принимается до выхода.</p>
+        <dl class="checkpoint-contract">
+          <div><dt>Что проверить</dt><dd>Погода и доступ подходят для сада?</dd></div>
+          <div><dt>Как изменить план</dt><dd>Переключиться на музейный сценарий.</dd></div>
+        </dl>
 
-              <h4>Primary and backup scenarios</h4>
-              <div class="scenario-switch interactive-controls" data-scenario-switch aria-label="Scenario view for day 10">
-                <button type="button" data-show-scenario="primary" aria-pressed="true">Primary</button>
-                <button type="button" data-show-scenario="backup" aria-pressed="false">Backup</button>
-              </div>
-              <section class="scenario-panel" data-scenario="primary" aria-label="Primary scenario">
-                <header class="scenario-heading">
-                  <span class="scenario-kind">primary</span>
-                  <strong>Garden</strong>
-                </header>
-                <p>Weather-dependent option.</p>
-              </section>
-              <section class="scenario-panel" data-scenario="backup" aria-label="Backup scenario">
-                <header class="scenario-heading">
-                  <span class="scenario-kind">backup</span>
-                  <strong>Museum</strong>
-                </header>
-                <p>Indoor alternative.</p>
-              </section>
 
-              <h4>Food in context</h4>
-              <ul class="food-list">
-<li><strong>Kanazawa lunch</strong><span>Flexible · No advance availability claim.</span></li>              </ul>
-            </div>
+      </div>
+    </li>
+    <li class="timeline-event timeline-event--activity" data-event-id="event-day-10-garden">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>09:30</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 10 · 11 ноября 2026 · Kanazawa</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-activity"></use></svg>Активность</p>
+        <h5>Сад</h5>
+<p>Подтвердить условия перед отправлением.</p>
 
-            <aside class="day-context" aria-label="Day 10 constraints and links">
-              <h4>Critical constraints</h4>
-              <ul class="constraint-list">
-<li>No critical constraints recorded.</li>              </ul>
-              <dl>
-                <div class="metadata-pair"><dt>Overnight</dt><dd>Kanazawa</dd></div>
-                <div class="metadata-pair"><dt>Travel</dt><dd>Local transit.</dd></div>
-                <div class="metadata-pair"><dt>Load</dt><dd>Moderate</dd></div>
-                <div class="metadata-pair"><dt>Last checked</dt><dd>2026-08-28</dd></div>
-              </dl>
-            </aside>
+
+      </div>
+    </li>
+    <li class="timeline-event timeline-event--meal" data-event-id="event-day-10-lunch">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>13:00</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 10 · 11 ноября 2026 · Kanazawa</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-meal"></use></svg>Еда</p>
+        <h5>Обед</h5>
+<p>Оставаться в выбранном районе.</p>
+
+
+      </div>
+    </li>
+  </ol>
+            </section>
+            <section class="scenario-panel scenario-panel--alternative" id="day-10-panel-alternative-day-10-rain" data-scenario="alternative-day-10-rain" role="tabpanel" aria-labelledby="day-10-tab-alternative-day-10-rain" tabindex="0">
+              <h4 class="scenario-heading">Альтернативный сценарий · Дождь</h4>
+<p class="scenario-summary">Заменить сад закрытой коллекцией и сохранить темп дня.</p>              <ol class="timeline">
+    <li class="timeline-event timeline-event--checkpoint" data-event-id="event-day-10-rain-check">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>08:00</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 10 · 11 ноября 2026 · Kanazawa</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-stop"></use></svg>Контрольная точка</p>
+        <h5>Подтвердить переключение</h5>
+<p>Проверить доступ музея.</p>
+        <dl class="checkpoint-contract">
+          <div><dt>Что проверить</dt><dd>Музей открыт и доступен?</dd></div>
+          <div><dt>Как изменить план</dt><dd>Вернуться к основному сценарию или сделать день отдыха.</dd></div>
+        </dl>
+
+
+      </div>
+    </li>
+    <li class="timeline-event timeline-event--activity" data-event-id="event-day-10-museum">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>10:00</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 10 · 11 ноября 2026 · Kanazawa</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-activity"></use></svg>Активность</p>
+        <h5>Музей</h5>
+<p>Провести активную часть дня в помещении.</p>
+
+
+      </div>
+    </li>
+    <li class="timeline-event timeline-event--meal" data-event-id="event-day-10-rain-lunch">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>13:00</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 10 · 11 ноября 2026 · Kanazawa</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-meal"></use></svg>Еда</p>
+        <h5>Обед рядом с музеем</h5>
+<p>Не добавлять дальний переезд.</p>
+
+
+      </div>
+    </li>
+  </ol>
+            </section>
           </div>
 
 
-          <nav class="day-nav" aria-label="Adjacent days">
-<a href="#day-9">← Previous day</a><a href="#day-11">Next day →</a>          </nav>
+          <nav class="day-nav" aria-label="Дни подробно">
+<a href="#day-9">← Предыдущий день</a><a href="#day-11">Следующий день →</a>          </nav>
         </article>
-        <article class="day-article" id="day-11" data-day data-weather="false" data-transfer="false" data-unresolved="true" data-warning="false" aria-labelledby="day-11-title">
+        <article class="day-chapter" id="day-11" data-day data-weather="false" data-transfer="false" data-unresolved="true" data-warning="false" aria-labelledby="day-11-title">
           <header class="day-heading">
-            <div>
-              <span class="day-number">Day 11</span>
-              <h3 id="day-11-title">2026-11-12 · Thursday · Kanazawa</h3>
-              <p class="day-thesis">Slow final full day with room for missed priorities.</p>
-            </div>
-            <div class="day-meta">
-              <span class="status status--selected">selected</span>
-            </div>
+            <div class="day-number"><span>День</span><strong>11</strong></div>
+            <div class="day-title-group"><p class="day-date">12 ноября 2026 · четверг</p><h3 id="day-11-title">Kanazawa</h3><p class="day-thesis">Сохранить последний полный день медленным и оставить место для пропущенного приоритета.</p></div>
+            <dl class="day-meta"><div><dt>Ночёвка</dt><dd>Kanazawa</dd></div><div><dt>Переезды</dt><dd>Пешком</dd></div><div><dt>Нагрузка</dt><dd>лёгкая</dd></div><div><dt>Проверено</dt><dd>2026-08-28</dd></div></dl>
           </header>
 
-          <div class="day-layout">
-            <div class="day-primary">
-              <h4>Timeline</h4>
-              <ol class="timeline">
-                <li class="timeline-event">
-                  <span class="timeline-time">afternoon</span>
-                  <div><strong>Flexible revisit</strong><p>Use only if earlier plans changed.</p></div>
-                </li>
-              </ol>
 
-              <h4>Primary and backup scenarios</h4>
-              <div class="scenario-switch interactive-controls" data-scenario-switch aria-label="Scenario view for day 11">
-                <button type="button" data-show-scenario="primary" aria-pressed="true">Primary</button>
-                <button type="button" data-show-scenario="backup" aria-pressed="false">Backup</button>
-              </div>
-              <section class="scenario-panel" data-scenario="primary" aria-label="Primary scenario">
-                <header class="scenario-heading">
-                  <span class="scenario-kind">primary</span>
-                  <strong>Return visit</strong>
-                </header>
-                <p>Preserve user choice.</p>
-              </section>
+          <div class="scenario-stack">
+            <section class="scenario-panel scenario-panel--primary">
+<h4 class="scenario-heading scenario-heading--primary-only">Расписание</h4>              <ol class="timeline">
+    <li class="timeline-event timeline-event--rest" data-event-id="event-day-11-morning">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>Утро</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 11 · 12 ноября 2026 · Kanazawa</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-rest"></use></svg>Отдых</p>
+        <h5>Свободное утро</h5>
+<p>Не назначать обязательную программу.</p>
 
-              <h4>Food in context</h4>
-              <ul class="food-list">
-<li><strong>Final dinner</strong><span>Flexible · Keep booking status honest.</span></li>              </ul>
-            </div>
 
-            <aside class="day-context" aria-label="Day 11 constraints and links">
-              <h4>Critical constraints</h4>
-              <ul class="constraint-list">
-<li>No critical constraints recorded.</li>              </ul>
-              <dl>
-                <div class="metadata-pair"><dt>Overnight</dt><dd>Kanazawa</dd></div>
-                <div class="metadata-pair"><dt>Travel</dt><dd>Local walking.</dd></div>
-                <div class="metadata-pair"><dt>Load</dt><dd>Light</dd></div>
-                <div class="metadata-pair"><dt>Last checked</dt><dd>2026-08-28</dd></div>
-              </dl>
-            </aside>
+      </div>
+    </li>
+    <li class="timeline-event timeline-event--activity" data-event-id="event-day-11-revisit">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>14:00</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 11 · 12 ноября 2026 · Kanazawa</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-activity"></use></svg>Активность</p>
+        <h5>Возврат к пропущенному месту</h5>
+<p>Использовать только если предыдущие планы изменились.</p>
+
+
+      </div>
+    </li>
+    <li class="timeline-event timeline-event--meal" data-event-id="event-day-11-dinner">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>18:30</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 11 · 12 ноября 2026 · Kanazawa</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-meal"></use></svg>Еда</p>
+        <h5>Финальный ужин</h5>
+<p>Сохранить честный статус бронирования.</p>
+
+
+      </div>
+    </li>
+  </ol>
+            </section>
           </div>
 
 
-          <nav class="day-nav" aria-label="Adjacent days">
-<a href="#day-10">← Previous day</a><a href="#day-12">Next day →</a>          </nav>
+          <nav class="day-nav" aria-label="Дни подробно">
+<a href="#day-10">← Предыдущий день</a><a href="#day-12">Следующий день →</a>          </nav>
         </article>
-        <article class="day-article" id="day-12" data-day data-weather="false" data-transfer="true" data-unresolved="true" data-warning="false" aria-labelledby="day-12-title">
+        <article class="day-chapter" id="day-12" data-day data-weather="false" data-transfer="true" data-unresolved="true" data-warning="false" aria-labelledby="day-12-title">
           <header class="day-heading">
-            <div>
-              <span class="day-number">Day 12</span>
-              <h3 id="day-12-title">2026-11-13 · Friday · Kanazawa departure</h3>
-              <p class="day-thesis">Departure buffer and handoff rather than new commitments.</p>
-            </div>
-            <div class="day-meta">
-              <span class="status status--recheck">recheck</span>
-            </div>
+            <div class="day-number"><span>День</span><strong>12</strong></div>
+            <div class="day-title-group"><p class="day-date">13 ноября 2026 · пятница</p><h3 id="day-12-title">Kanazawa — отъезд</h3><p class="day-thesis">Защитить время отъезда и не добавлять новые обязательства после выселения.</p></div>
+            <dl class="day-meta"><div><dt>Ночёвка</dt><dd>Отъезд</dd></div><div><dt>Переезды</dt><dd>Трансфер до вокзала или аэропорта</dd></div><div><dt>Нагрузка</dt><dd>лёгкая</dd></div><div><dt>Проверено</dt><dd>2026-08-28</dd></div></dl>
           </header>
 
-          <div class="day-layout">
-            <div class="day-primary">
-              <h4>Timeline</h4>
-              <ol class="timeline">
-                <li class="timeline-event">
-                  <span class="timeline-time">morning</span>
-                  <div><strong>Departure</strong><p>Confirm transport shortly before travel.</p></div>
-                </li>
-              </ol>
 
-              <h4>Primary and backup scenarios</h4>
-              <div class="scenario-switch interactive-controls" data-scenario-switch aria-label="Scenario view for day 12">
-                <button type="button" data-show-scenario="primary" aria-pressed="true">Primary</button>
-                <button type="button" data-show-scenario="backup" aria-pressed="false">Backup</button>
-              </div>
-              <section class="scenario-panel" data-scenario="primary" aria-label="Primary scenario">
-                <header class="scenario-heading">
-                  <span class="scenario-kind">primary</span>
-                  <strong>Checkout and transfer</strong>
-                </header>
-                <p>No fixed activity after checkout.</p>
-              </section>
+          <div class="scenario-stack">
+            <section class="scenario-panel scenario-panel--primary">
+<h4 class="scenario-heading scenario-heading--primary-only">Расписание</h4>              <ol class="timeline">
+    <li class="timeline-event timeline-event--lodging" data-event-id="event-day-12-checkout">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>Утро</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 12 · 13 ноября 2026 · Kanazawa — отъезд</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-lodging"></use></svg>Заселение</p>
+        <h5>Выселение</h5>
+<p>Завершить сборы с запасом.</p>
 
-              <h4>Food in context</h4>
-              <ul class="food-list">
-<li><strong>Station meal</strong><span>Flexible · Only if time permits.</span></li>              </ul>
-            </div>
 
-            <aside class="day-context" aria-label="Day 12 constraints and links">
-              <h4>Critical constraints</h4>
-              <ul class="constraint-list">
-<li>No critical constraints recorded.</li>              </ul>
-              <dl>
-                <div class="metadata-pair"><dt>Overnight</dt><dd>Departure</dd></div>
-                <div class="metadata-pair"><dt>Travel</dt><dd>Leave time for station or airport transfer.</dd></div>
-                <div class="metadata-pair"><dt>Load</dt><dd>Light</dd></div>
-                <div class="metadata-pair"><dt>Last checked</dt><dd>2026-08-28</dd></div>
-              </dl>
-            </aside>
+      </div>
+    </li>
+    <li class="timeline-event timeline-event--transport" data-event-id="event-day-12-departure">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>После выселения</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 12 · 13 ноября 2026 · Kanazawa — отъезд</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg>Переезд</p>
+        <h5>Трансфер к месту отправления</h5>
+<p>Подтвердить транспорт незадолго до поездки.</p>
+
+
+      </div>
+    </li>
+    <li class="timeline-event timeline-event--meal" data-event-id="event-day-12-meal">
+      <div class="timeline-marker" aria-hidden="true"></div>
+      <div class="timeline-time"><span class="timeline-time-label">Время</span><span>Если останется время</span></div>
+      <div class="event-body">
+        <p class="event-print-context">День 12 · 13 ноября 2026 · Kanazawa — отъезд</p>
+        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-meal"></use></svg>Еда</p>
+        <h5>Еда в пути</h5>
+<p>Не задерживать отправление ради отдельной остановки.</p>
+
+
+      </div>
+    </li>
+  </ol>
+            </section>
           </div>
 
 
-          <nav class="day-nav" aria-label="Adjacent days">
-<a href="#day-11">← Previous day</a>          </nav>
+          <nav class="day-nav" aria-label="Дни подробно">
+<a href="#day-11">← Предыдущий день</a>          </nav>
         </article>
       </section>
 
       <section class="document-section" id="preparation" aria-labelledby="preparation-title">
-        <h2 id="preparation-title">Bookings and readiness</h2>
-        <p>0 confirmed of 2. Blockers are shown separately and are not averaged into this count.</p>
+        <h2 id="preparation-title">Бронирования и готовность</h2>
+        <p>Подтверждено: 0 из 2. Блокеры показаны отдельно и не усредняются в этом числе.</p>
         <ul class="readiness-list">
-          <li class="readiness-item">
-            <p class="status-with-icon"><svg class="icon" aria-hidden="true"><use href="#icon-recheck"></use></svg><strong>Confirm final regional rail schedule from provider</strong></p>
-            <p><span class="status status--recheck">recheck</span> transport · Owner: traveler-b · Next check: 2026-10-15T09:00:00+09:00</p>
-          </li>
-          <li class="readiness-item">
-            <p class="status-with-icon"><svg class="icon" aria-hidden="true"><use href="#icon-recheck"></use></svg><strong>Check Kyoto garden seasonal and access information</strong></p>
-            <p><span class="status status--recheck">recheck</span> activities · Owner: traveler-a · Next check: 2026-10-31T09:00:00+09:00</p>
-          </li>
-        </ul>
+<li class="readiness-item"><p class="status-with-icon"><svg class="icon" aria-hidden="true"><use href="#icon-recheck"></use></svg><strong>Подтвердить итоговое региональное расписание поездов</strong></p><p><span class="status status--recheck">перепроверить</span> Переезд · Ответственный: traveler-b · Следующая проверка: 2026-10-15T09:00:00+09:00</p></li><li class="readiness-item"><p class="status-with-icon"><svg class="icon" aria-hidden="true"><use href="#icon-recheck"></use></svg><strong>Проверить сезонные условия и доступ в сад Kyoto</strong></p><p><span class="status status--recheck">перепроверить</span> Мероприятия · Ответственный: traveler-a · Следующая проверка: 2026-10-31T09:00:00+09:00</p></li>        </ul>
       </section>
 
       <section class="document-section" id="budget" aria-labelledby="budget-title">
-        <h2 id="budget-title">Recorded expenses</h2>
-        <p>Subtotals keep currencies and price bases separate. No currency conversion or multiplication by traveller count is applied. These recorded expenses are not a complete trip budget.</p>
-        <div class="budget-summary">
-          <div><span>JPY · per group</span><strong>330,000 JPY</strong><span>2 recorded rows</span></div>
-        </div>
-        <p>0 rows excluded from subtotals; their recorded values and reasons remain below.</p>
-        <table class="budget-table">
-          <thead><tr><th>Category</th><th>Recorded amount</th><th>Type</th><th>Basis</th><th>Subtotal inclusion</th></tr></thead>
-          <tbody>
-            <tr>
-              <td data-label="Category">lodging</td>
-              <td data-label="Recorded amount">240,000 JPY</td>
-              <td data-label="Type">estimate</td>
-              <td data-label="Basis">per group</td>
-              <td data-label="Subtotal inclusion">Included</td>
-            </tr>
-            <tr>
-              <td data-label="Category">transport</td>
-              <td data-label="Recorded amount">90,000 JPY</td>
-              <td data-label="Type">estimate</td>
-              <td data-label="Basis">per group</td>
-              <td data-label="Subtotal inclusion">Included</td>
-            </tr>
-          </tbody>
-        </table>
+        <h2 id="budget-title">Записанные расходы</h2><p>Промежуточные суммы разделяют валюты и основания цены. Конвертация и умножение на число путешественников не выполняются. Записанные расходы не являются полным бюджетом поездки.</p>
+        <div class="budget-summary"><div><span>JPY · на группу</span><strong>330,000 JPY</strong><span>2 строк расходов</span></div></div>
+        <p>Из промежуточных сумм исключено строк: 0; записанные значения и причины сохранены ниже.</p>
+        <table class="budget-table"><thead><tr><th>Категория</th><th>Записанная сумма</th><th>Тип</th><th>Основание</th><th>Учёт в сумме</th></tr></thead><tbody><tr><td data-label="Категория">проживание</td><td data-label="Записанная сумма">240,000 JPY</td><td data-label="Тип">оценка</td><td data-label="Основание">на группу</td><td data-label="Учёт в сумме">Учтено</td></tr><tr><td data-label="Категория">транспорт</td><td data-label="Записанная сумма">90,000 JPY</td><td data-label="Тип">оценка</td><td data-label="Основание">на группу</td><td data-label="Учёт в сумме">Учтено</td></tr></tbody></table>
       </section>
 
-      <section class="document-section" id="risks" aria-labelledby="risks-title">
-        <h2 id="risks-title">Risks and backup plans</h2>
-        <ul class="risk-list">
-<li>No recorded concerns. Unknowns may still remain.</li>        </ul>
-      </section>
+      <section class="document-section" id="risks" aria-labelledby="risks-title"><h2 id="risks-title">Риски и запасные планы</h2><ul class="risk-list"><li>Записанных замечаний нет. Неизвестные сведения могут сохраняться.</li></ul></section>
 
       <section class="document-section" id="sources" aria-labelledby="sources-title">
-        <h2 id="sources-title">Sources and document version</h2>
-        <p class="document-version" id="document-version">
-          <strong>Document version</strong> · japan-autumn-2026-example ·
-          <span lang="ru">Draft — без проверки · Данные не проверены</span> ·
-          Generated 2026-08-28T12:00:00+00:00 · Artefact v0.1
-        </p>
-        <ul class="source-list">
-          <li class="source-item">
-            <p><strong>official-kanazawa-fixture · Frozen Kanazawa fixture</strong> <span class="status status--reported">reported</span> <span class="status status--aging">aging</span></p>
-            <div class="source-meta"><span>Type: official</span><span>Last checked: 2026-08-28T12:00:00+00:00</span><span>Retrieval: Unknown</span></div>
-            <a class="source-url external-link" href="https://example.invalid/kanazawa-official" data-source-id="official-kanazawa-fixture">https://example.invalid/kanazawa-official</a> <span class="network-label">Internet required</span>
-          </li>
-          <li class="source-item">
-            <p><strong>official-kyoto-fixture · Frozen official fixture</strong> <span class="status status--reported">reported</span> <span class="status status--aging">aging</span></p>
-            <div class="source-meta"><span>Type: official</span><span>Last checked: 2026-08-28T12:00:00+00:00</span><span>Retrieval: Unknown</span></div>
-            <a class="source-url external-link" href="https://example.invalid/kyoto-official" data-source-id="official-kyoto-fixture">https://example.invalid/kyoto-official</a> <span class="network-label">Internet required</span>
-          </li>
-          <li class="source-item">
-            <p><strong>official-tokyo-fixture · Frozen Tokyo fixture</strong> <span class="status status--reported">reported</span> <span class="status status--aging">aging</span></p>
-            <div class="source-meta"><span>Type: official</span><span>Last checked: 2026-08-28T12:00:00+00:00</span><span>Retrieval: Unknown</span></div>
-            <a class="source-url external-link" href="https://example.invalid/tokyo-official" data-source-id="official-tokyo-fixture">https://example.invalid/tokyo-official</a> <span class="network-label">Internet required</span>
-          </li>
-        </ul>
+        <h2 id="sources-title">Источники и версия документа</h2>
+        <p class="document-version" id="document-version"><strong>Версия документа</strong> · japan-autumn-2026-example · Черновик — без проверки · Данные не проверены · Создан 2026-09-06T12:00:00+03:00 · Артефакт v0.1</p>
+        <ul class="source-list"><li class="source-item"><p><strong>official-kanazawa-fixture · Тестовый официальный источник Kanazawa</strong> <span class="status status--reported">по сообщению источника</span> <span class="status status--aging">требует скорой перепроверки</span></p><div class="source-meta"><span>Тип: Официальный</span><span>Проверено: 2026-08-28T12:00:00+00:00</span><span>Получение: неизвестно</span></div><a class="source-link external-link" href="https://example.invalid/kanazawa-official" data-source-id="official-kanazawa-fixture">Открыть источник: Тестовый официальный источник Kanazawa</a> <span class="print-url">https://example.invalid/kanazawa-official</span> <span class="network-label">Требуется интернет</span></li><li class="source-item"><p><strong>official-kyoto-fixture · Тестовый официальный источник Kyoto</strong> <span class="status status--reported">по сообщению источника</span> <span class="status status--aging">требует скорой перепроверки</span></p><div class="source-meta"><span>Тип: Официальный</span><span>Проверено: 2026-08-28T12:00:00+00:00</span><span>Получение: неизвестно</span></div><a class="source-link external-link" href="https://example.invalid/kyoto-official" data-source-id="official-kyoto-fixture">Открыть источник: Тестовый официальный источник Kyoto</a> <span class="print-url">https://example.invalid/kyoto-official</span> <span class="network-label">Требуется интернет</span></li><li class="source-item"><p><strong>official-tokyo-fixture · Тестовый официальный источник Tokyo</strong> <span class="status status--reported">по сообщению источника</span> <span class="status status--aging">требует скорой перепроверки</span></p><div class="source-meta"><span>Тип: Официальный</span><span>Проверено: 2026-08-28T12:00:00+00:00</span><span>Получение: неизвестно</span></div><a class="source-link external-link" href="https://example.invalid/tokyo-official" data-source-id="official-tokyo-fixture">Открыть источник: Тестовый официальный источник Tokyo</a> <span class="print-url">https://example.invalid/tokyo-official</span> <span class="network-label">Требуется интернет</span></li></ul>
+        <section class="print-link-appendix" aria-labelledby="print-links-title">
+          <h3 id="print-links-title">Ссылки действий и полные URL</h3>
+          <ol>
+<li><strong>День 1 · Трансфер до отеля · Построить маршрут в Google Maps</strong><span class="print-url">https://www.google.com/maps/search/?api=1&amp;query=Tokyo</span></li>
+<li><strong>День 2 · Прогулка по району · Открыть район на карте</strong><span class="print-url">https://www.google.com/maps/search/?api=1&amp;query=Tokyo</span></li>
+<li><strong>День 3 · Утреннее посещение · Локальный музей · Открыть район на карте</strong><span class="print-url">https://www.google.com/maps/search/?api=1&amp;query=Tokyo</span></li>
+<li><strong>День 4 · Переезд Tokyo — Kyoto · Открыть источник расписания</strong><span class="print-url">https://example.invalid/kyoto-official</span></li>
+
+<li><strong>День 6 · Утро в саду · Открыть официальный источник</strong><span class="print-url">https://example.invalid/kyoto-official</span></li>
+
+<li><strong>День 8 · Переезд Kyoto — Kanazawa · Открыть источник расписания</strong><span class="print-url">https://example.invalid/kanazawa-official</span></li>
+<li><strong>День 9 · Исторический район · Открыть район на карте</strong><span class="print-url">https://www.google.com/maps/search/?api=1&amp;query=Kanazawa</span></li>
+
+
+
+</ol>
+        </section>
       </section>
     </main>
   </div>
 
-  <footer class="document-footer">
-    <strong>Japan autumn 2026 — anonymized planning example</strong> · japan-autumn-2026-example · <span lang="ru">Draft — без проверки · Данные не проверены</span> · Generated 2026-08-28T12:00:00+00:00 · Artefact v0.1
-  </footer>
+  <footer class="document-footer"><strong>Япония осенью 2026 — пример маршрута</strong> · japan-autumn-2026-example · Черновик — без проверки · Данные не проверены · Создан 2026-09-06T12:00:00+03:00 · Артефакт v0.1</footer>
   <script>(() => {
   "use strict";
 
   const root = document.documentElement;
-  root.classList.add("js-enabled");
-
+  const body = document.body;
   const liveRegion = document.querySelector("[data-live-region]");
   const announce = (message) => {
     if (liveRegion) liveRegion.textContent = message;
   };
+  const copy = (name, replacements = {}) => {
+    let value = body?.dataset[name] || "";
+    Object.entries(replacements).forEach(([key, replacement]) => {
+      value = value.replace(`{${key}}`, String(replacement));
+    });
+    return value;
+  };
+
+  root.classList.add("js-enabled");
+  const alternativeDisclosures = Array.from(
+    document.querySelectorAll(".event-alternatives"),
+  );
 
   try {
-    const contents = document.querySelector("details.contents");
-    const compact = window.matchMedia("(max-width: 639px)");
-    const syncContents = () => {
-      if (!contents) return;
-      if (compact.matches) contents.removeAttribute("open");
-      else contents.setAttribute("open", "");
-    };
-    syncContents();
-    compact.addEventListener?.("change", syncContents);
-
-    const hero = document.querySelector(".trip-hero");
-    const syncCompactContentsVisibility = () => {
-      if (!contents) return;
-      const heroHasPassed = hero ? hero.getBoundingClientRect().bottom <= 0 : true;
-      contents.classList.toggle("contents--available", !compact.matches || heroHasPassed);
-    };
-    syncCompactContentsVisibility();
-    window.addEventListener("scroll", syncCompactContentsVisibility, { passive: true });
-    compact.addEventListener?.("change", syncCompactContentsVisibility);
-
     const days = Array.from(document.querySelectorAll("[data-day]"));
     const overviewByDay = new Map(
       Array.from(document.querySelectorAll("[data-day-overview]")).map((overview) => [
@@ -2394,36 +2774,30 @@ button[aria-pressed="true"] {
         overview,
       ]),
     );
-    const search = document.querySelector("[data-day-search]");
     const filterButtons = Array.from(document.querySelectorAll("[data-filter]"));
     const resultCount = document.querySelector("[data-filter-results]");
     const emptyState = document.querySelector("[data-filter-empty]");
     const resetFilters = document.querySelector("[data-reset-filters]");
     let activeFilter = "all";
 
-    const matchesFilter = (day) => {
-      if (activeFilter === "all") return true;
-      return day.dataset[activeFilter] === "true";
-    };
+    const matchesFilter = (day) =>
+      activeFilter === "all" || day.dataset[activeFilter] === "true";
 
     const applyDayView = () => {
-      const query = search?.value.trim().toLocaleLowerCase() || "";
       let visible = 0;
       days.forEach((day) => {
-        const matchesSearch = !query || day.textContent.toLocaleLowerCase().includes(query);
-        const show = matchesSearch && matchesFilter(day);
+        const show = matchesFilter(day);
         day.hidden = !show;
         const overview = overviewByDay.get(day.id);
         if (overview) overview.hidden = !show;
         if (show) visible += 1;
       });
-      const message = `${visible} ${visible === 1 ? "day" : "days"} shown.`;
+      const message = copy("daysShownCopy", { count: visible });
       if (resultCount) resultCount.textContent = message;
       if (emptyState) emptyState.hidden = visible !== 0;
       announce(message);
     };
 
-    search?.addEventListener("input", applyDayView);
     filterButtons.forEach((button) => {
       button.addEventListener("click", () => {
         activeFilter = button.dataset.filter || "all";
@@ -2435,12 +2809,51 @@ button[aria-pressed="true"] {
     });
     resetFilters?.addEventListener("click", () => {
       activeFilter = "all";
-      if (search) search.value = "";
       filterButtons.forEach((candidate) => {
         candidate.setAttribute("aria-pressed", String(candidate.dataset.filter === "all"));
       });
       applyDayView();
-      search?.focus();
+      filterButtons.find((candidate) => candidate.dataset.filter === "all")?.focus();
+    });
+
+    document.querySelectorAll("[data-scenario-tabs]").forEach((tablist) => {
+      const day = tablist.closest("[data-day]");
+      const tabs = Array.from(tablist.querySelectorAll('[role="tab"]'));
+      const panels = Array.from(day?.querySelectorAll("[data-scenario]") || []);
+      const selectScenario = (tab, { focus = false, speak = true } = {}) => {
+        const selected = tab.dataset.showScenario;
+        tabs.forEach((candidate) => {
+          const active = candidate === tab;
+          candidate.setAttribute("aria-selected", String(active));
+          candidate.tabIndex = active ? 0 : -1;
+        });
+        panels.forEach((panel) => {
+          panel.hidden = panel.dataset.scenario !== selected;
+        });
+        if (focus) tab.focus();
+        if (speak) announce(copy("scenarioShownCopy", { label: tab.textContent.trim() }));
+      };
+
+      const initial = tabs.find((tab) => tab.getAttribute("aria-selected") === "true");
+      if (initial) selectScenario(initial, { speak: false });
+      tabs.forEach((tab, index) => {
+        tab.addEventListener("click", () => selectScenario(tab));
+        tab.addEventListener("keydown", (event) => {
+          let targetIndex;
+          if (event.key === "ArrowRight") targetIndex = (index + 1) % tabs.length;
+          if (event.key === "ArrowLeft") targetIndex = (index - 1 + tabs.length) % tabs.length;
+          if (event.key === "Home") targetIndex = 0;
+          if (event.key === "End") targetIndex = tabs.length - 1;
+          if (targetIndex === undefined) return;
+          event.preventDefault();
+          selectScenario(tabs[targetIndex], { focus: true });
+        });
+      });
+      tablist.hidden = false;
+    });
+
+    alternativeDisclosures.forEach((disclosure) => {
+      disclosure.open = false;
     });
 
     document.querySelectorAll("[data-optional-media]").forEach((figure) => {
@@ -2459,37 +2872,19 @@ button[aria-pressed="true"] {
         photo?.addEventListener("error", markUnavailable, { once: true });
       }
     });
-
-    document.querySelectorAll("[data-scenario-switch]").forEach((switcher) => {
-      const day = switcher.closest("[data-day]");
-      const panels = Array.from(day?.querySelectorAll("[data-scenario]") || []);
-      const buttons = Array.from(switcher.querySelectorAll("[data-show-scenario]"));
-      const selectScenario = (kind) => {
-        panels.forEach((panel) => {
-          panel.hidden = panel.dataset.scenario !== kind;
-        });
-        buttons.forEach((button) => {
-          button.setAttribute("aria-pressed", String(button.dataset.showScenario === kind));
-        });
-        announce(`${kind === "primary" ? "Primary" : "Backup"} scenario shown.`);
-      };
-      if (panels.some((panel) => panel.dataset.scenario === "primary")) {
-        selectScenario("primary");
-      }
-      buttons.forEach((button) => {
-        button.addEventListener("click", () => selectScenario(button.dataset.showScenario));
-      });
-    });
-
-    document.querySelectorAll(".contents a").forEach((link) => {
-      link.addEventListener("click", () => {
-        if (compact.matches) contents?.removeAttribute("open");
-      });
-    });
   } catch (error) {
     root.classList.add("enhancement-failed");
     const notice = document.querySelector("[data-enhancement-error]");
     if (notice) notice.hidden = false;
+    document.querySelectorAll("[data-scenario]").forEach((panel) => {
+      panel.hidden = false;
+    });
+    document.querySelectorAll("[data-scenario-tabs]").forEach((tablist) => {
+      tablist.hidden = true;
+    });
+    alternativeDisclosures.forEach((disclosure) => {
+      disclosure.open = true;
+    });
     console.warn("Itinerary enhancements unavailable; core document remains readable.", error);
   }
 })();

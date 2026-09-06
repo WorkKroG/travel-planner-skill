@@ -267,9 +267,10 @@ def test_unknown_times_and_route_questions_are_not_computed_feasibility_findings
         {
             "id": "day-one",
             "timeline": [
-                {
-                    "id": "first",
-                    "title": "Visit",
+                    {
+                        "id": "first",
+                        "kind": "activity",
+                        "title": "Visit",
                     "detail": "Check the admission time.",
                     "start_at": "2026-11-03T10:00:00+09:00",
                     "last_admission_at": "2026-11-03T09:00:00+09:00",
