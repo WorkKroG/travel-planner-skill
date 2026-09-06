@@ -40,7 +40,7 @@ rationale: "User accepts the unresolved timetable risk and will recheck it befor
 
 Acceptance never replaces or deletes a concern, and cannot waive an error in the recorded data. A subset of saved concerns may have acceptance records; duplicate records for one concern and records without a matching saved concern are invalid.
 
-Display `Prepared copy — данные проверены в Codex` for the Codex basis and `Prepared copy — по запросу пользователя` for the user-requested basis. These v0.1 badges use those exact labels; the surrounding planning conversation follows the user's language. Show all saved concerns and concrete open actions. Preparing the document does not resolve or accept them.
+Use `brief.yaml.document_language` (`en` or `ru`) for every renderer-owned label. Display `Prepared copy — checked in Codex` / `Prepared copy — requested by user` in English and `Подготовленная копия — данные проверены в Codex` / `Подготовленная копия — по запросу пользователя` in Russian. Show all saved concerns and concrete open actions. Preparing the document does not resolve or accept them.
 
 Never infer acceptance from silence. `ai_reviewed` never equals `codex_validated`. The renderer copies the recorded document status and concerns; it does not promote source truth, resolve concerns, or invent a trip verdict. Invalid recorded data must be corrected before rendering, while an incomplete but valid draft or prepared copy is allowed.
 
@@ -54,6 +54,6 @@ travel-planner render PATH --output PATH/outputs/itinerary.html --at <evaluation
 
 In Codex, use the bundled helper. Where helpers are unavailable but skill assets can be used, build the downloadable HTML from the same bundled `assets/html/itinerary.html.j2`, `styles.css`, `app.js`, and `icons.svg` with the canonical bundle; do not create a second design. Keep verification `none` or `ai_reviewed`. If the surface cannot create a downloadable file, preserve/update the canonical bundle and state that limitation instead of claiming an HTML exists.
 
-The HTML is derived and opens locally as a self-contained file. If the user wants a PDF, browser Print → Save as PDF is a manual browser action, not an automated product artifact or guarantee.
+The HTML is derived and opens locally as a self-contained file. It uses one readable column, a closed native contents disclosure, typed chronological day timelines, event-owned links and alternatives, and complete alternative scenario timelines. JavaScript enhances filtering and scenario tabs; without it all content remains readable. If the user wants a PDF, browser Print → Save as PDF is a manual browser action, not an automated product artifact or guarantee.
 
 To continue elsewhere, the user manually transfers the five canonical files and may also transfer generated HTML. Do not promise invisible sync, server state, or filesystem access unavailable on that surface.

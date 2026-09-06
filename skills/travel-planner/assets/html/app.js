@@ -2,34 +2,22 @@
   "use strict";
 
   const root = document.documentElement;
-  root.classList.add("js-enabled");
-
+  const body = document.body;
   const liveRegion = document.querySelector("[data-live-region]");
   const announce = (message) => {
     if (liveRegion) liveRegion.textContent = message;
   };
+  const copy = (name, replacements = {}) => {
+    let value = body?.dataset[name] || "";
+    Object.entries(replacements).forEach(([key, replacement]) => {
+      value = value.replace(`{${key}}`, String(replacement));
+    });
+    return value;
+  };
+
+  root.classList.add("js-enabled");
 
   try {
-    const contents = document.querySelector("details.contents");
-    const compact = window.matchMedia("(max-width: 639px)");
-    const syncContents = () => {
-      if (!contents) return;
-      if (compact.matches) contents.removeAttribute("open");
-      else contents.setAttribute("open", "");
-    };
-    syncContents();
-    compact.addEventListener?.("change", syncContents);
-
-    const hero = document.querySelector(".trip-hero");
-    const syncCompactContentsVisibility = () => {
-      if (!contents) return;
-      const heroHasPassed = hero ? hero.getBoundingClientRect().bottom <= 0 : true;
-      contents.classList.toggle("contents--available", !compact.matches || heroHasPassed);
-    };
-    syncCompactContentsVisibility();
-    window.addEventListener("scroll", syncCompactContentsVisibility, { passive: true });
-    compact.addEventListener?.("change", syncCompactContentsVisibility);
-
     const days = Array.from(document.querySelectorAll("[data-day]"));
     const overviewByDay = new Map(
       Array.from(document.querySelectorAll("[data-day-overview]")).map((overview) => [
@@ -44,10 +32,8 @@
     const resetFilters = document.querySelector("[data-reset-filters]");
     let activeFilter = "all";
 
-    const matchesFilter = (day) => {
-      if (activeFilter === "all") return true;
-      return day.dataset[activeFilter] === "true";
-    };
+    const matchesFilter = (day) =>
+      activeFilter === "all" || day.dataset[activeFilter] === "true";
 
     const applyDayView = () => {
       const query = search?.value.trim().toLocaleLowerCase() || "";
@@ -60,7 +46,7 @@
         if (overview) overview.hidden = !show;
         if (show) visible += 1;
       });
-      const message = `${visible} ${visible === 1 ? "day" : "days"} shown.`;
+      const message = copy("daysShownCopy", { count: visible });
       if (resultCount) resultCount.textContent = message;
       if (emptyState) emptyState.hidden = visible !== 0;
       announce(message);
@@ -86,6 +72,41 @@
       search?.focus();
     });
 
+    document.querySelectorAll("[data-scenario-tabs]").forEach((tablist) => {
+      const day = tablist.closest("[data-day]");
+      const tabs = Array.from(tablist.querySelectorAll('[role="tab"]'));
+      const panels = Array.from(day?.querySelectorAll("[data-scenario]") || []);
+      const selectScenario = (tab, { focus = false, speak = true } = {}) => {
+        const selected = tab.dataset.showScenario;
+        tabs.forEach((candidate) => {
+          const active = candidate === tab;
+          candidate.setAttribute("aria-selected", String(active));
+          candidate.tabIndex = active ? 0 : -1;
+        });
+        panels.forEach((panel) => {
+          panel.hidden = panel.dataset.scenario !== selected;
+        });
+        if (focus) tab.focus();
+        if (speak) announce(copy("scenarioShownCopy", { label: tab.textContent.trim() }));
+      };
+
+      const initial = tabs.find((tab) => tab.getAttribute("aria-selected") === "true");
+      if (initial) selectScenario(initial, { speak: false });
+      tabs.forEach((tab, index) => {
+        tab.addEventListener("click", () => selectScenario(tab));
+        tab.addEventListener("keydown", (event) => {
+          let targetIndex;
+          if (event.key === "ArrowRight") targetIndex = (index + 1) % tabs.length;
+          if (event.key === "ArrowLeft") targetIndex = (index - 1 + tabs.length) % tabs.length;
+          if (event.key === "Home") targetIndex = 0;
+          if (event.key === "End") targetIndex = tabs.length - 1;
+          if (targetIndex === undefined) return;
+          event.preventDefault();
+          selectScenario(tabs[targetIndex], { focus: true });
+        });
+      });
+    });
+
     document.querySelectorAll("[data-optional-media]").forEach((figure) => {
       const photo = figure.querySelector("[data-media-image]");
       const fallback = figure.querySelector("[data-media-fallback]");
@@ -102,37 +123,13 @@
         photo?.addEventListener("error", markUnavailable, { once: true });
       }
     });
-
-    document.querySelectorAll("[data-scenario-switch]").forEach((switcher) => {
-      const day = switcher.closest("[data-day]");
-      const panels = Array.from(day?.querySelectorAll("[data-scenario]") || []);
-      const buttons = Array.from(switcher.querySelectorAll("[data-show-scenario]"));
-      const selectScenario = (kind) => {
-        panels.forEach((panel) => {
-          panel.hidden = panel.dataset.scenario !== kind;
-        });
-        buttons.forEach((button) => {
-          button.setAttribute("aria-pressed", String(button.dataset.showScenario === kind));
-        });
-        announce(`${kind === "primary" ? "Primary" : "Backup"} scenario shown.`);
-      };
-      if (panels.some((panel) => panel.dataset.scenario === "primary")) {
-        selectScenario("primary");
-      }
-      buttons.forEach((button) => {
-        button.addEventListener("click", () => selectScenario(button.dataset.showScenario));
-      });
-    });
-
-    document.querySelectorAll(".contents a").forEach((link) => {
-      link.addEventListener("click", () => {
-        if (compact.matches) contents?.removeAttribute("open");
-      });
-    });
   } catch (error) {
     root.classList.add("enhancement-failed");
     const notice = document.querySelector("[data-enhancement-error]");
     if (notice) notice.hidden = false;
+    document.querySelectorAll("[data-scenario]").forEach((panel) => {
+      panel.hidden = false;
+    });
     console.warn("Itinerary enhancements unavailable; core document remains readable.", error);
   }
 })();

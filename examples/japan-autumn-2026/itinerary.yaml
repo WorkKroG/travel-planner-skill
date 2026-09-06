@@ -9,9 +9,9 @@ alternatives:
   - id: japan-autumn-route
 selected_route_id: japan-autumn-route
 route_stops:
-  - {id: tokyo, name: Tokyo, dates: "2–5 Nov", nights: 3, transfer_label: Arrival base}
-  - {id: kyoto, name: Kyoto, dates: "5–9 Nov", nights: 4, transfer_label: Rail transfer — recheck final timetable}
-  - {id: kanazawa, name: Kanazawa, dates: "9–13 Nov", nights: 4, transfer_label: Rail transfer}
+  - {id: tokyo, name: Tokyo, dates: "2–5 ноября", nights: 3, transfer_label: База после прилёта}
+  - {id: kyoto, name: Kyoto, dates: "5–9 ноября", nights: 4, transfer_label: Переезд на поезде — расписание перепроверить}
+  - {id: kanazawa, name: Kanazawa, dates: "9–13 ноября", nights: 4, transfer_label: Переезд на поезде}
 days:
   - id: day-1
     number: 1
@@ -19,56 +19,389 @@ days:
     region: Tokyo
     overnight: Tokyo
     overnight_stop_id: tokyo
-    thesis: Arrival, recovery and a low-commitment neighbourhood walk.
+    thesis: Приехать без спешки, заселиться и оставить вечер гибким.
     load: light
-    travel: Arrival transfer is intentionally flexible.
+    travel: Трансфер после прилёта
     weather_sensitive: false
     booking_state: selected
-    timeline: [{id: event-day-1-arrival, time: afternoon, title: Arrival and check-in, detail: Keep the first afternoon unscheduled.}]
-    scenarios: [{kind: primary, title: Neighbourhood walk, description: Walk only if energy and weather allow.}]
-    food: [{name: Local dinner, status: flexible, note: Choose near lodging.}]
+    timeline:
+      - id: event-day-1-arrival
+        kind: transport
+        time: После прилёта
+        title: Трансфер до отеля
+        detail: Точное время зависит от выбранного рейса; не добавлять жёстких планов.
+        links:
+          - label: Построить маршрут в Google Maps
+            url: https://www.google.com/maps/search/?api=1&query=Tokyo
+            kind: route
+            requires_internet: true
+      - id: event-day-1-check-in
+        kind: lodging
+        time: Около 17:00
+        title: Заселение и пауза
+        detail: Сначала завершить заселение и оценить силы после дороги.
+      - id: event-day-1-checkpoint
+        kind: checkpoint
+        time: До 18:30
+        title: Решить, выходить ли на прогулку
+        detail: Контрольная точка защищает первый вечер от перегрузки.
+        checkpoint:
+          check: Заселение прошло без задержки и у всех остались силы?
+          adjust_plan: Отменить прогулку, поужинать рядом и закончить день.
+      - id: event-day-1-dinner
+        kind: meal
+        time: "19:00"
+        title: Ужин рядом с отелем
+        detail: Выбрать место только после заселения, не обещая наличие столика.
+        alternatives:
+          - id: alt-day-1-room-meal
+            title: Простой ужин в отеле
+            reason: Если прилёт задержался или дорога утомила сильнее ожидаемого.
+            detail: Не добавляет нового переезда и сохраняет ранний отдых.
+            effort: очень низкая
+            booking: бронирование не предполагается
+    scenarios:
+      - id: low-load
+        label: Низкая нагрузка
+        summary: Полностью убрать прогулку и завершить день после заселения.
+        timeline:
+          - {id: event-day-1-low-transfer, kind: transport, time: После прилёта, title: Прямой трансфер, detail: Ехать сразу в отель.}
+          - {id: event-day-1-low-check-in, kind: lodging, time: Около 17:00, title: Заселение, detail: После заселения больше никуда не ехать.}
+          - {id: event-day-1-low-dinner, kind: meal, time: "19:00", title: Ужин и отдых, detail: Выбрать самый близкий доступный вариант.}
     source_ids: [official-tokyo-fixture]
     last_checked: "2026-08-28"
+
+  - id: day-2
+    number: 2
+    date: "2026-11-03"
+    region: Tokyo
+    overnight: Tokyo
+    overnight_stop_id: tokyo
+    thesis: Мягко сориентироваться в городе и исследовать один культурный район.
+    load: moderate
+    travel: Пешком и на городском транспорте
+    weather_sensitive: false
+    booking_state: selected
+    timeline:
+      - {id: event-day-2-breakfast, kind: meal, time: "08:30", title: Завтрак рядом с отелем, detail: Начать день без отдельного переезда.}
+      - id: event-day-2-orientation
+        kind: activity
+        time: "10:00"
+        title: Прогулка по району
+        detail: Держать маршрут компактным и закончить до вечернего часа пик.
+        links:
+          - {label: Открыть район на карте, url: "https://www.google.com/maps/search/?api=1&query=Tokyo", kind: map, requires_internet: true}
+      - {id: event-day-2-lunch, kind: meal, time: "13:00", title: Обед по ходу маршрута, detail: Выбрать место в том же районе.}
+      - {id: event-day-2-rest, kind: rest, time: "16:00", title: Свободный вечер, detail: Оставить запас для восстановления.}
+    scenarios: []
+    source_ids: [official-tokyo-fixture]
+    last_checked: "2026-08-28"
+
+  - id: day-3
+    number: 3
+    date: "2026-11-04"
+    region: Tokyo
+    overnight: Tokyo
+    overnight_stop_id: tokyo
+    thesis: Посетить популярное место утром и оставить вторую половину дня спокойной.
+    load: moderate
+    travel: Городской транспорт с запасом
+    weather_sensitive: false
+    booking_state: recheck
+    timeline:
+      - id: event-day-3-check
+        kind: checkpoint
+        time: До выхода
+        title: Перепроверить часы работы
+        detail: Записанный источник не обещает актуальный режим на дату поездки.
+        checkpoint:
+          check: Официальный сайт подтверждает часы и правила входа?
+          adjust_plan: Перейти к локальному музею и не ехать через весь город.
+      - id: event-day-3-site
+        kind: activity
+        time: "09:30"
+        title: Утреннее посещение
+        detail: Прийти раньше основного потока и не удлинять визит при очереди.
+        alternatives:
+          - id: alt-day-3-museum
+            title: Локальный музей
+            reason: Если часы изменились или очередь делает визит неразумным.
+            detail: Сохраняет культурный фокус и уменьшает время в пути.
+            effort: низкая
+            distance: в пределах текущего района
+            booking: проверить вход перед выходом
+            links:
+              - {label: Открыть район на карте, url: "https://www.google.com/maps/search/?api=1&query=Tokyo", kind: map, requires_internet: true}
+      - {id: event-day-3-lunch, kind: meal, time: "13:00", title: Обед, detail: Выбрать место рядом с утренней точкой.}
+      - {id: event-day-3-afternoon, kind: rest, time: "15:00", title: Тихая вторая половина дня, detail: Не добавлять ещё одну главную достопримечательность.}
+    scenarios: []
+    source_ids: [official-tokyo-fixture]
+    last_checked: "2026-08-28"
+
+  - id: day-4
+    number: 4
+    date: "2026-11-05"
+    region: Tokyo → Kyoto
+    overnight: Kyoto
+    overnight_stop_id: kyoto
+    thesis: Защитить железнодорожный переезд и не ставить после него обязательную активность.
+    load: light
+    travel: Междугородний поезд; итоговое время ещё не опубликовано
+    weather_sensitive: false
+    booking_state: recheck
+    timeline:
+      - id: event-day-4-check
+        kind: checkpoint
+        time: До покупки билета
+        title: Проверить итоговое расписание
+        detail: Не использовать оценочное время как подтверждённое отправление.
+        checkpoint:
+          check: Выбранный рейс опубликован перевозчиком и оставляет запас на вокзале?
+          adjust_plan: Выбрать более поздний поезд и оставить вечер полностью свободным.
+        source_ids: [official-kyoto-fixture]
+      - id: event-day-4-rail
+        kind: transport
+        time: В середине дня
+        title: Переезд Tokyo — Kyoto
+        detail: Сохранить время на багаж и навигацию внутри вокзала.
+        links:
+          - {label: Открыть источник расписания, url: "https://example.invalid/kyoto-official", kind: official, requires_internet: true}
+      - {id: event-day-4-check-in, kind: lodging, time: После прибытия, title: Заселение в Kyoto, detail: Сначала завершить заселение.}
+      - {id: event-day-4-dinner, kind: meal, time: Вечером, title: Ужин рядом с отелем, detail: Не планировать дальний район после переезда.}
+    scenarios:
+      - id: later-train
+        label: Поздний поезд
+        summary: Сохранить Kyoto как место ночёвки, но полностью убрать вечернюю прогулку.
+        timeline:
+          - {id: event-day-4-late-check, kind: checkpoint, time: До покупки билета, title: Проверить окно заселения, detail: Поздний поезд должен сохранять возможность заселиться., checkpoint: {check: "Поздний поезд прибывает до окончания заселения?", adjust_plan: Связаться с отелем или выбрать более ранний опубликованный поезд.}}
+          - {id: event-day-4-late-rail, kind: transport, time: Во второй половине дня, title: Поздний переезд в Kyoto, detail: Ехать напрямую без дополнительных остановок.}
+          - {id: event-day-4-late-check-in, kind: lodging, time: Вечером, title: Заселение и отдых, detail: Завершить день в отеле.}
+    readiness_ids: [rail-timetable-recheck]
+    source_ids: [official-tokyo-fixture, official-kyoto-fixture]
+    last_checked: "2026-08-28"
+
+  - id: day-5
+    number: 5
+    date: "2026-11-06"
+    region: Kyoto
+    overnight: Kyoto
+    overnight_stop_id: kyoto
+    thesis: Пройти культурный район в умеренном темпе и держать закрытую альтернативу рядом.
+    load: moderate
+    travel: Пешком и на городском транспорте
+    weather_sensitive: true
+    booking_state: selected
+    timeline:
+      - {id: event-day-5-breakfast, kind: meal, time: "08:30", title: Завтрак, detail: Поесть перед продолжительной прогулкой.}
+      - {id: event-day-5-district, kind: activity, time: "10:00", title: Исторический район, detail: Следовать компактному маршруту без лишних возвратов.}
+      - {id: event-day-5-lunch, kind: meal, time: "13:00", title: Обед в районе, detail: Не менять географию дня ради ресторана.}
+      - {id: event-day-5-rest, kind: rest, time: "16:30", title: Возвращение и отдых, detail: Оставить вечер свободным.}
+    scenarios:
+      - id: day-5-rain
+        label: Дождь
+        summary: Заменить прогулку ремесленным музеем в том же районе.
+        timeline:
+          - {id: event-day-5-rain-breakfast, kind: meal, time: "08:30", title: Завтрак, detail: Начать день рядом с отелем.}
+          - {id: event-day-5-museum, kind: activity, time: "10:30", title: Ремесленный музей, detail: Проверить доступ перед выходом.}
+          - {id: event-day-5-rain-lunch, kind: meal, time: "13:00", title: Обед рядом с музеем, detail: Сохранить короткие переходы под дождём.}
+    source_ids: [official-kyoto-fixture]
+    last_checked: "2026-08-28"
+
   - id: day-6
     number: 6
     date: "2026-11-07"
     region: Kyoto
     overnight: Kyoto
     overnight_stop_id: kyoto
-    thesis: Garden morning with a local indoor alternative for rain.
+    thesis: Начать с сада и переключиться на закрытый маршрут, если условия не подходят.
     load: moderate
-    travel: Local transit only.
+    travel: Городской транспорт
     weather_sensitive: true
     booking_state: recheck
-    critical_constraints: [Confirm seasonal conditions close to travel.]
-    timeline: [{id: event-day-6-garden, time: morning, title: Garden visit, detail: Arrive early; do not assume seasonal peak.}]
+    timeline:
+      - id: event-day-6-check
+        kind: checkpoint
+        time: "08:00"
+        title: Проверить погоду и доступ
+        detail: Не считать сезонный пик и часы работы подтверждёнными заранее.
+        checkpoint:
+          check: Погода и официальный режим подходят для сада?
+          adjust_plan: Переключить весь день на закрытый музейный сценарий.
+      - id: event-day-6-garden
+        kind: activity
+        time: "09:30"
+        title: Утро в саду
+        detail: Прийти рано и ограничить время при сильной загруженности.
+        links:
+          - {label: Открыть официальный источник, url: "https://example.invalid/kyoto-official", kind: official, requires_internet: true}
+      - {id: event-day-6-lunch, kind: meal, time: "13:00", title: Обед поблизости, detail: Выбрать место после утренней активности.}
+      - {id: event-day-6-afternoon, kind: rest, time: "15:00", title: Свободная вторая половина дня, detail: Не перегружать день второй большой точкой.}
     scenarios:
-      - {kind: primary, title: Garden visit, description: Use only when weather and access remain suitable.}
-      - {kind: backup, title: Indoor museum, description: Local rain fallback without changing lodging.}
-    food: [{name: Kyoto lunch, status: flexible, note: Select after the morning activity.}]
+      - id: day-6-rain
+        label: Дождь
+        summary: Весь активный блок дня проходит в помещении.
+        timeline:
+          - {id: event-day-6-rain-check, kind: checkpoint, time: "08:00", title: Подтвердить переключение, detail: Проверить прогноз и доступ музея., checkpoint: {check: "Дождь или режим сада делают визит неразумным?", adjust_plan: Вернуться к основному сценарию сада.}}
+          - {id: event-day-6-museum, kind: activity, time: "10:00", title: Городской музей, detail: Выбрать закрытую площадку с опубликованным доступом.}
+          - {id: event-day-6-rain-lunch, kind: meal, time: "13:00", title: Обед рядом с музеем, detail: Сохранить компактную географию.}
     readiness_ids: [seasonal-recheck]
     source_ids: [official-kyoto-fixture]
     last_checked: "2026-08-28"
-  - {id: day-2, number: 2, date: "2026-11-03", region: Tokyo, overnight: Tokyo, overnight_stop_id: tokyo, thesis: Gentle city orientation and one cultural neighbourhood., load: moderate, travel: Walk and local transit., weather_sensitive: false, booking_state: selected, timeline: [{id: event-day-2-orientation, time: morning, title: Neighbourhood orientation, detail: Keep choices local to the base.}], scenarios: [{kind: primary, title: Tokyo walk, description: Choose a nearby cultural area.}], food: [{name: Tokyo lunch, status: flexible, note: No reservation claim.}], source_ids: [official-tokyo-fixture], last_checked: "2026-08-28"}
-  - {id: day-3, number: 3, date: "2026-11-04", region: Tokyo, overnight: Tokyo, overnight_stop_id: tokyo, thesis: Popular-site morning with a quieter afternoon., load: moderate, travel: Local transit with buffer., weather_sensitive: false, booking_state: recheck, timeline: [{id: event-day-3-site, time: morning, title: Popular-site window, detail: Recheck provider hours before travel.}], scenarios: [{kind: primary, title: Early visit, description: Use an early arrival to reduce crowd risk.}, {kind: backup, title: Local museum, description: Weather-independent fallback.}], food: [{name: Tokyo dinner, status: flexible, note: Select near lodging.}], source_ids: [official-tokyo-fixture], last_checked: "2026-08-28"}
-  - {id: day-4, number: 4, date: "2026-11-05", region: Tokyo to Kyoto, overnight: Kyoto, overnight_stop_id: kyoto, thesis: Rail transfer day with no stacked headline activity., load: light, travel: Confirm final rail timing with provider before departure., weather_sensitive: false, booking_state: recheck, timeline: [{id: event-day-4-rail, time: midday, title: Tokyo to Kyoto transfer, detail: Preserve buffer and luggage handoff.}], scenarios: [{kind: primary, title: Check-in and local walk, description: Keep evening flexible after transfer.}], food: [{name: Kyoto dinner, status: flexible, note: Near lodging after arrival.}], readiness_ids: [rail-timetable-recheck], source_ids: [official-tokyo-fixture, official-kyoto-fixture], last_checked: "2026-08-28"}
-  - {id: day-5, number: 5, date: "2026-11-06", region: Kyoto, overnight: Kyoto, overnight_stop_id: kyoto, thesis: Cultural district at an intentionally moderate pace., load: moderate, travel: Walk and local transit., weather_sensitive: true, booking_state: selected, timeline: [{id: event-day-5-district, time: morning, title: Historic district, detail: Keep a rain-friendly indoor stop nearby.}], scenarios: [{kind: primary, title: District walk, description: Follow the local route.}, {kind: backup, title: Craft museum, description: Indoor backup.}], food: [{name: Kyoto lunch, status: flexible, note: Select locally.}], source_ids: [official-kyoto-fixture], last_checked: "2026-08-28"}
-  - {id: day-7, number: 7, date: "2026-11-08", region: Kyoto, overnight: Kyoto, overnight_stop_id: kyoto, thesis: Flexible cultural day that can absorb a weather swap., load: moderate, travel: Local transit only., weather_sensitive: true, booking_state: recheck, timeline: [{id: event-day-7-cultural, time: afternoon, title: Cultural visit, detail: Confirm provider access nearer travel.}], scenarios: [{kind: primary, title: Temple area, description: Outdoor cultural plan.}, {kind: backup, title: Indoor collection, description: Rain fallback.}], food: [{name: Kyoto dinner, status: flexible, note: No live availability claim.}], readiness_ids: [seasonal-recheck], source_ids: [official-kyoto-fixture], last_checked: "2026-08-28"}
-  - {id: day-8, number: 8, date: "2026-11-09", region: Kyoto to Kanazawa, overnight: Kanazawa, overnight_stop_id: kanazawa, thesis: Second rail transfer with an unhurried arrival evening., load: light, travel: Confirm provider timetable; retain station buffer., weather_sensitive: false, booking_state: recheck, timeline: [{id: event-day-8-rail, time: midday, title: Kyoto to Kanazawa transfer, detail: Do not infer final departure times.}], scenarios: [{kind: primary, title: Hotel check-in, description: Keep evening unscheduled.}], food: [{name: Kanazawa dinner, status: flexible, note: Near lodging.}], readiness_ids: [rail-timetable-recheck], source_ids: [official-kyoto-fixture, official-kanazawa-fixture], last_checked: "2026-08-28"}
-  - {id: day-9, number: 9, date: "2026-11-10", region: Kanazawa, overnight: Kanazawa, overnight_stop_id: kanazawa, thesis: Historic district and market-scale exploration., load: moderate, travel: Walk and local bus., weather_sensitive: false, booking_state: selected, timeline: [{id: event-day-9-district, time: morning, title: Historic district, detail: Use the local base.}], scenarios: [{kind: primary, title: District route, description: Cultural day at walkable scale.}], food: [{name: Market lunch, status: flexible, note: Choose on the day.}], source_ids: [official-kanazawa-fixture], last_checked: "2026-08-28"}
-  - {id: day-10, number: 10, date: "2026-11-11", region: Kanazawa, overnight: Kanazawa, overnight_stop_id: kanazawa, thesis: Garden or indoor collection according to conditions., load: moderate, travel: Local transit., weather_sensitive: true, booking_state: recheck, timeline: [{id: event-day-10-garden, time: morning, title: Garden option, detail: Validate conditions before departure.}], scenarios: [{kind: primary, title: Garden, description: Weather-dependent option.}, {kind: backup, title: Museum, description: Indoor alternative.}], food: [{name: Kanazawa lunch, status: flexible, note: No advance availability claim.}], readiness_ids: [seasonal-recheck], source_ids: [official-kanazawa-fixture], last_checked: "2026-08-28"}
-  - {id: day-11, number: 11, date: "2026-11-12", region: Kanazawa, overnight: Kanazawa, overnight_stop_id: kanazawa, thesis: Slow final full day with room for missed priorities., load: light, travel: Local walking., weather_sensitive: false, booking_state: selected, timeline: [{id: event-day-11-revisit, time: afternoon, title: Flexible revisit, detail: Use only if earlier plans changed.}], scenarios: [{kind: primary, title: Return visit, description: Preserve user choice.}], food: [{name: Final dinner, status: flexible, note: Keep booking status honest.}], source_ids: [official-kanazawa-fixture], last_checked: "2026-08-28"}
-  - {id: day-12, number: 12, date: "2026-11-13", region: Kanazawa departure, overnight: Departure, overnight_stop_id: kanazawa, thesis: Departure buffer and handoff rather than new commitments., load: light, travel: Leave time for station or airport transfer., weather_sensitive: false, booking_state: recheck, timeline: [{id: event-day-12-departure, time: morning, title: Departure, detail: Confirm transport shortly before travel.}], scenarios: [{kind: primary, title: Checkout and transfer, description: No fixed activity after checkout.}], food: [{name: Station meal, status: flexible, note: Only if time permits.}], readiness_ids: [rail-timetable-recheck], source_ids: [official-kanazawa-fixture], last_checked: "2026-08-28"}
+
+  - id: day-7
+    number: 7
+    date: "2026-11-08"
+    region: Kyoto
+    overnight: Kyoto
+    overnight_stop_id: kyoto
+    thesis: Оставить культурный день гибким и при необходимости снизить нагрузку.
+    load: moderate
+    travel: Городской транспорт
+    weather_sensitive: true
+    booking_state: recheck
+    timeline:
+      - {id: event-day-7-morning, kind: rest, time: Утро, title: Медленное начало, detail: Сохранить запас после предыдущих дней.}
+      - {id: event-day-7-cultural, kind: activity, time: "13:00", title: Культурный визит, detail: Подтвердить доступ ближе к поездке.}
+      - {id: event-day-7-dinner, kind: meal, time: "18:30", title: Ужин в Kyoto, detail: Не обещать наличие мест без бронирования.}
+    scenarios:
+      - id: day-7-low-load
+        label: Низкая нагрузка
+        summary: Оставить только одну короткую культурную точку возле базы.
+        timeline:
+          - {id: event-day-7-low-rest, kind: rest, time: До обеда, title: Отдых, detail: Не назначать утреннюю активность.}
+          - {id: event-day-7-low-visit, kind: activity, time: "14:00", title: Короткий локальный визит, detail: Выбрать место рядом с отелем.}
+          - {id: event-day-7-low-dinner, kind: meal, time: "18:30", title: Ранний ужин, detail: Завершить день без вечерней программы.}
+    readiness_ids: [seasonal-recheck]
+    source_ids: [official-kyoto-fixture]
+    last_checked: "2026-08-28"
+
+  - id: day-8
+    number: 8
+    date: "2026-11-09"
+    region: Kyoto → Kanazawa
+    overnight: Kanazawa
+    overnight_stop_id: kanazawa
+    thesis: Спокойно сменить базу и не превращать вечер прибытия в экскурсионный блок.
+    load: light
+    travel: Междугородний поезд; расписание перепроверить
+    weather_sensitive: false
+    booking_state: recheck
+    timeline:
+      - {id: event-day-8-checkout, kind: lodging, time: Утро, title: Выселение, detail: Оставить время на багаж и дорогу до вокзала.}
+      - id: event-day-8-rail
+        kind: transport
+        time: В середине дня
+        title: Переезд Kyoto — Kanazawa
+        detail: Подтвердить расписание у перевозчика и сохранить станционный запас.
+        links:
+          - {label: Открыть источник расписания, url: "https://example.invalid/kanazawa-official", kind: official, requires_internet: true}
+      - {id: event-day-8-check-in, kind: lodging, time: После прибытия, title: Заселение в Kanazawa, detail: Завершить обязательную часть дня.}
+      - {id: event-day-8-dinner, kind: meal, time: Вечером, title: Ужин рядом с отелем, detail: Выбрать место по фактическому времени прибытия.}
+    scenarios: []
+    readiness_ids: [rail-timetable-recheck]
+    source_ids: [official-kyoto-fixture, official-kanazawa-fixture]
+    last_checked: "2026-08-28"
+
+  - id: day-9
+    number: 9
+    date: "2026-11-10"
+    region: Kanazawa
+    overnight: Kanazawa
+    overnight_stop_id: kanazawa
+    thesis: Исследовать исторический район и рынок в масштабе пешего дня.
+    load: moderate
+    travel: Пешком и на местном автобусе
+    weather_sensitive: false
+    booking_state: selected
+    timeline:
+      - id: event-day-9-district
+        kind: activity
+        time: "09:30"
+        title: Исторический район
+        detail: Следовать локальному маршруту без дальних переездов.
+        links:
+          - {label: Открыть район на карте, url: "https://www.google.com/maps/search/?api=1&query=Kanazawa", kind: map, requires_internet: true}
+      - {id: event-day-9-market, kind: meal, time: "12:30", title: Обед на рынке, detail: Выбрать по фактической доступности.}
+      - {id: event-day-9-afternoon, kind: activity, time: "14:30", title: Продолжение прогулки, detail: Сократить маршрут при усталости.}
+    scenarios: []
+    source_ids: [official-kanazawa-fixture]
+    last_checked: "2026-08-28"
+
+  - id: day-10
+    number: 10
+    date: "2026-11-11"
+    region: Kanazawa
+    overnight: Kanazawa
+    overnight_stop_id: kanazawa
+    thesis: Выбрать сад или закрытую коллекцию по фактическим условиям.
+    load: moderate
+    travel: Местный транспорт
+    weather_sensitive: true
+    booking_state: recheck
+    timeline:
+      - {id: event-day-10-check, kind: checkpoint, time: "08:00", title: Оценить условия, detail: Решение принимается до выхода., checkpoint: {check: "Погода и доступ подходят для сада?", adjust_plan: Переключиться на музейный сценарий.}}
+      - {id: event-day-10-garden, kind: activity, time: "09:30", title: Сад, detail: Подтвердить условия перед отправлением.}
+      - {id: event-day-10-lunch, kind: meal, time: "13:00", title: Обед, detail: Оставаться в выбранном районе.}
+    scenarios:
+      - id: day-10-rain
+        label: Дождь
+        summary: Заменить сад закрытой коллекцией и сохранить темп дня.
+        timeline:
+          - {id: event-day-10-rain-check, kind: checkpoint, time: "08:00", title: Подтвердить переключение, detail: Проверить доступ музея., checkpoint: {check: "Музей открыт и доступен?", adjust_plan: Вернуться к основному сценарию или сделать день отдыха.}}
+          - {id: event-day-10-museum, kind: activity, time: "10:00", title: Музей, detail: Провести активную часть дня в помещении.}
+          - {id: event-day-10-rain-lunch, kind: meal, time: "13:00", title: Обед рядом с музеем, detail: Не добавлять дальний переезд.}
+    readiness_ids: [seasonal-recheck]
+    source_ids: [official-kanazawa-fixture]
+    last_checked: "2026-08-28"
+
+  - id: day-11
+    number: 11
+    date: "2026-11-12"
+    region: Kanazawa
+    overnight: Kanazawa
+    overnight_stop_id: kanazawa
+    thesis: Сохранить последний полный день медленным и оставить место для пропущенного приоритета.
+    load: light
+    travel: Пешком
+    weather_sensitive: false
+    booking_state: selected
+    timeline:
+      - {id: event-day-11-morning, kind: rest, time: Утро, title: Свободное утро, detail: Не назначать обязательную программу.}
+      - {id: event-day-11-revisit, kind: activity, time: "14:00", title: Возврат к пропущенному месту, detail: Использовать только если предыдущие планы изменились.}
+      - {id: event-day-11-dinner, kind: meal, time: "18:30", title: Финальный ужин, detail: Сохранить честный статус бронирования.}
+    scenarios: []
+    source_ids: [official-kanazawa-fixture]
+    last_checked: "2026-08-28"
+
+  - id: day-12
+    number: 12
+    date: "2026-11-13"
+    region: Kanazawa — отъезд
+    overnight: Отъезд
+    overnight_stop_id: kanazawa
+    thesis: Защитить время отъезда и не добавлять новые обязательства после выселения.
+    load: light
+    travel: Трансфер до вокзала или аэропорта
+    weather_sensitive: false
+    booking_state: recheck
+    timeline:
+      - {id: event-day-12-checkout, kind: lodging, time: Утро, title: Выселение, detail: Завершить сборы с запасом.}
+      - {id: event-day-12-departure, kind: transport, time: После выселения, title: Трансфер к месту отправления, detail: Подтвердить транспорт незадолго до поездки.}
+      - {id: event-day-12-meal, kind: meal, time: Если останется время, title: Еда в пути, detail: Не задерживать отправление ради отдельной остановки.}
+    scenarios: []
+    readiness_ids: [rail-timetable-recheck]
+    source_ids: [official-kanazawa-fixture]
+    last_checked: "2026-08-28"
 budget_items:
-  - {id: lodging-estimate, category: lodging, amount: 240000, currency: JPY, amount_type: estimate, basis: per_group, confidence: medium}
-  - {id: rail-estimate, category: transport, amount: 90000, currency: JPY, amount_type: estimate, basis: per_group, confidence: low}
+  - {id: lodging-estimate, category: проживание, amount: 240000, currency: JPY, amount_type: estimate, basis: per_group, confidence: medium}
+  - {id: rail-estimate, category: транспорт, amount: 90000, currency: JPY, amount_type: estimate, basis: per_group, confidence: low}
 budget_summary: null
 challenge_findings: []
 open_decisions:
   - id: seasonal-recheck-decision
     severity: warning
-    question: Are seasonal conditions and garden access suitable for 7 November?
-    why: The example intentionally has no live weather or seasonal claim.
+    question: Подходят ли сезонные условия и доступ в сад для 7 ноября?
+    why: В примере намеренно нет актуального прогноза и подтверждения сезонного пика.
     affected_ids: [day-6, kyoto-garden]
     deadline: "2026-10-31"
-    next_action: Check the official provider information before final packing.
+    next_action: Проверить официальный источник перед окончательной сборкой маршрута.

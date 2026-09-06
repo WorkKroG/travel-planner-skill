@@ -5,6 +5,8 @@
 **Design process:** Impeccable `shape`  
 **Reference case:** Japan, 2–13 November 2026
 
+> **Superseded details:** [Readable Itinerary Days — HTML Design Specification](2026-09-06-itinerary-readable-days-design.md) replaces this document's navigation model, detailed-day layout, event context, scenario representation, and localization details. All other scope, lifecycle, accessibility, self-contained, responsive, print, and visual-direction requirements remain active.
+
 ## 1. Purpose and scope
 
 This document specifies the user experience and visual design of the self-contained interactive HTML itinerary produced by Travel Planner Skill. It is a design input for a later implementation plan, not an implementation plan itself.

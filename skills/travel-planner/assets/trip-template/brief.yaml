@@ -2,6 +2,7 @@ schema_version: 1
 trip_id: ""
 updated_at: ""
 title: ""
+document_language: en
 travel_dates:
   start: null
   end: null
@@ -11,4 +12,3 @@ hard_constraints: []
 soft_preferences: []
 assumptions: []
 map_provider: auto
-

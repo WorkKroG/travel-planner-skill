@@ -12,7 +12,7 @@ The workflow is intentionally collaborative:
 6. Run the verification available on the current surface.
 7. Produce one responsive, self-contained HTML itinerary for review and sharing.
 
-The complete product contract is in [PRODUCT.md](PRODUCT.md), the component boundary is in [ARCHITECTURE.md](ARCHITECTURE.md), and the shared HTML behavior is defined by the [approved interactive itinerary specification](docs/superpowers/specs/2026-08-28-interactive-itinerary-html-design.md).
+The complete product contract is in [PRODUCT.md](PRODUCT.md), the component boundary is in [ARCHITECTURE.md](ARCHITECTURE.md), and the current day-reading experience is defined by the [Readable Itinerary Days specification](docs/superpowers/specs/2026-09-06-itinerary-readable-days-design.md) over the retained requirements of the [original interactive itinerary specification](docs/superpowers/specs/2026-08-28-interactive-itinerary-html-design.md).
 
 ## Supported surfaces
 
@@ -24,7 +24,7 @@ Availability of a source or local marketplace can vary by surface. The table des
 | ChatGPT Chat/Work | Core planning workflow and the same self-contained HTML template | `none` or explicitly limited `ai_reviewed`; never claim Codex validation without the helper |
 | Mobile | Core planning workflow and the same self-contained HTML template, subject to file capabilities on the device | `none` or explicitly limited `ai_reviewed`; manual bundle transfer and human review required |
 
-Prepared copies use the exact labels `Prepared copy — данные проверены в Codex` and `Prepared copy — по запросу пользователя`; the surrounding planning conversation follows the user's language. They describe document preparation, not a verified trip.
+`brief.yaml.document_language` selects `en` or `ru` for the whole generated document. Prepared-copy labels and every other renderer-owned label follow that choice. They describe document preparation, not a verified trip.
 
 ## Package and trip data
 
@@ -81,7 +81,7 @@ These commands are internal to the plugin and may change before a stable public 
 .venv/bin/travel-planner render /path/to/trip --output /path/to/trip/outputs/itinerary.html --at 2026-08-30T09:00:00+00:00
 ```
 
-`init` never overwrites an existing trip. `check` verifies recorded dates, IDs, declared references, present monetary values, and document-status consistency. It does not evaluate overall trip feasibility. `render` reads the same valid data and creates the shared self-contained HTML, including unknowns and saved concerns. If a PDF is needed, open the HTML and use Browser/System Print → Save as PDF; the plugin has no built-in PDF pipeline.
+`init` never overwrites an existing trip. `check` verifies recorded dates, IDs, typed day events and scenarios, declared references, present monetary values, and document-status consistency. It does not evaluate overall trip feasibility. `render` reads the same valid data and creates a one-column self-contained itinerary with chronological meal/transport/activity/checkpoint events, contextual links and alternatives, and complete alternative day scenarios. If a PDF is needed, open the HTML and use Browser/System Print → Save as PDF; the plugin has no built-in PDF pipeline.
 
 See the [Japan autumn 2026 example](examples/japan-autumn-2026/README.md) for a deterministic draft-quality workspace.
 

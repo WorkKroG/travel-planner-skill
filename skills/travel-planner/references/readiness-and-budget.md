@@ -1,4 +1,4 @@
-# Readiness, budget, food, and bookings
+# Readiness, budget, meals, and bookings
 
 Use `readiness.yaml` for entry/transit, health/medication, insurance, transport, lodging, activities, dining, connectivity, money, documents, packing, emergency, and pre-departure actions. Each item needs a stable ID, status, owner when known, due/recheck time when known, source/claim links, dependencies, and a concise `next_action` with a completion or cancellation condition. Preserve recorded `due_at` independently of `next_check_at`; do not invent universal recheck deadlines. Critical unknowns remain visible actions or saved concerns until resolved with evidence.
 
@@ -6,4 +6,4 @@ Use only `itinerary.yaml` `budget_items` for itemized cost. Record `exact`, `est
 
 Where the local helpers are available, `travel_planner.budget.calculate_budget` computes exact recorded subtotals separately for each currency and basis and explains excluded rows. It does not convert currencies, infer a currency from the brief, multiply by traveller count, or assess budget completeness. The shared HTML uses this calculation and retains known values from incomplete rows. Keep `budget_summary` null for new work; a pre-existing summary stays in canonical state but does not replace the computed recorded subtotals. Preserve contingency as a labelled item or assumption and explain material gaps with useful next actions.
 
-Build food choices by location and day fit: propose alternatives, compare constraints and booking needs, ask the user to choose, and retain useful rejected options in decision history. Research may prepare a booking decision, but the user selects and completes every reservation, payment, or external contact.
+Place every meal in the day's primary timeline so food follows the same chronology as transport, activities, lodging, and rest. Keep nearby substitutions inside that meal event's `alternatives[]`, compare constraints and booking needs there, ask the user to choose, and retain useful rejected options in decision history. Research may prepare a booking decision, but the user selects and completes every reservation, payment, or external contact.

@@ -19,6 +19,7 @@ soft_preferences: []
 assumptions:
   - This is synthetic renderer test data, not a confirmed itinerary.
 map_provider: auto
+document_language: en
 trip_thesis: A synthetic reference route for testing document hierarchy and uncertainty.
 budget:
   currency: JPY

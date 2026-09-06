@@ -44,30 +44,63 @@ days:
     travel: Airport arrival
     weather_sensitive: false
     booking_state: selected
-    critical_constraints:
-      - Arrive at lodging before the stated check-in cutoff.
     timeline:
       - id: event-day-1-arrival
+        kind: transport
         time: "16:00"
         title: Arrival and transfer
         detail: Exact timing remains dependent on the booked flight.
+        links:
+          - label: Build route in Google Maps
+            url: https://www.google.com/maps/search/?api=1&query=Tokyo
+            kind: route
+            requires_internet: true
+      - id: event-day-1-check-in
+        kind: lodging
+        time: "18:00"
+        title: Check in and pause
+        detail: Leave the first evening free until arrival is complete.
+      - id: event-day-1-decision
+        kind: checkpoint
+        time: "19:00"
+        title: Decide whether to walk
+        detail: Make the choice only after checking actual arrival time and energy.
+        checkpoint:
+          check: Has check-in finished without delay, and does everyone still have energy?
+          adjust_plan: Skip the walk and move directly to dinner and rest.
+      - id: event-day-1-dinner
+        kind: meal
+        time: "19:30"
+        title: Nearby dinner
+        detail: Choose close to the lodging after check-in.
+        alternatives:
+          - id: event-day-1-dinner-room
+            title: Simple meal at the lodging
+            reason: Use after a delayed or tiring arrival.
+            detail: Keep the evening short without another transfer.
+            effort: very low
+            booking: No reservation assumed
     scenarios:
-      - kind: primary
-        title: Short neighbourhood walk
-        description: Keep the evening close to the lodging.
-      - kind: backup
-        title: Direct rest
-        description: Skip the walk if arrival is delayed.
-    food:
-      - name: Nearby dinner option
-        status: unknown
-        note: Choose after lodging is confirmed.
+      - id: direct-rest
+        label: Direct rest
+        summary: Remove the neighbourhood walk after a delayed arrival.
+        timeline:
+          - id: event-day-1-rest-arrival
+            kind: transport
+            time: "16:00"
+            title: Arrival and direct transfer
+            detail: Travel directly to the lodging.
+          - id: event-day-1-rest-check-in
+            kind: lodging
+            time: "18:00"
+            title: Check in
+            detail: End the day's movement after check-in.
+          - id: event-day-1-rest-meal
+            kind: meal
+            time: "19:00"
+            title: Simple nearby meal
+            detail: Eat at or beside the lodging, then rest.
     readiness_ids: []
-    links:
-      - label: Google Maps
-        url: https://www.google.com/maps/search/?api=1&query=Tokyo
-        kind: map
-        requires_internet: true
     source_ids: []
     last_checked: unknown
   - id: day-2
@@ -81,27 +114,63 @@ days:
     travel: Intercity rail
     weather_sensitive: false
     booking_state: not_released_yet
-    critical_constraints:
-      - Departure time is not released yet; keep the day in Draft.
     timeline:
+      - id: event-day-2-check
+        kind: checkpoint
+        time: Before booking
+        title: Confirm the operating timetable
+        detail: The final departure time is not released yet.
+        checkpoint:
+          check: Is the selected departure published by the official operator?
+          adjust_plan: Use the later-departure scenario and preserve the overnight city.
+        source_ids: [source-rail]
       - id: event-day-2-rail
+        kind: transport
         time: Unknown
         title: Intercity rail transfer
-        detail: Confirm only from the operator schedule.
+        detail: Confirm only from the operator schedule and keep a station buffer.
+        readiness_ids: [rail-release]
+        source_ids: [source-rail]
+        links:
+          - label: Official operator timetable
+            url: https://example.jp/rail
+            kind: official
+            requires_internet: true
+      - id: event-day-2-check-in
+        kind: lodging
+        time: After arrival
+        title: Kanazawa check-in
+        detail: Keep the evening uncommitted until the transfer is complete.
+      - id: event-day-2-dinner
+        kind: meal
+        time: Evening
+        title: Dinner near the lodging
+        detail: Select locally after arrival.
     scenarios:
-      - kind: primary
-        title: Direct rail transfer
-        description: Use the selected departure after release.
-      - kind: backup
-        title: Later departure
-        description: Preserve a labelled fallback without changing the overnight city.
-    food: []
+      - id: later-departure
+        label: Later departure
+        summary: Preserve the same overnight city with no evening activity.
+        timeline:
+          - id: event-day-2-late-check
+            kind: checkpoint
+            time: Before booking
+            title: Confirm the later train
+            detail: Use only a published official departure.
+            checkpoint:
+              check: Does the later service preserve the check-in window?
+              adjust_plan: Contact the lodging or select another published service.
+          - id: event-day-2-late-rail
+            kind: transport
+            time: Unknown
+            title: Later intercity rail transfer
+            detail: Travel directly to Kanazawa without an added activity.
+            source_ids: [source-rail]
+          - id: event-day-2-late-check-in
+            kind: lodging
+            time: After arrival
+            title: Check in and rest
+            detail: End the day at the lodging.
     readiness_ids: [rail-release]
-    links:
-      - label: Official operator
-        url: https://example.jp/rail
-        kind: official
-        requires_internet: true
     source_ids: [source-rail]
     last_checked: "2026-08-28T10:00:00+00:00"
   - id: day-3
@@ -115,27 +184,69 @@ days:
     travel: Local transit
     weather_sensitive: true
     booking_state: recheck
-    critical_constraints:
-      - Published hours conflict and must be resolved before Final.
     timeline:
+      - id: event-day-3-check
+        kind: checkpoint
+        time: "08:00"
+        title: Confirm hours and weather
+        detail: Published hours conflict and must be resolved before departure.
+        checkpoint:
+          check: Do the official hours and weather support the garden visit?
+          adjust_plan: Switch to the indoor cultural scenario.
+        source_ids: [source-garden]
       - id: event-day-3-garden
+        kind: activity
         time: Unknown
         title: Reference Garden
         detail: Opening time remains unresolved.
+        source_ids: [source-garden]
+        links:
+          - label: Official garden site
+            url: https://example.jp/garden
+            kind: official
+            requires_internet: true
+        alternatives:
+          - id: event-day-3-quieter-garden
+            title: Smaller neighbourhood garden
+            reason: Use when the main garden is crowded but weather remains suitable.
+            detail: A shorter local visit that keeps the rest of the day intact.
+            effort: low
+            distance: Within the same district
+            booking: Recheck local access
+            links:
+              - label: Open district on Google Maps
+                url: https://www.google.com/maps/search/?api=1&query=Kyoto
+                kind: map
+                requires_internet: true
+      - id: event-day-3-lunch
+        kind: meal
+        time: "13:00"
+        title: Lunch near the selected visit
+        detail: Keep the meal in the same district.
     scenarios:
-      - kind: primary
-        title: Garden visit
-        description: Use only after hours are rechecked.
-      - kind: backup
-        title: Indoor cultural visit
-        description: Keep the same city and lodging.
-    food: []
+      - id: indoor
+        label: Rain
+        summary: Replace the outdoor visit without changing the city or lodging.
+        timeline:
+          - id: event-day-3-indoor-check
+            kind: checkpoint
+            time: "08:00"
+            title: Confirm the switch
+            detail: Use the indoor plan when weather or hours make the garden unsuitable.
+            checkpoint:
+              check: Is the garden still unsuitable at departure time?
+              adjust_plan: Keep the primary garden timeline.
+          - id: event-day-3-museum
+            kind: activity
+            time: "10:00"
+            title: Indoor cultural visit
+            detail: Use a local collection with published access.
+          - id: event-day-3-indoor-lunch
+            kind: meal
+            time: "13:00"
+            title: Lunch near the museum
+            detail: Keep the route compact and weather-protected.
     readiness_ids: [garden-hours]
-    links:
-      - label: Official garden site
-        url: https://example.jp/garden
-        kind: official
-        requires_internet: true
     source_ids: [source-garden]
     last_checked: "2026-07-01T10:00:00+00:00"
 budget_items:

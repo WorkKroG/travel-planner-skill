@@ -91,15 +91,20 @@
         "timeline": {
           "type": "array",
           "items": {"$ref": "#/$defs/timeline_event"}
+        },
+        "scenarios": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/day_scenario"}
         }
       },
       "additionalProperties": true
     },
     "timeline_event": {
       "type": "object",
-      "required": ["id", "title", "detail"],
+      "required": ["id", "kind", "title", "detail"],
       "properties": {
         "id": {"$ref": "#/$defs/id"},
+        "kind": {"enum": ["transport", "activity", "meal", "lodging", "rest", "checkpoint"]},
         "time": {"type": ["string", "null"]},
         "title": {"type": "string", "minLength": 1},
         "detail": {"type": "string"},
@@ -128,9 +133,82 @@
         "route_id": {"$ref": "#/$defs/id"},
         "readiness_ids": {"$ref": "#/$defs/id_list"},
         "source_ids": {"$ref": "#/$defs/id_list"},
-        "claim_ids": {"$ref": "#/$defs/id_list"}
+        "claim_ids": {"$ref": "#/$defs/id_list"},
+        "links": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/contextual_link"}
+        },
+        "alternatives": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/event_alternative"}
+        },
+        "checkpoint": {"$ref": "#/$defs/checkpoint"}
       },
+      "allOf": [
+        {
+          "if": {
+            "required": ["kind"],
+            "properties": {"kind": {"const": "checkpoint"}}
+          },
+          "then": {"required": ["checkpoint"]},
+          "else": {"not": {"required": ["checkpoint"]}}
+        }
+      ],
       "additionalProperties": true
+    },
+    "day_scenario": {
+      "type": "object",
+      "required": ["id", "label", "timeline"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "label": {"type": "string", "minLength": 1, "pattern": "\\S"},
+        "summary": {"type": "string"},
+        "timeline": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/timeline_event"}
+        }
+      },
+      "additionalProperties": false
+    },
+    "contextual_link": {
+      "type": "object",
+      "required": ["label", "url", "kind", "requires_internet"],
+      "properties": {
+        "label": {"type": "string", "minLength": 1, "pattern": "\\S"},
+        "url": {"type": "string", "pattern": "^https://[^\\s]+$"},
+        "kind": {"enum": ["map", "route", "official", "tickets", "source"]},
+        "requires_internet": {"const": true}
+      },
+      "additionalProperties": false
+    },
+    "event_alternative": {
+      "type": "object",
+      "required": ["id", "title", "reason", "detail"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "title": {"type": "string", "minLength": 1},
+        "reason": {"type": "string", "minLength": 1},
+        "detail": {"type": "string"},
+        "price": {"type": "string"},
+        "effort": {"type": "string"},
+        "distance": {"type": "string"},
+        "booking": {"type": "string"},
+        "links": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/contextual_link"}
+        }
+      },
+      "additionalProperties": false
+    },
+    "checkpoint": {
+      "type": "object",
+      "required": ["check", "adjust_plan"],
+      "properties": {
+        "check": {"type": "string", "minLength": 1, "pattern": "\\S"},
+        "adjust_plan": {"type": "string", "minLength": 1, "pattern": "\\S"}
+      },
+      "additionalProperties": false
     },
     "budget_item": {
       "type": "object",

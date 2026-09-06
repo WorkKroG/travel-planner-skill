@@ -4,17 +4,17 @@ sources:
   - id: official-kyoto-fixture
     url: https://example.invalid/kyoto-official
     source_type: official
-    publisher: Frozen official fixture
+    publisher: Тестовый официальный источник Kyoto
     retrieved_at: "2026-08-28T12:00:00+00:00"
   - id: official-tokyo-fixture
     url: https://example.invalid/tokyo-official
     source_type: official
-    publisher: Frozen Tokyo fixture
+    publisher: Тестовый официальный источник Tokyo
     retrieved_at: "2026-08-28T12:00:00+00:00"
   - id: official-kanazawa-fixture
     url: https://example.invalid/kanazawa-official
     source_type: official
-    publisher: Frozen Kanazawa fixture
+    publisher: Тестовый официальный источник Kanazawa
     retrieved_at: "2026-08-28T12:00:00+00:00"
 items:
   - id: kyoto-garden

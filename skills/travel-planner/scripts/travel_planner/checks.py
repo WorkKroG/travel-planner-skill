@@ -118,10 +118,27 @@ def _records(value: Any, base_path: str) -> tuple[Entry, ...]:
 
 
 def _timeline_entries(days: tuple[Entry, ...]) -> tuple[Entry, ...]:
+    entries: list[Entry] = []
+    for day, day_path in days:
+        entries.extend(_records(day.get("timeline"), f"{day_path}.timeline"))
+        for scenario, scenario_path in _records(day.get("scenarios"), f"{day_path}.scenarios"):
+            entries.extend(_records(scenario.get("timeline"), f"{scenario_path}.timeline"))
+    return tuple(entries)
+
+
+def _scenario_entries(days: tuple[Entry, ...]) -> tuple[Entry, ...]:
     return tuple(
         entry
         for day, day_path in days
-        for entry in _records(day.get("timeline"), f"{day_path}.timeline")
+        for entry in _records(day.get("scenarios"), f"{day_path}.scenarios")
+    )
+
+
+def _event_alternative_entries(timeline: tuple[Entry, ...]) -> tuple[Entry, ...]:
+    return tuple(
+        entry
+        for event, event_path in timeline
+        for entry in _records(event.get("alternatives"), f"{event_path}.alternatives")
     )
 
 
@@ -142,6 +159,8 @@ def _identity_findings(entries: tuple[Entry, ...], key: str = "id") -> tuple[Fin
     findings: list[Finding] = []
     for record, path in entries:
         identifier = str(record.get(key, ""))
+        if not identifier:
+            continue
         if identifier in seen:
             findings.append(
                 _finding(
@@ -157,13 +176,16 @@ def _identity_findings(entries: tuple[Entry, ...], key: str = "id") -> tuple[Fin
 
 
 def _identity_checks(state: TripState, days: tuple[Entry, ...]) -> tuple[Finding, ...]:
+    timeline = _timeline_entries(days)
     groups = (
         _records(state.brief.get("travelers"), "brief.yaml.travelers"),
         _records(state.candidates.get("items"), "candidates.yaml.items"),
         _records(state.itinerary.get("alternatives"), "itinerary.yaml.alternatives"),
         _records(state.itinerary.get("route_stops"), "itinerary.yaml.route_stops"),
         days,
-        _timeline_entries(days),
+        _scenario_entries(days),
+        timeline,
+        _event_alternative_entries(timeline),
         _records(state.itinerary.get("budget_items"), "itinerary.yaml.budget_items"),
         _records(state.candidates.get("sources"), "candidates.yaml.sources"),
         _claim_entries(state),

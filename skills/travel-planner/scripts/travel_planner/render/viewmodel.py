@@ -34,27 +34,6 @@ class DecisionView:
 
 
 @dataclass(frozen=True)
-class TimelineEventView:
-    time: str
-    title: str
-    detail: str
-
-
-@dataclass(frozen=True)
-class ScenarioView:
-    kind: Literal["primary", "backup"]
-    title: str
-    description: str
-
-
-@dataclass(frozen=True)
-class FoodView:
-    name: str
-    status: str
-    note: str
-
-
-@dataclass(frozen=True)
 class LinkView:
     label: str
     url: str
@@ -63,10 +42,50 @@ class LinkView:
 
 
 @dataclass(frozen=True)
+class CheckpointView:
+    check: str
+    adjust_plan: str
+
+
+@dataclass(frozen=True)
+class EventAlternativeView:
+    alternative_id: str
+    title: str
+    reason: str
+    detail: str
+    price: str
+    effort: str
+    distance: str
+    booking: str
+    links: tuple[LinkView, ...]
+
+
+@dataclass(frozen=True)
+class TimelineEventView:
+    event_id: str
+    kind: str
+    time: str
+    title: str
+    detail: str
+    links: tuple[LinkView, ...]
+    alternatives: tuple[EventAlternativeView, ...]
+    checkpoint: CheckpointView | None
+
+
+@dataclass(frozen=True)
+class ScenarioView:
+    scenario_id: str
+    label: str
+    summary: str
+    timeline: tuple[TimelineEventView, ...]
+
+
+@dataclass(frozen=True)
 class DayView:
     day_id: str
     number: int
     date: str
+    date_label: str
     weekday: str
     region: str
     overnight: str
@@ -75,12 +94,9 @@ class DayView:
     travel: str
     weather_sensitive: bool
     booking_state: str
-    critical_constraints: tuple[str, ...]
     timeline: tuple[TimelineEventView, ...]
     scenarios: tuple[ScenarioView, ...]
-    food: tuple[FoodView, ...]
     readiness_ids: tuple[str, ...]
-    links: tuple[LinkView, ...]
     source_ids: tuple[str, ...]
     last_checked: str
 
@@ -156,6 +172,7 @@ class SummaryView:
 
 @dataclass(frozen=True)
 class ItineraryView:
+    language: Literal["en", "ru"]
     trip_id: str
     title: str
     document_status: Literal["draft", "final"]
@@ -186,6 +203,30 @@ def _text(value: Any, default: str = "Unknown") -> str:
     return rendered or default
 
 
+def _unknown(language: str) -> str:
+    return "Неизвестно" if language == "ru" else "Unknown"
+
+
+def _budget_exclusion(reason: str | None, language: str) -> str | None:
+    if reason is None or language != "ru":
+        return reason
+    if reason == "Amount is unknown":
+        return "Сумма неизвестна"
+    if reason.startswith("Missing "):
+        fields = {
+            "amount": "сумма",
+            "amount_min": "нижняя граница",
+            "amount_max": "верхняя граница",
+            "currency": "валюта",
+            "basis": "основание цены",
+        }
+        missing = ", ".join(
+            fields.get(field, field) for field in reason.removeprefix("Missing ").split(", ")
+        )
+        return f"Не указано: {missing}"
+    return reason
+
+
 def _strings(value: Any) -> tuple[str, ...]:
     if not isinstance(value, list):
         return ()
@@ -208,22 +249,83 @@ def _decimal(value: Any) -> Decimal | None:
         return None
 
 
-def _weekday(value: str) -> str:
+_WEEKDAYS = {
+    "en": ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"),
+    "ru": (
+        "понедельник",
+        "вторник",
+        "среда",
+        "четверг",
+        "пятница",
+        "суббота",
+        "воскресенье",
+    ),
+}
+
+_MONTHS = {
+    "en": (
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+    ),
+    "ru": (
+        "января",
+        "февраля",
+        "марта",
+        "апреля",
+        "мая",
+        "июня",
+        "июля",
+        "августа",
+        "сентября",
+        "октября",
+        "ноября",
+        "декабря",
+    ),
+}
+
+
+def _language(state: TripState) -> Literal["en", "ru"]:
+    return "ru" if state.brief.get("document_language") == "ru" else "en"
+
+
+def _weekday(value: str, language: str) -> str:
     try:
-        return date.fromisoformat(value).strftime("%A")
+        parsed = date.fromisoformat(value)
+        return _WEEKDAYS[language][parsed.weekday()]
     except ValueError:
-        return "Unknown"
+        return "Неизвестно" if language == "ru" else "Unknown"
 
 
-def _route(state: TripState) -> tuple[RouteStopView, ...]:
+def _date_label(value: str, language: str) -> str:
+    try:
+        parsed = date.fromisoformat(value)
+    except ValueError:
+        return "Неизвестно" if language == "ru" else "Unknown"
+    month = _MONTHS[language][parsed.month - 1]
+    if language == "ru":
+        return f"{parsed.day} {month} {parsed.year}"
+    return f"{month} {parsed.day}, {parsed.year}"
+
+
+def _route(state: TripState, language: str) -> tuple[RouteStopView, ...]:
     views = []
     for position, item in enumerate(_mapping_items(state.itinerary.get("route_stops")), start=1):
         nights = item.get("nights")
         views.append(
             RouteStopView(
                 stop_id=_text(item.get("id"), f"stop-{position}"),
-                name=_text(item.get("name")),
-                dates=_text(item.get("dates")),
+                name=_text(item.get("name"), _unknown(language)),
+                dates=_text(item.get("dates"), _unknown(language)),
                 nights=nights if isinstance(nights, int) and not isinstance(nights, bool) else None,
                 transfer_label=(
                     _text(item.get("transfer_label"))
@@ -235,17 +337,17 @@ def _route(state: TripState) -> tuple[RouteStopView, ...]:
     return tuple(views)
 
 
-def _decisions(state: TripState) -> tuple[DecisionView, ...]:
+def _decisions(state: TripState, language: str) -> tuple[DecisionView, ...]:
     severity_order = {"blocking": 0, "warning": 1, "note": 2}
     views = [
         DecisionView(
             decision_id=_text(item.get("id"), "unknown-decision"),
             severity=_text(item.get("severity"), "warning"),
-            question=_text(item.get("question")),
-            why=_text(item.get("why")),
+            question=_text(item.get("question"), _unknown(language)),
+            why=_text(item.get("why"), _unknown(language)),
             affected_ids=_strings(item.get("affected_ids")),
-            deadline=_text(item.get("deadline")),
-            next_action=_text(item.get("next_action")),
+            deadline=_text(item.get("deadline"), _unknown(language)),
+            next_action=_text(item.get("next_action"), _unknown(language)),
         )
         for item in _mapping_items(state.itinerary.get("open_decisions"))
     ]
@@ -261,71 +363,100 @@ def _decisions(state: TripState) -> tuple[DecisionView, ...]:
     )
 
 
-def _scenario(item: Mapping[str, Any]) -> ScenarioView | None:
-    kind = item.get("kind")
-    if kind not in {"primary", "backup"}:
-        return None
-    return ScenarioView(kind, _text(item.get("title")), _text(item.get("description")))
+def _link(item: Mapping[str, Any]) -> LinkView:
+    return LinkView(
+        _text(item.get("label")),
+        _text(item.get("url")),
+        _text(item.get("kind"), "source"),
+        bool(item.get("requires_internet", True)),
+    )
 
 
-def _days(state: TripState) -> tuple[DayView, ...]:
+def _event_alternative(item: Mapping[str, Any]) -> EventAlternativeView:
+    return EventAlternativeView(
+        alternative_id=_text(item.get("id"), "unknown-alternative"),
+        title=_text(item.get("title")),
+        reason=_text(item.get("reason")),
+        detail=_text(item.get("detail"), ""),
+        price=_text(item.get("price"), ""),
+        effort=_text(item.get("effort"), ""),
+        distance=_text(item.get("distance"), ""),
+        booking=_text(item.get("booking"), ""),
+        links=tuple(_link(link) for link in _mapping_items(item.get("links"))),
+    )
+
+
+def _timeline(value: Any, language: str) -> tuple[TimelineEventView, ...]:
+    views = []
+    for position, event in enumerate(_mapping_items(value), start=1):
+        checkpoint_value = event.get("checkpoint")
+        checkpoint = (
+            CheckpointView(
+                _text(checkpoint_value.get("check")),
+                _text(checkpoint_value.get("adjust_plan")),
+            )
+            if isinstance(checkpoint_value, Mapping)
+            else None
+        )
+        views.append(
+            TimelineEventView(
+                event_id=_text(event.get("id"), f"unknown-event-{position}"),
+                kind=_text(event.get("kind"), "activity"),
+                time=_text(event.get("time"), _unknown(language)),
+                title=_text(event.get("title"), _unknown(language)),
+                detail=_text(event.get("detail"), ""),
+                links=tuple(_link(link) for link in _mapping_items(event.get("links"))),
+                alternatives=tuple(
+                    _event_alternative(alternative)
+                    for alternative in _mapping_items(event.get("alternatives"))
+                ),
+                checkpoint=checkpoint,
+            )
+        )
+    return tuple(views)
+
+
+def _scenario(item: Mapping[str, Any], language: str) -> ScenarioView:
+    return ScenarioView(
+        scenario_id=_text(item.get("id"), "unknown-scenario"),
+        label=_text(item.get("label")),
+        summary=_text(item.get("summary"), ""),
+        timeline=_timeline(item.get("timeline"), language),
+    )
+
+
+def _days(state: TripState, language: str) -> tuple[DayView, ...]:
     views = []
     for position, item in enumerate(_mapping_items(state.itinerary.get("days")), start=1):
         date_value = _text(item.get("date"))
         scenarios = tuple(
-            scenario
-            for scenario in (_scenario(value) for value in _mapping_items(item.get("scenarios")))
-            if scenario is not None
+            _scenario(value, language) for value in _mapping_items(item.get("scenarios"))
         )
         views.append(
             DayView(
                 day_id=_text(item.get("id"), f"day-{position}"),
                 number=item.get("number") if isinstance(item.get("number"), int) else position,
                 date=date_value,
-                weekday=_weekday(date_value),
-                region=_text(item.get("region")),
-                overnight=_text(item.get("overnight")),
-                thesis=_text(item.get("thesis")),
-                load=_text(item.get("load")),
-                travel=_text(item.get("travel")),
+                date_label=_date_label(date_value, language),
+                weekday=_weekday(date_value, language),
+                region=_text(item.get("region"), _unknown(language)),
+                overnight=_text(item.get("overnight"), _unknown(language)),
+                thesis=_text(item.get("thesis"), _unknown(language)),
+                load=_text(item.get("load"), _unknown(language)),
+                travel=_text(item.get("travel"), _unknown(language)),
                 weather_sensitive=bool(item.get("weather_sensitive", False)),
-                booking_state=_text(item.get("booking_state")),
-                critical_constraints=_strings(item.get("critical_constraints")),
-                timeline=tuple(
-                    TimelineEventView(
-                        _text(event.get("time")),
-                        _text(event.get("title")),
-                        _text(event.get("detail")),
-                    )
-                    for event in _mapping_items(item.get("timeline"))
-                ),
+                booking_state=_text(item.get("booking_state"), _unknown(language)),
+                timeline=_timeline(item.get("timeline"), language),
                 scenarios=scenarios,
-                food=tuple(
-                    FoodView(
-                        _text(food.get("name")),
-                        _text(food.get("status")),
-                        _text(food.get("note")),
-                    )
-                    for food in _mapping_items(item.get("food"))
-                ),
                 readiness_ids=_strings(item.get("readiness_ids")),
-                links=tuple(
-                    LinkView(
-                        _text(link.get("label")),
-                        _text(link.get("url")),
-                        _text(link.get("kind"), "external"),
-                        bool(link.get("requires_internet", True)),
-                    )
-                    for link in _mapping_items(item.get("links"))
-                ),
                 source_ids=_strings(item.get("source_ids")),
-                last_checked=_text(item.get("last_checked")),
+                last_checked=_text(item.get("last_checked"), _unknown(language)),
             )
         )
     return tuple(sorted(views, key=lambda item: (item.number, item.day_id)))
 
 
-def _readiness(state: TripState) -> tuple[ReadinessView, ...]:
+def _readiness(state: TripState, language: str) -> tuple[ReadinessView, ...]:
     status_order = {
         "action_needed": 0,
         "recheck": 1,
@@ -340,10 +471,16 @@ def _readiness(state: TripState) -> tuple[ReadinessView, ...]:
     views = [
         ReadinessView(
             item_id=_text(item.get("id"), "unknown-readiness"),
-            title=_text(item.get("title"), _text(item.get("id"), "Unknown readiness item")),
-            category=_text(item.get("category")),
-            status=_text(item.get("status")),
-            owner_id=_text(item.get("owner_id")),
+            title=_text(
+                item.get("title"),
+                _text(
+                    item.get("id"),
+                    "Неизвестная задача" if language == "ru" else "Unknown readiness item",
+                ),
+            ),
+            category=_text(item.get("category"), "unknown"),
+            status=_text(item.get("status"), "unknown"),
+            owner_id=_text(item.get("owner_id"), _unknown(language)),
             due_at=_text(item.get("due_at"), ""),
             next_check_at=_text(item.get("next_check_at"), ""),
             next_action=_text(item.get("next_action"), ""),
@@ -356,7 +493,7 @@ def _readiness(state: TripState) -> tuple[ReadinessView, ...]:
     return tuple(sorted(views, key=lambda item: (status_order.get(item.status, 9), item.item_id)))
 
 
-def _budget(state: TripState) -> BudgetView:
+def _budget(state: TripState, language: str) -> BudgetView:
     items = tuple(_mapping_items(state.itinerary.get("budget_items")))
     calculated = calculate_budget(items)
     exclusions = {item.index: item.reason for item in calculated.excluded}
@@ -374,10 +511,10 @@ def _budget(state: TripState) -> BudgetView:
                 category=_text(item.get("category"), _text(item.get("id"))),
                 minimum=minimum,
                 maximum=maximum,
-                currency=_text(item.get("currency")),
+                currency=_text(item.get("currency"), _unknown(language)),
                 amount_type=amount_type,
-                basis=_text(item.get("basis")),
-                exclusion_reason=exclusions.get(index),
+                basis=_text(item.get("basis"), "unknown"),
+                exclusion_reason=_budget_exclusion(exclusions.get(index), language),
             )
         )
     return BudgetView(
@@ -399,7 +536,7 @@ def _highest(values: Iterable[str], order: Mapping[str, int], default: str) -> s
     return min(available, key=lambda value: order.get(value, 99)) if available else default
 
 
-def _sources(state: TripState) -> tuple[SourceView, ...]:
+def _sources(state: TripState, language: str) -> tuple[SourceView, ...]:
     claims = _all_claims(state)
     claim_order = {
         "conflicting": 0,
@@ -416,11 +553,11 @@ def _sources(state: TripState) -> tuple[SourceView, ...]:
         views.append(
             SourceView(
                 source_id=source_id,
-                title=_text(source.get("publisher")),
-                url=_text(source.get("url")),
-                source_type=_text(source.get("source_type")),
-                last_checked=_text(source.get("retrieved_at")),
-                retrieval_status=_text(source.get("retrieval_status")),
+                title=_text(source.get("publisher"), _unknown(language)),
+                url=_text(source.get("url"), _unknown(language)),
+                source_type=_text(source.get("source_type"), "unknown"),
+                last_checked=_text(source.get("retrieved_at"), _unknown(language)),
+                retrieval_status=_text(source.get("retrieval_status"), "unknown"),
                 claim_status=_highest(
                     (_text(claim.get("status"), "unverified") for claim in linked),
                     claim_order,
@@ -436,21 +573,38 @@ def _sources(state: TripState) -> tuple[SourceView, ...]:
     return tuple(sorted(views, key=lambda item: item.source_id))
 
 
-def _verification_label(level: str) -> str:
-    return {
-        "none": "Данные не проверены",
-        "ai_reviewed": "AI-review — вероятностный разбор",
-        "codex_validated": "Целостность данных проверена в Codex",
-    }.get(level, "Неизвестный уровень проверки")
+def _verification_label(level: str, language: str) -> str:
+    labels = {
+        "en": {
+            "none": "Recorded data not checked",
+            "ai_reviewed": "AI-review — probabilistic review",
+            "codex_validated": "Recorded data integrity checked in Codex",
+            "unknown": "Unknown verification level",
+        },
+        "ru": {
+            "none": "Данные не проверены",
+            "ai_reviewed": "AI-проверка — вероятностный разбор",
+            "codex_validated": "Целостность данных проверена в Codex",
+            "unknown": "Неизвестный уровень проверки",
+        },
+    }[language]
+    return labels.get(level, labels["unknown"])
 
 
-def _declared_final_label(status: str, basis: Any) -> str | None:
+def _declared_final_label(status: str, basis: Any, language: str) -> str | None:
     if status != "final":
         return None
-    return {
-        "codex_validated": "Prepared copy — данные проверены в Codex",
-        "user_confirmed": "Prepared copy — по запросу пользователя",
-    }.get(basis)
+    labels = {
+        "en": {
+            "codex_validated": "Prepared copy — checked in Codex",
+            "user_confirmed": "Prepared copy — requested by user",
+        },
+        "ru": {
+            "codex_validated": "Подготовленная копия — данные проверены в Codex",
+            "user_confirmed": "Подготовленная копия — по запросу пользователя",
+        },
+    }[language]
+    return labels.get(basis)
 
 
 def _status_label(
@@ -458,18 +612,27 @@ def _status_label(
     verification: str,
     declared_final_label: str | None,
     lifecycle_safe: bool,
+    language: str,
 ) -> str:
     if status == "final":
         return (
             declared_final_label
             if lifecycle_safe and declared_final_label
-            else ("Prepared copy — несогласованное состояние")
+            else (
+                "Подготовленная копия — несогласованное состояние"
+                if language == "ru"
+                else "Prepared copy — inconsistent state"
+            )
         )
     if verification == "ai_reviewed":
-        return "Draft — AI-review"
+        return "Черновик — AI-проверка" if language == "ru" else "Draft — AI-review"
     if verification == "codex_validated":
-        return "Draft — данные проверены в Codex"
-    return "Draft — без проверки"
+        return (
+            "Черновик — данные проверены в Codex"
+            if language == "ru"
+            else "Draft — checked in Codex"
+        )
+    return "Черновик — без проверки" if language == "ru" else "Draft — unchecked"
 
 
 def _acceptance_records(state: TripState) -> dict[str, Mapping[str, Any]]:
@@ -486,6 +649,7 @@ def _blocker_view(
     acceptance: Mapping[str, Any] | None,
     *,
     accepted: bool,
+    language: str,
 ) -> BlockerView:
     return BlockerView(
         id=finding.id,
@@ -495,7 +659,15 @@ def _blocker_view(
         affected_ids=finding.affected_ids,
         message=finding.message,
         resolution_status="unresolved",
-        acceptance_label="Принят пользователем — остаётся блокирующим" if accepted else None,
+        acceptance_label=(
+            (
+                "Принят пользователем — остаётся блокирующим"
+                if language == "ru"
+                else "Accepted by user — remains blocking"
+            )
+            if accepted
+            else None
+        ),
         accepted_at=(
             _text(acceptance.get("accepted_at") if acceptance else None) if accepted else None
         ),
@@ -511,9 +683,10 @@ def build_view(
     generated_at: datetime,
 ) -> ItineraryView:
     """Project canonical state into an immutable, deterministic document view."""
-    route = _route(state)
-    readiness = _readiness(state)
-    budget = _budget(state)
+    language = _language(state)
+    route = _route(state, language)
+    readiness = _readiness(state, language)
+    budget = _budget(state, language)
     document_status = state.itinerary.get("document_status")
     verification_level = state.itinerary.get("verification_level")
     finalization_basis = state.itinerary.get("finalization_basis")
@@ -523,25 +696,34 @@ def build_view(
         if document_status == "final"
         else not check_report.structural_errors and check_report.lifecycle_consistent
     )
-    declared_final_label = _declared_final_label(document_status, finalization_basis)
+    declared_final_label = _declared_final_label(
+        document_status, finalization_basis, language
+    )
     accepted_blockers = tuple(
-        _blocker_view(finding, acceptance_records.get(finding.id), accepted=True)
+        _blocker_view(
+            finding,
+            acceptance_records.get(finding.id),
+            accepted=True,
+            language=language,
+        )
         for finding in check_report.accepted_blocking_findings
     )
     unaccepted_blockers = tuple(
-        _blocker_view(finding, None, accepted=False)
+        _blocker_view(finding, None, accepted=False, language=language)
         for finding in check_report.unaccepted_blocking_findings
     )
     dates = state.brief.get("travel_dates", {})
     summary = SummaryView(
         date_range=f"{_text(dates.get('start'))} — {_text(dates.get('end'))}",
         traveler_count=len(state.brief.get("travelers", [])),
-        thesis=_text(state.brief.get("trip_thesis")),
-        route_text=" → ".join(stop.name for stop in route) or "Route not selected",
+        thesis=_text(state.brief.get("trip_thesis"), _unknown(language)),
+        route_text=" → ".join(stop.name for stop in route)
+        or ("Маршрут не выбран" if language == "ru" else "Route not selected"),
         readiness_confirmed=sum(item.status == "confirmed" for item in readiness),
         readiness_total=len(readiness),
     )
     return ItineraryView(
+        language=language,
         trip_id=_text(state.brief.get("trip_id")),
         title=_text(state.brief.get("title")),
         document_status=document_status,
@@ -552,27 +734,35 @@ def build_view(
             verification_level,
             declared_final_label,
             lifecycle_safe,
+            language,
         ),
-        verification_label=_verification_label(verification_level),
+        verification_label=_verification_label(verification_level, language),
         declared_final_label=declared_final_label,
         lifecycle_safe=lifecycle_safe,
         lifecycle_warning=(
             None
             if lifecycle_safe
             else (
-                "Статус и отчёт проверки противоречат друг другу; "
-                "этот документ нельзя считать согласованной подготовленной копией."
+                (
+                    "Статус и отчёт проверки противоречат друг другу; "
+                    "этот документ нельзя считать согласованной подготовленной копией."
+                )
+                if language == "ru"
+                else (
+                    "The status and check report conflict; this document cannot be treated "
+                    "as a consistent prepared copy."
+                )
             )
         ),
         accepted_blockers=accepted_blockers,
         unaccepted_blockers=unaccepted_blockers,
         summary=summary,
         route=route,
-        open_decisions=_decisions(state),
-        days=_days(state),
+        open_decisions=_decisions(state, language),
+        days=_days(state, language),
         readiness=readiness,
         budget=budget,
         risks=check_report.all_findings,
-        sources=_sources(state),
+        sources=_sources(state, language),
         generated_at=generated_at,
     )

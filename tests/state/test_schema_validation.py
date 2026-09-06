@@ -82,6 +82,157 @@ def test_repository_trip_bundles_match_all_four_schemas(relative_root: str) -> N
     assert validate_trip(repository_root / relative_root).ok is True
 
 
+def test_itinerary_accepts_typed_event_context_and_full_scenario_timeline(
+    minimal_trip: Path,
+) -> None:
+    """Catch the schema rejecting the readable-day event and scenario contract."""
+    brief = yaml.safe_load((minimal_trip / "brief.yaml").read_text())
+    brief["document_language"] = "ru"
+    write_state_file(minimal_trip / "brief.yaml", brief)
+    itinerary = yaml.safe_load((minimal_trip / "itinerary.yaml").read_text())
+    itinerary["days"] = [
+        {
+            "id": "day-one",
+            "timeline": [
+                {
+                    "id": "event-transfer",
+                    "kind": "transport",
+                    "time": "09:00",
+                    "title": "Train",
+                    "detail": "Travel to the next district.",
+                    "links": [
+                        {
+                            "label": "Build route",
+                            "url": "https://maps.example/route",
+                            "kind": "route",
+                            "requires_internet": True,
+                        }
+                    ],
+                    "alternatives": [
+                        {
+                            "id": "event-transfer-bus",
+                            "title": "Bus",
+                            "reason": "Use when the train is disrupted.",
+                            "detail": "Direct local bus.",
+                            "price": "Approx. JPY 500",
+                            "effort": "low",
+                            "distance": "8 km",
+                            "booking": "No reservation",
+                            "links": [
+                                {
+                                    "label": "Open on map",
+                                    "url": "https://maps.example/bus",
+                                    "kind": "map",
+                                    "requires_internet": True,
+                                }
+                            ],
+                        }
+                    ],
+                },
+                {
+                    "id": "event-lunch",
+                    "kind": "meal",
+                    "time": "12:30",
+                    "title": "Lunch",
+                    "detail": "Eat near the next stop.",
+                },
+                {
+                    "id": "event-check",
+                    "kind": "checkpoint",
+                    "time": "14:00",
+                    "title": "Weather check",
+                    "detail": "Decide before leaving the station.",
+                    "checkpoint": {
+                        "check": "Confirm the rain warning.",
+                        "adjust_plan": "Use the indoor scenario.",
+                    },
+                },
+            ],
+            "scenarios": [
+                {
+                    "id": "rain",
+                    "label": "Rain",
+                    "summary": "Replace the outdoor half of the day.",
+                    "timeline": [
+                        {
+                            "id": "event-rain-museum",
+                            "kind": "activity",
+                            "time": "15:00",
+                            "title": "Museum",
+                            "detail": "Stay indoors.",
+                        }
+                    ],
+                }
+            ],
+        }
+    ]
+    write_state_file(minimal_trip / "itinerary.yaml", itinerary)
+
+    assert validate_trip(minimal_trip).ok is True
+
+
+@pytest.mark.parametrize(
+    "event",
+    [
+        {
+            "id": "missing-kind",
+            "time": "09:00",
+            "title": "Untyped",
+            "detail": "An event needs a type.",
+        },
+        {
+            "id": "bad-checkpoint",
+            "kind": "checkpoint",
+            "time": "09:00",
+            "title": "Decide",
+            "detail": "Missing the adjustment contract.",
+            "checkpoint": {"check": "Check conditions."},
+        },
+        {
+            "id": "bad-link",
+            "kind": "activity",
+            "time": "09:00",
+            "title": "Visit",
+            "detail": "Unsafe action URL.",
+            "links": [
+                {
+                    "label": "Open",
+                    "url": "http://example.test/place",
+                    "kind": "map",
+                    "requires_internet": True,
+                }
+            ],
+        },
+    ],
+)
+def test_typed_timeline_event_rejects_an_incomplete_contract(
+    minimal_trip: Path, event: dict[str, object]
+) -> None:
+    """Catch ambiguous events, checkpoints or unsafe contextual actions."""
+    itinerary = yaml.safe_load((minimal_trip / "itinerary.yaml").read_text())
+    itinerary["days"] = [{"id": "day-one", "timeline": [event]}]
+    write_state_file(minimal_trip / "itinerary.yaml", itinerary)
+
+    assert validate_trip(minimal_trip).ok is False
+
+
+def test_alternative_day_scenario_requires_a_label_and_nonempty_timeline(
+    minimal_trip: Path,
+) -> None:
+    """Catch a description-only scenario that cannot replace the visible day plan."""
+    itinerary = yaml.safe_load((minimal_trip / "itinerary.yaml").read_text())
+    itinerary["days"] = [
+        {
+            "id": "day-one",
+            "timeline": [],
+            "scenarios": [{"id": "rain", "summary": "No actual alternative events."}],
+        }
+    ]
+    write_state_file(minimal_trip / "itinerary.yaml", itinerary)
+
+    assert validate_trip(minimal_trip).ok is False
+
+
 @pytest.mark.parametrize(
     "field",
     ["document_status", "verification_level", "finalization_basis", "accepted_blockers"],

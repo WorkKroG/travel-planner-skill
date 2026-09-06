@@ -1,0 +1,311 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-06T08:43:46Z",
+  "title": "Design System: Travel Planner",
+  "extensions": {
+    "colorMeta": {
+      "mineral-margin": {
+        "role": "primary",
+        "displayName": "Mineral Margin",
+        "tonalRamp": [
+          "oklch(15% 0.008 139.4)",
+          "oklch(27% 0.008 139.4)",
+          "oklch(39% 0.008 139.4)",
+          "oklch(51% 0.008 139.4)",
+          "oklch(63% 0.008 139.4)",
+          "oklch(75% 0.008 139.4)",
+          "oklch(87% 0.008 139.4)",
+          "oklch(95% 0.008 139.4)"
+        ]
+      },
+      "warm-paper": {
+        "role": "neutral",
+        "displayName": "Warm Paper",
+        "tonalRamp": [
+          "oklch(15% 0.008 91.5)",
+          "oklch(27% 0.008 91.5)",
+          "oklch(39% 0.008 91.5)",
+          "oklch(51% 0.008 91.5)",
+          "oklch(63% 0.008 91.5)",
+          "oklch(75% 0.008 91.5)",
+          "oklch(87% 0.008 91.5)",
+          "oklch(95% 0.008 91.5)"
+        ]
+      },
+      "deep-teal": {
+        "role": "primary",
+        "displayName": "Deep Teal",
+        "tonalRamp": [
+          "oklch(15% 0.044 214)",
+          "oklch(27% 0.044 214)",
+          "oklch(39% 0.044 214)",
+          "oklch(51% 0.044 214)",
+          "oklch(63% 0.044 214)",
+          "oklch(75% 0.044 214)",
+          "oklch(87% 0.044 214)",
+          "oklch(95% 0.044 214)"
+        ]
+      },
+      "maple": {
+        "role": "secondary",
+        "displayName": "Maple",
+        "tonalRamp": [
+          "oklch(15% 0.143 31.5)",
+          "oklch(27% 0.143 31.5)",
+          "oklch(39% 0.143 31.5)",
+          "oklch(51% 0.143 31.5)",
+          "oklch(63% 0.143 31.5)",
+          "oklch(75% 0.143 31.5)",
+          "oklch(87% 0.143 31.5)",
+          "oklch(95% 0.143 31.5)"
+        ]
+      },
+      "brass": {
+        "role": "tertiary",
+        "displayName": "Quiet Brass",
+        "tonalRamp": [
+          "oklch(15% 0.113 76.1)",
+          "oklch(27% 0.113 76.1)",
+          "oklch(39% 0.113 76.1)",
+          "oklch(51% 0.113 76.1)",
+          "oklch(63% 0.113 76.1)",
+          "oklch(75% 0.113 76.1)",
+          "oklch(87% 0.113 76.1)",
+          "oklch(95% 0.113 76.1)"
+        ]
+      },
+      "moss": {
+        "role": "tertiary",
+        "displayName": "Moss",
+        "tonalRamp": [
+          "oklch(15% 0.05 159.4)",
+          "oklch(27% 0.05 159.4)",
+          "oklch(39% 0.05 159.4)",
+          "oklch(51% 0.05 159.4)",
+          "oklch(63% 0.05 159.4)",
+          "oklch(75% 0.05 159.4)",
+          "oklch(87% 0.05 159.4)",
+          "oklch(95% 0.05 159.4)"
+        ]
+      },
+      "soft-ink": {
+        "role": "neutral",
+        "displayName": "Soft Ink",
+        "tonalRamp": [
+          "oklch(15% 0.035 218)",
+          "oklch(27% 0.035 218)",
+          "oklch(39% 0.035 218)",
+          "oklch(51% 0.035 218)",
+          "oklch(63% 0.035 218)",
+          "oklch(75% 0.035 218)",
+          "oklch(87% 0.035 218)",
+          "oklch(95% 0.035 218)"
+        ]
+      },
+      "quiet-line": {
+        "role": "neutral",
+        "displayName": "Quiet Line",
+        "tonalRamp": [
+          "oklch(15% 0.015 175.6)",
+          "oklch(27% 0.015 175.6)",
+          "oklch(39% 0.015 175.6)",
+          "oklch(51% 0.015 175.6)",
+          "oklch(63% 0.015 175.6)",
+          "oklch(75% 0.015 175.6)",
+          "oklch(87% 0.015 175.6)",
+          "oklch(95% 0.015 175.6)"
+        ]
+      },
+      "focus-blue": {
+        "role": "tertiary",
+        "displayName": "Focus Blue",
+        "tonalRamp": [
+          "oklch(15% 0.138 251.4)",
+          "oklch(27% 0.138 251.4)",
+          "oklch(39% 0.138 251.4)",
+          "oklch(51% 0.138 251.4)",
+          "oklch(63% 0.138 251.4)",
+          "oklch(75% 0.138 251.4)",
+          "oklch(87% 0.138 251.4)",
+          "oklch(95% 0.138 251.4)"
+        ]
+      },
+      "maple-wash": {
+        "role": "secondary",
+        "displayName": "Maple Wash",
+        "tonalRamp": [
+          "oklch(15% 0.018 43.2)",
+          "oklch(27% 0.018 43.2)",
+          "oklch(39% 0.018 43.2)",
+          "oklch(51% 0.018 43.2)",
+          "oklch(63% 0.018 43.2)",
+          "oklch(75% 0.018 43.2)",
+          "oklch(87% 0.018 43.2)",
+          "oklch(95% 0.018 43.2)"
+        ]
+      },
+      "brass-wash": {
+        "role": "tertiary",
+        "displayName": "Brass Wash",
+        "tonalRamp": [
+          "oklch(15% 0.039 94.3)",
+          "oklch(27% 0.039 94.3)",
+          "oklch(39% 0.039 94.3)",
+          "oklch(51% 0.039 94.3)",
+          "oklch(63% 0.039 94.3)",
+          "oklch(75% 0.039 94.3)",
+          "oklch(87% 0.039 94.3)",
+          "oklch(95% 0.039 94.3)"
+        ]
+      },
+      "moss-wash": {
+        "role": "tertiary",
+        "displayName": "Moss Wash",
+        "tonalRamp": [
+          "oklch(15% 0.014 145.5)",
+          "oklch(27% 0.014 145.5)",
+          "oklch(39% 0.014 145.5)",
+          "oklch(51% 0.014 145.5)",
+          "oklch(63% 0.014 145.5)",
+          "oklch(75% 0.014 145.5)",
+          "oklch(87% 0.014 145.5)",
+          "oklch(95% 0.014 145.5)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Trip identity on the cover."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Major document sections."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Day-region chapter titles."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Continuous reading and event detail."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Short statuses, event kinds, and metadata."
+      }
+    },
+    "breakpoints": [
+      {
+        "name": "compact",
+        "value": "760px",
+        "purpose": "Resolve the document, chapters, timelines, and tables to one reading column."
+      }
+    ]
+  },
+  "components": [
+      {
+        "name": "Document Button",
+        "kind": "button",
+        "refersTo": "button-document",
+        "description": "Restrained control for filters and scenario selection at rest.",
+        "html": "<button class=\"ds-button-document\" type=\"button\">ALL DAYS</button>",
+        "css": ".ds-button-document { min-height: 2.75rem; padding: 0.55rem 0.9rem; border: 1px solid var(--teal, #173c44); border-radius: 8px; background: var(--paper, #fffdf7); color: var(--teal, #173c44); font: 700 0.9rem/1.2 var(--sans, Inter, ui-sans-serif, sans-serif); cursor: pointer; } .ds-button-document:hover, .ds-button-document:active { background: var(--teal, #173c44); color: var(--paper, #fffdf7); } .ds-button-document:focus-visible { outline: 3px solid var(--focus, #075fa8); outline-offset: 3px; }"
+      },
+      {
+        "name": "Search Field",
+        "kind": "input",
+        "refersTo": "search-field",
+        "description": "Plain paper search field for progressive day filtering.",
+        "html": "<label class=\"ds-search-label\" for=\"ds-day-search\">SEARCH DAYS</label><input class=\"ds-search-field\" id=\"ds-day-search\" type=\"search\" placeholder=\"Place, activity, or note\">",
+        "css": ".ds-search-label { display: block; margin-bottom: 0.5rem; color: var(--soft-ink, #456068); font: 750 0.78rem/1.2 var(--sans, Inter, ui-sans-serif, sans-serif); letter-spacing: 0.06em; } .ds-search-field { width: min(100%, 34rem); min-height: 2.75rem; padding: 0.65rem 0.9rem; border: 1px solid var(--teal, #173c44); border-radius: 8px; background: var(--paper, #fffdf7); color: var(--teal, #173c44); font: 400 1rem/1.65 var(--sans, Inter, ui-sans-serif, sans-serif); } .ds-search-field:hover { border-color: var(--maple, #a93f2e); } .ds-search-field:focus-visible { outline: 3px solid var(--focus, #075fa8); outline-offset: 3px; }"
+      },
+      {
+        "name": "Lifecycle Status",
+        "kind": "chip",
+        "refersTo": "lifecycle-pill",
+        "description": "Compact semantic truth label using a pale wash and current-color border.",
+        "html": "<span class=\"ds-lifecycle-status\">DRAFT</span>",
+        "css": ".ds-lifecycle-status { display: inline-flex; min-height: 2rem; align-items: center; padding: 0.2rem 0.7rem; border: 1px solid currentColor; border-radius: 999px; background: var(--maple-wash, #fff0ea); color: #7a281d; font: 750 0.78rem/1.2 var(--sans, Inter, ui-sans-serif, sans-serif); letter-spacing: 0.055em; text-transform: uppercase; }"
+      },
+      {
+        "name": "Day Chapter",
+        "kind": "card",
+        "refersTo": "day-chapter",
+        "description": "Bounded editorial chapter opening with number, date, place, and thesis.",
+        "html": "<article class=\"ds-day-chapter\"><header class=\"ds-day-heading\"><div class=\"ds-day-number\"><span class=\"ds-day-label\">DAY</span><strong class=\"ds-day-count\">04</strong></div><div class=\"ds-day-copy\"><p class=\"ds-day-date\">18 OCTOBER · SUNDAY</p><h3 class=\"ds-day-title\">Kyoto</h3><p class=\"ds-day-thesis\">Move slowly through the eastern hills before the evening crowds arrive.</p></div></header></article>",
+        "css": ".ds-day-chapter { padding: clamp(2rem, 5vw, 4.5rem) clamp(1rem, 4vw, 3rem); border-top: 0.25rem solid var(--teal, #173c44); background: var(--mineral, #edf1ec); color: var(--teal, #173c44); } .ds-day-heading { display: grid; grid-template-columns: 5.5rem minmax(0, 1fr); gap: 1.5rem; align-items: start; } .ds-day-number { display: flex; flex-direction: column; color: var(--teal, #173c44); font: 750 0.75rem/1 var(--sans, Inter, ui-sans-serif, sans-serif); letter-spacing: 0.07em; text-transform: uppercase; } .ds-day-count { font: 600 clamp(3.5rem, 7vw, 5.5rem)/0.9 var(--serif, Georgia, serif); letter-spacing: -0.035em; } .ds-day-date { margin: 0 0 0.5rem; color: var(--soft-ink, #456068); font: 700 1rem/1.4 var(--sans, Inter, ui-sans-serif, sans-serif); } .ds-day-title { margin: 0; font: 600 clamp(2rem, 4vw, 3.4rem)/1.05 var(--serif, Georgia, serif); letter-spacing: -0.025em; } .ds-day-thesis { max-width: 54ch; margin: 1rem 0 0; font: 400 1.25rem/1.45 var(--sans, Inter, ui-sans-serif, sans-serif); }"
+      },
+      {
+        "name": "Checkpoint Event",
+        "kind": "custom",
+        "refersTo": "checkpoint",
+        "description": "Rare maple interruption that states what to check and how the plan changes.",
+        "html": "<article class=\"ds-checkpoint\"><time class=\"ds-checkpoint-time\">14:00</time><div class=\"ds-checkpoint-body\"><p class=\"ds-checkpoint-kind\">CHECKPOINT</p><h4 class=\"ds-checkpoint-title\">Weather decision</h4><dl class=\"ds-checkpoint-contract\"><div class=\"ds-checkpoint-part\"><dt class=\"ds-checkpoint-term\">WHAT TO CHECK</dt><dd class=\"ds-checkpoint-detail\">Rain and wind at the ridge.</dd></div><div class=\"ds-checkpoint-part\"><dt class=\"ds-checkpoint-term\">HOW TO ADJUST</dt><dd class=\"ds-checkpoint-detail\">Use the covered market route.</dd></div></dl></div></article>",
+        "css": ".ds-checkpoint { display: grid; grid-template-columns: 6rem minmax(0, 1fr); gap: 1rem; padding: 1.5rem; border-block: 2px solid var(--maple, #a93f2e); background: var(--maple-wash, #fff0ea); color: #541b13; } .ds-checkpoint-time, .ds-checkpoint-kind { color: #7a281d; } .ds-checkpoint-time { font: 800 1rem/1.4 var(--sans, Inter, ui-sans-serif, sans-serif); font-variant-numeric: tabular-nums; } .ds-checkpoint-kind { margin: 0 0 0.25rem; font: 750 0.78rem/1.2 var(--sans, Inter, ui-sans-serif, sans-serif); letter-spacing: 0.06em; text-transform: uppercase; } .ds-checkpoint-title { margin: 0; font: 700 1.08rem/1.35 var(--sans, Inter, ui-sans-serif, sans-serif); } .ds-checkpoint-contract { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin: 1rem 0 0; padding-top: 1rem; border-top: 1px solid #c77e70; } .ds-checkpoint-term { font: 800 0.78rem/1.2 var(--sans, Inter, ui-sans-serif, sans-serif); letter-spacing: 0.05em; } .ds-checkpoint-detail { margin: 0.2rem 0 0; font: 400 1rem/1.5 var(--sans, Inter, ui-sans-serif, sans-serif); }"
+      }
+    ],
+  "narrative": {
+      "northStar": "The Curated Route",
+      "overview": "Travel Planner is an editorial travel guide, not a dashboard. Warm paper sits inside cool mineral margins, deep teal supplies the document's structure, and Source Serif gives route and day headings the authority of a carefully edited journey book. The mood is calm, literate, useful, and quietly crafted.\n\nThe interface earns attention through pacing rather than chrome: bounded reading widths, generous sectional pauses, crisp rules, and repeating day chapters. Controls remain modest and in flow. Color carries hierarchy sparingly, while maple appears with force only when the document must tell the truth about a checkpoint or consequential state.",
+      "keyCharacteristics": [
+        "Editorial reading flow with a bounded paper sheet.",
+        "Mineral and warm-paper material contrast.",
+        "Deep-teal structure with rare, semantic maple emphasis.",
+        "Serif-led hierarchy paired with practical sans-serif controls.",
+        "Day chapters separated by generous rhythm and quiet tinted fields.",
+        "Progressive controls that recede behind the guide itself."
+      ],
+      "rules": [
+        {
+          "name": "The Maple Reserve Rule",
+          "body": "Use maple only for checkpoints, lifecycle truth, and blocking information; its rarity is what gives it authority.",
+          "section": "colors"
+        },
+        {
+          "name": "The Quiet Accent Rule",
+          "body": "Brass communicates review and uncertainty, moss communicates confirmation, and focus blue belongs only to keyboard focus.",
+          "section": "colors"
+        },
+        {
+          "name": "The Two-Voice Rule",
+          "body": "Serif carries narrative hierarchy and route character; sans-serif carries reading copy, metadata, controls, and audit detail.",
+          "section": "typography"
+        },
+        {
+          "name": "The Small-Type Boundary Rule",
+          "body": "Sub-body sizes are for short labels and metadata only, never for continuous reading.",
+          "section": "typography"
+        },
+        {
+          "name": "The Chapter Boundary Rule",
+          "body": "Every day begins with a strong top rule, number, date, place, and thesis, then ends with a closing navigation rule and generous space.",
+          "section": "layout"
+        },
+        {
+          "name": "The Flat Document Rule",
+          "body": "Never float core reading surfaces as shadowed app cards; use tonal fields, rules, and spacing to express hierarchy.",
+          "section": "elevation"
+        },
+        {
+          "name": "The Square Page Rule",
+          "body": "Rounded geometry belongs to controls and compact statuses, not to the paper sheet or major content containers.",
+          "section": "shapes"
+        }
+      ],
+      "dos": [
+        "Do preserve a centred, bounded reading column with generous chapter spacing.",
+        "Do use deep teal for structure and warm paper for sustained reading.",
+        "Do keep controls restrained, accessible, and subordinate to the itinerary.",
+        "Do use chapter tints as rhythm while keeping meaning in text, labels, and structure.",
+        "Do reserve maple emphasis for checkpoints and consequential lifecycle truth."
+      ],
+      "donts": [
+        "Don't introduce permanent dashboard rails, sticky indexes, or fixed navigation furniture.",
+        "Don't turn each fact or event into a rounded, shadowed card.",
+        "Don't use maple as a general decorative accent.",
+        "Don't use small label typography for paragraphs or essential instructions.",
+        "Don't let optional imagery or controls compete with the chronological reading flow."
+      ]
+    }
+}

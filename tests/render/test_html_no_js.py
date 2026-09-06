@@ -9,9 +9,10 @@ from tests.render.css_contracts import assert_css_rule
 CRITICAL_PRINT_SELECTORS = (
     ".warning-block",
     ".blocker-item",
-    ".constraint-list li",
-    ".metadata-pair",
+    ".checkpoint-contract",
+    ".day-meta",
     ".timeline-event",
+    ".event-alternative",
     ".decision-item",
     ".readiness-item",
     ".risk-item",
@@ -28,10 +29,24 @@ def test_primary_and_backup_exist_without_javascript(japan_view: ItineraryView) 
     html = _without_javascript(render_html(japan_view, media={}, options=DEFAULTS))
 
     assert 'data-scenario="primary"' in html
-    assert 'data-scenario="backup"' in html
-    assert "Short neighbourhood walk" in html
-    assert "Direct rest" in html
-    assert 'data-scenario="backup" hidden' not in html
+    assert 'data-scenario="direct-rest"' in html
+    assert "Arrival and transfer" in html
+    assert "Arrival and direct transfer" in html
+    assert 'data-scenario="direct-rest" hidden' not in html
+
+
+def test_scenario_tabs_include_keyboard_and_failure_recovery_logic(
+    japan_view: ItineraryView,
+) -> None:
+    """Keep the bounded source-level evidence for accessible progressive enhancement."""
+    html = render_html(japan_view, media={}, options=DEFAULTS)
+
+    for key in ("ArrowRight", "ArrowLeft", "Home", "End"):
+        assert f'event.key === "{key}"' in html
+    assert 'candidate.setAttribute("aria-selected", String(active))' in html
+    assert "panel.hidden = panel.dataset.scenario !== selected" in html
+    assert 'root.classList.add("enhancement-failed")' in html
+    assert "panel.hidden = false" in html
 
 
 def test_contents_and_all_core_sections_remain_linked_without_javascript(
@@ -40,7 +55,7 @@ def test_contents_and_all_core_sections_remain_linked_without_javascript(
     """Catch JavaScript becoming a gate for document navigation or core reading."""
     html = _without_javascript(render_html(japan_view, media={}, options=DEFAULTS))
 
-    assert '<details class="contents" open>' in html
+    assert '<details class="contents">' in html
     for anchor in (
         "#trip-summary",
         "#blockers",
@@ -79,8 +94,21 @@ def test_print_static_css_keeps_both_scenarios_and_removes_interactive_chrome(
     )
     assert_css_rule(
         print_css,
-        (".scenario-panel > p",),
+        (".scenario-summary",),
         {"orphans": "2", "widows": "2"},
+    )
+    assert_css_rule(print_css, (".day-chapter",), {"break-before": "page"})
+    assert_css_rule(
+        print_css,
+        (".day-title-group h3",),
+        {"string-set": "day-title content()"},
+    )
+    assert_css_rule(print_css, (".day-date",), {"string-set": "day-date content()"})
+    assert '@top-right { content: string(day-title) " · " string(day-date); }' in print_css
+    assert_css_rule(
+        print_css,
+        (".event-alternatives > :not(summary)",),
+        {"display": "block !important"},
     )
 
 
