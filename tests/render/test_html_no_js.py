@@ -47,6 +47,34 @@ def test_no_javascript_keeps_controls_hidden_and_event_alternatives_expanded(
     assert "Simple meal at the lodging" in html
 
 
+def test_print_keeps_alternatives_when_a_no_javascript_reader_closes_details(
+    japan_view: ItineraryView,
+) -> None:
+    """Catch user-controlled disclosure state removing required print content."""
+    html = _without_javascript(render_html(japan_view, media={}, options=DEFAULTS))
+    closed = re.sub(
+        r'(<details class="event-alternatives"[^>]*) open>',
+        r"\1>",
+        html,
+    )
+    print_copy_start = closed.index('<div class="event-alternatives-print"')
+    print_copy_end = closed.index("</div>", print_copy_start)
+    print_copy = closed[print_copy_start:print_copy_end]
+    print_css = closed[closed.index("@media print") :]
+
+    assert "Simple meal at the lodging" in print_copy
+    assert_css_rule(
+        print_css,
+        (".event-alternatives",),
+        {"display": "none !important"},
+    )
+    assert_css_rule(
+        print_css,
+        (".event-alternatives-print",),
+        {"display": "block"},
+    )
+
+
 def test_scenario_tabs_include_keyboard_and_failure_recovery_logic(
     japan_view: ItineraryView,
 ) -> None:
@@ -62,8 +90,6 @@ def test_scenario_tabs_include_keyboard_and_failure_recovery_logic(
     assert "tablist.hidden = false" in html
     assert "tablist.hidden = true" in html
     assert "disclosure.open = true" in html
-    assert 'window.addEventListener("beforeprint"' in html
-    assert 'window.addEventListener("afterprint"' in html
 
 
 def test_contents_and_all_core_sections_remain_linked_without_javascript(
@@ -189,5 +215,9 @@ def test_print_keeps_version_provenance_without_a_footer_only_page(
     assert 'id="document-version"' in sources
     assert japan_view.status_label in sources
     assert japan_view.generated_at.isoformat() in sources
-    footer_rules = print_css[print_css.index(".document-footer") :]
-    assert "display: none !important" in footer_rules
+    assert_css_rule(
+        print_css,
+        (".document-footer",),
+        {"display": "block !important", "position": "fixed"},
+    )
+    assert '@bottom-right { content: counter(page) " / " counter(pages); }' in print_css

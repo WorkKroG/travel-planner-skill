@@ -109,18 +109,6 @@
     alternativeDisclosures.forEach((disclosure) => {
       disclosure.open = false;
     });
-    let disclosureOpenState = [];
-    window.addEventListener("beforeprint", () => {
-      disclosureOpenState = alternativeDisclosures.map((disclosure) => disclosure.open);
-      alternativeDisclosures.forEach((disclosure) => {
-        disclosure.open = true;
-      });
-    });
-    window.addEventListener("afterprint", () => {
-      alternativeDisclosures.forEach((disclosure, index) => {
-        disclosure.open = disclosureOpenState[index] ?? false;
-      });
-    });
 
     document.querySelectorAll("[data-optional-media]").forEach((figure) => {
       const photo = figure.querySelector("[data-media-image]");

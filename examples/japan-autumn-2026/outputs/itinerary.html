@@ -897,6 +897,7 @@ button[aria-selected="true"] {
 
 .print-url,
 .event-print-context,
+.event-alternatives-print,
 .print-link-appendix {
   display: none;
 }
@@ -1252,6 +1253,7 @@ button[aria-selected="true"] {
   @page {
     size: A4 portrait;
     margin: 16mm 14mm 18mm;
+    @bottom-right { content: counter(page) " / " counter(pages); }
   }
 
   :root,
@@ -1294,9 +1296,27 @@ button[aria-selected="true"] {
   .day-nav,
   .skip-link,
   .screen-reader-live,
-  .enhancement-error,
-  .document-footer {
+  .enhancement-error {
     display: none !important;
+  }
+
+  .event-alternatives {
+    display: none !important;
+  }
+
+  .document-footer {
+    position: fixed;
+    right: 25mm;
+    bottom: -13mm;
+    left: 0;
+    display: block !important;
+    width: auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: #fff;
+    color: #333;
+    font-size: 7pt;
   }
 
   .scenario-panel[hidden] {
@@ -1309,6 +1329,10 @@ button[aria-selected="true"] {
     color: #333;
     font-size: 8pt;
     font-weight: 700;
+  }
+
+  .event-alternatives-print {
+    display: block;
   }
 
   article[data-day][hidden] {
@@ -1421,6 +1445,7 @@ button[aria-selected="true"] {
   <symbol id="icon-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
   <symbol id="icon-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5"/></symbol>
 </svg>
+
 
 
 
@@ -1623,14 +1648,25 @@ button[aria-selected="true"] {
         <details class="event-alternatives" id="day-1-primary-event-day-1-dinner-alternatives" open>
           <summary>Альтернативы (1)</summary>
           <div class="alternative-list">
-            <article class="event-alternative">
-              <h6>Простой ужин в отеле</h6>
-              <p><strong>Когда выбрать:</strong> Если прилёт задержался или дорога утомила сильнее ожидаемого.</p>
-<p>Не добавляет нового переезда и сохраняет ранний отдых.</p>              <dl class="alternative-meta">
-<div><dt>Нагрузка</dt><dd>очень низкая</dd></div><div><dt>Бронирование</dt><dd>бронирование не предполагается</dd></div>              </dl>
-            </article>
-          </div>
+    <article class="event-alternative">
+      <h6>Простой ужин в отеле</h6>
+      <p><strong>Когда выбрать:</strong> Если прилёт задержался или дорога утомила сильнее ожидаемого.</p>
+<p>Не добавляет нового переезда и сохраняет ранний отдых.</p>      <dl class="alternative-meta">
+<div><dt>Нагрузка</dt><dd>очень низкая</dd></div><div><dt>Бронирование</dt><dd>бронирование не предполагается</dd></div>      </dl>
+    </article>
+  </div>
         </details>
+        <div class="event-alternatives-print" aria-label="Альтернативы (1)">
+          <p><strong>Альтернативы (1)</strong></p>
+          <div class="alternative-list">
+    <article class="event-alternative">
+      <h6>Простой ужин в отеле</h6>
+      <p><strong>Когда выбрать:</strong> Если прилёт задержался или дорога утомила сильнее ожидаемого.</p>
+<p>Не добавляет нового переезда и сохраняет ранний отдых.</p>      <dl class="alternative-meta">
+<div><dt>Нагрузка</dt><dd>очень низкая</dd></div><div><dt>Бронирование</dt><dd>бронирование не предполагается</dd></div>      </dl>
+    </article>
+  </div>
+        </div>
       </div>
     </li>
   </ol>
@@ -1794,19 +1830,35 @@ button[aria-selected="true"] {
         <details class="event-alternatives" id="day-3-primary-event-day-3-site-alternatives" open>
           <summary>Альтернативы (1)</summary>
           <div class="alternative-list">
-            <article class="event-alternative">
-              <h6>Локальный музей</h6>
-              <p><strong>Когда выбрать:</strong> Если часы изменились или очередь делает визит неразумным.</p>
-<p>Сохраняет культурный фокус и уменьшает время в пути.</p>              <dl class="alternative-meta">
-<div><dt>Нагрузка</dt><dd>низкая</dd></div><div><dt>Расстояние</dt><dd>в пределах текущего района</dd></div><div><dt>Бронирование</dt><dd>проверить вход перед выходом</dd></div>              </dl>
-              <ul class="event-actions">
-                <li>
-                  <a class="external-link" href="https://www.google.com/maps/search/?api=1&amp;query=Tokyo"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg>Открыть район на карте</a>
-<span class="network-label">Требуется интернет</span>                </li>
-              </ul>
-            </article>
-          </div>
+    <article class="event-alternative">
+      <h6>Локальный музей</h6>
+      <p><strong>Когда выбрать:</strong> Если часы изменились или очередь делает визит неразумным.</p>
+<p>Сохраняет культурный фокус и уменьшает время в пути.</p>      <dl class="alternative-meta">
+<div><dt>Нагрузка</dt><dd>низкая</dd></div><div><dt>Расстояние</dt><dd>в пределах текущего района</dd></div><div><dt>Бронирование</dt><dd>проверить вход перед выходом</dd></div>      </dl>
+      <ul class="event-actions">
+        <li>
+          <a class="external-link" href="https://www.google.com/maps/search/?api=1&amp;query=Tokyo"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg>Открыть район на карте</a>
+<span class="network-label">Требуется интернет</span>        </li>
+      </ul>
+    </article>
+  </div>
         </details>
+        <div class="event-alternatives-print" aria-label="Альтернативы (1)">
+          <p><strong>Альтернативы (1)</strong></p>
+          <div class="alternative-list">
+    <article class="event-alternative">
+      <h6>Локальный музей</h6>
+      <p><strong>Когда выбрать:</strong> Если часы изменились или очередь делает визит неразумным.</p>
+<p>Сохраняет культурный фокус и уменьшает время в пути.</p>      <dl class="alternative-meta">
+<div><dt>Нагрузка</dt><dd>низкая</dd></div><div><dt>Расстояние</dt><dd>в пределах текущего района</dd></div><div><dt>Бронирование</dt><dd>проверить вход перед выходом</dd></div>      </dl>
+      <ul class="event-actions">
+        <li>
+          <a class="external-link" href="https://www.google.com/maps/search/?api=1&amp;query=Tokyo"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg>Открыть район на карте</a>
+<span class="network-label">Требуется интернет</span>        </li>
+      </ul>
+    </article>
+  </div>
+        </div>
       </div>
     </li>
     <li class="timeline-event timeline-event--meal" data-event-id="event-day-3-lunch">
@@ -2802,18 +2854,6 @@ button[aria-selected="true"] {
 
     alternativeDisclosures.forEach((disclosure) => {
       disclosure.open = false;
-    });
-    let disclosureOpenState = [];
-    window.addEventListener("beforeprint", () => {
-      disclosureOpenState = alternativeDisclosures.map((disclosure) => disclosure.open);
-      alternativeDisclosures.forEach((disclosure) => {
-        disclosure.open = true;
-      });
-    });
-    window.addEventListener("afterprint", () => {
-      alternativeDisclosures.forEach((disclosure, index) => {
-        disclosure.open = disclosureOpenState[index] ?? false;
-      });
     });
 
     document.querySelectorAll("[data-optional-media]").forEach((figure) => {

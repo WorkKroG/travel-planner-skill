@@ -890,6 +890,7 @@ button[aria-selected="true"] {
 
 .print-url,
 .event-print-context,
+.event-alternatives-print,
 .print-link-appendix {
   display: none;
 }
@@ -1245,6 +1246,7 @@ button[aria-selected="true"] {
   @page {
     size: A4 portrait;
     margin: 16mm 14mm 18mm;
+    @bottom-right { content: counter(page) " / " counter(pages); }
   }
 
   :root,
@@ -1287,9 +1289,27 @@ button[aria-selected="true"] {
   .day-nav,
   .skip-link,
   .screen-reader-live,
-  .enhancement-error,
-  .document-footer {
+  .enhancement-error {
     display: none !important;
+  }
+
+  .event-alternatives {
+    display: none !important;
+  }
+
+  .document-footer {
+    position: fixed;
+    right: 25mm;
+    bottom: -13mm;
+    left: 0;
+    display: block !important;
+    width: auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: #fff;
+    color: #333;
+    font-size: 7pt;
   }
 
   .scenario-panel[hidden] {
@@ -1302,6 +1322,10 @@ button[aria-selected="true"] {
     color: #333;
     font-size: 8pt;
     font-weight: 700;
+  }
+
+  .event-alternatives-print {
+    display: block;
   }
 
   article[data-day][hidden] {

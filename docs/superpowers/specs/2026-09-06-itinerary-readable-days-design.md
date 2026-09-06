@@ -54,7 +54,7 @@ Each event link has `label`, absolute HTTPS `url`, `kind` (`map`, `route`, `offi
 
 ### 4.2 Event alternatives
 
-An event alternative has stable `id`, `title`, `reason` and `detail`, with optional `price`, `effort`, `distance`, `booking` and its own `links[]`. It appears inside the owning event in a native disclosure labelled `Alternatives (N)`. The source disclosure is open so content survives absent or failed JavaScript; successful enhancement collapses it until requested and expands it temporarily for print. Opening or closing it changes only the view and never edits canonical state.
+An event alternative has stable `id`, `title`, `reason` and `detail`, with optional `price`, `effort`, `distance`, `booking` and its own `links[]`. It appears inside the owning event in a native disclosure labelled `Alternatives (N)`. The source disclosure is open so content survives absent or failed JavaScript; successful enhancement collapses it until requested. A separate print-only projection preserves the same alternative content regardless of disclosure state. Opening or closing the disclosure changes only the view and never edits canonical state.
 
 ### 4.3 Checkpoints
 
@@ -96,6 +96,7 @@ User-authored itinerary content is never machine-translated by the renderer. A w
 - Interactive filters, tab controls and adjacent-day controls are hidden.
 - Filtered days and hidden scenario panels are forced visible.
 - Each normal day starts on a fresh page when practical; every printed event repeats a compact day/date/region context so continuation pages remain identifiable in browsers without paged-media string support.
+- Every page repeats the generated trip/version/status footer and a page counter; the fixed print footer is the narrow exception to the normal-flow print rule because it is page furniture, not document content.
 - Primary timeline events, checkpoints and compact alternative scenario blocks avoid page splits when practical.
 - The primary timeline prints in full; alternative day scenarios print more compactly but with complete titles, times and details.
 - Link labels and source identifiers print without dumping naked URLs into the reading flow; the source section includes full source URLs plus a print-only appendix for every event and alternative action URL.

@@ -253,7 +253,7 @@ Rules:
 
 ### Persistence
 
-Search text, active filters, open disclosures and selected scenario are session-level view state. The first version does not persist them between browser launches and does not require `localStorage`. Any later persistence remains explicitly non-canonical and must offer an obvious reset.
+Active filters, open disclosures and selected scenario are session-level view state. The first version does not persist them between browser launches and does not require `localStorage`. Any later persistence remains explicitly non-canonical and must offer an obvious reset.
 
 ### Progressive enhancement
 
@@ -423,7 +423,7 @@ Render the core document and all primary/backup content in readable order. Enhan
 - WCAG 2.2 AA contrast for text and functional graphics.
 - Status is communicated through text plus icon/shape, not colour alone.
 - Native controls and disclosure semantics are preferred; custom controls expose name, role, value and state.
-- Search results, filter changes and scenario changes receive restrained screen-reader announcements.
+- Filter changes and scenario changes receive restrained screen-reader announcements.
 - Timeline order is meaningful in the DOM and does not depend on a visual line.
 - Images have appropriate alt text; decorative stamp art is hidden from assistive technology.
 - At 200% zoom, no content or operation is lost.
@@ -507,8 +507,6 @@ The following shared PR7 interaction and local-open checklist is entirely
 confirm that the necessary source hooks and fallback content exist, but do not satisfy or
 partially execute any item in this checklist:
 
-- Search: record a query with matches, a query with no matches and reset; confirm the
-  expected result/empty state and restoration of the complete itinerary.
 - Filters: exercise All days, unresolved items, weather-sensitive items, transfers and
   warnings one at a time; for every filter, record that detailed days and the day overview
   remain synchronized, then reset.

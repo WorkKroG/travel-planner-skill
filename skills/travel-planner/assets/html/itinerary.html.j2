@@ -27,6 +27,36 @@
     'checkpoint': 'stop'
   } %}
 
+  {% macro render_event_alternative_list(alternatives) -%}
+  <div class="alternative-list">
+    {% for alternative in alternatives %}
+    <article class="event-alternative">
+      <h6>{{ alternative.title }}</h6>
+      <p><strong>{{ tr('reason') }}:</strong> {{ alternative.reason }}</p>
+      {% if alternative.detail %}<p>{{ alternative.detail }}</p>{% endif %}
+      {% if alternative.price or alternative.effort or alternative.distance or alternative.booking %}
+      <dl class="alternative-meta">
+        {% if alternative.price %}<div><dt>{{ tr('price') }}</dt><dd>{{ alternative.price }}</dd></div>{% endif %}
+        {% if alternative.effort %}<div><dt>{{ tr('effort') }}</dt><dd>{{ alternative.effort }}</dd></div>{% endif %}
+        {% if alternative.distance %}<div><dt>{{ tr('distance') }}</dt><dd>{{ alternative.distance }}</dd></div>{% endif %}
+        {% if alternative.booking %}<div><dt>{{ tr('booking') }}</dt><dd>{{ alternative.booking }}</dd></div>{% endif %}
+      </dl>
+      {% endif %}
+      {% if alternative.links %}
+      <ul class="event-actions">
+        {% for link in alternative.links %}
+        <li>
+          <a class="external-link" href="{{ link.url }}"><svg class="icon" aria-hidden="true"><use href="#icon-{% if link.kind in ['map', 'route'] %}route{% else %}arrow{% endif %}"></use></svg>{{ link.label }}</a>
+          {% if link.requires_internet %}<span class="network-label">{{ tr('internet') }}</span>{% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </article>
+    {% endfor %}
+  </div>
+  {%- endmacro %}
+
   {% macro render_timeline(timeline, panel_id, day) -%}
   <ol class="timeline">
     {% for event in timeline %}
@@ -60,34 +90,12 @@
         {% if event.alternatives %}
         <details class="event-alternatives" id="{{ panel_id }}-{{ event.event_id }}-alternatives" open>
           <summary>{{ tr('alternatives', count=event.alternatives|length) }}</summary>
-          <div class="alternative-list">
-            {% for alternative in event.alternatives %}
-            <article class="event-alternative">
-              <h6>{{ alternative.title }}</h6>
-              <p><strong>{{ tr('reason') }}:</strong> {{ alternative.reason }}</p>
-              {% if alternative.detail %}<p>{{ alternative.detail }}</p>{% endif %}
-              {% if alternative.price or alternative.effort or alternative.distance or alternative.booking %}
-              <dl class="alternative-meta">
-                {% if alternative.price %}<div><dt>{{ tr('price') }}</dt><dd>{{ alternative.price }}</dd></div>{% endif %}
-                {% if alternative.effort %}<div><dt>{{ tr('effort') }}</dt><dd>{{ alternative.effort }}</dd></div>{% endif %}
-                {% if alternative.distance %}<div><dt>{{ tr('distance') }}</dt><dd>{{ alternative.distance }}</dd></div>{% endif %}
-                {% if alternative.booking %}<div><dt>{{ tr('booking') }}</dt><dd>{{ alternative.booking }}</dd></div>{% endif %}
-              </dl>
-              {% endif %}
-              {% if alternative.links %}
-              <ul class="event-actions">
-                {% for link in alternative.links %}
-                <li>
-                  <a class="external-link" href="{{ link.url }}"><svg class="icon" aria-hidden="true"><use href="#icon-{% if link.kind in ['map', 'route'] %}route{% else %}arrow{% endif %}"></use></svg>{{ link.label }}</a>
-                  {% if link.requires_internet %}<span class="network-label">{{ tr('internet') }}</span>{% endif %}
-                </li>
-                {% endfor %}
-              </ul>
-              {% endif %}
-            </article>
-            {% endfor %}
-          </div>
+          {{ render_event_alternative_list(event.alternatives) }}
         </details>
+        <div class="event-alternatives-print" aria-label="{{ tr('alternatives', count=event.alternatives|length) }}">
+          <p><strong>{{ tr('alternatives', count=event.alternatives|length) }}</strong></p>
+          {{ render_event_alternative_list(event.alternatives) }}
+        </div>
         {% endif %}
       </div>
     </li>
