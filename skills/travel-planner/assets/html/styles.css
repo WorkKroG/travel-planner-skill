@@ -487,17 +487,6 @@ main {
   margin: var(--space-4) 0 var(--space-2);
 }
 
-input[type="search"] {
-  width: min(100%, 34rem);
-  min-height: var(--control);
-  padding: 0.65rem 0.9rem;
-  border: 1px solid var(--teal);
-  border-radius: 8px;
-  background: var(--paper);
-  color: var(--teal);
-  font: inherit;
-}
-
 .filters,
 .scenario-tabs {
   display: flex;

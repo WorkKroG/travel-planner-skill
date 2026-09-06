@@ -78,7 +78,7 @@
 - [ ] **Step 3: Write failing no-JS/print tests** proving primary and alternative timelines remain complete, tabs are labelled, and print restores every scenario.
 - [ ] **Step 4: Run the no-JS tests and confirm the old description-only scenarios fail.**
 - [ ] **Step 5: Rebuild the Jinja template with the approved direction contract as the first body comment and add the localized copy catalog in `html.py`.**
-- [ ] **Step 6: Implement tab keyboard/view behaviour and localized filter/search announcements in `app.js`; keep all content visible before enhancement.**
+- [ ] **Step 6: Implement tab keyboard/view behaviour and localized filter announcements in `app.js`; keep all content visible before enhancement.**
 - [ ] **Step 7: Extend URL validation to scenario events and event alternatives, then run all render tests until green.**
 
 ### Task 4: Reading-column visual system and print rules

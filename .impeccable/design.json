@@ -213,14 +213,6 @@
         "css": ".ds-button-document { min-height: 2.75rem; padding: 0.55rem 0.9rem; border: 1px solid var(--teal, #173c44); border-radius: 8px; background: var(--paper, #fffdf7); color: var(--teal, #173c44); font: 700 0.9rem/1.2 var(--sans, Inter, ui-sans-serif, sans-serif); cursor: pointer; } .ds-button-document:hover, .ds-button-document:active { background: var(--teal, #173c44); color: var(--paper, #fffdf7); } .ds-button-document:focus-visible { outline: 3px solid var(--focus, #075fa8); outline-offset: 3px; }"
       },
       {
-        "name": "Search Field",
-        "kind": "input",
-        "refersTo": "search-field",
-        "description": "Plain paper search field for progressive day filtering.",
-        "html": "<label class=\"ds-search-label\" for=\"ds-day-search\">SEARCH DAYS</label><input class=\"ds-search-field\" id=\"ds-day-search\" type=\"search\" placeholder=\"Place, activity, or note\">",
-        "css": ".ds-search-label { display: block; margin-bottom: 0.5rem; color: var(--soft-ink, #456068); font: 750 0.78rem/1.2 var(--sans, Inter, ui-sans-serif, sans-serif); letter-spacing: 0.06em; } .ds-search-field { width: min(100%, 34rem); min-height: 2.75rem; padding: 0.65rem 0.9rem; border: 1px solid var(--teal, #173c44); border-radius: 8px; background: var(--paper, #fffdf7); color: var(--teal, #173c44); font: 400 1rem/1.65 var(--sans, Inter, ui-sans-serif, sans-serif); } .ds-search-field:hover { border-color: var(--maple, #a93f2e); } .ds-search-field:focus-visible { outline: 3px solid var(--focus, #075fa8); outline-offset: 3px; }"
-      },
-      {
         "name": "Lifecycle Status",
         "kind": "chip",
         "refersTo": "lifecycle-pill",

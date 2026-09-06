@@ -71,13 +71,6 @@ components:
     rounded: "{rounded.control}"
     padding: "0.55rem 0.9rem"
     height: "2.75rem"
-  search-field:
-    backgroundColor: "{colors.warm-paper}"
-    textColor: "{colors.deep-teal}"
-    typography: "{typography.body}"
-    rounded: "{rounded.control}"
-    padding: "0.65rem 0.9rem"
-    height: "2.75rem"
   lifecycle-pill:
     backgroundColor: "{colors.maple-wash}"
     textColor: "{colors.maple}"

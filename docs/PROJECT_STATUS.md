@@ -8,7 +8,7 @@
 
 HTML-маршрут перестроен из dashboard-композиции в спокойный одноколоночный документ. Встроенное оглавление закрыто по умолчанию, каждый день читается как отдельная глава, а основной `days[].timeline` объединяет переезды, активности, еду, заселение, отдых и контрольные точки в одной хронологии.
 
-Контекст принадлежит событию: HTTPS-ссылки и локальные замены хранятся в `timeline[].links[]` и `timeline[].alternatives[]`. Контрольная точка явно записывает, что проверить и как изменить план. `days[].scenarios[]` содержит только полноценные альтернативные timelines; основной план остаётся в `days[].timeline`. JavaScript улучшает поиск, фильтры и ARIA tabs, но без него все сценарии остаются читаемыми. Print CSS восстанавливает скрытые дни, сценарии и закрытые event-альтернативы, начинает каждый день с новой страницы и повторяет day/date-контекст на продолжениях.
+Контекст принадлежит событию: HTTPS-ссылки и локальные замены хранятся в `timeline[].links[]` и `timeline[].alternatives[]`. Контрольная точка явно записывает, что проверить и как изменить план. `days[].scenarios[]` содержит только полноценные альтернативные timelines; основной план остаётся в `days[].timeline`. JavaScript улучшает фильтры и ARIA tabs, но без него все сценарии остаются читаемыми. Полнотекстового поиска в документе нет. Print CSS восстанавливает скрытые дни, сценарии и закрытые event-альтернативы, начинает каждый день с новой страницы и повторяет day/date-контекст на продолжениях.
 
 `brief.yaml.document_language` выбирает английские или русские системные подписи, даты, weekday/enum/unknown labels и объявления JavaScript; отсутствие поля сохраняет английский default. Renderer не переводит пользовательский контент. Текущий 12-дневный Japan example записан по-русски и явно использует `document_language: ru`.
 
@@ -23,7 +23,7 @@ HTML-маршрут перестроен из dashboard-композиции в 
 - skill `quick_validate` и plugin validation из staged root `travel-planner` проходят;
 - временные `init`, `check` и `render` проходят как из editable install, так и из собранного wheel;
 - wheel содержит актуальные schemas, HTML template, CSS, JavaScript, icons и trip template;
-- committed Japan HTML совпадает со свежим fixed-time render; SHA-256: `bc0222368777c983eda2e1bacab615a915fc789521ccf49537bdee28962eba8e`;
+- committed Japan HTML совпадает со свежим fixed-time render; SHA-256: `ccb4ce9657d12487009d8849ac2074498ee3a73bc8d13c0924308fe1aa4db778`;
 - независимый skill forward-test завершён с `Pass`; Impeccable finish-review дал `Pass with limitations`, а три найденных source-level дефекта исправлены.
 
 Статические тесты подтверждают source contracts, а не реальную браузерную раскладку или поведение assistive technology.

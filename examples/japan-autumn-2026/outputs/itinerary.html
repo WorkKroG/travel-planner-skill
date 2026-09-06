@@ -494,17 +494,6 @@ main {
   margin: var(--space-4) 0 var(--space-2);
 }
 
-input[type="search"] {
-  width: min(100%, 34rem);
-  min-height: var(--control);
-  padding: 0.65rem 0.9rem;
-  border: 1px solid var(--teal);
-  border-radius: 8px;
-  background: var(--paper);
-  color: var(--teal);
-  font: inherit;
-}
-
 .filters,
 .scenario-tabs {
   display: flex;
@@ -1424,7 +1413,6 @@ button[aria-selected="true"] {
   <symbol id="icon-conflict" viewBox="0 0 24 24"><path d="M7 7h12m0 0-4-4m4 4-4 4M17 17H5m0 0 4-4m-4 4 4 4"/></symbol>
   <symbol id="icon-cloud" viewBox="0 0 24 24"><path d="M7 18h10a4 4 0 0 0 .5-8A6 6 0 0 0 6 9a4.5 4.5 0 0 0 1 9Z"/></symbol>
   <symbol id="icon-stop" viewBox="0 0 24 24"><path d="M8 3h8l5 5v8l-5 5H8l-5-5V8Z"/><path d="M12 7v6m0 4h.01"/></symbol>
-  <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m16 16 4 4"/></symbol>
   <symbol id="icon-route" viewBox="0 0 24 24"><circle cx="6" cy="18" r="2"/><circle cx="18" cy="6" r="2"/><path d="M8 18h3a3 3 0 0 0 3-3V9a3 3 0 0 1 3-3"/></symbol>
   <symbol id="icon-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
   <symbol id="icon-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5"/></symbol>
@@ -1523,8 +1511,6 @@ button[aria-selected="true"] {
           <li class="route-stop"><strong>Kanazawa</strong><span>9–13 ноября · 4 ночей</span><span>Переезд на поезде</span></li>
         </ol>
         <div class="interactive-controls" aria-label="Фильтр дней">
-          <label class="visually-hidden" for="day-search">Поиск по дням маршрута</label>
-          <input id="day-search" type="search" placeholder="Найти день, место или контрольную точку" data-day-search>
           <div class="filters" aria-label="Фильтр дней">
             <button type="button" data-filter="all" aria-pressed="true">Все дни</button>
             <button type="button" data-filter="unresolved" aria-pressed="false">Не решено</button>
@@ -2649,7 +2635,6 @@ button[aria-selected="true"] {
         overview,
       ]),
     );
-    const search = document.querySelector("[data-day-search]");
     const filterButtons = Array.from(document.querySelectorAll("[data-filter]"));
     const resultCount = document.querySelector("[data-filter-results]");
     const emptyState = document.querySelector("[data-filter-empty]");
@@ -2660,11 +2645,9 @@ button[aria-selected="true"] {
       activeFilter === "all" || day.dataset[activeFilter] === "true";
 
     const applyDayView = () => {
-      const query = search?.value.trim().toLocaleLowerCase() || "";
       let visible = 0;
       days.forEach((day) => {
-        const matchesSearch = !query || day.textContent.toLocaleLowerCase().includes(query);
-        const show = matchesSearch && matchesFilter(day);
+        const show = matchesFilter(day);
         day.hidden = !show;
         const overview = overviewByDay.get(day.id);
         if (overview) overview.hidden = !show;
@@ -2676,7 +2659,6 @@ button[aria-selected="true"] {
       announce(message);
     };
 
-    search?.addEventListener("input", applyDayView);
     filterButtons.forEach((button) => {
       button.addEventListener("click", () => {
         activeFilter = button.dataset.filter || "all";
@@ -2688,12 +2670,11 @@ button[aria-selected="true"] {
     });
     resetFilters?.addEventListener("click", () => {
       activeFilter = "all";
-      if (search) search.value = "";
       filterButtons.forEach((candidate) => {
         candidate.setAttribute("aria-pressed", String(candidate.dataset.filter === "all"));
       });
       applyDayView();
-      search?.focus();
+      filterButtons.find((candidate) => candidate.dataset.filter === "all")?.focus();
     });
 
     document.querySelectorAll("[data-scenario-tabs]").forEach((tablist) => {

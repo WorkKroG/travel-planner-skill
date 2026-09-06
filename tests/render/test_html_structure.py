@@ -254,10 +254,10 @@ def test_html_marks_a_recorded_data_error_as_inconsistent(japan_state) -> None:
     assert "cannot be treated as a consistent prepared copy" in html
 
 
-def test_day_filter_source_exposes_overview_and_empty_state_hooks(
+def test_day_filters_expose_overview_and_empty_state_without_search(
     japan_view: ItineraryView,
 ) -> None:
-    """Catch missing source hooks needed for PR7's manual synchronization checks."""
+    """Catch filters regressing into an unnecessary full-text search interface."""
     html = render_html(japan_view, media={}, options=DEFAULTS)
 
     for day in japan_view.days:
@@ -265,6 +265,8 @@ def test_day_filter_source_exposes_overview_and_empty_state_hooks(
     assert "data-filter-results" in html
     assert "data-filter-empty" in html
     assert "data-reset-filters" in html
+    assert 'type="search"' not in html
+    assert "data-day-search" not in html
 
 
 def test_day_chapter_owns_timeline_links_checkpoints_and_local_alternatives(

@@ -25,7 +25,6 @@
         overview,
       ]),
     );
-    const search = document.querySelector("[data-day-search]");
     const filterButtons = Array.from(document.querySelectorAll("[data-filter]"));
     const resultCount = document.querySelector("[data-filter-results]");
     const emptyState = document.querySelector("[data-filter-empty]");
@@ -36,11 +35,9 @@
       activeFilter === "all" || day.dataset[activeFilter] === "true";
 
     const applyDayView = () => {
-      const query = search?.value.trim().toLocaleLowerCase() || "";
       let visible = 0;
       days.forEach((day) => {
-        const matchesSearch = !query || day.textContent.toLocaleLowerCase().includes(query);
-        const show = matchesSearch && matchesFilter(day);
+        const show = matchesFilter(day);
         day.hidden = !show;
         const overview = overviewByDay.get(day.id);
         if (overview) overview.hidden = !show;
@@ -52,7 +49,6 @@
       announce(message);
     };
 
-    search?.addEventListener("input", applyDayView);
     filterButtons.forEach((button) => {
       button.addEventListener("click", () => {
         activeFilter = button.dataset.filter || "all";
@@ -64,12 +60,11 @@
     });
     resetFilters?.addEventListener("click", () => {
       activeFilter = "all";
-      if (search) search.value = "";
       filterButtons.forEach((candidate) => {
         candidate.setAttribute("aria-pressed", String(candidate.dataset.filter === "all"));
       });
       applyDayView();
-      search?.focus();
+      filterButtons.find((candidate) => candidate.dataset.filter === "all")?.focus();
     });
 
     document.querySelectorAll("[data-scenario-tabs]").forEach((tablist) => {

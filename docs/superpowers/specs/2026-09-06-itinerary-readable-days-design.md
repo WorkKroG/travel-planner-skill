@@ -17,7 +17,7 @@ The primary reading task is: understand each day in chronological order, notice 
 - A compact in-flow contents disclosure appears after the cover and is closed by default at every breakpoint. Without JavaScript it remains a native, usable disclosure containing all section and day links.
 - There is no permanent sticky left index, fixed bottom contents button or three-column composition.
 - The cover keeps trip identity, route, lifecycle status, readiness, recorded expenses and the highest-priority saved concerns, but its supporting facts read as document furniture rather than dashboard cards.
-- The day overview remains compact and searchable, with a stacked transformation on narrow screens.
+- The day overview remains compact and filterable, with a stacked transformation on narrow screens. The document does not offer full-text search.
 
 ## 3. Day chapters
 
@@ -93,7 +93,7 @@ User-authored itinerary content is never machine-translated by the renderer. A w
 
 ## 8. Print
 
-- Interactive search, filters, tab controls and adjacent-day controls are hidden.
+- Interactive filters, tab controls and adjacent-day controls are hidden.
 - Filtered days and hidden scenario panels are forced visible.
 - Each normal day starts on a fresh page when practical and repeats day/date context in its header.
 - Primary timeline events, checkpoints and compact alternative scenario blocks avoid page splits when practical.

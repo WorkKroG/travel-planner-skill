@@ -42,7 +42,7 @@ The dominant task is to understand and evaluate a complex itinerary. Content ord
 Lightweight operations help the reader inspect the document:
 
 - navigate to a day or section;
-- search locally;
+- filter days locally;
 - filter days by meaningful planning conditions;
 - expand supporting detail;
 - compare the primary and backup scenarios;
@@ -166,7 +166,7 @@ Immediately after the first screen, show all days in a compact overview. Each it
 
 On desktop this may use a compact table-like composition. On phones it becomes a stacked list with the same information and no horizontal overflow.
 
-The overview must remain useful for a 30-day route. It supports fast search and filtering rather than shrinking text or creating a long horizontal control strip.
+The overview must remain useful for a 30-day route. It supports fast filtering rather than shrinking text or creating a long horizontal control strip.
 
 ## 9. Detailed day anatomy
 
@@ -246,7 +246,6 @@ Rules:
 ### Included
 
 - anchor navigation by section and day;
-- local full-text search over visible itinerary content;
 - filters for all days, unresolved items, weather-sensitive items, transfers and warnings;
 - semantic disclosure controls;
 - view-only primary/backup scenario switching;
@@ -258,7 +257,7 @@ Search text, active filters, open disclosures and selected scenario are session-
 
 ### Progressive enhancement
 
-Core reading order, all primary itinerary information, links and print content remain available when JavaScript is absent or fails. JavaScript enhances filtering, search, disclosures and scenario presentation; it does not gate the document.
+Core reading order, all primary itinerary information, links and print content remain available when JavaScript is absent or fails. JavaScript enhances filtering, disclosures and scenario presentation; it does not gate the document.
 
 ## 13. Responsive behaviour
 
@@ -404,7 +403,7 @@ The self-contained core document has no application loading shell or skeleton sc
 
 ### Error
 
-A generation or validation error prevents Final status and produces an explicit build report outside the artefact. At runtime, failure of search, filtering or another enhancement leaves the full document readable and may show a concise inline notice near the failed control. Do not replace the itinerary with a generic error screen.
+A generation or validation error prevents Final status and produces an explicit build report outside the artefact. At runtime, failure of filtering or another enhancement leaves the full document readable and may show a concise inline notice near the failed control. Do not replace the itinerary with a generic error screen.
 
 ### Optional media failure
 
@@ -446,7 +445,7 @@ Browser print uses the same information model with dedicated print CSS. There is
 
 ### Print transformations
 
-- hide interactive navigation, search, filters and button chrome;
+- hide interactive navigation, filters and button chrome;
 - print primary and backup scenarios together;
 - prevent critical blocks, timeline events and compact tables from splitting where possible;
 - repeat table headers;

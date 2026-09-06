@@ -209,8 +209,6 @@
           {% else %}<li>{{ tr('route_empty') }}</li>{% endfor %}
         </ol>
         <div class="interactive-controls" aria-label="{{ tr('filter_days') }}">
-          <label class="visually-hidden" for="day-search">{{ tr('search_label') }}</label>
-          <input id="day-search" type="search" placeholder="{{ tr('search_placeholder') }}" data-day-search>
           <div class="filters" aria-label="{{ tr('filter_days') }}">
             <button type="button" data-filter="all" aria-pressed="true">{{ tr('all_days') }}</button>
             <button type="button" data-filter="unresolved" aria-pressed="false">{{ tr('unresolved_filter') }}</button>
