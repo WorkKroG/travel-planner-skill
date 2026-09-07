@@ -1,3 +1,145 @@
 # Sources
 
-This demonstration uses anonymized, frozen fixture evidence only. `official-tokyo-fixture`, `official-kyoto-fixture`, and `official-kanazawa-fixture` model regional provenance; their URLs are deliberately non-live and must not be treated as current operational sources.
+## Claims
+
+- **claim-ebike-availability** — unverified
+  - source-kawaguchiko-cycling: Fujisan.ne.jp — https://fujisan.ne.jp/feature/611/
+  - Last checked: 2026-09-06T22:33:50+03:00
+  - source-momiji-festival: Fujisan.ne.jp — https://fujisan.ne.jp/news/6065/
+  - Last checked: 2026-09-06T22:33:50+03:00
+- **claim-hakone-operations** — unverified
+  - source-hakone-nav: Hakone Navi — https://www.hakonenavi.jp/international/en/around
+  - Last checked: 2026-09-06T22:33:50+03:00
+  - source-kintoki: Hakone Japan — https://hakone-japan.com/discover/national-park/activities/mt-kintoki-course/
+  - Last checked: 2026-09-06T22:33:50+03:00
+  - source-owakudani: Owakudani — https://owakudani.com/nature/
+  - Last checked: 2026-09-06T22:33:50+03:00
+  - source-pola: Hakone Japan — https://hakone-japan.com/things-to-do/museums/pola_art_museum/
+  - Last checked: 2026-09-06T22:33:50+03:00
+- **claim-izu-craft-logistics** — unverified
+  - source-hachimano: Hachimano Kiln — https://taiken-jp.com/yawata/experience_eng.html
+  - Last checked: 2026-09-06T22:33:50+03:00
+  - source-izu-craft: Izu Craft House — https://www.izu-crafthouse.org/glassblowing.html
+  - Last checked: 2026-09-06T22:33:50+03:00
+- **claim-packrafting-slot** — unverified
+  - source-packrafting: Visit Nikko — https://www.visitnikko.jp/en/stories/lake-chuzenji-trekking-and-packrafting-experience/
+  - Last checked: 2026-09-06T22:33:50+03:00
+- **claim-ryugatake-conditions** — unverified
+  - source-fujikyu-bus: Fujikyu Bus — https://www.fujikyubus.co.jp/shuyu
+  - Last checked: 2026-09-06T22:33:50+03:00
+  - source-ryugatake: Yamanashi Tourism — https://www.yamanashi-kankou.jp/kankou/spot/p1_4756.html
+  - Last checked: 2026-09-06T22:33:50+03:00
+- **claim-ryuo-route** — unverified
+  - source-ryuo: Visit Nikko — https://www.visitnikko.jp/en/spots/ryuo-valley-hiking/
+  - Last checked: 2026-09-06T22:33:50+03:00
+  - source-tobu-express: Tobu Railway — https://www.tobu.co.jp/en/express_info/timetable.html
+  - Last checked: 2026-09-06T22:33:50+03:00
+- **claim-tokyo-bookable-access** — unverified
+  - source-edo-tokyo: Edo-Tokyo Museum — https://edo-tokyo-museum.or.jp/en/information/hours/
+  - Last checked: 2026-09-06T22:33:50+03:00
+  - source-gcans: G-Cans — https://gaikaku.jp/apply/
+  - Last checked: 2026-09-06T22:33:50+03:00
+  - source-jal-sky: JAL Sky Museum — https://www.jal.com/ja/kengaku/en/info/
+  - Last checked: 2026-09-06T22:33:50+03:00
+  - source-urban-kayak: ZAC Sports — https://www.zacsports.com/tokyo-kayak-e.htm
+  - Last checked: 2026-09-06T22:33:50+03:00
+- **claim-toyosu-edo-access** — unverified
+  - source-edo-kiriko: GO TOKYO — https://www.gotokyo.org/en/workshop/sd016/index.html
+  - Last checked: 2026-09-06T22:33:50+03:00
+  - source-edo-tokyo: Edo-Tokyo Museum — https://edo-tokyo-museum.or.jp/en/information/hours/
+  - Last checked: 2026-09-06T22:33:50+03:00
+  - source-toyosu-auctions: Toyosu Market — https://www.toyosu-market.or.jp/en/wholesale-auctions/
+  - Last checked: 2026-09-06T22:33:50+03:00
+  - source-toyosu-calendar: Tokyo Metropolitan Central Wholesale Market — https://www.shijou.metro.tokyo.lg.jp/calendar/2026/
+  - Last checked: 2026-09-06T22:33:50+03:00
+
+## Readiness references
+
+- **arrange-luggage-forwarding** — claims: none; sources: none
+- **arrange-ryugatake-transfer** — claims: none; sources: source-fujikyu-bus, source-ryugatake
+- **choose-izu-workshop** — claims: none; sources: source-izu-craft, source-hachimano
+- **choose-tokyo-nov-11** — claims: none; sources: source-gcans, source-jal-sky, source-urban-kayak
+- **confirm-arrival-airport** — claims: none; sources: none
+- **confirm-edo-kiriko** — claims: none; sources: source-edo-kiriko
+- **confirm-hakone-ryokan** — claims: none; sources: none
+- **confirm-hnd-terminal** — claims: none; sources: source-haneda, source-keikyu, source-monorail
+- **recheck-toyosu** — claims: none; sources: source-toyosu-calendar, source-toyosu-auctions
+- **recheck-weather-and-operations** — claims: none; sources: source-omuro, source-hakone-nav, source-fujikyu-bus
+- **reserve-kawaguchiko-ebikes** — claims: none; sources: source-kawaguchiko-cycling
+- **reserve-packrafting** — claims: none; sources: source-packrafting
+- **reserve-tobu-and-odoriko** — claims: none; sources: source-tobu-express, source-odoriko
+
+## Day photographs
+
+- **day-1 · Асакуса вечером** — media/day-01-01.jpg
+  - Kakidai · CC BY-SA 3.0
+  - photo-day-1-1: https://commons.wikimedia.org/wiki/File:Sensoji_at_night_4.jpg
+  - Embedded photo and credit imported from japan_itinerary_02-13_nov_2026.html#d02; remote page not rechecked.
+- **day-2 · Ущелье Рюокё** — media/day-02-01.jpg
+  - Kanohara · public domain
+  - photo-day-2-1: https://commons.wikimedia.org/wiki/File:Ryuokyo,_Tochigi.jpg
+  - Embedded photo and credit imported from japan_itinerary_02-13_nov_2026.html#d03; remote page not rechecked.
+- **day-3 · Озеро Тюдзэндзи** — media/day-03-01.jpg
+  - Kennosuke Yamaguchi · CC BY-SA 2.0
+  - photo-day-3-1: https://commons.wikimedia.org/wiki/File:Lake_Ch%C5%ABzenji_in_autumn.jpg
+  - Embedded photo and credit imported from japan_itinerary_02-13_nov_2026.html#d04; remote page not rechecked.
+- **day-3 · British Embassy Villa** — media/day-03-02.jpg
+  - 663highland · CC BY-SA 4.0
+  - photo-day-3-2: https://commons.wikimedia.org/wiki/File:170825_British_Embassy_Villa_Memorial_Park01s3.jpg
+  - Embedded photo and credit imported from japan_itinerary_02-13_nov_2026.html#d04; remote page not rechecked.
+- **day-4 · Atagawa Tropical & Alligator Garden** — media/day-04-01.jpg
+  - Motokoka · CC BY-SA 4.0
+  - photo-day-4-1: https://commons.wikimedia.org/wiki/File:Atagawa_Banana_Alligator.jpg
+  - Embedded photo and credit imported from japan_itinerary_02-13_nov_2026.html#d05; remote page not rechecked.
+- **day-5 · Кратер Mt Ōmuro** — media/day-05-01.jpg
+  - Dandy1022 · CC BY-SA 3.0
+  - photo-day-5-1: https://commons.wikimedia.org/wiki/File:Crater_of_Mount_%C5%8Cmuro.jpg
+  - Embedded photo and credit imported from japan_itinerary_02-13_nov_2026.html#d06; remote page not rechecked.
+- **day-5 · Побережье Дзёгасаки** — media/day-05-02.jpg
+  - Batholith · public domain
+  - photo-day-5-2: https://commons.wikimedia.org/wiki/File:Jogasaki_Coast_20111016_b.jpg
+  - Embedded photo and credit imported from japan_itinerary_02-13_nov_2026.html#d06; remote page not rechecked.
+- **day-6 · Mt Kintoki · ясный сценарий** — media/day-06-01.jpg
+  - Alpsdake · CC BY-SA 4.0
+  - photo-day-6-1: https://commons.wikimedia.org/wiki/File:Mount_Fuji_from_Mount_Kintoki_2022-11-22.jpg
+  - Embedded photo and credit imported from japan_itinerary_02-13_nov_2026.html#d07; remote page not rechecked.
+- **day-6 · Owakudani · смешанный сценарий** — media/day-06-02.jpg
+  - Joli Rumi · CC BY-SA 4.0
+  - photo-day-6-2: https://commons.wikimedia.org/wiki/File:View_of_Mount_Fuji_from_Owakudani,_Hakone,_Japan.jpg
+  - Embedded photo and credit imported from japan_itinerary_02-13_nov_2026.html#d07; remote page not rechecked.
+- **day-7 · Кавагутико осенью** — media/day-07-01.jpg
+  - Alpsdake · CC BY-SA 4.0
+  - photo-day-7-1: https://commons.wikimedia.org/wiki/File:Autumn_leaf_color_and_Mount_Fuji_from_Lake_Kawaguchi.jpg
+  - Embedded photo and credit imported from japan_itinerary_02-13_nov_2026.html#d08; remote page not rechecked.
+- **day-8 · Фудзи от озера Мотосу** — media/day-08-01.jpg
+  - Supanut Arunoprayote · CC BY 4.0
+  - photo-day-8-1: https://commons.wikimedia.org/wiki/File:Mount_Fuji_from_Lake_Motosu_20241026.jpg
+  - Embedded photo and credit imported from japan_itinerary_02-13_nov_2026.html#d09; remote page not rechecked.
+- **day-9 · Kitaguchi Hongu Fuji Sengen** — media/day-09-01.jpg
+  - 江戸村のとくぞう · CC BY-SA 4.0
+  - photo-day-9-1: https://commons.wikimedia.org/wiki/File:Kitaguchi_Hongu_Fuji_Sengen_jinja_Torii.jpg
+  - Embedded photo and credit imported from japan_itinerary_02-13_nov_2026.html#d10; remote page not rechecked.
+- **day-9 · Старый Фудзиёсида** — media/day-09-02.jpg
+  - DimiTalen · CC0
+  - photo-day-9-2: https://commons.wikimedia.org/wiki/File:Honcho_Street_with_Mount_Fuji_in_the_daytime,_Fujiyoshida,_2016.jpg
+  - Embedded photo and credit imported from japan_itinerary_02-13_nov_2026.html#d10; remote page not rechecked.
+- **day-10 · G-Cans · подземный храм** — media/day-10-01.jpg
+  - Ubahnverleih · CC0
+  - photo-day-10-1: https://commons.wikimedia.org/wiki/File:Metropolitan_Area_Outer_Underground_Discharge_Channel.jpg
+  - Embedded photo and credit imported from japan_itinerary_02-13_nov_2026.html#d11; remote page not rechecked.
+- **day-10 · Edo-Tokyo Museum** — media/day-10-02.jpg
+  - Kentin · CC BY-SA 2.1 JP
+  - photo-day-10-2: https://commons.wikimedia.org/wiki/File:Edo_tokyo_museum.jpg
+  - Embedded photo and credit imported from japan_itinerary_02-13_nov_2026.html#d11; remote page not rechecked.
+- **day-11 · Toyosu Market** — media/day-11-01.jpg
+  - Lombroso · CC BY-SA 4.0
+  - photo-day-11-1: https://commons.wikimedia.org/wiki/File:Toyosu_fish_market,_at_Toyosu,_Koto,_Tokyo_(2019-01-01)_02.jpg
+  - Embedded photo and credit imported from japan_itinerary_02-13_nov_2026.html#d12; remote page not rechecked.
+- **day-11 · Стекло Edo Kiriko** — media/day-11-02.jpg
+  - Shoestring · public domain
+  - photo-day-11-2: https://commons.wikimedia.org/wiki/File:Edo-Kiriko.JPG
+  - Embedded photo and credit imported from japan_itinerary_02-13_nov_2026.html#d12; remote page not rechecked.
+- **day-12 · Haneda Airport** — media/day-12-01.jpg
+  - Syced · CC0
+  - photo-day-12-1: https://commons.wikimedia.org/wiki/File:Haneda_airport.jpg
+  - Embedded photo and credit imported from japan_itinerary_02-13_nov_2026.html#d13; remote page not rechecked.

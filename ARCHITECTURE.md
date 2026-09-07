@@ -53,6 +53,7 @@ trip workspace, переносимый пользователем
 ├── itinerary.yaml
 ├── readiness.yaml
 ├── decisions.md
+├── media/              # optional canonical photo files referenced by days
 ├── sources.md          # generated
 └── outputs/            # generated
 ```
@@ -101,6 +102,8 @@ View model переносит без переосмысления три пол�
 
 Self-contained означает, что скачанный HTML открывается локально без обязательных сетевых assets. Это свойство артефакта, а не offline workflow. Специальных offline-статусов, UI, challenge или evals нет.
 
+Фотографии дня записываются в `itinerary.yaml.days[].media` в порядке показа, максимум три. Schema проверяет metadata, а recorded-data checks — разрешимость `source_id` в `candidates.yaml.sources`. `render/media.py` читает только явно записанные относительные файлы внутри `media/` выбранной поездки (включая проверку symlink), проверяет непустые bytes и разрешённый raster MIME, затем встраивает base64. CLI передаёт эти галереи общему шаблону; одинаковый bundle и `--at` дают одинаковые bytes HTML. Загрузок из сети и image-processing dependency нет; декодирование повреждённого непустого raster остаётся ответственностью браузера с локальным fallback для каждой фотографии. Ошибка чтения/metadata останавливает сборку до перезаписи HTML. Перенос bundle включает `media/`; HTML остаётся единственным автономным документом для читателя.
+
 Print CSS сохраняет критический контент, lifecycle labels, блокеры, источники и читаемую пагинацию. Если пользователю нужен PDF, он вручную выбирает browser Print → Save as PDF; отдельного adapter, data pipeline или продуктовой гарантии PDF нет.
 
 ## Целевая упаковка и QA
@@ -118,5 +121,7 @@ Print CSS сохраняет критический контент, lifecycle la
 `reference_evaluator.py`, adapters, judges, rubrics/graders, fixture worlds, scenario-directory matrix, сохранённые eval traces и тесты удалённых модулей не входят в целевую архитектуру.
 
 ## Связь с HTML spec
+
+[Утверждённый визуальный редизайн от 7 сентября](docs/superpowers/specs/2026-09-07-html-visual-redesign-design.md) определяет палитру «Лимон и кобальт» для общего шаблона, галерею в шапке дня и линию расписания. Иконки событий выбираются по `kind`; иконки сценариев показывают основной маршрут и погодные либо общие альтернативы по записанному `weather_sensitive`, без разбора ID, индексов или текста маршрута. Renderer не выводит время и части дня из неоднозначных человеческих подписей.
 
 [Readable Itinerary Days spec](docs/superpowers/specs/2026-09-06-itinerary-readable-days-design.md) заменяет прежнюю композицию навигации, дня и сценариев. [Interactive Itinerary HTML spec](docs/superpowers/specs/2026-08-28-interactive-itinerary-html-design.md) сохраняет остальные UX, responsive, accessibility, progressive enhancement, browser print и visual requirements. Текущий продуктовый контракт заменяет общий запрет на выдачу документа и обещания проверенной поездки на Prepared copy и узкую проверку данных. Отсутствие отдельного offline workflow и встроенного PDF pipeline сохраняется.

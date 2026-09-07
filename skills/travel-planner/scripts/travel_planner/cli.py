@@ -15,6 +15,7 @@ from . import __version__
 from .checks import CheckReport, run_checks
 from .render.html import DEFAULTS as HTML_DEFAULTS
 from .render.html import write_html
+from .render.media import load_media
 from .render.viewmodel import build_view
 from .state import load_trip, validate_trip
 from .workspace import PROJECT_REMINDER, WorkspaceError, initialize_trip
@@ -96,7 +97,12 @@ def main(argv: Sequence[str] | None = None) -> int:
         if not report.ok:
             _print_report(report)
             return 3
-        write_html(build_view(state, report, args.at), args.output, HTML_DEFAULTS)
+        try:
+            media = load_media(state)
+            write_html(build_view(state, report, args.at), args.output, HTML_DEFAULTS, media=media)
+        except ValueError as error:
+            print(str(error), file=sys.stderr)
+            return 2
         print(f"Rendered HTML: {args.output}")
         return 0
 

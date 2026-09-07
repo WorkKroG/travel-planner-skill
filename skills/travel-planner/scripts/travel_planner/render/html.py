@@ -2,8 +2,7 @@
 
 from __future__ import annotations
 
-import base64
-from collections.abc import Callable, Iterable, Mapping
+from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from decimal import Decimal
 from pathlib import Path
@@ -14,9 +13,8 @@ from markupsafe import Markup
 
 from ..budget import format_money
 from ..resources import resource_path
+from .media import MediaAsset, embed_media
 from .viewmodel import ItineraryView, LinkView, TimelineEventView
-
-_SUPPORTED_MEDIA = frozenset({"image/jpeg", "image/png", "image/webp", "image/avif"})
 
 _COPY = {
     "en": {
@@ -99,6 +97,7 @@ _COPY = {
         "distance": "Distance",
         "booking": "Booking",
         "media_unavailable": "Photo unavailable; the day plan remains complete.",
+        "day_gallery": "Main locations · Day {number}",
         "source": "Source",
         "licence": "Licence",
         "previous_day": "Previous day",
@@ -210,6 +209,7 @@ _COPY = {
         "distance": "Расстояние",
         "booking": "Бронирование",
         "media_unavailable": "Фото недоступно; план дня остаётся полным.",
+        "day_gallery": "Основные места · День {number}",
         "source": "Источник",
         "licence": "Лицензия",
         "previous_day": "Предыдущий день",
@@ -374,44 +374,6 @@ class HtmlOptions:
 DEFAULTS = HtmlOptions()
 
 
-@dataclass(frozen=True)
-class MediaAsset:
-    content: bytes
-    mime_type: str
-    alt: str
-    source_id: str
-    license: str
-
-
-@dataclass(frozen=True)
-class EmbeddedMedia:
-    data_url: str
-    alt: str
-    source_id: str
-    license: str
-
-
-def embed_media(media: Mapping[str, MediaAsset]) -> dict[str, EmbeddedMedia]:
-    """Embed approved raster media only when provenance is complete."""
-    embedded: dict[str, EmbeddedMedia] = {}
-    for key in sorted(media):
-        asset = media[key]
-        if not asset.source_id.strip() or not asset.license.strip():
-            raise ValueError(f"Optional media {key!r} requires a source and license.")
-        if asset.mime_type not in _SUPPORTED_MEDIA:
-            raise ValueError(f"Unsupported optional media type for {key!r}: {asset.mime_type}")
-        if not asset.content:
-            raise ValueError(f"Optional media {key!r} is empty.")
-        payload = base64.b64encode(asset.content).decode("ascii")
-        embedded[key] = EmbeddedMedia(
-            data_url=f"data:{asset.mime_type};base64,{payload}",
-            alt=asset.alt,
-            source_id=asset.source_id,
-            license=asset.license,
-        )
-    return embedded
-
-
 def _asset(name: str) -> Path:
     return resource_path("html", name)
 
@@ -469,7 +431,7 @@ def _validate_external_urls(view: ItineraryView) -> None:
 
 def render_html(
     view: ItineraryView,
-    media: Mapping[str, MediaAsset],
+    media: Mapping[str, Sequence[MediaAsset]],
     options: HtmlOptions,
 ) -> str:
     """Render one deterministic document with every required asset inline."""
@@ -483,7 +445,11 @@ def render_html(
         lstrip_blocks=True,
     )
     template = environment.get_template(template_path.name)
-    optional_media = embed_media(media) if options.include_optional_media else {}
+    optional_media = {}
+    if options.include_optional_media:
+        if set(media) - {day.day_id for day in view.days}:
+            raise ValueError("Optional media must belong to a recorded day.")
+        optional_media = embed_media(media, {s.source_id: s.url for s in view.sources})
     translate = _translator(view.language)
     rendered = template.render(
         money=_money_formatter(view.language),
@@ -508,7 +474,7 @@ def write_html(
     target: Path,
     options: HtmlOptions,
     *,
-    media: Mapping[str, MediaAsset] | None = None,
+    media: Mapping[str, Sequence[MediaAsset]] | None = None,
 ) -> Path:
     """Write exact render bytes to one explicitly selected destination."""
     destination = Path(target)

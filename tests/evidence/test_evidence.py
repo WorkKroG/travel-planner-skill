@@ -48,3 +48,14 @@ def test_sources_projection_includes_readiness_claims(state: TripState) -> None:
     assert "claim-visa" in markdown
     assert "ready-entry" in markdown
     assert "last checked" in markdown.lower()
+
+
+def test_sources_projection_preserves_photo_credits(state: TripState) -> None:
+    state.itinerary["days"] = [{"id": "day-1", "media": [{
+        "path": "media/garden.jpg", "source_id": "official-1", "caption": "Garden",
+        "attribution": "Recorded Author", "license": "CC BY-SA 4.0",
+    }]}]
+    markdown = render_sources_markdown(state)
+    assert "Garden" in markdown and "media/garden.jpg" in markdown
+    assert "Recorded Author" in markdown and "CC BY-SA 4.0" in markdown
+    assert source_index(state)["official-1"]["url"] in markdown

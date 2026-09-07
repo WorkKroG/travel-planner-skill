@@ -1,38 +1,53 @@
 ---
 name: Travel Planner
-description: "Curated Route — a calm editorial travel guide shaped by mineral, maple, and warm paper."
+description: "Lemon and Cobalt — a bright travel guide with yellow destination openings and a continuous chronological line."
 colors:
-  mineral-margin: "#edf1ec"
-  warm-paper: "#fffdf7"
-  deep-teal: "#173c44"
-  maple: "#a93f2e"
-  brass: "#9b6b12"
-  moss: "#496b58"
-  soft-ink: "#456068"
-  quiet-line: "#bdcac6"
-  focus-blue: "#075fa8"
-  maple-wash: "#fff0ea"
-  brass-wash: "#fff7da"
-  moss-wash: "#edf5ed"
+  paper: "#fffef8"
+  heading-field: "#ffe785"
+  ink: "#153369"
+  ink-soft: "#3b5271"
+  accent: "#1649b5"
+  selected: "#1747ab"
+  selected-ink: "#fff"
+  checkpoint-field: "#fff0b7"
+  timeline-line: "#acbee0"
+  info-field: "#e7efff"
+  heading-line: "#c2a844"
+  line: "#d6dddf"
+  danger: "#8b3028"
+  danger-ink: "#7a281d"
+  warning: "#70430c"
+  attention-ink: "#65470f"
+  success: "#355442"
+  danger-field: "#fff0e8"
+  attention-field: "#fff0b7"
+  success-field: "#edf5ed"
+  focus: "#1649b5"
 typography:
   display:
-    fontFamily: '"Source Serif 4", "Iowan Old Style", "Palatino Linotype", Georgia, serif'
-    fontSize: "clamp(3rem, 7vw, 5.8rem)"
-    fontWeight: 600
-    lineHeight: 0.98
-    letterSpacing: "-0.025em"
+    fontFamily: '"Avenir Next", "Segoe UI", sans-serif'
+    fontSize: "clamp(2.75rem, 6vw, 4.5rem)"
+    fontWeight: 750
+    lineHeight: 1.04
+    letterSpacing: "-0.035em"
   headline:
-    fontFamily: '"Source Serif 4", "Iowan Old Style", "Palatino Linotype", Georgia, serif'
-    fontSize: "clamp(2rem, 4vw, 3.25rem)"
-    fontWeight: 600
-    lineHeight: 1.08
-    letterSpacing: "-0.025em"
+    fontFamily: '"Avenir Next", "Segoe UI", sans-serif'
+    fontSize: "clamp(2rem, 4vw, 3rem)"
+    fontWeight: 750
+    lineHeight: 1.12
+    letterSpacing: "-0.035em"
   title:
-    fontFamily: '"Source Serif 4", "Iowan Old Style", "Palatino Linotype", Georgia, serif'
-    fontSize: "clamp(2rem, 4vw, 3.4rem)"
-    fontWeight: 600
-    lineHeight: 1.05
-    letterSpacing: "-0.025em"
+    fontFamily: '"Avenir Next", "Segoe UI", sans-serif'
+    fontSize: "clamp(2.25rem, 6vw, 4.125rem)"
+    fontWeight: 750
+    lineHeight: 1.04
+    letterSpacing: "-0.04em"
+  day-number:
+    fontFamily: '"Avenir Next", "Segoe UI", sans-serif'
+    fontSize: "3.375rem"
+    fontWeight: 750
+    lineHeight: 1
+    letterSpacing: "-0.035em"
   body:
     fontFamily: 'Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
     fontSize: "1rem"
@@ -40,12 +55,24 @@ typography:
     lineHeight: 1.65
   label:
     fontFamily: 'Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
-    fontSize: "0.78rem"
-    fontWeight: 750
-    lineHeight: 1.2
-    letterSpacing: "0.06em"
+    fontSize: "0.875rem"
+    fontWeight: 400
+    lineHeight: 1.65
+  control:
+    fontFamily: 'Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
+    fontSize: "0.875rem"
+    fontWeight: 600
+    lineHeight: 1.4
+  status:
+    fontFamily: 'Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
+    fontSize: "0.875rem"
+    fontWeight: 700
+    lineHeight: 1.4
 rounded:
-  control: "8px"
+  control: "6px"
+  notice: "12px"
+  photo: "16px"
+  checkpoint: "0 12px 12px 0"
   pill: "999px"
   circle: "50%"
 spacing:
@@ -58,187 +85,200 @@ spacing:
   10: "5rem"
 components:
   button-document:
-    backgroundColor: "{colors.warm-paper}"
-    textColor: "{colors.deep-teal}"
-    typography: "{typography.label}"
+    backgroundColor: "{colors.paper}"
+    textColor: "{colors.ink}"
+    typography: "{typography.control}"
     rounded: "{rounded.control}"
-    padding: "0.55rem 0.9rem"
-    height: "2.75rem"
+    padding: "0.65rem 0.9rem"
   button-document-active:
-    backgroundColor: "{colors.deep-teal}"
-    textColor: "{colors.warm-paper}"
-    typography: "{typography.label}"
+    backgroundColor: "{colors.selected}"
+    textColor: "{colors.selected-ink}"
+    typography: "{typography.control}"
     rounded: "{rounded.control}"
-    padding: "0.55rem 0.9rem"
-    height: "2.75rem"
+    padding: "0.65rem 0.9rem"
   lifecycle-pill:
-    backgroundColor: "{colors.maple-wash}"
-    textColor: "{colors.maple}"
-    typography: "{typography.label}"
+    backgroundColor: "{colors.danger-field}"
+    textColor: "{colors.danger-ink}"
+    typography: "{typography.status}"
     rounded: "{rounded.pill}"
     padding: "0.2rem 0.7rem"
-    height: "2rem"
-  day-chapter:
-    backgroundColor: "{colors.mineral-margin}"
-    textColor: "{colors.deep-teal}"
-    padding: "clamp(2rem, 5vw, 4.5rem) clamp(1rem, 4vw, 3rem)"
+  contents:
+    backgroundColor: "{colors.info-field}"
+    textColor: "{colors.ink}"
+    padding: "0 1rem"
+  day-heading:
+    backgroundColor: "{colors.heading-field}"
+    textColor: "{colors.ink}"
+    padding: "2rem"
+  timeline-activity:
+    backgroundColor: "{colors.paper}"
+    textColor: "{colors.ink}"
+    padding: "0.8rem 0 1.5rem 1.75rem"
   checkpoint:
-    backgroundColor: "{colors.maple-wash}"
-    textColor: "{colors.maple}"
-    padding: "1.5rem"
+    backgroundColor: "{colors.checkpoint-field}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.checkpoint}"
+    padding: "0.8rem 1rem 1.5rem 1.75rem"
 ---
 
 # Design System: Travel Planner
 
 ## Overview
 
-**Creative North Star: "The Curated Route"**
+**Creative North Star: "Lemon and Cobalt"**
 
-Travel Planner is an editorial travel guide, not a dashboard. Warm paper sits inside cool mineral margins, deep teal supplies the document's structure, and Source Serif gives route and day headings the authority of a carefully edited journey book. The mood is calm, literate, useful, and quietly crafted.
+Travel Planner is a bright, readable travel guide. Lemon fields introduce the trip and each destination; cobalt links and time anchors carry the reader through warm paper. Large sans-serif place names, real photographs and a continuous timeline give each day a clear opening and a dependable reading rhythm.
 
-The interface earns attention through pacing rather than chrome: bounded reading widths, generous sectional pauses, crisp rules, and repeating day chapters. Controls remain modest and in flow. Color carries hierarchy sparingly, while maple appears with force only when the document must tell the truth about a checkpoint or consequential state.
+The same visual language covers the whole document: cover, route overview, contents, days, open decisions, preparation, budget, risks, sources and footer. Controls stay in the reading flow. Information hierarchy comes from type, spacing, thin rules and a few purposeful color fields.
+
+This document records the implemented shared template in `skills/travel-planner/assets/html/styles.css` and `itinerary.html.j2`, following the [approved September 7 visual specification](docs/superpowers/specs/2026-09-07-html-visual-redesign-design.md) and its Lemon HTML source. It describes source-level design properties; it does not record a completed browser or visual review.
 
 **Key Characteristics:**
 
-- Editorial reading flow with a bounded paper sheet.
-- Mineral and warm-paper material contrast.
-- Deep-teal structure with rare, semantic maple emphasis.
-- Serif-led hierarchy paired with practical sans-serif controls.
-- Day chapters separated by generous rhythm and quiet tinted fields.
-- Progressive controls that recede behind the guide itself.
+- Lemon cover and destination openings on warm paper.
+- Large sans-serif titles with cobalt actions and time anchors.
+- Optional galleries inside the day opening, before compact facts.
+- Continuous chronological lines with semantic outline SVG icons.
+- Pale yellow checkpoints and pale blue navigation fields.
+- Accessible reading with progressive controls and a complete print layout.
 
 ## Colors
 
-The palette feels botanical and archival: cool mineral, inked teal, warm paper, and restrained natural accents.
+The palette is sunny and legible, with deep blue text, clear cobalt actions and restrained semantic notices.
 
 ### Primary
 
-- **Deep Teal:** The structural ink for body copy, major rules, controls, and primary interaction states.
-- **Mineral Margin:** The cool page surround and the first field in the repeating day-chapter sequence.
+- **Lemon / Heading Field:** Cover and day openings, plus budget-table headings.
+- **Cobalt / Accent:** Links, route accents, scenario headings, activity titles and timeline time anchors.
+- **Selected Cobalt / Selected Ink:** Selected or hovered buttons use cobalt fill with white text.
+- **Focus:** The accent cobalt also supplies visible keyboard focus.
 
 ### Secondary
 
-- **Maple:** The consequential accent, reserved for checkpoints, blocking truth, and document states that demand attention.
-- **Maple Wash:** A warm, pale field that keeps consequential content readable without turning it into an alarm panel.
+- **Checkpoint Field:** Pale yellow emphasizes a concrete decision inside the timeline.
+- **Information Field:** Pale blue frames the contents, adjacent-day navigation and document footer.
+- **Timeline Line:** Cool blue joins events and separates navigation, scenario and disclosure areas.
+- **Heading Line:** Muted gold separates facts within yellow openings.
 
 ### Tertiary
 
-- **Quiet Brass:** A restrained signal for stale, unknown, recheck, and optional-media fallback states.
-- **Moss:** A calm confirmation accent for ready and confirmed states.
-- **Focus Blue:** A dedicated accessibility accent for visible keyboard focus, not a general brand color.
+- **Danger / Danger Ink / Danger Field:** Reddish borders and pale notices distinguish saved blockers, conflicting information and draft or inconsistent lifecycle labels.
+- **Warning / Attention Ink / Attention Field:** Brown labels and yellow notices distinguish recheck, stale and unknown states, accepted concerns and unavailable-photo feedback.
+- **Success / Success Field:** Green labels and pale green fills distinguish confirmed, ready and prepared-copy states; their text retains the specific meaning.
 
 ### Neutral
 
-- **Warm Paper:** The principal reading surface and default control fill.
-- **Soft Ink:** Supporting text, metadata, captions, and explanatory copy.
-- **Quiet Line:** Dividers and low-emphasis structural boundaries.
-- **Brass Wash:** The pale field paired with brass notices.
-- **Moss Wash:** The pale field paired with confirmed states.
+- **Paper:** Page, reading body and unselected controls.
+- **Ink:** Main text and major section rules.
+- **Soft Ink:** Explanations, dates, captions and metadata.
+- **Line:** Quiet list and table dividers.
 
-### Named Rules
-
-**The Maple Reserve Rule.** Use maple only for checkpoints, lifecycle truth, and blocking information; its rarity is what gives it authority.
-
-**The Quiet Accent Rule.** Brass communicates review and uncertainty, moss communicates confirmation, and focus blue belongs only to keyboard focus.
+**The Meaning in Text Rule.** Color supports explicit labels, icons and document structure; it never establishes a status or resolves an uncertainty by itself.
 
 ## Typography
 
-**Display Font:** Source Serif 4, with Iowan Old Style, Palatino Linotype, Georgia, and serif fallbacks
-**Body Font:** Inter, with system sans-serif fallbacks
-**Label Font:** Inter, with system sans-serif fallbacks
+**Display Font:** Avenir Next, with Segoe UI and sans-serif fallbacks.
 
-**Character:** The serif is cultivated and literary without becoming nostalgic; the sans-serif is compact, neutral, and exact. Together they make the artifact feel edited rather than app-like.
+**Body and Label Font:** Inter, with local system sans-serif fallbacks.
+
+Both are CSS font stacks using available local fonts. The document downloads no web fonts, and exact letterforms can vary across devices.
 
 ### Hierarchy
 
-- **Display:** The trip title; large, closely led, balanced, and constrained to a short measure.
-- **Headline:** Major document sections; authoritative but quieter than the cover.
-- **Title:** Day-region chapter titles and other strong editorial moments.
-- **Body:** The continuous reading voice; keep prose at a comfortable measure of no more than 72 characters.
-- **Label:** Uppercase event kinds, facts, statuses, and metadata; compact, tracked, and used in short phrases only.
+- **Display:** The trip title, limited to 17ch on wide screens.
+- **Headline:** Major document sections.
+- **Title:** The day destination; closely led and balanced, with the day number aligned to its right.
+- **Day Number:** A compact, bold chapter anchor in selected cobalt.
+- **Body:** Continuous reading at a maximum measure of 72ch; day introductions use 1.125rem, 1.5 line height and a 48ch measure.
+- **Label:** Event kinds, dates, captions and compact metadata in sentence case. Labels have no global uppercase or tracking treatment.
+- **Control / Status:** Short labels with the stronger weights in the frontmatter.
 
-### Named Rules
+Ordinary event headings use 1.0625rem, weight 650 and 1.35 line height. Activity headings grow to `clamp(1.25rem, 3vw, 1.6875rem)`, use cobalt and keep 1.2 line height. Times and monetary totals use tabular numerals.
 
-**The Two-Voice Rule.** Serif carries narrative hierarchy and route character; sans-serif carries reading copy, metadata, controls, and audit detail.
+**The Sans-Serif Rule.** Use the local sans-serif stacks throughout the guide; place names gain hierarchy through scale and weight.
 
 **The Small-Type Boundary Rule.** Sub-body sizes are for short labels and metadata only, never for continuous reading.
 
 ## Layout
 
-The page is a centred document with two nested bounds: the cover and footer can extend to 88rem, the paper shell stops at 76rem, and primary content stops at 68rem. Long prose stays within 72ch. A compact, closed contents disclosure remains in normal flow; there are no permanent side rails or fixed navigation controls.
+The cover, document shell and footer share a centred maximum width of 58rem, with a 1rem outer margin on wide screens. Main content is bounded at 46rem. The shell has responsive horizontal padding; the cover uses `clamp(2rem, 5vw, 4rem)` padding. Sections use 4rem vertical spacing, and adjacent days have a 4rem gap.
 
-The spatial rhythm follows the seven-step spacing scale, with large pauses between sections and day chapters and small, regular increments within events. Day chapters may bleed slightly into the shell padding so their tinted fields read as chapter boundaries, while their text remains aligned to the reading column.
+A day opens with a yellow header padded by 2rem. The destination and date are on the left, day number on the right; introduction, optional gallery and compact facts follow in that order. The body begins below the header with scenario controls and full chronological timelines. Previous/next links close the day in a blue field.
 
-At and below 760px, all grids resolve to one reading column. Day metadata stacks, the timeline time moves above event content with a visible label, the route becomes a vertical sequence, tabular data becomes labelled blocks, and every interactive target retains a 2.75rem minimum height. The page remains usable from 320 CSS px without horizontal page scrolling.
+The timeline retains a separate time column at every supported width: 6.4375rem on wide screens and 4.5rem at the compact breakpoint. A one-pixel line at the left edge of each event body connects the sequence. Event copy has 1.75rem left padding on wide screens.
 
-**The Chapter Boundary Rule.** Every day begins with a strong top rule, number, date, place, and thesis, then ends with a closing navigation rule and generous space.
+At and below 760px, the outer document fills the viewport; its horizontal padding becomes 1rem. Day openings reach the page edges, use 1.5rem vertical and 1rem horizontal padding, and keep the title/number arrangement. The day number shrinks to 2.75rem. Galleries, compact facts, contents, route stops and supporting metadata become one column. Event copy uses 1.25rem left padding. Budget rows become labelled blocks, retaining the table's accessible headings. Long text can wrap, and the CSS minimum page width is 20rem.
+
+The contents remains a closed native disclosure in normal flow. Page anchors use smooth scrolling, with automatic scrolling restored for reduced-motion preferences.
 
 ## Elevation & Depth
 
-The system is flat by design and uses no ambient drop shadows. Depth comes from the contrast between mineral margins and warm paper, alternating chapter fields, border weight, and the overlap implied by slight chapter bleeds. The inset rule on the narrow-screen route sequence is structural, not elevation.
+The system uses no ambient drop shadows. Yellow openings, paper event bodies, blue closing fields and thin rules create separation. The narrow-screen route uses `inset 3px 0 0 var(--ink)` solely to draw its vertical rule.
 
-**The Flat Document Rule.** Never float core reading surfaces as shadowed app cards; use tonal fields, rules, and spacing to express hierarchy.
+**The Flat Document Rule.** Keep reading surfaces flat; use fields, rules and spacing to express hierarchy.
 
 ## Shapes
 
-The form language is mostly rectilinear and editorial. Reading surfaces, warnings, chapters, and route structures keep square edges; restrained controls use gently curved corners (8px). Lifecycle labels use a full pill, and timeline or route markers use true circles. Borders are deliberate and usually one pixel, becoming heavier only for chapter starts or consequential states.
-
-**The Square Page Rule.** Rounded geometry belongs to controls and compact statuses, not to the paper sheet or major content containers.
+Major document surfaces and day openings have square edges. Buttons use restrained corners, notices use softer corners, and photographs have the largest rounded corners. Status labels are pills. Timeline markers are circles laid over the line; checkpoint fields round only their right-hand corners, keeping their left edge attached to the timeline.
 
 ## Components
 
-### Buttons
+### Buttons and Scenario Tabs
 
-- **Shape:** Restrained control corners with a 2.75rem minimum height.
-- **Primary:** Warm-paper fill, deep-teal text and border, compact sans-serif label, and modest horizontal padding.
-- **Hover / Focus:** Hover, pressed, and selected states reverse to deep teal on warm paper; keyboard focus uses the dedicated blue outline with clear offset.
-- **Active:** Active controls may retain the reversed state, but should not gain shadow or scale effects.
+Buttons have paper fill, ink text, a one-pixel timeline-colored border and a minimum height of 2.75rem. Hover, `aria-pressed="true"` and `aria-selected="true"` apply selected cobalt with white text. Keyboard focus has a three-pixel cobalt outline with a three-pixel offset; there is no animated lift or scaling.
 
-### Chips
+The existing day filters cover all days, unresolved bookings, weather, transfers and warnings. Scenario tabs appear only when full alternatives exist. They retain text labels and semantic SVGs, `tablist` / `tab` / `tabpanel` relationships, selected state, roving focus, ArrowLeft/ArrowRight/Home/End navigation and polite live announcements. There is no search field or theme selector.
 
-- **Style:** Full pills with a fine current-color border, uppercase tracked label, and a pale semantic wash.
-- **State:** Maple marks blocking or draft truth, moss marks confirmed or ready truth, and brass marks stale, unknown, or recheck truth.
+### Status Labels and Notices
 
-### Cards / Containers
+Status pills have a current-color border, compact sentence-case text and semantic fills. Saved blockers use bordered pale notices with explicit severity, affected items and unresolved state. Accepted concerns retain their recorded meaning and acceptance text. Lifecycle labels remain separate from verification text.
 
-- **Corner Style:** Square-edged document fields and list blocks.
-- **Background:** Warm paper for the reading sheet; mineral, pale maple, and pale brass for the repeating day sequence.
-- **Shadow Strategy:** No ambient shadow; see the Flat Document Rule.
-- **Border:** Fine quiet-line dividers, deep-teal section rules, and heavier maple rules only for consequential content.
-- **Internal Padding:** Follow the spacing scale; chapter fields use substantially more air than list rows.
+### Navigation and Supporting Sections
 
-### Inputs / Fields
+The closed contents disclosure uses a pale blue field and a bold summary with a menu icon. Its links form two columns on wide screens and one on compact screens. The route uses a horizontal sequence that becomes vertical on compact screens. Open decisions, preparation, risks and sources use divided reading rows. Budget totals use a two-column summary and a yellow-headed table. The footer repeats document provenance in a blue field.
 
-- **Style:** Warm-paper fill, deep-teal one-pixel stroke, restrained control corners, and full body typography.
-- **Focus:** A three-pixel focus-blue outline with a three-pixel offset.
-- **Disabled:** If introduced, retain legible text and structure; never communicate state through opacity alone.
+### Day Galleries
 
-### Navigation
+A day has zero to three ordered photographs. No gallery markup is emitted when there are none. The gallery sits inside the yellow header after the introduction and before compact facts; it is never a trailing appendix.
 
-The contents is a native disclosure with deep-teal block rules, a bold summary row, and link rows separated by quiet lines. Adjacent-day navigation is an in-flow text pair at the end of each chapter. Navigation never becomes a permanent rail or overlays the reading column.
+| Photos | Wide-screen composition | Image aspect ratio |
+| --- | --- | --- |
+| 1 | One full-width photograph | 2.8 / 1 |
+| 2 | Two equal photographs | 1.65 / 1 |
+| 3 | Three equal photographs | 1.3 / 1 |
 
-### Day Chapters and Timelines
+The gap is 0.75rem, photographs use the photo radius and `object-fit: cover`. At the compact breakpoint, all photographs stack in source order with a 1.9 / 1 ratio. Each preserves its alt text, caption, attribution, license and source link. Images are embedded, with explicit dimensions, lazy loading and asynchronous decoding hints. When JavaScript detects a decoding failure, a localized fallback appears while caption and provenance remain available; native alt text is retained without JavaScript.
 
-Day chapters repeat mineral, pale maple, and pale brass fields as structural rhythm, never as semantic status. A large serif day number anchors a typed, chronological timeline. Wide layouts retain a prominent time column; narrow layouts place the labelled time above event copy. Links and alternatives stay inside the event they describe.
+### Timelines and Checkpoints
 
-### Checkpoints
+The event sequence is an ordered list. Semantic SVGs distinguish transport, activity, meal, lodging, rest and checkpoint events. They come from the bundled inline sprite, remain decorative to assistive technology and accompany visible text labels. Timeline icons are 1.1875rem inside 1.8125rem circular markers.
 
-Checkpoints interrupt the timeline with maple wash, stronger horizontal rules, and a compact two-part contract. They are the visual high point of a day and should remain rare enough to be unmistakable.
+Events retain their recorded order and displayed times, including unknown values. The renderer does not invent morning, afternoon or evening groups. Links and local alternatives remain inside the event they describe; full scenario alternatives retain their own timelines.
+
+Checkpoint copy sits in a pale yellow field attached to the line, with brown marker and kind label. A separated definition list states what to check and how to adjust the plan.
+
+### Reading Without JavaScript and Printing
+
+Without JavaScript, enhancement controls are hidden, all full timelines remain visible and event alternatives start expanded. The contents disclosure and anchors remain native controls. If enhancement initialization fails, the template has an explicit notice and restores scenario and alternative visibility. No external icon library, host global or browser runtime package is required.
+
+Print CSS uses A4 portrait, a white page, 10.5pt body text and clear rules. The cover and each day start separate page sections. Filters, scenario controls, contents and adjacent-day navigation are removed; all days, scenarios and event alternatives are included regardless of screen selection. Event context, source URLs, linked-action URLs and document provenance are printed. Critical groups avoid internal page breaks, and table layout is restored.
+
+Gallery printing follows the existing print-images option. When enabled, one photo fills its row and multiple photos use two columns; images preserve their full proportions, lose rounded corners and keep caption, attribution, license and source ID. This is browser Print behavior, with PDF saving performed by the reader.
 
 ## Do's and Don'ts
 
 ### Do:
 
-- **Do** preserve a centred, bounded reading column with generous chapter spacing.
-- **Do** use deep teal for structure and warm paper for sustained reading.
-- **Do** keep controls restrained, accessible, and subordinate to the itinerary.
-- **Do** use chapter tints as rhythm while keeping meaning in text, labels, and structure.
-- **Do** reserve maple emphasis for checkpoints and consequential lifecycle truth.
+- **Do** apply Lemon and Cobalt consistently across the whole document.
+- **Do** preserve a bounded reading column, clear day openings and continuous time anchors.
+- **Do** place zero to three real photographs inside the day header and preserve their order and provenance.
+- **Do** keep meaning in text alongside color and semantic icons.
+- **Do** preserve full reading content without JavaScript and in print.
 
 ### Don't:
 
-- **Don't** introduce permanent dashboard rails, sticky indexes, or fixed navigation furniture.
-- **Don't** turn each fact or event into a rounded, shadowed card.
-- **Don't** use maple as a general decorative accent.
-- **Don't** use small label typography for paragraphs or essential instructions.
-- **Don't** let optional imagery or controls compete with the chronological reading flow.
+- **Don't** restore the mineral/maple palette, alternating day tints or serif headings.
+- **Don't** introduce permanent side rails, sticky indexes or floating reading cards.
+- **Don't** move galleries below the timeline or add empty photo placeholders.
+- **Don't** add search, a theme selector, remote fonts or an external icon runtime.
+- **Don't** invent event times, day-phase groups or missing photographs to fit the composition.

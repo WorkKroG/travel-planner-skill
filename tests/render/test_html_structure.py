@@ -324,9 +324,10 @@ def test_each_timeline_event_kind_uses_a_specific_available_icon(
     for kind, icon in icons.items():
         assert f'<symbol id="icon-{icon}"' in html
         event_start = html.index(f'data-event-id="event-icon-{kind}"')
-        event_kind_start = html.index('<p class="event-kind">', event_start)
-        event_kind_end = html.index("</p>", event_kind_start)
-        assert f'href="#icon-{icon}"' in html[event_kind_start:event_kind_end]
+        marker_start = html.index('<span class="timeline-marker" aria-hidden="true">', event_start)
+        marker_end = html.index("</span>", marker_start)
+        assert f'href="#icon-{icon}"' in html[marker_start:marker_end]
+        assert marker_end < html.index('<h5>', event_start)
 
 
 def test_material_day_scenarios_are_tabs_over_complete_timelines(
@@ -421,15 +422,20 @@ def test_html_is_self_contained_but_keeps_labelled_external_actions(
     japan_view: ItineraryView,
 ) -> None:
     """Catch a local document that silently requires remote CSS, scripts, fonts, or images."""
-    html = render_html(japan_view, media={}, options=DEFAULTS)
+    photo = MediaAsset(
+        b"image", "image/jpeg", "Garden", japan_view.sources[0].source_id, "CC BY 4.0",
+        "Example Author", "Garden", 1200, 800,
+    )
+    html = render_html(japan_view, media={"day-1": [photo] * 3}, options=DEFAULTS)
 
+    assert html.count('src="data:image/jpeg;base64,') == 3
     assert '<link rel="stylesheet"' not in html
     assert "<script src=" not in html
     assert 'src="http' not in html
     assert "@import" not in html
     assert "https://www.google.com/maps" in html
     assert "Internet required" in html
-    assert "--mineral: #edf1ec" in html.lower()
+    assert "--paper: #fffef8" in html.lower()
 
 
 def test_renderer_escapes_untrusted_trip_text(japan_view: ItineraryView) -> None:
@@ -457,30 +463,36 @@ def test_renderer_rejects_non_https_external_urls(japan_view: ItineraryView) -> 
 
 def test_optional_media_requires_provenance(japan_view: ItineraryView) -> None:
     """Catch an embedded photograph shipping without a source and reusable licence record."""
-    unlicensed = MediaAsset(b"image", "image/jpeg", "Garden", "", "")
+    unlicensed = MediaAsset(b"image", "image/jpeg", "Garden", "", "", "Author", "Garden", 1200, 800)
 
     with pytest.raises(ValueError, match="source and license"):
-        render_html(japan_view, media={"day-3": unlicensed}, options=HtmlOptions())
+        render_html(japan_view, media={"day-3": [unlicensed]}, options=HtmlOptions())
 
 
 def test_optional_media_has_a_visible_failure_fallback(japan_view: ItineraryView) -> None:
     """Catch a failed embedded photo leaving a broken image with no useful explanation."""
-    media = MediaAsset(b"invalid-image", "image/jpeg", "Garden", "photo-1", "CC BY 4.0")
+    media = MediaAsset(
+        b"invalid-image", "image/jpeg", "Garden", japan_view.sources[0].source_id,
+        "CC BY 4.0", "Example Author", "Garden", 1200, 800,
+    )
 
-    html = render_html(japan_view, media={"day-3": media}, options=DEFAULTS)
+    html = render_html(japan_view, media={"day-3": [media]}, options=DEFAULTS)
 
     assert "data-optional-media" in html
     assert "data-media-fallback" in html
     assert "Photo unavailable; the day plan remains complete." in html
 
 
-def test_checkpoints_precede_optional_media_in_the_document_order(
+def test_gallery_opens_the_day_before_the_complete_timeline(
     japan_view: ItineraryView,
 ) -> None:
-    """Catch optional imagery pushing a day's critical warning later on mobile or in print."""
-    media = MediaAsset(b"image", "image/jpeg", "Garden", "photo-1", "CC BY 4.0")
+    """Keep the approved header gallery without dropping the checkpoint or its actions."""
+    media = MediaAsset(
+        b"image", "image/jpeg", "Garden", japan_view.sources[0].source_id,
+        "CC BY 4.0", "Example Author", "Garden", 1200, 800,
+    )
 
-    html = render_html(japan_view, media={"day-1": media}, options=HtmlOptions(print_images=True))
+    html = render_html(japan_view, media={"day-1": [media]}, options=HtmlOptions(print_images=True))
     day = html[
         html.index('<article class="day-chapter" id="day-1"') : html.index(
             '<article class="day-chapter" id="day-2"'
@@ -488,10 +500,12 @@ def test_checkpoints_precede_optional_media_in_the_document_order(
     ]
     no_javascript = re.sub(r"<script\b[^>]*>.*?</script>", "", day, flags=re.DOTALL)
 
-    assert day.index("What to check") < day.index("data-optional-media")
-    assert no_javascript.index("What to check") < no_javascript.index(
-        "data-optional-media"
-    )
+    for content in (day, no_javascript):
+        assert content.index('class="day-thesis"') < content.index('class="day-gallery ')
+        assert content.index('class="day-gallery ') < content.index('class="day-meta"')
+        assert content.index('class="day-meta"') < content.index('class="scenario-stack"')
+        assert content.index('class="day-gallery ') < content.index("</header>")
+        assert "What to check" in content and "How to change the plan" in content
     assert 'class="print-images"' in html
 
 
@@ -526,13 +540,13 @@ def test_static_css_declares_reading_column_and_nonsticky_contents(
     assert_css_rule(
         css,
         (".document-shell",),
-        {"width": "min(100% - 2rem, 76rem)", "margin-inline": "auto"},
+        {"width": "min(100% - 2rem, 58rem)", "margin-inline": "auto"},
     )
     assert_css_rule(css, (".contents",), {"position": "static"})
     assert_css_rule(
         css,
         ("main",),
-        {"width": "min(100%, 68rem)", "margin-inline": "auto"},
+        {"width": "min(100%, 46rem)", "margin-inline": "auto"},
     )
     assert_css_rule(
         css,
@@ -542,7 +556,7 @@ def test_static_css_declares_reading_column_and_nonsticky_contents(
     assert_css_rule(
         css,
         (".day-chapter",),
-        {"border-top": "0.25rem solid var(--chapter-accent)"},
+        {"background": "var(--paper)"},
     )
 
 

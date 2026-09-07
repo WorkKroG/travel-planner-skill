@@ -30,6 +30,8 @@ Apply the same day contract in both cases:
 | `evidence` | Attach `linked_sources` and preserve `claim_status`. |
 | `transport` | Show segments in `local_time`, cover `door_to_door`, and offer a practical `comfortable_alternative` and `budget_alternative` when choices exist. |
 
+For each day, retain 1–3 available photographs of its main locations when useful. Store the ordered `days[].media` records and local `media/` files using the contract in [verification and render](verification-and-render.md). Preserve the source, licence, creator credit and purposeful alt text; label alternative-scenario locations clearly. Do not pad a one- or two-photo day to three, and leave media absent when no suitable image is available.
+
 Before editing a material user decision, follow this contract:
 
 | Case | Explain before edit | User gate | Update scope | Record |

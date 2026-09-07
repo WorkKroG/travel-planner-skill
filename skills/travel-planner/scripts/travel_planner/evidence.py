@@ -64,4 +64,18 @@ def render_sources_markdown(state: TripState) -> str:
         lines.append(
             f"- **{item.get('id', 'unknown-item')}** — claims: {claim_ids}; sources: {source_ids}"
         )
+    photos = [
+        (day["id"], photo)
+        for day in state.itinerary.get("days", [])
+        for photo in day.get("media", [])
+    ]
+    if photos:
+        lines.extend(["", "## Day photographs", ""])
+        for day_id, photo in photos:
+            source = sources.get(photo["source_id"], {})
+            lines.append(f"- **{day_id} · {photo['caption']}** — {photo['path']}")
+            lines.append(f"  - {photo['attribution']} · {photo['license']}")
+            lines.append(f"  - {photo['source_id']}: {source.get('url', 'unavailable')}")
+            if source.get("provenance"):
+                lines.append(f"  - {source['provenance']}")
     return "\n".join(lines).rstrip() + "\n"

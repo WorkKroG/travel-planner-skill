@@ -1,17 +1,78 @@
 schema_version: 1
-trip_id: japan-autumn-2026-example
+trip_id: japan-02-13-nov-2026
 items:
-  - id: seasonal-recheck
-    title: Проверить сезонные условия и доступ в сад Kyoto
-    category: activities
-    status: recheck
-    owner_id: traveler-a
-    next_check_at: "2026-10-31T09:00:00+09:00"
-    source_ids: [official-kyoto-fixture]
-  - id: rail-timetable-recheck
-    title: Подтвердить итоговое региональное расписание поездов
+  - id: confirm-arrival-airport
+    title: Подтвердить аэропорт, время прилёта и район первого отеля
+    category: transport
+    status: action_needed
+    next_action: Вписать HND или NRT, фактическое время прилёта и адрес отеля; после этого выбрать трансфер.
+  - id: reserve-tobu-and-odoriko
+    title: Подтвердить поезда Токио → Никко и Никко → Идзу
     category: transport
     status: recheck
-    owner_id: traveler-b
-    next_check_at: "2026-10-15T09:00:00+09:00"
-    source_ids: [official-kyoto-fixture]
+    next_action: После публикации ноябрьского расписания выбрать конкретные рейсы, места и достаточные пересадки.
+    source_ids: [source-tobu-express, source-odoriko]
+  - id: arrange-luggage-forwarding
+    title: Организовать доставку крупного багажа между базами
+    category: packing
+    status: action_needed
+    next_action: Согласовать отправку из Токио в Идзу или Хаконэ и приём готового изделия токийским отелем.
+  - id: reserve-packrafting
+    title: Забронировать packrafting на озере Тюдзэндзи для четверых
+    category: activities
+    status: action_needed
+    next_action: Подтвердить слот 4 ноября, точку встречи, экипировку, ограничения и условия отмены.
+    source_ids: [source-packrafting]
+  - id: choose-izu-workshop
+    title: Выбрать одну мастерскую на 6 ноября
+    category: activities
+    status: action_needed
+    next_action: Выбрать стекло в Izu Craft House или керамику в Hachimano Kiln и проверить доставку изделия.
+    source_ids: [source-izu-craft, source-hachimano]
+  - id: confirm-hakone-ryokan
+    title: Подтвердить позднее заселение и ужин в рёкане Хаконэ
+    category: lodging
+    status: action_needed
+    next_action: Сообщить рёкану ожидаемое прибытие 18:30–19:15 и узнать крайнее время ужина.
+  - id: reserve-kawaguchiko-ebikes
+    title: Забронировать четыре e-bike на 8 ноября
+    category: activities
+    status: action_needed
+    next_action: Подтвердить четыре велосипеда одного класса, шлемы, время выдачи и возврата.
+    source_ids: [source-kawaguchiko-cycling]
+  - id: arrange-ryugatake-transfer
+    title: Выбрать транспорт к началу маршрута Ryūgatake
+    category: transport
+    status: action_needed
+    next_action: Сравнить раннее такси для четверых с Blue Line и зафиксировать обратный транспорт.
+    source_ids: [source-fujikyu-bus, source-ryugatake]
+  - id: choose-tokyo-nov-11
+    title: Выбрать и забронировать основной сценарий на 11 ноября
+    category: activities
+    status: action_needed
+    next_action: Выбрать G-Cans, JAL Sky Museum или urban kayak; забронировать выбранный вариант и сохранить городской план B.
+    source_ids: [source-gcans, source-jal-sky, source-urban-kayak]
+  - id: confirm-edo-kiriko
+    title: Подтвердить мастерскую Edo Kiriko на 12 ноября
+    category: activities
+    status: action_needed
+    next_action: Проверить англоязычную программу, длительность и наличие четырёх мест после рынка.
+    source_ids: [source-edo-kiriko]
+  - id: recheck-toyosu
+    title: Перепроверить работу Toyosu Market и правила торгов тунцом
+    category: activities
+    status: recheck
+    next_action: Проверить календарь 2026 года и отдельно подать заявку на нижнюю площадку, если она нужна.
+    source_ids: [source-toyosu-calendar, source-toyosu-auctions]
+  - id: recheck-weather-and-operations
+    title: Проверять погоду, ветер и состояние объектов за 48–24 часа
+    category: activities
+    status: recheck
+    next_action: Перед Никко, Омуро, Хаконэ и Фудзи проверить осадки, ветер, тропы, lift, ropeway и водные активности.
+    source_ids: [source-omuro, source-hakone-nav, source-fujikyu-bus]
+  - id: confirm-hnd-terminal
+    title: Подтвердить терминал вылета HND и путь из финального отеля
+    category: transport
+    status: recheck
+    next_action: Внести терминал международного рейса и выбрать Keikyu, monorail или раннее такси с прибытием к 12:40–13:00.
+    source_ids: [source-haneda, source-keikyu, source-monorail]

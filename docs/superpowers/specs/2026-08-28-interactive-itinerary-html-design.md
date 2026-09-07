@@ -5,7 +5,7 @@
 **Design process:** Impeccable `shape`  
 **Reference case:** Japan, 2–13 November 2026
 
-> **Superseded details:** [Readable Itinerary Days — HTML Design Specification](2026-09-06-itinerary-readable-days-design.md) replaces this document's navigation model, detailed-day layout, event context, scenario representation, and localization details. All other scope, lifecycle, accessibility, self-contained, responsive, print, and visual-direction requirements remain active.
+> **Superseded details:** [Readable Itinerary Days — HTML Design Specification](2026-09-06-itinerary-readable-days-design.md) replaces this document's navigation model, detailed-day layout, event context, scenario representation, and localization details. The [7 September visual redesign](2026-09-07-html-visual-redesign-design.md) replaces the visual direction, typography, chapter colours and photo placement throughout the complete document. Other scope, lifecycle, accessibility, self-contained, responsive and print requirements remain active, subject to PRODUCT.md and ARCHITECTURE.md.
 
 ## 1. Purpose and scope
 
@@ -297,57 +297,30 @@ Core reading order, all primary itinerary information, links and print content r
 
 ## 14. Visual system
 
-### Direction
+### Direction and colour roles
 
-“Mineral and Maple”: mineral paper, deep teal structure and restrained autumn accents. The result should evoke a contemporary museum guide, not a themed template or an “AI gradient” interface.
+The approved direction is **Lemon and Cobalt**, as fixed by the [7 September specification](2026-09-07-html-visual-redesign-design.md) and its supplied HTML compositions. It applies to the cover, route overview, contents, every day, existing filters, decisions, readiness, budget, risks, sources and print.
 
-### Colour roles
+- Day and cover header: `#FFE785`
+- Reading paper: `#FFFEF8`
+- Main text: `#153369`; secondary text: `#3B5271`
+- Actions: `#1649B5`; selected controls: `#1747AB` with white text
+- Checkpoint field: `#FFF0B7`; timeline line: `#ACBEE0`
+- Closing information field: `#E7EFFF`
 
-- Mineral surface: `#EDF1EC`
-- Warm paper: `#FFFDF7`
-- Deep teal structure/text: `#173C44`
-- Maple action/critical accent: `#BD4A36`
-- Muted brass for attention/staleness: `#D1A044`
-- Moss for confirmed/ready: `#496B58`
+Statuses retain explicit wording, icon/shape and distinct danger, attention and confirmation treatments; hue never carries meaning alone. Text and functional graphics require WCAG AA contrast. There is no theme selector or alternate dark palette.
 
-These are direction tokens, not permission to rely on hue alone. Final foreground/background pairs must be contrast-tested. Draft, stale, conflict, ready and blocker states also use wording, shape and iconography.
+### Composition, shape and spacing
 
-### Shape grammar
+Use a bounded centred reading column. Broad yellow openings and blue closing fields define days. At the reference width of 736 px, a day uses 32 px internal padding, a 66 px region title and 16 px event text. Controls are at least 44 px high. Layout adapts down to 320 px and tolerates long names, mixed scripts and unknown times.
 
-- 0 px radius: hero fields, route structure, tables and major document sections;
-- 8 px radius: buttons and controls;
-- 12 px radius: only floating summary panels;
-- full pill: short statuses and compact filters only;
-- warnings use a straight-edged block with a strong leading rule.
+Photos have 16 px corners and 12 px gaps. One photo is wide (`2.8 / 1`); two equal photos use `1.65 / 1`; three equal photos use `1.3 / 1`. At compact widths they form one column in authored order (`1.9 / 1`). Checkpoint event bodies have a light-yellow field; ordinary events sit on paper with small icons on a continuous vertical line.
 
-This prevents both an all-rectangular interface and a collection of interchangeable rounded cards.
+### Typography and icons
 
-### Typography
+Use large sans-serif headings matching the supplied composition, with local/system fallbacks (Avenir Next, Segoe UI, sans-serif for display; Inter and system sans for body). Do not require remote fonts. Time and money use tabular numerals. Secondary text remains at least 14 px and body text 16 px on screen.
 
-- editorial serif for the trip title, major section titles and short theses;
-- humanist sans serif for body copy, metadata, controls, times and status;
-- tabular numerals for times, prices and durations;
-- minimum body size and line length favour reading rather than density;
-- Japanese text uses a legible local/system CJK fallback or an embedded subset; layout must tolerate font substitution without clipping.
-
-Preferred direction: Source Serif 4 for editorial roles and Inter for functional roles, with robust system fallbacks. Font assets are embedded or substituted locally; there are no runtime font requests.
-
-### Spacing
-
-Use an 8 px base rhythm, with 4 px only for tight internal alignment. Reading sections should use visibly larger 32–64 px separations rather than enclosing every group in a card.
-
-### Iconography
-
-Use a small consistent outline set with simple geometry. Every state icon has a text label. Emoji, mixed icon families and decorative transport glyph clouds are excluded.
-
-Suggested state vocabulary:
-
-- check: ready/confirmed;
-- empty square: unresolved;
-- circular arrow: stale/recheck;
-- opposing arrows: conflict;
-- cloud: external/network required;
-- stop marker: blocker.
+Use the bundled outline SVG symbols. Select an event icon from its canonical kind, independent of IDs or array positions. Scenario controls show recorded primary/alternative semantics and retain visible labels. No external icon library, CDN or host global is required. Do not infer phases or invent timing from ambiguous source text.
 
 ### Motion
 
@@ -355,16 +328,16 @@ Motion is functional and restrained: short disclosure and focus transitions, app
 
 ## 15. Imagery policy
 
-Photography helps comparison and decision-making, so primary locations may each receive one useful image. The policy is meaning-driven rather than governed by a fixed count or hard megabyte cap.
+Photography helps comparison and decision-making. The user-approved amendment of 7 September permits a gallery of 1–3 useful images of the main locations of each day; the detailed storage and layout contract is in section 3 of the Readable Itinerary Days specification. There is no hard megabyte cap.
 
 - use one representative image for a primary location when it clarifies atmosphere, scale, season or activity choice;
-- avoid galleries and repetitive decorative landscapes;
-- never place imagery before a critical warning or cut-off;
+- use the one or two suitable images available without padding to three; avoid repetitive decorative landscapes;
+- place the gallery in the yellow day header beneath its introduction; keep every checkpoint in its chronological timeline position before the action it governs;
 - secondary stops do not require imagery;
 - reserve dimensions to prevent layout shift;
 - optimise and embed assets so the HTML remains self-contained;
 - record source, licence or generation provenance;
-- provide purposeful alternative text, or empty alt text for purely decorative images;
+- provide purposeful nonblank alternative text for every gallery photograph; decorative stamp art remains separate;
 - missing optional media collapses cleanly without blocking content.
 
 Embedded media remains optional and must not introduce a required network dependency or compromise scrolling and print reliability.
@@ -453,7 +426,7 @@ Browser print uses the same information model with dedicated print CSS. There is
 - show short source/site names and IDs inline, with full URLs in an appendix;
 - use lines, labels and hatching so greyscale remains meaningful;
 - keep Draft/Final visible in header/footer rather than through colour alone;
-- allow at most one meaningful image per region, or an economical no-image print option.
+- allow the day's gallery in at most two print columns with bounded image height, or an economical no-image print option.
 
 Print QA rejects clipped URLs, orphan headings, blank pages, split critical events and content hidden by interactive state.
 
@@ -483,7 +456,7 @@ Automated checks cover:
 - semantic source order, navigation and complete primary/backup content without JavaScript;
 - print declarations that preserve critical content and separate control-only elements;
 - source-level long-content wrapping/min-width declarations;
-- critical constraints before optional media in DOM order;
+- header galleries after the day introduction, with complete checkpoints and their actions preserved in chronological timeline order;
 - scenario-heading and day-metadata wrappers used by print;
 - the data contract of eight independent-review inputs and exactly three unexecuted release scenarios.
 
@@ -603,7 +576,7 @@ The generated page must never instruct the user to edit the HTML to fix trip dat
 - embedded third-party interactive maps;
 - overview pseudo-map;
 - automatic country theming based on stereotypes;
-- photo galleries;
+- carousel/lightbox interactions beyond the simple 1–3-image day gallery;
 - dark mode in the first release;
 - redesign of the main Travel Planner architecture specification.
 

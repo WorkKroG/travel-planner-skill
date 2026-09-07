@@ -1,48 +1,248 @@
 schema_version: 1
-trip_id: japan-autumn-2026-example
+trip_id: japan-02-13-nov-2026
 sources:
-  - id: official-kyoto-fixture
-    url: https://example.invalid/kyoto-official
-    source_type: official
-    publisher: Тестовый официальный источник Kyoto
-    retrieved_at: "2026-08-28T12:00:00+00:00"
-  - id: official-tokyo-fixture
-    url: https://example.invalid/tokyo-official
-    source_type: official
-    publisher: Тестовый официальный источник Tokyo
-    retrieved_at: "2026-08-28T12:00:00+00:00"
-  - id: official-kanazawa-fixture
-    url: https://example.invalid/kanazawa-official
-    source_type: official
-    publisher: Тестовый официальный источник Kanazawa
-    retrieved_at: "2026-08-28T12:00:00+00:00"
+  - {id: source-keikyu, url: "https://www.haneda-tokyo-access.com/en/ride/fares.html", source_type: official, publisher: Keikyu, retrieved_at: "2026-09-06T22:33:50+03:00"}
+  - {id: source-monorail, url: "https://www.tokyo-monorail.co.jp/english/haneda-tokyo-access/company.html", source_type: official, publisher: Tokyo Monorail, retrieved_at: "2026-09-06T22:33:50+03:00"}
+  - {id: source-tobu-express, url: "https://www.tobu.co.jp/en/express_info/timetable.html", source_type: official, publisher: Tobu Railway, retrieved_at: "2026-09-06T22:33:50+03:00"}
+  - {id: source-ryuo, url: "https://www.visitnikko.jp/en/spots/ryuo-valley-hiking/", source_type: official, publisher: Visit Nikko, retrieved_at: "2026-09-06T22:33:50+03:00"}
+  - {id: source-tobu-bus, url: "https://www.tobu.co.jp/en/access/nikko/bus_nikko.html", source_type: official, publisher: Tobu Railway, retrieved_at: "2026-09-06T22:33:50+03:00"}
+  - {id: source-packrafting, url: "https://www.visitnikko.jp/en/stories/lake-chuzenji-trekking-and-packrafting-experience/", source_type: official, publisher: Visit Nikko, retrieved_at: "2026-09-06T22:33:50+03:00"}
+  - {id: source-odoriko, url: "https://www.jreast.co.jp/en/multi/traininformation/odoriko/", source_type: official, publisher: JR East, retrieved_at: "2026-09-06T22:33:50+03:00"}
+  - {id: source-omuro, url: "https://omuroyama.com/index_en/information_en/", source_type: official, publisher: Mount Omuro Lift, retrieved_at: "2026-09-06T22:33:50+03:00"}
+  - {id: source-izu-craft, url: "https://www.izu-crafthouse.org/glassblowing.html", source_type: official, publisher: Izu Craft House, retrieved_at: "2026-09-06T22:33:50+03:00"}
+  - {id: source-hachimano, url: "https://taiken-jp.com/yawata/experience_eng.html", source_type: official, publisher: Hachimano Kiln, retrieved_at: "2026-09-06T22:33:50+03:00"}
+  - {id: source-jogasaki, url: "https://b-izu.com/feature/post-17833/", source_type: official, publisher: Beautiful Izu, retrieved_at: "2026-09-06T22:33:50+03:00"}
+  - {id: source-hakone-nav, url: "https://www.hakonenavi.jp/international/en/around", source_type: official, publisher: Hakone Navi, retrieved_at: "2026-09-06T22:33:50+03:00"}
+  - {id: source-kintoki, url: "https://hakone-japan.com/discover/national-park/activities/mt-kintoki-course/", source_type: official, publisher: Hakone Japan, retrieved_at: "2026-09-06T22:33:50+03:00"}
+  - {id: source-owakudani, url: "https://owakudani.com/nature/", source_type: official, publisher: Owakudani, retrieved_at: "2026-09-06T22:33:50+03:00"}
+  - {id: source-pola, url: "https://hakone-japan.com/things-to-do/museums/pola_art_museum/", source_type: official, publisher: Hakone Japan, retrieved_at: "2026-09-06T22:33:50+03:00"}
+  - {id: source-fujikyu-bus, url: "https://www.fujikyubus.co.jp/shuyu", source_type: official, publisher: Fujikyu Bus, retrieved_at: "2026-09-06T22:33:50+03:00"}
+  - {id: source-kawaguchiko-cycling, url: "https://fujisan.ne.jp/feature/611/", source_type: official, publisher: Fujisan.ne.jp, retrieved_at: "2026-09-06T22:33:50+03:00"}
+  - {id: source-momiji-festival, url: "https://fujisan.ne.jp/news/6065/", source_type: official, publisher: Fujisan.ne.jp, retrieved_at: "2026-09-06T22:33:50+03:00"}
+  - {id: source-ryugatake, url: "https://www.yamanashi-kankou.jp/kankou/spot/p1_4756.html", source_type: official, publisher: Yamanashi Tourism, retrieved_at: "2026-09-06T22:33:50+03:00"}
+  - {id: source-fujiyoshida, url: "https://fujiyoshida.net/en/see-and-do/26", source_type: official, publisher: Fujiyoshida Tourism, retrieved_at: "2026-09-06T22:33:50+03:00"}
+  - {id: source-gcans, url: "https://gaikaku.jp/apply/", source_type: official, publisher: G-Cans, retrieved_at: "2026-09-06T22:33:50+03:00"}
+  - {id: source-jal-sky, url: "https://www.jal.com/ja/kengaku/en/info/", source_type: official, publisher: JAL Sky Museum, retrieved_at: "2026-09-06T22:33:50+03:00"}
+  - {id: source-edo-tokyo, url: "https://edo-tokyo-museum.or.jp/en/information/hours/", source_type: official, publisher: Edo-Tokyo Museum, retrieved_at: "2026-09-06T22:33:50+03:00"}
+  - {id: source-urban-kayak, url: "https://www.zacsports.com/tokyo-kayak-e.htm", source_type: primary, publisher: ZAC Sports, retrieved_at: "2026-09-06T22:33:50+03:00"}
+  - {id: source-toyosu-auctions, url: "https://www.toyosu-market.or.jp/en/wholesale-auctions/", source_type: official, publisher: Toyosu Market, retrieved_at: "2026-09-06T22:33:50+03:00"}
+  - {id: source-toyosu-calendar, url: "https://www.shijou.metro.tokyo.lg.jp/calendar/2026/", source_type: official, publisher: Tokyo Metropolitan Central Wholesale Market, retrieved_at: "2026-09-06T22:33:50+03:00"}
+  - {id: source-edo-kiriko, url: "https://www.gotokyo.org/en/workshop/sd016/index.html", source_type: official, publisher: GO TOKYO, retrieved_at: "2026-09-06T22:33:50+03:00"}
+  - {id: source-haneda, url: "https://tokyo-haneda.com/en/access/train/index.html?tab=terminal3", source_type: official, publisher: Haneda Airport, retrieved_at: "2026-09-06T22:33:50+03:00"}
+  - id: photo-day-1-1
+    title: Асакуса вечером
+    url: https://commons.wikimedia.org/wiki/File:Sensoji_at_night_4.jpg
+    source_type: community
+    publisher: Wikimedia Commons
+    retrieved_at: '2026-09-07T17:44:11+00:00'
+    provenance: Embedded photo and credit imported from japan_itinerary_02-13_nov_2026.html#d02;
+      remote page not rechecked.
+  - id: photo-day-2-1
+    title: Ущелье Рюокё
+    url: https://commons.wikimedia.org/wiki/File:Ryuokyo,_Tochigi.jpg
+    source_type: community
+    publisher: Wikimedia Commons
+    retrieved_at: '2026-09-07T17:44:11+00:00'
+    provenance: Embedded photo and credit imported from japan_itinerary_02-13_nov_2026.html#d03;
+      remote page not rechecked.
+  - id: photo-day-3-1
+    title: Озеро Тюдзэндзи
+    url: https://commons.wikimedia.org/wiki/File:Lake_Ch%C5%ABzenji_in_autumn.jpg
+    source_type: community
+    publisher: Wikimedia Commons
+    retrieved_at: '2026-09-07T17:44:11+00:00'
+    provenance: Embedded photo and credit imported from japan_itinerary_02-13_nov_2026.html#d04;
+      remote page not rechecked.
+  - id: photo-day-3-2
+    title: British Embassy Villa
+    url: https://commons.wikimedia.org/wiki/File:170825_British_Embassy_Villa_Memorial_Park01s3.jpg
+    source_type: community
+    publisher: Wikimedia Commons
+    retrieved_at: '2026-09-07T17:44:11+00:00'
+    provenance: Embedded photo and credit imported from japan_itinerary_02-13_nov_2026.html#d04;
+      remote page not rechecked.
+  - id: photo-day-4-1
+    title: Atagawa Tropical & Alligator Garden
+    url: https://commons.wikimedia.org/wiki/File:Atagawa_Banana_Alligator.jpg
+    source_type: community
+    publisher: Wikimedia Commons
+    retrieved_at: '2026-09-07T17:44:11+00:00'
+    provenance: Embedded photo and credit imported from japan_itinerary_02-13_nov_2026.html#d05;
+      remote page not rechecked.
+  - id: photo-day-5-1
+    title: Кратер Mt Ōmuro
+    url: https://commons.wikimedia.org/wiki/File:Crater_of_Mount_%C5%8Cmuro.jpg
+    source_type: community
+    publisher: Wikimedia Commons
+    retrieved_at: '2026-09-07T17:44:11+00:00'
+    provenance: Embedded photo and credit imported from japan_itinerary_02-13_nov_2026.html#d06;
+      remote page not rechecked.
+  - id: photo-day-5-2
+    title: Побережье Дзёгасаки
+    url: https://commons.wikimedia.org/wiki/File:Jogasaki_Coast_20111016_b.jpg
+    source_type: community
+    publisher: Wikimedia Commons
+    retrieved_at: '2026-09-07T17:44:11+00:00'
+    provenance: Embedded photo and credit imported from japan_itinerary_02-13_nov_2026.html#d06;
+      remote page not rechecked.
+  - id: photo-day-6-1
+    title: Mt Kintoki · ясный сценарий
+    url: https://commons.wikimedia.org/wiki/File:Mount_Fuji_from_Mount_Kintoki_2022-11-22.jpg
+    source_type: community
+    publisher: Wikimedia Commons
+    retrieved_at: '2026-09-07T17:44:11+00:00'
+    provenance: Embedded photo and credit imported from japan_itinerary_02-13_nov_2026.html#d07;
+      remote page not rechecked.
+  - id: photo-day-6-2
+    title: Owakudani · смешанный сценарий
+    url: https://commons.wikimedia.org/wiki/File:View_of_Mount_Fuji_from_Owakudani,_Hakone,_Japan.jpg
+    source_type: community
+    publisher: Wikimedia Commons
+    retrieved_at: '2026-09-07T17:44:11+00:00'
+    provenance: Embedded photo and credit imported from japan_itinerary_02-13_nov_2026.html#d07;
+      remote page not rechecked.
+  - id: photo-day-7-1
+    title: Кавагутико осенью
+    url: https://commons.wikimedia.org/wiki/File:Autumn_leaf_color_and_Mount_Fuji_from_Lake_Kawaguchi.jpg
+    source_type: community
+    publisher: Wikimedia Commons
+    retrieved_at: '2026-09-07T17:44:11+00:00'
+    provenance: Embedded photo and credit imported from japan_itinerary_02-13_nov_2026.html#d08;
+      remote page not rechecked.
+  - id: photo-day-8-1
+    title: Фудзи от озера Мотосу
+    url: https://commons.wikimedia.org/wiki/File:Mount_Fuji_from_Lake_Motosu_20241026.jpg
+    source_type: community
+    publisher: Wikimedia Commons
+    retrieved_at: '2026-09-07T17:44:11+00:00'
+    provenance: Embedded photo and credit imported from japan_itinerary_02-13_nov_2026.html#d09;
+      remote page not rechecked.
+  - id: photo-day-9-1
+    title: Kitaguchi Hongu Fuji Sengen
+    url: https://commons.wikimedia.org/wiki/File:Kitaguchi_Hongu_Fuji_Sengen_jinja_Torii.jpg
+    source_type: community
+    publisher: Wikimedia Commons
+    retrieved_at: '2026-09-07T17:44:11+00:00'
+    provenance: Embedded photo and credit imported from japan_itinerary_02-13_nov_2026.html#d10;
+      remote page not rechecked.
+  - id: photo-day-9-2
+    title: Старый Фудзиёсида
+    url: https://commons.wikimedia.org/wiki/File:Honcho_Street_with_Mount_Fuji_in_the_daytime,_Fujiyoshida,_2016.jpg
+    source_type: community
+    publisher: Wikimedia Commons
+    retrieved_at: '2026-09-07T17:44:11+00:00'
+    provenance: Embedded photo and credit imported from japan_itinerary_02-13_nov_2026.html#d10;
+      remote page not rechecked.
+  - id: photo-day-10-1
+    title: G-Cans · подземный храм
+    url: https://commons.wikimedia.org/wiki/File:Metropolitan_Area_Outer_Underground_Discharge_Channel.jpg
+    source_type: community
+    publisher: Wikimedia Commons
+    retrieved_at: '2026-09-07T17:44:11+00:00'
+    provenance: Embedded photo and credit imported from japan_itinerary_02-13_nov_2026.html#d11;
+      remote page not rechecked.
+  - id: photo-day-10-2
+    title: Edo-Tokyo Museum
+    url: https://commons.wikimedia.org/wiki/File:Edo_tokyo_museum.jpg
+    source_type: community
+    publisher: Wikimedia Commons
+    retrieved_at: '2026-09-07T17:44:11+00:00'
+    provenance: Embedded photo and credit imported from japan_itinerary_02-13_nov_2026.html#d11;
+      remote page not rechecked.
+  - id: photo-day-11-1
+    title: Toyosu Market
+    url: https://commons.wikimedia.org/wiki/File:Toyosu_fish_market,_at_Toyosu,_Koto,_Tokyo_(2019-01-01)_02.jpg
+    source_type: community
+    publisher: Wikimedia Commons
+    retrieved_at: '2026-09-07T17:44:11+00:00'
+    provenance: Embedded photo and credit imported from japan_itinerary_02-13_nov_2026.html#d12;
+      remote page not rechecked.
+  - id: photo-day-11-2
+    title: Стекло Edo Kiriko
+    url: https://commons.wikimedia.org/wiki/File:Edo-Kiriko.JPG
+    source_type: community
+    publisher: Wikimedia Commons
+    retrieved_at: '2026-09-07T17:44:11+00:00'
+    provenance: Embedded photo and credit imported from japan_itinerary_02-13_nov_2026.html#d12;
+      remote page not rechecked.
+  - id: photo-day-12-1
+    title: Haneda Airport
+    url: https://commons.wikimedia.org/wiki/File:Haneda_airport.jpg
+    source_type: community
+    publisher: Wikimedia Commons
+    retrieved_at: '2026-09-07T17:44:11+00:00'
+    provenance: Embedded photo and credit imported from japan_itinerary_02-13_nov_2026.html#d13;
+      remote page not rechecked.
 items:
-  - id: kyoto-garden
-    name: Kyoto garden
-    geography: {country_code: JP, locality: Kyoto}
-    discovery_layers: [cultural, nature_active]
+  - id: ryuo-gorge-hike
+    name: Хайкинг по ущелью Рюокё
+    geography: {country_code: JP, locality: Nikko}
+    discovery_layers: [nature_active]
     claims:
-      - id: garden-season
-        topic: seasonal conditions
-        status: reported
-        freshness_status: aging
-        source_ids: [official-kyoto-fixture]
-    popularity_signals: [{platform: fixture, observed_at: "2026-08-28", signal: known seasonal interest}]
-    assessments: [{dimension: trip_value, value: high, rationale: fits the autumn route}]
-    verdict: {status: shortlisted, rationale: weather-sensitive primary with indoor backup}
-  - id: tokyo-neighbourhood
-    name: Tokyo neighbourhood walk
+      - {id: claim-ryuo-route, topic: маршрут и доступ, status: unverified, freshness_status: unknown, source_ids: [source-ryuo, source-tobu-express]}
+    popularity_signals: []
+    assessments: [{dimension: trip_value, value: high, rationale: активный переход к базе Никко без смены выбранного региона}]
+    verdict: {status: selected, rationale: основной план 3 ноября с коротким и культурным сценариями}
+  - id: chuzenji-packrafting
+    name: Треккинг и packrafting на озере Тюдзэндзи
+    geography: {country_code: JP, locality: Nikko}
+    discovery_layers: [nature_active, hidden_gem]
+    claims:
+      - {id: claim-packrafting-slot, topic: слот, экипировка и условия отмены, status: unverified, freshness_status: unknown, source_ids: [source-packrafting]}
+    popularity_signals: []
+    assessments: [{dimension: trip_value, value: high, rationale: выбранная необычная активность 4 ноября}]
+    verdict: {status: selected, rationale: выбран пользователем; требует бронирования и погодной проверки}
+  - id: izu-craft-choice
+    name: Ремесленная мастерская на Идзу
+    geography: {country_code: JP, locality: Ito}
+    discovery_layers: [cultural, hidden_gem]
+    claims:
+      - {id: claim-izu-craft-logistics, topic: длительность и доставка изделия, status: unverified, freshness_status: unknown, source_ids: [source-izu-craft, source-hachimano]}
+    popularity_signals: []
+    assessments: [{dimension: trip_value, value: high, rationale: сохраняет ремесленный фокус насыщенного дня 6 ноября}]
+    verdict: {status: shortlisted, rationale: выбрать стекло или керамику, но не обе в основном плане}
+  - id: hakone-weather-day
+    name: Погодные сценарии Хаконэ
+    geography: {country_code: JP, locality: Hakone}
+    discovery_layers: [nature_active, cultural]
+    claims:
+      - {id: claim-hakone-operations, topic: транспорт, тропы, ropeway и газовые ограничения, status: unverified, freshness_status: unknown, source_ids: [source-hakone-nav, source-kintoki, source-owakudani, source-pola]}
+    popularity_signals: []
+    assessments: [{dimension: resilience, value: high, rationale: три полных сценария под ясную, ветреную и дождевую погоду}]
+    verdict: {status: selected, rationale: Mt Kintoki основной при ясной погоде; сценарий выбирается утром}
+  - id: kawaguchiko-ebike
+    name: Кавагутико на e-bike
+    geography: {country_code: JP, locality: Fujikawaguchiko}
+    discovery_layers: [nature_active]
+    claims:
+      - {id: claim-ebike-availability, topic: наличие четырёх велосипедов и условия возврата, status: unverified, freshness_status: unknown, source_ids: [source-kawaguchiko-cycling, source-momiji-festival]}
+    popularity_signals: []
+    assessments: [{dimension: trip_value, value: high, rationale: связывает северный берег и вечернюю подсветку 8 ноября}]
+    verdict: {status: selected, rationale: требует бронирования и погодного плана B}
+  - id: ryugatake-hike
+    name: Mt Ryūgatake
+    geography: {country_code: JP, locality: Lake Motosu}
+    discovery_layers: [nature_active]
+    claims:
+      - {id: claim-ryugatake-conditions, topic: маршрут, погода и транспорт к старту, status: unverified, freshness_status: unknown, source_ids: [source-ryugatake, source-fujikyu-bus]}
+    popularity_signals: []
+    assessments: [{dimension: trip_value, value: high, rationale: главное ясное утро в районе Фудзи}]
+    verdict: {status: selected, rationale: ставится на 9 или 10 ноября по фактической видимости и состоянию тропы}
+  - id: tokyo-nov-11-choice
+    name: G-Cans, JAL Sky Museum или urban kayak
     geography: {country_code: JP, locality: Tokyo}
-    discovery_layers: [cultural]
-    claims: [{id: tokyo-walk, topic: walkability, status: reported, freshness_status: aging, source_ids: [official-tokyo-fixture]}]
+    discovery_layers: [hidden_gem, cultural]
+    claims:
+      - {id: claim-tokyo-bookable-access, topic: доступ, бронирование и ограничения, status: unverified, freshness_status: unknown, source_ids: [source-gcans, source-jal-sky, source-urban-kayak, source-edo-tokyo]}
     popularity_signals: []
-    assessments: [{dimension: trip_value, value: medium, rationale: suitable for flexible arrival days}]
-    verdict: {status: selected, rationale: low-commitment arrival activity}
-  - id: kanazawa-district
-    name: Kanazawa historic district
-    geography: {country_code: JP, locality: Kanazawa}
-    discovery_layers: [cultural]
-    claims: [{id: kanazawa-access, topic: access, status: reported, freshness_status: aging, source_ids: [official-kanazawa-fixture]}]
+    assessments: [{dimension: decision_need, value: high, rationale: варианты несовместимы по времени и требуют отдельного бронирования}]
+    verdict: {status: shortlisted, rationale: G-Cans оставлен основным только как рабочий вариант}
+  - id: toyosu-edo-day
+    name: Toyosu Market, Edo-Tokyo Museum и Edo Kiriko
+    geography: {country_code: JP, locality: Tokyo}
+    discovery_layers: [cultural, hidden_gem]
+    claims:
+      - {id: claim-toyosu-edo-access, topic: календарь рынка, торги и мастерская, status: unverified, freshness_status: unknown, source_ids: [source-toyosu-auctions, source-toyosu-calendar, source-edo-kiriko, source-edo-tokyo]}
     popularity_signals: []
-    assessments: [{dimension: trip_value, value: high, rationale: final-region cultural focus}]
-    verdict: {status: selected, rationale: compact final base}
+    assessments: [{dimension: trip_value, value: high, rationale: выбранный каркас финального полного дня в Токио}]
+    verdict: {status: selected, rationale: ранний старт допускает сокращённый сценарий без подъёма в 05:00}
