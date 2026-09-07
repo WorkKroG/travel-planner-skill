@@ -354,6 +354,11 @@ def _link_checks(state: TripState, days: tuple[Entry, ...]) -> tuple[Finding, ..
             owner = str(record.get("id", "unknown-item"))
             for key, known, code in specs:
                 findings.extend(_reference_findings(record, path, key, known, code, owner))
+    for day, day_path in days:
+        for photo, path in _records(day.get("media"), f"{day_path}.media"):
+            findings.extend(_reference_findings(
+                photo, path, "source_id", source_ids, "LINK_SOURCE_NOT_FOUND", str(day["id"])
+            ))
     for claim, path in claims:
         findings.extend(
             _reference_findings(

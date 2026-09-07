@@ -9,11 +9,11 @@
 </head>
 <body class="{% if options.print_images %}print-images{% else %}no-print-images{% endif %}" data-days-shown-copy="{{ js_copy.daysShown }}" data-scenario-shown-copy="{{ js_copy.scenarioShown }}">
   <!--
-  THESIS: Readable Days turns the itinerary into consecutive visual chapters and refuses permanent dashboard rails around the route.
-  OWN-WORLD: Warm paper, mineral margins, deep-teal rules, quiet chapter tints, maple reserved for checkpoints, and precise document controls.
+  THESIS: A bright, readable travel guide with destination openings and a continuous chronological line.
+  OWN-WORLD: Lemon headers, warm paper, cobalt actions, strong sans-serif titles, small outline icons, yellow checkpoints and blue closing fields.
   STORY: Readers understand the trip, scan unresolved choices, then follow one chronological timeline per day and open context only where it belongs.
   FIRST VIEWPORT: Trip identity and text route lead inside a bounded reading sheet; readiness, expenses, and saved blockers follow as calm document facts.
-  FORM: Curated Route reading document, first-ranked approved direction; seed readable-days-2026-09-06.
+  FORM: Full reading document in the user-approved Lemon and Cobalt composition, 2026-09-07.
   FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
   -->
   {{ icons }}
@@ -61,11 +61,11 @@
   <ol class="timeline">
     {% for event in timeline %}
     <li class="timeline-event timeline-event--{{ event.kind }}" data-event-id="{{ event.event_id }}">
-      <div class="timeline-marker" aria-hidden="true"></div>
       <div class="timeline-time"><span class="timeline-time-label">{{ tr('time') }}</span><span>{{ event.time }}</span></div>
       <div class="event-body">
+        <span class="timeline-marker" aria-hidden="true"><svg class="icon"><use href="#icon-{{ event_icons[event.kind] }}"></use></svg></span>
         <p class="event-print-context">{{ tr('day') }} {{ day.number }} · {{ day.date_label }} · {{ day.region }}</p>
-        <p class="event-kind"><svg class="icon" aria-hidden="true"><use href="#icon-{{ event_icons[event.kind] }}"></use></svg>{{ enum_label(event.kind) }}</p>
+        <p class="event-kind">{{ enum_label(event.kind) }}</p>
         <h5>{{ event.title }}</h5>
         {% if event.detail %}<p>{{ event.detail }}</p>{% endif %}
 
@@ -122,11 +122,6 @@
         <span>{{ view.summary.traveler_count }} {{ tr('travellers') }}</span>
       </div>
       <p class="verification-line"><strong>{{ tr('verification') }}:</strong> {{ view.verification_label }}</p>
-      <dl class="lifecycle-details" aria-label="{{ tr('audit') }}">
-        <div><dt>document_status</dt><dd>{{ view.document_status }}</dd></div>
-        <div><dt>verification_level</dt><dd>{{ view.verification_level }}</dd></div>
-        <div><dt>finalization_basis</dt><dd>{{ view.finalization_basis or 'none' }}</dd></div>
-      </dl>
       {% if view.lifecycle_warning %}
       <div class="lifecycle-warning" role="alert">
         <strong>{{ tr('inconsistent') }}</strong>
@@ -135,22 +130,15 @@
       </div>
       {% endif %}
       <h1>{{ view.title }}</h1>
-      <p class="feasibility-note">{{ tr('feasibility_note') }}</p>
       <p class="trip-thesis">{{ view.summary.thesis }}</p>
       <p class="route-ribbon"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg>{{ view.summary.route_text }}</p>
+      <p class="feasibility-note">{{ tr('feasibility_note') }}</p>
       <div class="summary-links">
         <a href="#route-overview">{{ tr('review_days') }}</a>
         <a href="#open-decisions">{{ view.open_decisions|length }} {{ tr('open_decisions_count') }}</a>
       </div>
     </div>
     <aside class="hero-facts" aria-label="{{ tr('readiness') }}">
-      <div class="stamp" aria-hidden="true">
-        <svg viewBox="0 0 112 132">
-          <path d="M8 8h96v116H8z" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="3 4"/>
-          <path d="M57 24c-2 13-10 16-20 12 5 8 2 15-6 20 10 0 15 5 15 14 6-6 12-7 19-1-1-9 4-14 14-15-8-5-10-12-5-20-10 4-16 0-17-10Z" fill="none" stroke="currentColor" stroke-width="2.5"/>
-          <path d="M55 45v49M39 97h34" fill="none" stroke="currentColor" stroke-width="2"/>
-        </svg>
-      </div>
       <section class="hero-fact">
         <h2>{{ tr('readiness') }}</h2>
         <p class="hero-fact-value">{{ tr('confirmed_of', confirmed=view.summary.readiness_confirmed, total=view.summary.readiness_total) }}</p>
@@ -266,16 +254,31 @@
         {% for day in view.days %}
         <article class="day-chapter" id="{{ day.day_id }}" data-day data-weather="{{ day.weather_sensitive|string|lower }}" data-transfer="{{ (day.timeline|selectattr('kind', 'equalto', 'transport')|list|length > 0)|string|lower }}" data-unresolved="{{ (day.booking_state not in ['booked', 'confirmed'])|string|lower }}" data-warning="{{ (day.timeline|selectattr('kind', 'equalto', 'checkpoint')|list|length > 0)|string|lower }}" aria-labelledby="{{ day.day_id }}-title">
           <header class="day-heading">
-            <div class="day-number"><span>{{ tr('day') }}</span><strong>{{ day.number }}</strong></div>
-            <div class="day-title-group"><p class="day-date">{{ day.date_label }} · {{ day.weekday }}</p><h3 id="{{ day.day_id }}-title">{{ day.region }}</h3><p class="day-thesis">{{ day.thesis }}</p></div>
+            <div class="day-title-row">
+              <div class="day-title-group"><h3 id="{{ day.day_id }}-title">{{ day.region }}</h3><p class="day-date">{{ day.date_label }} · {{ day.weekday }}</p></div>
+              <div class="day-number"><span>{{ tr('day') }}</span><strong>{{ day.number }}</strong></div>
+            </div>
+            <p class="day-thesis">{{ day.thesis }}</p>
+            {% if media.get(day.day_id) %}
+            <div class="day-gallery day-gallery--{{ media[day.day_id]|length }}" role="group" aria-label="{{ tr('day_gallery', number=day.number) }}">
+              {% for photo in media[day.day_id] %}
+              <figure class="day-photo" data-optional-media>
+                <img src="{{ photo.data_url }}" alt="{{ photo.alt }}" width="{{ photo.width }}" height="{{ photo.height }}" loading="lazy" decoding="async" data-media-image>
+                <p class="media-fallback" data-media-fallback hidden>{{ tr('media_unavailable') }}</p>
+                <figcaption><strong>{{ photo.caption }}</strong><span>{{ photo.attribution }} · {{ photo.license }}</span><a class="external-link" href="{{ photo.source_url }}" data-source-id="{{ photo.source_id }}">{{ tr('source') }}</a><span class="print-media-source"> · {{ photo.source_id }}</span> <span class="network-label">{{ tr('internet') }}</span></figcaption>
+              </figure>
+              {% endfor %}
+            </div>
+            {% endif %}
             <dl class="day-meta"><div><dt>{{ tr('overnight') }}</dt><dd>{{ day.overnight }}</dd></div><div><dt>{{ tr('travel') }}</dt><dd>{{ day.travel }}</dd></div><div><dt>{{ tr('load')|capitalize }}</dt><dd>{{ enum_label(day.load) }}</dd></div><div><dt>{{ tr('last_checked') }}</dt><dd>{{ day.last_checked }}</dd></div></dl>
           </header>
-          {% if day.weather_sensitive %}<p class="weather-note"><svg class="icon" aria-hidden="true"><use href="#icon-recheck"></use></svg>{{ tr('weather_sensitive') }}</p>{% endif %}
+          <div class="day-body">
+          {% if day.weather_sensitive %}<p class="weather-note"><svg class="icon" aria-hidden="true"><use href="#icon-cloud"></use></svg>{{ tr('weather_sensitive') }}</p>{% endif %}
 
           {% if day.scenarios %}
           <div class="scenario-tabs interactive-controls" data-scenario-tabs hidden role="tablist" aria-label="{{ tr('scenario_view', number=day.number) }}">
-            <button type="button" id="{{ day.day_id }}-tab-primary" role="tab" aria-selected="true" aria-controls="{{ day.day_id }}-panel-primary" tabindex="0" data-show-scenario="primary">{{ tr('primary') }}</button>
-            {% for scenario in day.scenarios %}<button type="button" id="{{ day.day_id }}-tab-alternative-{{ scenario.scenario_id }}" role="tab" aria-selected="false" aria-controls="{{ day.day_id }}-panel-alternative-{{ scenario.scenario_id }}" tabindex="-1" data-show-scenario="alternative-{{ scenario.scenario_id }}">{{ scenario.label }}</button>{% endfor %}
+            <button type="button" id="{{ day.day_id }}-tab-primary" role="tab" aria-selected="true" aria-controls="{{ day.day_id }}-panel-primary" tabindex="0" data-show-scenario="primary"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg>{{ tr('primary') }}</button>
+            {% for scenario in day.scenarios %}<button type="button" id="{{ day.day_id }}-tab-alternative-{{ scenario.scenario_id }}" role="tab" aria-selected="false" aria-controls="{{ day.day_id }}-panel-alternative-{{ scenario.scenario_id }}" tabindex="-1" data-show-scenario="alternative-{{ scenario.scenario_id }}"><svg class="icon" aria-hidden="true"><use href="#icon-{{ 'cloud' if day.weather_sensitive else 'conflict' }}"></use></svg>{{ scenario.label }}</button>{% endfor %}
           </div>
           {% endif %}
 
@@ -293,10 +296,7 @@
             {% endfor %}
           </div>
 
-          {% if media.get(day.day_id) %}
-          {% set photo = media.get(day.day_id) %}
-          <figure class="day-photo" data-optional-media><img src="{{ photo.data_url }}" alt="{{ photo.alt }}" width="1200" height="800" loading="lazy" decoding="async" data-media-image><p class="media-fallback" data-media-fallback hidden>{{ tr('media_unavailable') }}</p><figcaption>{{ tr('source') }}: {{ photo.source_id }} · {{ tr('licence') }}: {{ photo.license }}</figcaption></figure>
-          {% endif %}
+          </div>
 
           <nav class="day-nav" aria-label="{{ tr('detailed_days') }}">
             {% if not loop.first %}<a href="#{{ view.days[loop.index0 - 1].day_id }}">← {{ tr('previous_day') }}</a>{% else %}<span></span>{% endif %}
@@ -326,7 +326,12 @@
       <section class="document-section" id="sources" aria-labelledby="sources-title">
         <h2 id="sources-title">{{ tr('sources_version') }}</h2>
         <p class="document-version" id="document-version"><strong>{{ tr('document_version') }}</strong> · {{ view.trip_id }} · {{ view.status_label }} · {{ view.verification_label }} · {{ tr('generated') }} {{ view.generated_at.isoformat() }} · {{ tr('artefact') }}</p>
-        <ul class="source-list">{% for source in view.sources %}<li class="source-item"><p><strong>{{ source.source_id }} · {{ source.title }}</strong> <span class="status status--{{ source.claim_status|replace('_', '-') }}">{{ enum_label(source.claim_status) }}</span> <span class="status status--{{ source.freshness_status }}">{{ enum_label(source.freshness_status) }}</span></p><div class="source-meta"><span>{{ tr('source_type') }}: {{ enum_label(source.source_type) }}</span><span>{{ tr('last_checked') }}: {{ source.last_checked }}</span><span>{{ tr('retrieval') }}: {{ enum_label(source.retrieval_status) }}</span></div><a class="source-link external-link" href="{{ source.url }}" data-source-id="{{ source.source_id }}">{{ tr('open_source', title=source.title) }}</a> <span class="print-url">{{ source.url }}</span> <span class="network-label">{{ tr('internet') }}</span></li>{% else %}<li>{{ tr('no_sources') }}</li>{% endfor %}</ul>
+        <dl class="lifecycle-details" aria-label="{{ tr('audit') }}">
+          <div><dt>document_status</dt><dd>{{ view.document_status }}</dd></div>
+          <div><dt>verification_level</dt><dd>{{ view.verification_level }}</dd></div>
+          <div><dt>finalization_basis</dt><dd>{{ view.finalization_basis or 'none' }}</dd></div>
+        </dl>
+        <ul class="source-list">{% for source in view.sources %}<li class="source-item"><p><strong>{{ source.source_id }} · {{ source.title }}</strong> <span class="status status--{{ source.claim_status|replace('_', '-') }}">{{ enum_label(source.claim_status) }}</span> <span class="status status--{{ source.freshness_status }}">{{ enum_label(source.freshness_status) }}</span></p><div class="source-meta"><span>{{ tr('source_type') }}: {{ enum_label(source.source_type) }}</span><span>{{ tr('last_checked') }}: {{ source.last_checked }}</span><span>{{ tr('retrieval') }}: {{ enum_label(source.retrieval_status) }}</span></div>{% if source.provenance %}<p>{{ source.provenance }}</p>{% endif %}<a class="source-link external-link" href="{{ source.url }}" data-source-id="{{ source.source_id }}">{{ tr('open_source', title=source.title) }}</a> <span class="print-url">{{ source.url }}</span> <span class="network-label">{{ tr('internet') }}</span></li>{% else %}<li>{{ tr('no_sources') }}</li>{% endfor %}</ul>
         <section class="print-link-appendix" aria-labelledby="print-links-title">
           <h3 id="print-links-title">{{ tr('linked_actions') }}</h3>
           <ol>

@@ -7,7 +7,7 @@
 
 ## 1. Outcome
 
-The generated HTML is a calm, readable itinerary rather than a dashboard. The document retains the existing Curated Route / Mineral and Maple identity, but replaces the permanent desktop sidebar and two-column day body with a bounded reading column and a sequence of visually distinct day chapters.
+The generated HTML is a calm, readable itinerary rather than a dashboard. The document uses the [7 September Lemon and Cobalt visual redesign](2026-09-07-html-visual-redesign-design.md) and replaces the permanent desktop sidebar and two-column day body with a bounded reading column and a sequence of visually distinct day chapters.
 
 The primary reading task is: understand each day in chronological order, notice the few moments that can change the plan, and open contextual links or alternatives only when needed. Day filters remain a progressive enhancement; they do not determine the visual architecture.
 
@@ -23,16 +23,20 @@ The primary reading task is: understand each day in chronological order, notice 
 
 Every day is a distinct chapter with a clear beginning and ending:
 
-1. day number, localized date/weekday and primary region;
-2. a one-sentence thesis and overnight/location metadata;
-3. scenario tabs only when one or more materially different alternative day timelines exist;
-4. one timeline containing every primary event type;
-5. optional one-image day portrait with provenance;
-6. adjacent-day navigation.
+1. large region heading on the left, day number on the right, localized date/weekday and thesis;
+2. optional gallery of 1–3 photographs beneath the introduction inside the yellow header;
+3. compact overnight, travel, load and last-checked metadata beneath the gallery;
+4. scenario tabs only when materially different alternative day timelines exist;
+5. one complete chronological timeline with semantic icons on a continuous line;
+6. adjacent-day navigation in a light-blue closing field.
 
-Chapters use a light, repeating three-accent sequence derived from mineral, pale maple and pale brass fields. Accent is structural rather than semantic: important states never rely on the day colour. Large spacing, a top rule, chapter number and a closing rule make the boundaries unmistakable in screen and print.
+The [approved 7 September specification](2026-09-07-html-visual-redesign-design.md) replaces the earlier three-accent chapter cycle with Lemon and Cobalt throughout the complete document. Chapter openings, generous spacing and closing fields establish boundaries; semantic states remain explicit in text.
 
-At most one meaningful image is rendered per day. Missing media produces no empty frame. Failed optional media removes the image surface and retains a concise fallback only when useful. Every embedded image has a purposeful `alt`, source identifier and licence; the HTML has no required remote media.
+The user-approved amendment of 7 September replaces the one-image limit: each day may show 1–3 meaningful photographs of its main locations, including clearly captioned alternative-scenario locations. Use the available one or two images without padding the gallery to three. Missing media produces no empty frame. Failed optional media removes only the affected image surface and retains its caption and a concise localized fallback. Every embedded image has a purposeful nonblank `alt`, caption, source identifier, attribution, licence and recorded dimensions; the HTML has no required remote media.
+
+`days[].media` is an ordered array, omitted or empty when no suitable media is available, with a maximum of three records. Each record has `path` (relative POSIX file path beneath the trip's `media/`, no traversal or symlink escape), `mime_type` (`image/jpeg`, `image/png`, `image/webp`, `image/avif`), `alt`, `caption`, `source_id` (resolves to `candidates.yaml.sources`), `attribution` (creator credit or generation provenance), `license`, and positive integer `width`/`height` in pixels. Source URLs must be absolute HTTPS links. Existing local sources may be imported without claiming a fresh remote verification. Keep their original attribution and licence; do not infer a licence from the repository's MIT licence.
+
+The gallery appears in the day header after the thesis and before metadata, scenario controls and timelines. Checkpoints remain in chronological order before the events they govern; the header gallery does not remove or collapse their instructions. One photograph fills the available reading width; two or three form equally sized columns on wide screens. At 760 CSS px and below, each image occupies its own row with its caption immediately following it. There are no empty columns, carousel, lightbox or new controls. Each figure preserves its caption and credit when JavaScript is absent. Print uses at most two columns with bounded image height, keeps each image and credit together when practical, and honors the existing no-image option for the entire gallery.
 
 ## 4. Canonical event contract
 
@@ -64,7 +68,7 @@ A checkpoint is a timeline event, not a side rail. It visibly answers:
 2. what to check, using `checkpoint.check`;
 3. how to change the plan, using `checkpoint.adjust_plan`.
 
-Strong maple contrast is reserved for checkpoints and lifecycle/blocking truth. Normal caveats stay quiet and adjacent to the affected event. A well-formed day should normally contain no more than two primary checkpoints; the schema permits drafts while the planning instructions set the authoring limit.
+A light-yellow field and labelled semantic icon identify checkpoints; lifecycle and blocking truth retain explicit distinct status wording. Normal caveats stay quiet and adjacent to the affected event. A well-formed day should normally contain no more than two primary checkpoints; the schema permits drafts while the planning instructions set the authoring limit.
 
 ## 5. Alternative day scenarios
 

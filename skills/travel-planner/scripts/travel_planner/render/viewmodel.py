@@ -144,6 +144,7 @@ class SourceView:
     retrieval_status: str
     claim_status: str
     freshness_status: str
+    provenance: str
 
 
 @dataclass(frozen=True)
@@ -558,6 +559,7 @@ def _sources(state: TripState, language: str) -> tuple[SourceView, ...]:
                 source_type=_text(source.get("source_type"), "unknown"),
                 last_checked=_text(source.get("retrieved_at"), _unknown(language)),
                 retrieval_status=_text(source.get("retrieval_status"), "unknown"),
+                provenance=_text(source.get("provenance"), ""),
                 claim_status=_highest(
                     (_text(claim.get("status"), "unverified") for claim in linked),
                     claim_order,

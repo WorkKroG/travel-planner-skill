@@ -1,18 +1,16 @@
-# Japan autumn 2026 example
+# Япония, 2–13 ноября 2026
 
-This is a readable, anonymized trip workspace derived from the Japan scenario fixture. It is an illustrative **draft-quality planning artifact**, not final travel advice: live schedules, seasonal conditions, entry requirements and bookings all retain explicit rechecks.
+Канонический пакет поездки, перенесённый из пользовательского HTML-плана `japan_itinerary_02-13_nov_2026.html` в актуальный формат Travel Planner. Он сохраняет шесть баз, 12 дней, транспортные варианты, погодные сценарии, еду, бюджетный ориентир и открытые действия.
 
-Create a separate throwaway workspace when testing `init`:
+Это черновик: внешние ссылки взяты из исходного документа без нового поиска, расписания и бронирования не подтверждены. Все 18 встроенных фотографий перенесены без изменения bytes в `media/`: по одной или две на каждый из 12 дней. Авторы, лицензии, alt-тексты и ссылки на оригиналы сохранены из документа; удалённые страницы повторно не проверялись. См. [происхождение и лицензии фотографий](media/README.md). Фотографии не покрываются MIT-лицензией кода проекта.
 
-```sh
-travel-planner init /tmp/japan-example-smoke --title "Japan example smoke" --trip-id japan-example-smoke --confirm-path
-```
-
-Check and render the committed example with the current internal CLI:
+Проверка и воспроизводимая сборка:
 
 ```sh
 travel-planner check examples/japan-autumn-2026
-travel-planner render examples/japan-autumn-2026 --output /tmp/japan-autumn-2026.html --at 2026-08-28T12:00:00+00:00
+travel-planner render examples/japan-autumn-2026 --output /tmp/japan-02-13-nov-2026.html --at 2026-09-07T17:44:11+00:00
 ```
 
-The temporary output path avoids overwriting the committed deterministic artifact.
+Для проверки команды `init` используйте отдельную временную директорию и не перезаписывайте этот пример.
+
+Переносимый bundle включает пять канонических файлов и `media/`. Готовый `outputs/itinerary.html` уже содержит фотографии и открывается как самостоятельный файл. Пересборка с указанным временем воспроизводит committed HTML.

@@ -54,6 +54,27 @@ travel-planner render PATH --output PATH/outputs/itinerary.html --at <evaluation
 
 In Codex, use the bundled helper. Where helpers are unavailable but skill assets can be used, build the downloadable HTML from the same bundled `assets/html/itinerary.html.j2`, `styles.css`, `app.js`, and `icons.svg` with the canonical bundle; do not create a second design. Keep verification `none` or `ai_reviewed`. If the surface cannot create a downloadable file, preserve/update the canonical bundle and state that limitation instead of claiming an HTML exists.
 
-The HTML is derived and opens locally as a self-contained file. It uses one readable column, a closed native contents disclosure, typed chronological day timelines, event-owned links and alternatives, and complete alternative scenario timelines. JavaScript enhances filtering and scenario tabs; without it all content remains readable. If the user wants a PDF, browser Print → Save as PDF is a manual browser action, not an automated product artifact or guarantee.
+The HTML is derived and opens locally as a self-contained file. It uses one readable column, a closed native contents disclosure, typed chronological day timelines, event-owned links and alternatives, and complete alternative scenario timelines. Use the shared Lemon and Cobalt visual language: yellow cover/day openings, sans-serif place headings, gallery under the day introduction and above compact facts, cobalt controls, semantic icons on a continuous timeline and blue closing fields. Do not infer day phases from ambiguous labels, add full-text search or depend on host icon globals. JavaScript enhances filtering and scenario tabs; without it all content remains readable. If the user wants a PDF, browser Print → Save as PDF is a manual browser action, not an automated product artifact or guarantee.
 
-To continue elsewhere, the user manually transfers the five canonical files and may also transfer generated HTML. Do not promise invisible sync, server state, or filesystem access unavailable on that surface.
+### Day photographs
+
+When suitable photographs are available, record 1–3 per day in `itinerary.yaml.days[].media`, in reading order. Keep one or two when that is all the relevant media; omit the field or use `[]` for no imagery. Do not add decorative duplicates. A caption must identify the location and distinguish an alternative scenario when needed. Each record requires:
+
+```yaml
+media:
+  - path: media/lake.jpg
+    mime_type: image/jpeg
+    alt: "Lake beneath autumn woodland and mountain slopes"
+    caption: "Lake · primary route"
+    source_id: photo-lake
+    attribution: "Recorded creator credit"
+    license: "Recorded reuse licence"
+    width: 1280
+    height: 853
+```
+
+Replace these illustrative values with actual metadata. `source_id` resolves to a `candidates.yaml.sources` entry with an absolute HTTPS source URL. Preserve original credit, licence or generation provenance; importing metadata from a supplied document does not mean its remote page has been rechecked. Source metadata must state that provenance honestly. Every gallery photo needs nonblank alt text, caption, attribution and licence, plus its positive integer pixel dimensions. Only JPEG, PNG, WebP and AVIF are supported; SVG and remote file paths are not.
+
+Place the raster files beneath the trip's `media/` directory. The helper reads only relative files within that directory, rejects traversal/symlink escapes, and embeds bytes directly; it never fetches an image. `check` validates metadata and source references. `render` also checks local file readability and nonempty content before writing; a missing declared file is an explicit build error, while a day with no media renders normally. Browser decoding failure affects only that photograph and preserves its caption/credit and a localized notice. Where helpers are unavailable, use the same shared template with ordered galleries and inline data URLs; never substitute remote image dependencies.
+
+To continue elsewhere, the user manually transfers the five canonical files, the referenced `media/` directory when present, and may also transfer generated HTML. Do not promise invisible sync, server state, or filesystem access unavailable on that surface.
