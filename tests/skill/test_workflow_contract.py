@@ -75,7 +75,7 @@ def _normalise_example(tokens: list[str], workspace: Path) -> list[str]:
         "PATH": str(workspace),
         "TITLE": "Executable contract trip",
         "TRIP_ID": "executable-contract-trip",
-        "<evaluation-time-iso8601-with-offset>": "2026-08-30T09:00:00+00:00",
+        "<generation-time-iso8601-with-offset>": "2026-08-30T09:00:00+00:00",
     }
     normalized = []
     for token in tokens[1:]:

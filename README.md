@@ -47,7 +47,7 @@ Each trip has five canonical files:
 
 When days reference local photographs, their files in `media/` are also canonical and must travel with those five files. Each photograph records its source, attribution, license, caption, alt text and dimensions. Photograph licenses are separate from the repository's MIT license.
 
-`sources.md` and `outputs/` are generated and can be rebuilt. The generated HTML embeds available local photographs and can be shared as one file; resuming or rebuilding the trip requires the canonical bundle, including referenced media.
+`sources.md` and `outputs/` are generated. Current outputs can be rebuilt from the canonical bundle; keep saved source snapshots to retain evidence for earlier versions after the canonical data changes. The generated HTML embeds available local photographs and can be shared as one file; resuming or rebuilding the trip requires the canonical bundle, including referenced media.
 
 Draft and Prepared copy are document lifecycle labels, independent of verification. The internal value `document_status: final` retains the `codex_validated` or `user_confirmed` preparation basis. Open decisions, unknowns, and saved concerns remain visible in either copy; individual risk acceptance is not required to issue it. Any actual acceptance stays auditable and never erases the original concern.
 
@@ -89,7 +89,7 @@ Replace the path, title, ID and `--at` timestamp with the values for your trip. 
 
 `init` never overwrites an existing trip. `check` verifies recorded dates, IDs, typed day events and scenarios, declared references, present monetary values, and document-status consistency. It does not evaluate overall trip feasibility. `render` reads the same valid data and creates a one-column self-contained itinerary with chronological meal/transport/activity/checkpoint events, contextual links and alternatives, and complete alternative day scenarios.
 
-Each day uses the approved Lemon and Cobalt composition: a yellow destination header, zero to three photographs, overnight/travel/load facts, scenario tabs, and a timeline with separate time, icon and text columns. Recorded morning/afternoon/evening groups are optional; the renderer never infers them from event times. Sources, photo credits and the last-check date appear in a closing disclosure and remain available in print. The same template supports Russian and English, narrow screens and complete content without JavaScript.
+Each day uses the approved Lemon and Cobalt composition: a yellow destination header, zero to three photographs, overnight/travel/load facts, scenario tabs, and a timeline with separate time, icon and text columns. Recorded morning/afternoon/evening groups are optional; the renderer never infers them from event times. Every concrete main program point should have its official-site and map/route links beside the event, including in alternative scenarios; unresolved venue choices remain explicit. Photo credits stay with captions. The same template supports Russian and English, narrow screens and complete content without JavaScript.
 
 If a PDF is needed, open the HTML and use Browser/System Print → Save as PDF; the plugin has no built-in PDF pipeline. Browser, mobile and print observations still need manual evidence; see the [release checklist](docs/RELEASE_CHECKLIST.md).
 
@@ -100,6 +100,10 @@ See the [Japan autumn 2026 example](examples/japan-autumn-2026/README.md) for a 
 Use the [new-chat route test guide](docs/ROUTE_BUILD_TEST.md) (Russian) to check which plugin copy is loaded, start a separate trip workspace, run the planning workflow and record the result. It includes a starting prompt and instructions for resuming from saved files. Keep the committed Japan example as reference data.
 
 ## Maps, sources, security, and privacy
+
+Research indexes are technical artifacts and do not appear in the HTML or its print output. Each `render` saves `sources/<HTML-SHA256>.md` beside the requested HTML before publishing it. The file records all source materials, claims, program references, photo provenance, generation time and canonical input hashes for that build. New builds preserve previous snapshots; repeating an identical build is safe. A conflicting snapshot stops publication instead of replacing history; use a new `--at` for changed evidence.
+
+Ask Codex for the sources of a particular HTML or version. It can hash the file and retrieve the matching saved snapshot. This requires access to that trip's saved files; no account or automatic sync is involved. The current-state `sources.md` is rebuildable but does not replace historical snapshots. Official links in the program and compact photo attribution remain part of the shared HTML.
 
 - Yandex Maps is preferred by default for Russia, CIS countries, and Turkey unless the user chooses another provider.
 - Entry, transit, medical, legal, safety, emergency, and transport-operation claims require current official sources.

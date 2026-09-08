@@ -76,8 +76,8 @@ def test_source_import_provenance_survives_projection_and_escaping(japan_state, 
     source_id = japan_state.candidates["sources"][0]["id"]
     assert next(source for source in view.sources if source.source_id == source_id).provenance == note
     html = render_html(view, {}, DEFAULTS)
-    assert "remote source not rechecked." in html
-    assert "&lt;img onerror=alert(1)&gt;" in html
+    assert "remote source not rechecked." not in html
+    assert "&lt;img onerror=alert(1)&gt;" not in html
 
 
 def test_media_copy_is_escaped_and_omission_option_hides_the_whole_gallery(japan_view):
@@ -108,13 +108,11 @@ def test_gallery_css_and_no_js_keep_reading_and_print_contracts(japan_view):
     assert_css_rule(print_css, (".no-print-images .day-gallery", "body:not(.print-images) .day-gallery"), {"display": "none"})
 
 
-def test_print_credit_identifies_each_photos_source(japan_view):
+def test_photo_credit_stays_in_its_figure_for_screen_and_print(japan_view):
     source_id = japan_view.sources[0].source_id
     html = render_html(japan_view, {"day-1": [photo(source_id)]}, DEFAULTS)
-    credits = re.search(r'<div class="day-sources-print">(.*?)</div>\s*</div>', html, re.DOTALL).group(1)
-    assert f'<span class="print-media-source">· {source_id}</span>' in credits
-    css = html[html.index("<style>"):html.index("</style>")]
-    assert_css_rule(css[:css.index("@media print")], (".print-media-source",), {"display": "none"})
-    assert_css_rule(css[css.index("@media print"):], (".print-media-source",), {"display": "inline"})
-    assert_css_rule(css[css.index("@media print"):], (".day-sources-print",), {"display": "block"})
-    assert_css_rule(css[css.index("@media print"):], (".day-sources",), {"display": "none"})
+    caption = re.search(r"<figcaption>(.*?)</figcaption>", html, re.DOTALL)[1]
+    assert "Example Author" in caption and "CC BY-SA 4.0" in caption
+    assert japan_view.sources[0].url in caption
+    assert source_id not in caption
+    assert 'class="day-sources-print"' not in html

@@ -16,7 +16,6 @@ CRITICAL_PRINT_SELECTORS = (
     ".decision-item",
     ".readiness-item",
     ".risk-item",
-    ".source-item",
 )
 
 
@@ -108,7 +107,6 @@ def test_contents_and_all_core_sections_remain_linked_without_javascript(
         "#preparation",
         "#budget",
         "#risks",
-        "#sources",
     ):
         assert f'href="{anchor}"' in html
     assert "Rail booking window is not open yet." in html
@@ -146,32 +144,15 @@ def test_print_static_css_keeps_both_scenarios_and_removes_interactive_chrome(
         (".event-print-context",),
         {"display": "block"},
     )
-    assert_css_rule(
-        print_css,
-        (".print-url",),
-        {"display": "inline"},
-    )
     assert "string-set" not in print_css
     assert "string(day-title)" not in print_css
 
 
-def test_print_document_contains_event_context_and_full_external_urls(
-    japan_view: ItineraryView,
-) -> None:
-    """Catch printed continuations and links losing their human-readable context."""
+def test_print_document_keeps_event_context_and_clickable_actions(japan_view):
     html = render_html(japan_view, media={}, options=DEFAULTS)
-    appendix_start = html.index('class="print-link-appendix"')
-    appendix = html[
-        appendix_start : html.index("</section>", appendix_start)
-    ]
-
     assert "Day 1 · November 2, 2026 · Tokyo" in html
-    assert '<span class="print-url">https://example.jp/rail</span>' in html
-    assert (
-        '<span class="print-url">https://www.google.com/maps/search/?api=1&amp;query=Tokyo</span>'
-        in appendix
-    )
-    assert "Arrival and transfer · Build route in Google Maps" in appendix
+    assert 'href="https://www.google.com/maps/search/?api=1&amp;query=Tokyo"' in html
+    assert 'class="print-link-appendix"' not in html
 
 
 def test_print_critical_group_contract_rejects_auto_mutation(
@@ -209,12 +190,12 @@ def test_print_keeps_version_provenance_without_a_footer_only_page(
 ) -> None:
     """Catch version provenance depending on a screen footer that paginates alone."""
     html = render_html(japan_view, media={}, options=DEFAULTS)
-    sources = html[html.index('id="sources"') : html.index("</main>")]
+    footer = re.search(r"<footer[^>]*>(.*?)</footer>", html, re.DOTALL)[1]
     print_css = html[html.index("@media print") :]
 
-    assert 'id="document-version"' in sources
-    assert japan_view.status_label in sources
-    assert japan_view.generated_at.isoformat() in sources
+    assert 'id="document-version"' in html
+    assert japan_view.status_label in footer
+    assert japan_view.generated_at.isoformat() in footer
     assert_css_rule(
         print_css,
         (".document-footer",),

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import tempfile
 from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from decimal import Decimal
@@ -23,7 +24,6 @@ _COPY = {
         "skip": "Skip to itinerary",
         "travellers": "travellers",
         "verification": "Verification level",
-        "audit": "Canonical lifecycle values",
         "inconsistent": "Inconsistent state",
         "declared_basis": "Declared basis",
         "feasibility_note": "Document preparation and recorded-data checks do not confirm that the trip is feasible. Open decisions and recorded concerns remain below.",
@@ -47,7 +47,6 @@ _COPY = {
         "preparation": "Preparation",
         "budget": "Budget",
         "risks": "Risks and backups",
-        "sources": "Sources",
         "day": "Day",
         "enhancement_error": "Interactive controls are unavailable. The complete itinerary remains below.",
         "blocker_intro": "Recorded blockers remain unresolved and blocking for their decisions. Preparing this document does not resolve or accept them.",
@@ -79,7 +78,6 @@ _COPY = {
         "no_decisions": "No open decisions.",
         "overnight": "Overnight",
         "travel": "Travel",
-        "last_checked": "Last checked",
         "weather_sensitive": "Weather-sensitive",
         "scenario_view": "Scenario view for day {number}",
         "primary": "Primary",
@@ -91,7 +89,6 @@ _COPY = {
         "morning": "Morning",
         "afternoon": "Afternoon",
         "evening": "Evening",
-        "day_sources": "Sources and photographs",
         "time": "Time",
         "event_type": "{kind}",
         "what_check": "What to check",
@@ -105,8 +102,6 @@ _COPY = {
         "booking": "Booking",
         "media_unavailable": "Photo unavailable; the day plan remains complete.",
         "day_gallery": "Main locations · Day {number}",
-        "source": "Source",
-        "licence": "Licence",
         "previous_day": "Previous day",
         "next_day": "Next day",
         "bookings_readiness": "Bookings and readiness",
@@ -125,15 +120,8 @@ _COPY = {
         "included": "Included",
         "no_budget": "No budget items recorded.",
         "no_risks": "No recorded concerns. Unknowns may still remain.",
-        "sources_version": "Sources and document version",
-        "linked_actions": "Linked actions and full URLs",
-        "document_version": "Document version",
         "generated": "Generated",
         "artefact": "Artefact v0.1",
-        "source_type": "Type",
-        "retrieval": "Retrieval",
-        "open_source": "Open source: {title}",
-        "no_sources": "No sources recorded.",
         "scenario_shown": "{label} scenario shown.",
     },
     "ru": {
@@ -141,7 +129,6 @@ _COPY = {
         "skip": "Перейти к маршруту",
         "travellers": "путешественников",
         "verification": "Уровень проверки",
-        "audit": "Канонические поля состояния документа",
         "inconsistent": "Несогласованное состояние",
         "declared_basis": "Заявленное основание",
         "feasibility_note": "Подготовка документа и проверка записанных данных не подтверждают выполнимость поездки. Открытые решения и замечания сохранены ниже.",
@@ -165,7 +152,6 @@ _COPY = {
         "preparation": "Подготовка",
         "budget": "Расходы",
         "risks": "Риски и запасные планы",
-        "sources": "Источники",
         "day": "День",
         "enhancement_error": "Интерактивные элементы недоступны. Полный маршрут остаётся ниже.",
         "blocker_intro": "Записанные блокеры остаются нерешёнными и блокирующими для своих решений. Подготовка документа не устраняет и не принимает их.",
@@ -197,7 +183,6 @@ _COPY = {
         "no_decisions": "Открытых решений нет.",
         "overnight": "Ночёвка",
         "travel": "Переезды",
-        "last_checked": "Проверено",
         "weather_sensitive": "Зависит от погоды",
         "scenario_view": "Сценарий дня {number}",
         "primary": "Основной",
@@ -209,7 +194,6 @@ _COPY = {
         "morning": "Утро",
         "afternoon": "День",
         "evening": "Вечер",
-        "day_sources": "Источники и фотографии",
         "time": "Время",
         "event_type": "{kind}",
         "what_check": "Что проверить",
@@ -223,8 +207,6 @@ _COPY = {
         "booking": "Бронирование",
         "media_unavailable": "Фото недоступно; план дня остаётся полным.",
         "day_gallery": "Основные места · День {number}",
-        "source": "Источник",
-        "licence": "Лицензия",
         "previous_day": "Предыдущий день",
         "next_day": "Следующий день",
         "bookings_readiness": "Бронирования и готовность",
@@ -243,15 +225,8 @@ _COPY = {
         "included": "Учтено",
         "no_budget": "Расходы не записаны.",
         "no_risks": "Записанных замечаний нет. Неизвестные сведения могут сохраняться.",
-        "sources_version": "Источники и версия документа",
-        "linked_actions": "Ссылки действий и полные URL",
-        "document_version": "Версия документа",
         "generated": "Создан",
         "artefact": "Артефакт v0.1",
-        "source_type": "Тип",
-        "retrieval": "Получение",
-        "open_source": "Открыть источник: {title}",
-        "no_sources": "Источники не записаны.",
         "scenario_shown": "Показан сценарий «{label}».",
     },
 }
@@ -501,7 +476,19 @@ def write_html(
     media: Mapping[str, Sequence[MediaAsset]] | None = None,
 ) -> Path:
     """Write exact render bytes to one explicitly selected destination."""
+    return write_rendered_html(render_html(view, media or {}, options), target)
+
+
+def write_rendered_html(html: str, target: Path) -> Path:
+    """Publish complete HTML without leaving a partial previous document on write failure."""
     destination = Path(target)
     destination.parent.mkdir(parents=True, exist_ok=True)
-    destination.write_text(render_html(view, media or {}, options), encoding="utf-8")
+    with tempfile.NamedTemporaryFile(dir=destination.parent, delete=False) as staged:
+        staging_path = Path(staged.name)
+        try:
+            staged.write(html.encode("utf-8"))
+            staged.flush()
+            staging_path.replace(destination)
+        finally:
+            staging_path.unlink(missing_ok=True)
     return destination

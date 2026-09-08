@@ -129,9 +129,9 @@ components:
 
 Travel Planner is a bright, readable travel guide. Lemon fields introduce the trip and each destination; cobalt links and time anchors carry the reader through warm paper. Large sans-serif place names, real photographs and a continuous timeline give each day a clear opening and a dependable reading rhythm.
 
-The same visual language covers the whole document: cover, route overview, contents, days, open decisions, preparation, budget, risks, sources and footer. Controls stay in the reading flow. Information hierarchy comes from type, spacing, thin rules and a few purposeful color fields.
+The same visual language covers the whole document: cover, route overview, contents, days, open decisions, preparation, budget, risks and footer. Controls stay in the reading flow. Information hierarchy comes from type, spacing, thin rules and a few purposeful color fields.
 
-This document records the implemented shared template in `skills/travel-planner/assets/html/styles.css` and `itinerary.html.j2`, following the [approved September 7 visual specification](docs/superpowers/specs/2026-09-07-html-visual-redesign-design.md) and the one-day Hakone composition approved for the full template on September 8. The latter governs the three-fact header, larger circular markers, recorded day periods and closing source disclosure. It describes source-level properties; it does not record a completed browser review.
+This document records the implemented shared template in `skills/travel-planner/assets/html/styles.css` and `itinerary.html.j2`, following the [approved September 7 visual specification](docs/superpowers/specs/2026-09-07-html-visual-redesign-design.md) and the one-day Hakone composition approved for the full template on September 8. That composition governs the three-fact header, larger circular markers and recorded day periods. A later 8 September refinement removes research lists from the reader HTML and retains only practical event links and compact photo credits. It describes source-level properties; it does not record a completed browser review.
 
 **Key Characteristics:**
 
@@ -203,7 +203,7 @@ Ordinary event headings use 1.25rem, weight 700 and 1.25 line height. Activity h
 
 The cover, document shell and footer share a centred maximum width of 58rem, with a 1rem outer margin on wide screens. Main content is bounded at 54rem; paragraphs retain a 72ch maximum. The shell has 1rem horizontal padding; the cover uses `clamp(2rem, 5vw, 4rem)` padding. Sections use 4rem vertical spacing, and adjacent days have a 4rem gap.
 
-A day opens with a yellow header padded by 2rem. The destination and date are on the left, two-digit day number on the right; introduction, optional gallery and three facts (overnight base, travel, load) follow. “How we’ll spend the day” introduces scenario controls and complete timelines. Source links, photo credits and last-check date sit in a closed native disclosure in the blue closing field, followed by previous/next links.
+A day opens with a yellow header padded by 2rem. The destination and date are on the left, two-digit day number on the right; introduction, optional gallery and three facts (overnight base, travel, load) follow. “How we’ll spend the day” introduces scenario controls and complete timelines. Previous/next links close each day. Research indexes and check dates live in a separate technical source snapshot; compact creator/license credits remain with photo captions.
 
 The timeline has separate time, icon and text columns: 5.5rem, 3.5rem and the remaining width, with 1.125rem gaps. A thin line connects the centres of circular markers. Adjacent recorded periods form reading groups without sorting events; unassigned events keep their own unlabelled group.
 
@@ -235,7 +235,7 @@ Status pills have a current-color border, compact sentence-case text and semanti
 
 ### Navigation and Supporting Sections
 
-The closed contents disclosure uses a pale blue field and a bold summary with a menu icon. Its links form two columns on wide screens and one on compact screens. The route uses a horizontal sequence that becomes vertical on compact screens. Open decisions, preparation, risks and sources use divided reading rows. Budget totals use a two-column summary and a yellow-headed table. The footer repeats document provenance in a blue field.
+The closed contents disclosure uses a pale blue field and a bold summary with a menu icon. Its links form two columns on wide screens and one on compact screens. The route uses a horizontal sequence that becomes vertical on compact screens. Open decisions, preparation and risks use divided reading rows. Budget totals use a two-column summary and a yellow-headed table. The footer repeats document provenance in a blue field.
 
 ### Day Galleries
 
@@ -247,7 +247,7 @@ A day has zero to three ordered photographs. No gallery markup is emitted when t
 | 2 | Two equal photographs | 1.42 / 1 |
 | 3 | Three equal photographs | 1.3 / 1 |
 
-The gap is 0.75rem, photographs use the photo radius and `object-fit: cover`. At 760px, photographs use a 1.9 / 1 ratio and three-photo galleries stack; two-photo galleries stack at 460px. Captions remain below each photograph. Attribution, license and source links move to the day disclosure and its independent print projection. Images are embedded, with dimensions, lazy loading and asynchronous decoding hints. A decoding failure shows a localized fallback while caption and provenance remain available; native alt text is retained without JavaScript.
+The gap is 0.75rem, photographs use the photo radius and `object-fit: cover`. At 760px, photographs use a 1.9 / 1 ratio and three-photo galleries stack; two-photo galleries stack at 460px. Captions remain below each photograph. A small line beneath each caption carries the linked creator credit and recorded license. There is no day source disclosure. Images are embedded, with dimensions, lazy loading and asynchronous decoding hints. A decoding failure shows a localized fallback while caption and provenance remain available; native alt text is retained without JavaScript.
 
 ### Timelines and Checkpoints
 
@@ -261,9 +261,9 @@ Checkpoint copy sits in a pale yellow text field beside a brown marker. A compac
 
 Without JavaScript, enhancement controls are hidden, all full timelines remain visible and event alternatives start expanded. The contents disclosure and anchors remain native controls. If enhancement initialization fails, the template has an explicit notice and restores scenario and alternative visibility. No external icon library, host global or browser runtime package is required.
 
-Print CSS uses A4 portrait, a white page, 10.5pt body text and clear rules. The cover and each day start separate page sections. Filters, scenario controls, contents and adjacent-day navigation are removed; all days, scenarios and event alternatives are included regardless of screen selection. Event context, source URLs, linked-action URLs and document provenance are printed. Critical groups avoid internal page breaks, and table layout is restored.
+Print CSS uses A4 portrait, a white page, 10.5pt body text and clear rules. The cover and each day start separate page sections. Filters, scenario controls, contents and adjacent-day navigation are removed; all days, scenarios and event alternatives are included regardless of screen selection. Event context, practical event links, photo credits and document provenance are printed. Research lists and the full-URL appendix are absent from both screen and print. Critical groups avoid internal page breaks, and table layout is restored.
 
-Gallery printing follows the existing print-images option. When enabled, one photo fills its row and multiple photos use two columns; images preserve their full proportions, lose rounded corners and keep caption, attribution, license and source ID. This is browser Print behavior, with PDF saving performed by the reader.
+Gallery printing follows the existing print-images option. When enabled, one photo fills its row and multiple photos use two columns; images preserve their full proportions, lose rounded corners and keep caption, linked attribution and license. This is browser Print behavior, with PDF saving performed by the reader.
 
 ## Do's and Don'ts
 

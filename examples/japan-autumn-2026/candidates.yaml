@@ -29,6 +29,55 @@ sources:
   - {id: source-toyosu-calendar, url: "https://www.shijou.metro.tokyo.lg.jp/calendar/2026/", source_type: official, publisher: Tokyo Metropolitan Central Wholesale Market, retrieved_at: "2026-09-06T22:33:50+03:00"}
   - {id: source-edo-kiriko, url: "https://www.gotokyo.org/en/workshop/sd016/index.html", source_type: official, publisher: GO TOKYO, retrieved_at: "2026-09-06T22:33:50+03:00"}
   - {id: source-haneda, url: "https://tokyo-haneda.com/en/access/train/index.html?tab=terminal3", source_type: official, publisher: Haneda Airport, retrieved_at: "2026-09-06T22:33:50+03:00"}
+  - {id: source-narita-airport, url: "https://www.narita-airport.jp/en/access/train/", source_type: official, publisher: Narita International Airport, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-keisei-skyliner, url: "https://new-www.keisei.co.jp/keisei/tetudou/skyliner/us/skyliner/index.php", source_type: official, publisher: Keisei Electric Railway, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-narita-express, url: "https://www.jreast.co.jp/multi/nex/", source_type: official, publisher: JR East, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-airport-limousine, url: "https://www.limousinebus.co.jp/en/", source_type: official, publisher: Airport Transport Service, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-monorail-access, url: "https://www.tokyo-monorail.co.jp/english/haneda-tokyo-access/index.html", source_type: official, publisher: Tokyo Monorail, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-tokyo-observatories, url: "https://www.english.metro.tokyo.lg.jp/w/000-101-000542", source_type: official, publisher: Tokyo Metropolitan Government, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-toshogu, url: "https://www.visitnikko.jp/en/spots/nikko-toshogu-shrine/", source_type: official, publisher: Visit Nikko, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-rinnoji, url: "https://www.visitnikko.jp/en/spots/nikkosan-rinnoji-temple/", source_type: official, publisher: Visit Nikko, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-shinkyo, url: "https://www.visitnikko.jp/en/spots/shinkyo-bridge/", source_type: official, publisher: Visit Nikko, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-shoyoen, url: "https://www.visitnikko.jp/en/spots/rinnoji-temple-shoyoen-light-up/", source_type: official, publisher: Visit Nikko, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-senjogahara, url: "https://www.visitnikko.jp/en/spots/senjogahara-hiking/", source_type: official, publisher: Visit Nikko, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-tamozawa, url: "https://www.visitnikko.jp/en/spots/nikko-tamozawa-imperial-villa-memorial-park/", source_type: official, publisher: Visit Nikko, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-ashio-mine, url: "https://www.visitnikko.jp/spots/ashio-copper-mine/", source_type: official, publisher: Visit Nikko, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-british-villa, url: "https://www.nikko-nsm.co.jp/british.html", source_type: official, publisher: Nikko Natural Science Museum, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-italian-villa, url: "https://www.nikko-nsm.co.jp/en/italy.html", source_type: official, publisher: Nikko Natural Science Museum, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-nikko-takaiya, url: "https://www.nikko-takaiya.jp/", source_type: primary, publisher: Nikko Takaiya, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-enya, url: "https://www.enya-nikko.jp/", source_type: primary, publisher: Restaurant Nikko Enya, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-atagawa-garden, url: "https://bananawani.jp/english/", source_type: primary, publisher: Atagawa Tropical & Alligator Garden, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-maguroya, url: "https://honkemaguroya.com/", source_type: primary, publisher: Honke Maguroya, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-izukyu, url: "https://www.izukyu.co.jp/global_site/", source_type: official, publisher: Izukyu, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-saphir-odoriko, url: "https://www.jreast.co.jp/en/multi/traininformation/saphir/", source_type: official, publisher: JR East, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-jr-east-network, url: "https://www.jreast.co.jp/en/multi/traininformation/", source_type: official, publisher: JR East, retrieved_at: "2026-09-08T18:19:57+00:00"}
+  - {id: source-hakone-transport, url: "https://www.hakonenavi.jp/international/en/transportation/", source_type: official, publisher: Hakone Navi, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-choanji, url: "https://www.hakonenavi.jp/international/en/spot/353", source_type: official, publisher: Hakone Navi, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-hakone-geomuseum, url: "https://www.hakone-geomuseum.jp/", source_type: primary, publisher: Hakone GeoMuseum, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-yasohachi, url: "https://www.hakone-yasohachi.jp/", source_type: primary, publisher: Hakone Tofu Chaya Yasohachi, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-pola-direct, url: "https://www.polamuseum.or.jp/en/info/", source_type: primary, publisher: Pola Museum of Art, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-pola-restaurant, url: "https://www.polamuseum.or.jp/en/shop/restaurant/", source_type: primary, publisher: Pola Museum of Art, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-gora-brewery, url: "https://itoh-dining.co.jp/gorabrewery/", source_type: primary, publisher: Gora Brewery & Grill, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-itchiku, url: "https://www.itchiku-museum.com/", source_type: primary, publisher: Itchiku Kubota Art Museum, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-koyodai, url: "https://www.city.fujiyoshida.yamanashi.jp/uploaded/attachment/1551.pdf", source_type: official, publisher: Fujiyoshida City, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-aokigahara, url: "https://www.yamanashi-kankou.jp/english/recover/aokigahara-forest.html", source_type: official, publisher: Yamanashi Tourism Organization, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-saiko-village, url: "https://saikoiyashinosatonenba.jp/en/", source_type: primary, publisher: Saiko Iyashi-no-Sato Nenba, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-sengen-shrine, url: "https://www.sengenjinja.jp/english/index.html", source_type: primary, publisher: Kitaguchi Hongu Fuji Sengen Shrine, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-yurari, url: "https://www.fuji-yurari.jp/", source_type: primary, publisher: Fuji Chobo-no-Yu Yurari, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-hoto-fudo, url: "https://www.houtou-fudou.jp/english.html", source_type: primary, publisher: Hoto Fudo, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-natural-living-center, url: "https://fujisan.ne.jp/sightseeing/3845/", source_type: official, publisher: Fujikawaguchiko Tourism Federation, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-koshu-sumibi, url: "https://www.sumibi-kawaguchiko.co.jp/", source_type: primary, publisher: Koshu Sumibiyaki Dining, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-honjin-tsukasa, url: "https://motosuko-honjintsukasa.jp/", source_type: primary, publisher: Honjin Tsukasa, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-hayashi-guide, url: "https://www.town.fujikawaguchiko.lg.jp/upload/file/kanko/gourmet%20guide2025_E.pdf", source_type: official, publisher: Fujikawaguchiko Town, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-menkyo-kaiden, url: "https://en.fujiyoshida.net/gourmet/index.php?p=121", source_type: official, publisher: Fujiyoshida Tourism Promotion Service, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-fuji-excursion, url: "https://e.fujikyu-railway.jp/fujikaiyuu/", source_type: official, publisher: Fujikyu Railway, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-fujikyu-highway, url: "https://www.fujikyubus.co.jp/highway/", source_type: official, publisher: Fujikyu Bus, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-kabuki, url: "https://www.shochiku.co.jp/global/en/kabuki/watchkabuki/gototheatre/", source_type: primary, publisher: Shochiku, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-teamlab-borderless, url: "https://www.teamlab.art/e/tokyo/", source_type: primary, publisher: teamLab, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-sona-area, url: "https://www.tokyorinkai-koen.jp/en/index.php", source_type: official, publisher: Tokyo Rinkai Disaster Prevention Park, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-shunkaen, url: "https://kunio-kobayashi.com/en/", source_type: primary, publisher: Shunkaen Bonsai Museum, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-haneda-innovation, url: "https://haneda-innovation-city.com/en/about/", source_type: primary, publisher: Haneda Innovation City, retrieved_at: "2026-09-08T20:38:34+03:00"}
+  - {id: source-kanmangafuchi, url: "https://www.visitnikko.jp/en/spots/kanmangafuchi-abyss/", source_type: official, publisher: Visit Nikko, retrieved_at: "2026-09-08T20:38:34+03:00"}
   - id: photo-day-1-1
     title: Асакуса вечером
     url: https://commons.wikimedia.org/wiki/File:Sensoji_at_night_4.jpg

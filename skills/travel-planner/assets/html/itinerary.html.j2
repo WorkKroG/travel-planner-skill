@@ -108,30 +108,6 @@
   {% endfor %}
   {%- endmacro %}
 
-  {% macro render_day_sources(day) -%}
-  <div class="day-source-content">
-    <p>{{ tr('last_checked') }}: {{ day.last_checked }}</p>
-    <ul class="day-source-list">
-      {% for source in view.sources if source.source_id in day.source_ids %}
-      <li><a class="external-link" href="{{ source.url }}" data-source-id="{{ source.source_id }}">{{ source.title }}</a><span class="print-url">{{ source.url }}</span></li>
-      {% endfor %}
-      {% for photo in media.get(day.day_id, ()) %}
-      <li class="photo-credit"><a class="external-link" href="{{ photo.source_url }}" data-source-id="{{ photo.source_id }}">{{ photo.caption }}</a><br>{{ photo.attribution }} · {{ photo.license }} <span class="print-media-source">· {{ photo.source_id }}</span><span class="print-url">{{ photo.source_url }}</span></li>
-      {% endfor %}
-    </ul>
-    <p class="network-label">{{ tr('internet') }}</p>
-  </div>
-  {%- endmacro %}
-
-  {% macro render_link_appendix(timeline, day, scenario_label='') -%}
-{% for event in timeline -%}
-{% for link in event.links -%}<li><strong>{{ tr('day') }} {{ day.number }} · {% if scenario_label %}{{ scenario_label }} · {% endif %}{{ event.title }} · {{ link.label }}</strong><span class="print-url">{{ link.url }}</span></li>{% endfor -%}
-{% for alternative in event.alternatives -%}
-{% for link in alternative.links -%}<li><strong>{{ tr('day') }} {{ day.number }} · {% if scenario_label %}{{ scenario_label }} · {% endif %}{{ event.title }} · {{ alternative.title }} · {{ link.label }}</strong><span class="print-url">{{ link.url }}</span></li>{% endfor -%}
-{% endfor -%}
-{% endfor -%}
-  {%- endmacro %}
-
   <a class="skip-link" href="#main-content">{{ tr('skip') }}</a>
 
   <header class="trip-hero" id="trip-summary">
@@ -196,7 +172,6 @@
           <li><a href="#preparation">{{ tr('preparation') }}</a></li>
           <li><a href="#budget">{{ tr('budget') }}</a></li>
           <li><a href="#risks">{{ tr('risks') }}</a></li>
-          <li><a href="#sources">{{ tr('sources') }}</a></li>
         </ol>
       </details>
     </nav>
@@ -285,7 +260,7 @@
               <figure class="day-photo" data-optional-media>
                 <img src="{{ photo.data_url }}" alt="{{ photo.alt }}" width="{{ photo.width }}" height="{{ photo.height }}" loading="lazy" decoding="async" data-media-image>
                 <p class="media-fallback" data-media-fallback hidden>{{ tr('media_unavailable') }}</p>
-                <figcaption>{{ photo.caption }}</figcaption>
+                <figcaption>{{ photo.caption }}<small class="photo-credit"><a class="external-link" href="{{ photo.source_url }}">{{ photo.attribution }}</a> · {{ photo.license }}</small></figcaption>
               </figure>
               {% endfor %}
             </div>
@@ -321,10 +296,6 @@
 
           </div>
 
-          <div class="day-provenance">
-            <details class="day-sources"><summary>{{ tr('day_sources') }}</summary>{{ render_day_sources(day) }}</details>
-            <div class="day-sources-print">{{ render_day_sources(day) }}</div>
-          </div>
           <nav class="day-nav" aria-label="{{ tr('detailed_days') }}">
             {% if not loop.first %}<a href="#{{ view.days[loop.index0 - 1].day_id }}">← {{ tr('previous_day') }}</a>{% else %}<span></span>{% endif %}
             {% if not loop.last %}<a href="#{{ view.days[loop.index0 + 1].day_id }}">{{ tr('next_day') }} →</a>{% endif %}
@@ -350,29 +321,10 @@
 
       <section class="document-section" id="risks" aria-labelledby="risks-title"><h2 id="risks-title">{{ tr('risks') }}</h2><ul class="risk-list">{% for finding in view.risks %}<li class="risk-item risk-item--{{ finding.severity }}"><p class="status-with-icon"><svg class="icon" aria-hidden="true"><use href="#icon-{% if finding.severity == 'blocking' %}stop{% else %}recheck{% endif %}"></use></svg><strong>{{ finding.code }} · {{ enum_label(finding.severity) }}</strong></p><p>{{ finding.message }}</p><p>{{ tr('affects') }}: {{ finding.affected_ids|join(', ') or enum_label('unknown') }} · {{ tr('path') }}: {{ finding.path }}</p></li>{% else %}<li>{{ tr('no_risks') }}</li>{% endfor %}</ul></section>
 
-      <section class="document-section" id="sources" aria-labelledby="sources-title">
-        <h2 id="sources-title">{{ tr('sources_version') }}</h2>
-        <p class="document-version" id="document-version"><strong>{{ tr('document_version') }}</strong> · {{ view.trip_id }} · {{ view.status_label }} · {{ view.verification_label }} · {{ tr('generated') }} {{ view.generated_at.isoformat() }} · {{ tr('artefact') }}</p>
-        <dl class="lifecycle-details" aria-label="{{ tr('audit') }}">
-          <div><dt>document_status</dt><dd>{{ view.document_status }}</dd></div>
-          <div><dt>verification_level</dt><dd>{{ view.verification_level }}</dd></div>
-          <div><dt>finalization_basis</dt><dd>{{ view.finalization_basis or 'none' }}</dd></div>
-        </dl>
-        <ul class="source-list">{% for source in view.sources %}<li class="source-item"><p><strong>{{ source.source_id }} · {{ source.title }}</strong> <span class="status status--{{ source.claim_status|replace('_', '-') }}">{{ enum_label(source.claim_status) }}</span> <span class="status status--{{ source.freshness_status }}">{{ enum_label(source.freshness_status) }}</span></p><div class="source-meta"><span>{{ tr('source_type') }}: {{ enum_label(source.source_type) }}</span><span>{{ tr('last_checked') }}: {{ source.last_checked }}</span><span>{{ tr('retrieval') }}: {{ enum_label(source.retrieval_status) }}</span></div>{% if source.provenance %}<p>{{ source.provenance }}</p>{% endif %}<a class="source-link external-link" href="{{ source.url }}" data-source-id="{{ source.source_id }}">{{ tr('open_source', title=source.title) }}</a> <span class="print-url">{{ source.url }}</span> <span class="network-label">{{ tr('internet') }}</span></li>{% else %}<li>{{ tr('no_sources') }}</li>{% endfor %}</ul>
-        <section class="print-link-appendix" aria-labelledby="print-links-title">
-          <h3 id="print-links-title">{{ tr('linked_actions') }}</h3>
-          <ol>
-{% for day in view.days -%}
-{{ render_link_appendix(day.timeline, day) }}
-{% for scenario in day.scenarios -%}{{ render_link_appendix(scenario.timeline, day, scenario.label) }}{% endfor -%}
-{% endfor -%}
-          </ol>
-        </section>
-      </section>
     </main>
   </div>
 
-  <footer class="document-footer"><strong>{{ view.title }}</strong> · {{ view.trip_id }} · {{ view.status_label }} · {{ view.verification_label }} · {{ tr('generated') }} {{ view.generated_at.isoformat() }} · {{ tr('artefact') }}</footer>
+  <footer class="document-footer" id="document-version" data-document-status="{{ view.document_status }}" data-verification-level="{{ view.verification_level }}" data-finalization-basis="{{ view.finalization_basis or 'none' }}"><strong>{{ view.title }}</strong> · {{ view.trip_id }} · {{ view.status_label }} · {{ view.verification_label }} · {{ tr('generated') }} {{ view.generated_at.isoformat() }} · {{ tr('artefact') }}</footer>
   <script>{{ js }}</script>
 </body>
 </html>

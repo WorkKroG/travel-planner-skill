@@ -1,7 +1,7 @@
 # Readable Itinerary Days — HTML Design Specification
 
 **Date:** 2026-09-06
-**Status:** Approved by user; implementation contract amended through 2026-09-08 (merged PR #11)
+**Status:** Approved by user; implementation contract amended on 2026-09-08: reader HTML without technical source lists
 **Supersedes:** the detailed-day layout, navigation and scenario treatment in `2026-08-28-interactive-itinerary-html-design.md`
 **Keeps:** the earlier specification's product scope, lifecycle truth, self-contained local opening, accessibility, responsive and browser-print guarantees
 
@@ -28,7 +28,7 @@ Every day is a distinct chapter with a clear beginning and ending:
 3. three compact facts beneath the gallery: overnight, travel and load;
 4. a localized “How we’ll spend the day” heading on every day; scenario tabs appear only when materially different alternative day timelines exist;
 5. one complete chronological timeline with separate time, circular semantic icon and text columns, optionally grouped by recorded periods;
-6. a closed native “Sources and photographs” disclosure with day sources, photo credits and last-checked metadata, followed by adjacent-day navigation in a light-blue closing field.
+6. adjacent-day navigation in a light-blue closing field; compact photo credits remain beside their captions, while day sources and check dates stay in the technical build snapshot.
 
 The [approved 7 September specification](2026-09-07-html-visual-redesign-design.md) replaces the earlier three-accent chapter cycle with Lemon and Cobalt throughout the complete document. Chapter openings, generous spacing and closing fields establish boundaries; semantic states remain explicit in text.
 
@@ -36,7 +36,7 @@ The user-approved amendment of 7 September replaces the one-image limit: each da
 
 `days[].media` is an ordered array, omitted or empty when no suitable media is available, with a maximum of three records. Each record has `path` (relative POSIX file path beneath the trip's `media/`, no traversal or symlink escape), `mime_type` (`image/jpeg`, `image/png`, `image/webp`, `image/avif`), `alt`, `caption`, `source_id` (resolves to `candidates.yaml.sources`), `attribution` (creator credit or generation provenance), `license`, and positive integer `width`/`height` in pixels. Source URLs must be absolute HTTPS links. Existing local sources may be imported without claiming a fresh remote verification. Keep their original attribution and licence; do not infer a licence from the repository's MIT licence.
 
-The gallery appears in the day header after the thesis and before metadata, scenario controls and timelines. Checkpoints remain in chronological order before the events they govern; the header gallery does not remove or collapse their instructions. One photograph fills the available reading width; two or three form equally sized columns on wide screens. Three-photo galleries stack at 760 CSS px and below; all galleries stack at 460 CSS px and below. Captions immediately follow images; attribution, license and linked source appear in the closing disclosure, which works without JavaScript. There are no empty columns, carousel or lightbox. Print uses at most two columns with bounded image height, keeps each image and caption together when practical, and honors the existing no-image option. A separate print projection preserves all day sources and photo credits even when the screen disclosure is closed.
+The gallery appears in the day header after the thesis and before metadata, scenario controls and timelines. Checkpoints remain in chronological order before the events they govern; the header gallery does not remove or collapse their instructions. One photograph fills the available reading width; two or three form equally sized columns on wide screens. Three-photo galleries stack at 760 CSS px and below; all galleries stack at 460 CSS px and below. Captions immediately follow images, with a compact linked creator credit and recorded license that remain available without JavaScript. There are no empty columns, carousel or lightbox. Print uses at most two columns with bounded image height, keeps each image and caption together when practical, and honors the existing no-image option. Photo credits stay inside each printed figure. Neither screen nor print contains a source index or a separate URL appendix.
 
 ## 4. Canonical event contract
 
@@ -57,7 +57,7 @@ Period headings group only adjacent equal recorded values, preserving source ord
 
 ### 4.1 Event links
 
-Each event link has `label`, absolute HTTPS `url`, `kind` (`map`, `route`, `official`, `tickets` or `source`) and `requires_internet`. Links are rendered only when present, never as naked URLs, and receive a localized connectivity note. Map/place actions use a localized equivalent of “Open on map”; transport route actions use “Build route”. Official schedule truth remains outside map providers.
+Each event link has `label`, absolute HTTPS `url`, `kind` (`map`, `route`, `official`, `tickets` or `source`) and `requires_internet`. Links are rendered only when present, never as naked URLs, and receive a localized connectivity note. Every concrete major point must be authored with an official venue/operator link and a map point or transport route, including full scenarios and local alternatives. Combined visits carry links for each named place. Unknown venues or unavailable official pages stay explicit; the renderer does not invent links and the schema does not classify main points. Map/place actions use a localized equivalent of “Open on map”; transport route actions use “Build route”. Official schedule truth remains outside map providers.
 
 ### 4.2 Event alternatives
 
@@ -85,7 +85,7 @@ A light-yellow field and labelled semantic icon identify checkpoints; lifecycle 
 
 ## 6. Localization
 
-`brief.yaml.document_language` selects visible system copy. v0.1 supports `en` and `ru`; absence defaults to `en` for simple compatibility. Titles, status explanations, navigation, headings, filters, scenario controls, connectivity notes, dates, weekdays, enum labels, empty states and JavaScript announcements use the selected language. Canonical enum values remain visible only in the lifecycle audit definition list where they are explicitly technical provenance.
+`brief.yaml.document_language` selects visible system copy. v0.1 supports `en` and `ru`; absence defaults to `en` for simple compatibility. Titles, status explanations, navigation, headings, filters, scenario controls, connectivity notes, dates, weekdays, enum labels, empty states and JavaScript announcements use the selected language. Canonical lifecycle values remain in footer data attributes and the technical source snapshot; visible status labels remain localized.
 
 User-authored itinerary content is never machine-translated by the renderer. A workspace should therefore author its content in the same language as `document_language`.
 
@@ -106,16 +106,20 @@ User-authored itinerary content is never machine-translated by the renderer. A w
 - Print CSS defines a fixed trip/version/status footer; page counters use `@page` margin boxes. Browser support and actual repetition/pagination require the manual print observations in the [release checklist](../../RELEASE_CHECKLIST.md); source tests alone do not establish them.
 - Primary timeline events, checkpoints and compact alternative scenario blocks avoid page splits when practical.
 - The primary timeline prints in full; alternative day scenarios print more compactly but with complete titles, times and details.
-- Link labels and source identifiers print without dumping naked URLs into the reading flow; the source section includes full source URLs plus a print-only appendix for every event and alternative action URL.
+- Practical links stay beside their events; linked photo credits stay with images. Technical source identifiers, source lists and a full-URL appendix are not part of HTML or print.
 - Optional imagery obeys the renderer's print-images option and never creates a blank page.
 
-## 9. Data compatibility and non-goals
+## 9. Technical materials by version
+
+Each Codex build writes a separate `sources/<HTML-SHA256>.md` beside its HTML, containing generation time, lifecycle, canonical input hashes and the complete source/claim/program/photo inventory. It is not embedded or linked in the reader document. Codex can retrieve the matching saved list from an explicit HTML file or version; a missing historical list must not be replaced by current sources. New builds retain older snapshots. Hash binding and conflict behavior are defined in [ARCHITECTURE.md](../../../ARCHITECTURE.md).
+
+## 10. Data compatibility and non-goals
 
 There is no migration framework. Repository fixtures and the bundled trip template adopt the new event/scenario contract directly. `document_language` is optional and defaults to English. Retaining old day-level `food`, `links`, prose `critical_constraints`, or description-only scenario records is not a goal; pre-release workspaces may remain incomplete drafts and should be regenerated or edited explicitly.
 
 This work does not add an MCP, backend, account, sync, browser automation stack, offline workflow, built-in PDF pipeline, migration system, partial rebuild, eval runner, judge or simulator.
 
-## 10. Acceptance evidence
+## 11. Acceptance evidence
 
 Automated evidence covers:
 

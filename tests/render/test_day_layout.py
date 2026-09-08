@@ -106,7 +106,7 @@ def test_scenario_presentation_is_localized_without_replacing_content(
     assert 'href="#icon-rain"' in html
 
 
-def test_photo_credits_and_day_check_date_move_to_disclosure_and_print(japan_view):
+def test_photo_credit_travels_with_caption_without_a_source_disclosure(japan_view):
     day = japan_view.days[0]
     photo = MediaAsset(
         b"photo",
@@ -122,14 +122,11 @@ def test_photo_credits_and_day_check_date_move_to_disclosure_and_print(japan_vie
     html = render_html(replace(japan_view, days=(day,)), {day.day_id: (photo,)}, DEFAULTS)
     caption = re.search(r"<figcaption>(.*?)</figcaption>", html, re.DOTALL)[1]
     assert "Garden in autumn" in caption
-    assert "Photographer" not in caption
-    disclosure = re.search(r'<details class="day-sources">(.*?)</details>', html, re.DOTALL)[1]
-    assert "Photographer" in disclosure and "CC BY 4.0" in disclosure
-    assert day.last_checked in disclosure
-    assert japan_view.sources[0].url in disclosure
-    printed = re.search(r'<div class="day-sources-print">(.*?)</div>\s*</div>', html, re.DOTALL)[1]
-    assert "Photographer" in printed and "CC BY 4.0" in printed
-    assert day.last_checked in printed
+    assert "Photographer" in caption and "CC BY 4.0" in caption
+    assert japan_view.sources[0].url in caption
+    assert 'class="day-sources"' not in html
+    assert day.last_checked not in caption
+
 
 
 @pytest.mark.parametrize("field,value", [("period", "tomorrow"), ("icon", "remote-icon")])
