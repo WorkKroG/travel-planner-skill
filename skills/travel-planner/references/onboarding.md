@@ -19,13 +19,12 @@ travel-planner init PATH --title "TITLE" --trip-id TRIP_ID --confirm-path
 | `itinerary.yaml` | canonical |
 | `readiness.yaml` | canonical |
 | `decisions.md` | canonical |
-| `sources.md` | generated |
 | `outputs/` | generated |
 
-`brief.yaml` owns goals, travellers, dates, constraints, and preferences. `candidates.yaml` owns researched candidates, sources, claims, and comparisons. `itinerary.yaml` owns the selected route, days/timeline, budget, scenarios, blockers, and lifecycle. `readiness.yaml` owns bookings, actions, rechecks, and dependencies. `decisions.md` preserves the rationale and history of material user decisions. Regenerate current `sources.md` and HTML from canonical data; preserve earlier build inventories for source history. Neither chat nor HTML is authoritative state.
+`brief.yaml` owns goals, travellers, dates, constraints, and preferences. `candidates.yaml` owns researched candidates, sources, claims, and comparisons. `itinerary.yaml` owns the selected route, days/timeline, budget, scenarios, blockers, and lifecycle. `readiness.yaml` owns bookings, actions, rechecks, and dependencies. `decisions.md` preserves the rationale and history of material user decisions. Regenerate HTML from canonical data. Research discussion and citations stay in the chat history; no separate bibliography or build inventory is produced. The canonical files own current editable state, not the conversation history.
 
 The table describes the files created by `init`. If days reference local photographs, their files in `media/` are additional canonical resources. Transfer them with the five canonical files when resuming elsewhere or rebuilding; preserve source, attribution and license metadata. The generated HTML embeds photographs for viewing but does not replace this editable bundle.
 
-Each rendered build also has a technical source snapshot beside its HTML, as described in [verification and render](verification-and-render.md). Keep these generated snapshots when replacing a build or moving the trip if earlier source history is needed; current canonical files cannot recreate an older inventory after the sources change.
+Deliver only the HTML, as described in [verification and render](verification-and-render.md). Do not create a source archive or require one to continue the trip. Existing files from earlier installations are not deleted automatically.
 
 To resume, require an explicit path or `trip_id`. If several trips match, ask rather than choosing by recency. Read only the canonical files and IDs relevant to the current request, then follow [verification and render](verification-and-render.md) before editing when deterministic helpers are available.

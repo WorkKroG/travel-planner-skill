@@ -424,7 +424,6 @@ def test_generated_paths_are_not_required_for_load_or_structural_validation(
     """Catch generated reports or outputs becoming hidden canonical validation inputs."""
     validate_structure = getattr(state_module, "validate_structure", None)
     assert callable(validate_structure)
-    (minimal_trip / "sources.md").unlink()
     shutil.rmtree(minimal_trip / "outputs", ignore_errors=True)
 
     assert load_trip(minimal_trip).itinerary["document_status"] == "draft"
