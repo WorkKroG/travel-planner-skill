@@ -1,4 +1,21 @@
 schema_version: 1
 trip_id: ""
-items: []
-
+items:
+  - id: review-destination-safety
+    title: Situation and safety
+    category: emergency
+    status: unknown
+    check_result: Not checked for the destinations, transit countries and travel dates.
+    checked_at: null
+    next_action: Review current official travel advisories, outbreaks, conflict, unrest, and changes affecting borders or transport; record consequences and unresolved questions for this route.
+    recheck_note: Recheck before booking and departure, and when the route or situation changes. Follow any earlier recheck point from the relevant authority; this plan does not update automatically.
+    source_ids: []
+  - id: review-entry-transit
+    title: Visas, entry and transit
+    category: entry
+    status: unknown
+    check_result: Not checked for each traveller and the full route.
+    checked_at: null
+    next_action: Clarify citizenship, residence and transit details; check official entry and transit requirements for each traveller, document validity, trip purpose and duration. Do not collect passport numbers or scans.
+    recheck_note: Recheck before booking, applying for a visa and departure, and after changes to the route, travel documents or rules. This plan does not update automatically.
+    source_ids: []

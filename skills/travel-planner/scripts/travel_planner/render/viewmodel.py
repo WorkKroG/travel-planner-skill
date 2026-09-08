@@ -10,6 +10,7 @@ from typing import Any, Literal
 
 from ..budget import BudgetSubtotal, calculate_budget
 from ..checks import CheckReport, Finding
+from ..evidence import source_index
 from ..state import TripState
 
 
@@ -120,6 +121,10 @@ class ReadinessView:
     issue: str
     source_ids: tuple[str, ...]
     claim_ids: tuple[str, ...]
+    check_result: str = ""
+    checked_at: str = ""
+    recheck_note: str = ""
+    links: tuple[LinkView, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -470,6 +475,7 @@ def _days(state: TripState, language: str) -> tuple[DayView, ...]:
 
 
 def _readiness(state: TripState, language: str) -> tuple[ReadinessView, ...]:
+    sources = source_index(state)
     status_order = {
         "action_needed": 0,
         "recheck": 1,
@@ -500,6 +506,19 @@ def _readiness(state: TripState, language: str) -> tuple[ReadinessView, ...]:
             issue=_text(item.get("issue"), ""),
             source_ids=_strings(item.get("source_ids")),
             claim_ids=_strings(item.get("claim_ids")),
+            check_result=_text(item.get("check_result"), ""),
+            checked_at=_text(item.get("checked_at"), ""),
+            recheck_note=_text(item.get("recheck_note"), ""),
+            links=tuple(
+                LinkView(
+                    label=_text(source.get("title"), _text(source.get("publisher"), source_id)),
+                    url=_text(source.get("url"), ""),
+                    kind="reference",
+                    requires_internet=True,
+                )
+                for source_id in dict.fromkeys(_strings(item.get("source_ids")))
+                if (source := sources.get(source_id)) is not None
+            ),
         )
         for item in _mapping_items(state.readiness.get("items"))
     ]

@@ -1,6 +1,30 @@
 schema_version: 1
 trip_id: japan-02-13-nov-2026
 sources:
+  - id: source-japan-visa
+    url: https://www.mofa.go.jp/j_info/visit/visa/index.html
+    title: Визы и въезд — МИД Японии
+    source_type: official
+    publisher: Ministry of Foreign Affairs of Japan
+    retrieved_at: '2026-09-08T20:45:34+00:00'
+    retrieval_status: ok
+    provenance: Official recheck entry page opened; no trip-specific visa or transit assessment completed.
+  - id: source-jnto-emergencies
+    url: https://www.japan.travel/en/plan/emergencies/
+    title: Экстренная информация — JNTO
+    source_type: official
+    publisher: Japan National Tourism Organization
+    retrieved_at: '2026-09-08T20:45:34+00:00'
+    retrieval_status: ok
+    provenance: Official recheck entry page opened; no current trip-specific safety assessment completed.
+  - id: source-who-outbreaks
+    url: https://www.who.int/emergencies/disease-outbreak-news
+    title: Сообщения о вспышках заболеваний — ВОЗ
+    source_type: official
+    publisher: World Health Organization
+    retrieved_at: '2026-09-08T20:45:34+00:00'
+    retrieval_status: ok
+    provenance: Official global outbreak index opened; no Japan-specific health assessment completed.
   - {id: source-keikyu, url: "https://www.haneda-tokyo-access.com/en/ride/fares.html", source_type: official, publisher: Keikyu, retrieved_at: "2026-09-06T22:33:50+03:00"}
   - {id: source-monorail, url: "https://www.tokyo-monorail.co.jp/english/haneda-tokyo-access/company.html", source_type: official, publisher: Tokyo Monorail, retrieved_at: "2026-09-06T22:33:50+03:00"}
   - {id: source-tobu-express, url: "https://www.tobu.co.jp/en/express_info/timetable.html", source_type: official, publisher: Tobu Railway, retrieved_at: "2026-09-06T22:33:50+03:00"}

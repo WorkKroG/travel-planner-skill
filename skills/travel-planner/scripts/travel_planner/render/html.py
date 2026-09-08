@@ -109,6 +109,10 @@ _COPY = {
         "owner": "Owner",
         "due": "Due",
         "next_check": "Next check",
+        "check_result": "Review result",
+        "checked_at": "Reviewed on",
+        "not_checked": "Not checked",
+        "recheck_required": "Recheck required",
         "no_readiness": "No readiness items recorded.",
         "expenses_note": "Subtotals keep currencies and price bases separate. No conversion or multiplication by traveller count is applied. Recorded expenses are not a complete trip budget.",
         "excluded_rows": "{count} rows are excluded from subtotals; their recorded values and reasons remain below.",
@@ -214,6 +218,10 @@ _COPY = {
         "owner": "Ответственный",
         "due": "Срок",
         "next_check": "Следующая проверка",
+        "check_result": "Результат проверки",
+        "checked_at": "Дата проверки",
+        "not_checked": "Не проверено",
+        "recheck_required": "Обязательно перепроверить",
         "no_readiness": "Элементы готовности не записаны.",
         "expenses_note": "Промежуточные суммы разделяют валюты и основания цены. Конвертация и умножение на число путешественников не выполняются. Записанные расходы не являются полным бюджетом поездки.",
         "excluded_rows": "Из промежуточных сумм исключено строк: {count}; записанные значения и причины сохранены ниже.",
@@ -403,6 +411,8 @@ def _timeline_links(timeline: Iterable[TimelineEventView]) -> Iterable[LinkView]
 
 def _validate_external_urls(view: ItineraryView) -> None:
     links = []
+    for item in view.readiness:
+        links.extend(item.links)
     for day in view.days:
         links.extend(_timeline_links(day.timeline))
         for scenario in day.scenarios:

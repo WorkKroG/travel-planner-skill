@@ -56,6 +56,8 @@ In Codex, use the bundled helper. Where helpers are unavailable but skill assets
 
 Before rendering, review the official-site and map/route links for every concrete main program point, including alternative scenarios, according to [planning](planning.md). Preserve explicit gaps for unselected or unavailable venues. Do not replace missing practical links with a global source list.
 
+Before every delivery, perform the two [situation and entry reviews](research.md) and update their separate [preparation items](readiness-and-budget.md). Ensure the result or unknowns, actual review date when available, applicable official links and explicit recheck requirement remain visible in the HTML and print, even for a previously completed review. If research cannot be completed, deliver an honestly incomplete plan with the missing review/details and next actions; do not silently treat the review as passed. Revisit changed/stale evidence, not just the date field. `check`, `render` and `--at` neither fetch current advisories/visa rules nor monitor future changes.
+
 ### Research history and delivery
 
 The HTML is the delivered plan. Important official-site and map/route links belong beside their program points, and compact photo credits remain with images. Neither the screen nor print output contains a research index, day source disclosure or URL appendix.
