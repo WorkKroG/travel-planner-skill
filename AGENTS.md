@@ -1,6 +1,6 @@
 # Contributor guidance
 
-Treat [PRODUCT.md](PRODUCT.md), [ARCHITECTURE.md](ARCHITECTURE.md), and the [approved HTML specification](docs/superpowers/specs/2026-08-28-interactive-itinerary-html-design.md) as canonical, in that order for product/architecture and then HTML behavior. `docs/PROJECT_STATUS.md` records progress; the skill and its seven references own runtime workflow.
+Treat [PRODUCT.md](PRODUCT.md), [ARCHITECTURE.md](ARCHITECTURE.md), and the [Readable Itinerary Days specification](docs/superpowers/specs/2026-09-06-itinerary-readable-days-design.md) over the retained requirements of the [original HTML specification](docs/superpowers/specs/2026-08-28-interactive-itinerary-html-design.md) as canonical, in that order for product/architecture and then HTML behavior. [DESIGN.md](DESIGN.md) records the implemented visual system, including the approved 8 September day composition. `docs/PROJECT_STATUS.md` records progress; the skill and its seven references own runtime workflow. Historical implementation plans are not pending tasks.
 
 Do not expand the v0.1 non-goals: no MCP/backend/apps/accounts/sync, offline workflow, built-in PDF pipeline, migrations/partial rebuild, browser automation stack, or eval runner/judge/simulator.
 

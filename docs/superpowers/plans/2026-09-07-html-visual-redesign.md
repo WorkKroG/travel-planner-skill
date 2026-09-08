@@ -1,6 +1,6 @@
 # HTML visual redesign implementation plan
 
-> **For agentic workers:** Use superpowers:executing-plans for inline execution. The user has already approved the design and requested implementation, independent review, a commit and a PR without merging.
+> **Historical plan:** Implemented in merged PR #10, followed by the day-composition refinement in PR #11. See [project status](../../PROJECT_STATUS.md) for current evidence and [DESIGN.md](../../../DESIGN.md) for the implemented visual system. The execution instructions and checklist below record the original task; they do not authorize new work.
 
 **Goal:** Apply the approved Lemon and Cobalt design to the complete shared HTML and rebuild the actual 2–13 November 2026 Japan trip.
 

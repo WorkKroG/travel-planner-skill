@@ -24,4 +24,6 @@ travel-planner init PATH --title "TITLE" --trip-id TRIP_ID --confirm-path
 
 `brief.yaml` owns goals, travellers, dates, constraints, and preferences. `candidates.yaml` owns researched candidates, sources, claims, and comparisons. `itinerary.yaml` owns the selected route, days/timeline, budget, scenarios, blockers, and lifecycle. `readiness.yaml` owns bookings, actions, rechecks, and dependencies. `decisions.md` preserves the rationale and history of material user decisions. Regenerate `sources.md` and `outputs/`; neither chat nor HTML is authoritative state.
 
+The table describes the files created by `init`. If days reference local photographs, their files in `media/` are additional canonical resources. Transfer them with the five canonical files when resuming elsewhere or rebuilding; preserve source, attribution and license metadata. The generated HTML embeds photographs for viewing but does not replace this editable bundle.
+
 To resume, require an explicit path or `trip_id`. If several trips match, ask rather than choosing by recency. Read only the canonical files and IDs relevant to the current request, then follow [verification and render](verification-and-render.md) before editing when deterministic helpers are available.
