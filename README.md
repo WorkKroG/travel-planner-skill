@@ -12,6 +12,8 @@ The workflow is intentionally collaborative:
 6. Run the verification available on the current surface.
 7. Produce one responsive, self-contained HTML itinerary for review and sharing.
 
+Route selection and plan delivery include two official-source reviews: **Situation and safety** (including conflict, unrest, epidemics, and changes affecting borders or transport) and **Visas, entry and transit** for each traveller. Both appear as separate preparation items with findings or explicit unknowns, actual review dates when available, useful official links and a requirement to recheck before booking/departure and after relevant changes. The plan does not update automatically; a successful data check does not establish safety or entry eligibility.
+
 The complete product contract is in [PRODUCT.md](PRODUCT.md), the component boundary is in [ARCHITECTURE.md](ARCHITECTURE.md), and the implemented visual system is in [DESIGN.md](DESIGN.md). The [Readable Itinerary Days specification](docs/superpowers/specs/2026-09-06-itinerary-readable-days-design.md) defines HTML behavior over the retained requirements of the [original interactive itinerary specification](docs/superpowers/specs/2026-08-28-interactive-itinerary-html-design.md). Historical design and implementation plans record earlier decisions; [project status](docs/PROJECT_STATUS.md) identifies what is merged and what remains unverified.
 
 ## Supported surfaces

@@ -4,9 +4,16 @@
 
 This is a checklist and evidence index, not a runner or an eval framework. Catalog entries remain `not_executed` until their named review or observation is actually performed.
 
-## HTML-only delivery verification
+## Situation and entry reviews
 
-The current `codex/sources-in-research-history` branch removes separate materials lists and per-build inventories. Delivery is one HTML file; research discussion and citations remain in the available planning conversation. Full suite: **251 passed**. Ruff, dependency check, CLI help, skill validation and diff whitespace checks pass. Independent source review: ready for PR, no P0–P2 findings; its stale visual-spec wording was corrected. Manual browser/mobile/print gates below remain pending.
+The current `codex/travel-readiness-checks` branch adds two explicit preparation reviews to the workflow and new trip template. Results or unknowns, actual review dates, contextual official links and mandatory recheck instructions remain visible in HTML/print. The Japan example deliberately leaves both reviews unresolved. Full suite: **262 passed**; Ruff, dependency check, CLI help, skill validation and diff whitespace checks passed. Independent review found no actionable P0–P2 issues. A clean wheel installation passed temporary init/check/render smokes, created only HTML, reproduced the Japan output byte-for-byte and matched the installed schema/templates to source. This is not a live assessment of Japan, a visa eligibility check, background monitoring or browser QA.
+
+- [ ] Observe both preparation items in desktop/mobile and print, including “Not checked” and the recheck requirement.
+- [ ] In the manual route-building scenario, confirm missing traveller/transit details and unavailable official evidence stay unresolved; a completed review still retains recheck instructions.
+
+## Historical HTML-only delivery verification (PR #14)
+
+[PR #14](https://github.com/WorkKroG/travel-planner-skill/pull/14) merged as `df6bf977705c585f54da96adb8b8ca55ef36820f`, removing separate materials lists and per-build inventories. Delivery is one HTML file; research discussion and citations remain in the available planning conversation. Its full suite: **251 passed**. Ruff, dependency check, CLI help, skill validation and diff whitespace checks passed. Independent source review: ready for PR, no P0–P2 findings; its stale visual-spec wording was corrected. Manual browser/mobile/print gates below remain pending.
 
 The new wheel was built and installed in a clean temporary Python 3.12 environment. Temporary init/check/render smokes produce only HTML, and the installed package reproduces the unchanged Japan HTML byte-for-byte. No sources-report template is packaged.
 

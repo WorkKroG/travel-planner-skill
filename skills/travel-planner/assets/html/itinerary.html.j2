@@ -308,7 +308,24 @@
         <h2 id="preparation-title">{{ tr('bookings_readiness') }}</h2>
         <p>{{ tr('readiness_note', confirmed=view.summary.readiness_confirmed, total=view.summary.readiness_total) }}</p>
         <ul class="readiness-list">
-          {% for item in view.readiness %}<li class="readiness-item"><p class="status-with-icon"><svg class="icon" aria-hidden="true"><use href="#icon-{% if item.status == 'confirmed' %}check{% elif item.status == 'recheck' %}recheck{% else %}square{% endif %}"></use></svg><strong>{{ item.title }}</strong></p><p><span class="status status--{{ item.status|replace('_', '-') }}">{{ enum_label(item.status) }}</span> {{ enum_label(item.category) }} · {{ tr('owner') }}: {{ item.owner_id }}{% if item.due_at %} · {{ tr('due') }}: {{ item.due_at }}{% endif %}{% if item.next_check_at %} · {{ tr('next_check') }}: {{ item.next_check_at }}{% endif %}</p>{% if item.issue %}<p>{{ item.issue }}</p>{% endif %}{% if item.next_action %}<p>{{ tr('next_action') }}: {{ item.next_action }}</p>{% endif %}</li>{% else %}<li>{{ tr('no_readiness') }}</li>{% endfor %}
+          {% for item in view.readiness %}
+          <li class="readiness-item">
+            <p class="status-with-icon"><svg class="icon" aria-hidden="true"><use href="#icon-{% if item.status == 'confirmed' %}check{% elif item.status == 'recheck' %}recheck{% else %}square{% endif %}"></use></svg><strong>{{ item.title }}</strong></p>
+            <p><span class="status status--{{ item.status|replace('_', '-') }}">{{ enum_label(item.status) }}</span> {{ enum_label(item.category) }} · {{ tr('owner') }}: {{ item.owner_id }}{% if item.due_at %} · {{ tr('due') }}: {{ item.due_at }}{% endif %}{% if item.next_check_at %} · {{ tr('next_check') }}: {{ item.next_check_at }}{% endif %}</p>
+            {% if item.check_result %}<p>{{ tr('check_result') }}: {{ item.check_result }}</p>{% endif %}
+            {% if item.check_result or item.checked_at or item.recheck_note %}<p>{{ tr('checked_at') }}: {{ item.checked_at or tr('not_checked') }}</p>{% endif %}
+            {% if item.issue %}<p>{{ item.issue }}</p>{% endif %}
+            {% if item.next_action %}<p>{{ tr('next_action') }}: {{ item.next_action }}</p>{% endif %}
+            {% if item.recheck_note %}<p><strong>{{ tr('recheck_required') }}:</strong> {{ item.recheck_note }}</p>{% endif %}
+            {% if item.links %}
+            <ul class="event-actions">
+              {% for link in item.links %}
+              <li><a class="external-link" href="{{ link.url }}"><svg class="icon" aria-hidden="true"><use href="#icon-arrow"></use></svg>{{ link.label }}</a>{% if link.requires_internet %}<span class="network-label">{{ tr('internet') }}</span>{% endif %}</li>
+              {% endfor %}
+            </ul>
+            {% endif %}
+          </li>
+          {% else %}<li>{{ tr('no_readiness') }}</li>{% endfor %}
         </ul>
       </section>
 
