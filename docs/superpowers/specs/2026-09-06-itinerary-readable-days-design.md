@@ -28,7 +28,7 @@ Every day is a distinct chapter with a clear beginning and ending:
 3. three compact facts beneath the gallery: overnight, travel and load;
 4. a localized “How we’ll spend the day” heading on every day; scenario tabs appear only when materially different alternative day timelines exist;
 5. one complete chronological timeline with separate time, circular semantic icon and text columns, optionally grouped by recorded periods;
-6. adjacent-day navigation in a light-blue closing field; compact photo credits remain beside their captions, while day sources and check dates stay in the technical build snapshot.
+6. adjacent-day navigation in a light-blue closing field; compact photo credits remain beside their captions, research history stays in the planning conversation without a separate materials list.
 
 The [approved 7 September specification](2026-09-07-html-visual-redesign-design.md) replaces the earlier three-accent chapter cycle with Lemon and Cobalt throughout the complete document. Chapter openings, generous spacing and closing fields establish boundaries; semantic states remain explicit in text.
 
@@ -85,7 +85,7 @@ A light-yellow field and labelled semantic icon identify checkpoints; lifecycle 
 
 ## 6. Localization
 
-`brief.yaml.document_language` selects visible system copy. v0.1 supports `en` and `ru`; absence defaults to `en` for simple compatibility. Titles, status explanations, navigation, headings, filters, scenario controls, connectivity notes, dates, weekdays, enum labels, empty states and JavaScript announcements use the selected language. Canonical lifecycle values remain in footer data attributes and the technical source snapshot; visible status labels remain localized.
+`brief.yaml.document_language` selects visible system copy. v0.1 supports `en` and `ru`; absence defaults to `en` for simple compatibility. Titles, status explanations, navigation, headings, filters, scenario controls, connectivity notes, dates, weekdays, enum labels, empty states and JavaScript announcements use the selected language. Canonical lifecycle values remain in the working data and footer data attributes; visible status labels remain localized.
 
 User-authored itinerary content is never machine-translated by the renderer. A workspace should therefore author its content in the same language as `document_language`.
 
@@ -109,9 +109,9 @@ User-authored itinerary content is never machine-translated by the renderer. A w
 - Practical links stay beside their events; linked photo credits stay with images. Technical source identifiers, source lists and a full-URL appendix are not part of HTML or print.
 - Optional imagery obeys the renderer's print-images option and never creates a blank page.
 
-## 9. Technical materials by version
+## 9. Research history and practical links
 
-Each Codex build writes a separate `sources/<HTML-SHA256>.md` beside its HTML, containing generation time, lifecycle, canonical input hashes and the complete source/claim/program/photo inventory. It is not embedded or linked in the reader document. Codex can retrieve the matching saved list from an explicit HTML file or version; a missing historical list must not be replaced by current sources. New builds retain older snapshots. Hash binding and conflict behavior are defined in [ARCHITECTURE.md](../../../ARCHITECTURE.md).
+The HTML is the delivered plan. Research discussion and citations stay in the planning conversation, available only while that history is accessible. No separate bibliography, source snapshot or version-to-source archive is created on any surface. Current canonical source records support claims and photograph attribution without promising recovery of past research. This supersedes the earlier per-build inventory requirement.
 
 ## 10. Data compatibility and non-goals
 

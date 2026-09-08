@@ -1,6 +1,6 @@
 # Versioned technical sources implementation plan
 
-**Status:** Implemented on 8 September 2026 in `codex/versioned-sources`; retained as implementation history. Both tasks are complete, with 259 passing tests and a clean-install reproduction of the Japan HTML and its source snapshot. The feature is not merged at this revision.
+**Status:** Historical implementation of merged PR #13. Superseded by the later user decision to retain research history in the chat and deliver only HTML with contextual links. Separate source reports and per-build inventories are no longer required; do not execute the tasks below.
 
 **Goal:** Keep research indexes outside the reader's HTML, preserve each build's sources for Codex retrieval, and put practical official/map links beside major program points.
 

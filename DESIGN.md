@@ -203,7 +203,7 @@ Ordinary event headings use 1.25rem, weight 700 and 1.25 line height. Activity h
 
 The cover, document shell and footer share a centred maximum width of 58rem, with a 1rem outer margin on wide screens. Main content is bounded at 54rem; paragraphs retain a 72ch maximum. The shell has 1rem horizontal padding; the cover uses `clamp(2rem, 5vw, 4rem)` padding. Sections use 4rem vertical spacing, and adjacent days have a 4rem gap.
 
-A day opens with a yellow header padded by 2rem. The destination and date are on the left, two-digit day number on the right; introduction, optional gallery and three facts (overnight base, travel, load) follow. “How we’ll spend the day” introduces scenario controls and complete timelines. Previous/next links close each day. Research indexes and check dates live in a separate technical source snapshot; compact creator/license credits remain with photo captions.
+A day opens with a yellow header padded by 2rem. The destination and date are on the left, two-digit day number on the right; introduction, optional gallery and three facts (overnight base, travel, load) follow. “How we’ll spend the day” introduces scenario controls and complete timelines. Previous/next links close each day. Research history stays in the planning conversation; no separate materials list is generated. Compact creator/license credits remain with photo captions.
 
 The timeline has separate time, icon and text columns: 5.5rem, 3.5rem and the remaining width, with 1.125rem gaps. A thin line connects the centres of circular markers. Adjacent recorded periods form reading groups without sorting events; unassigned events keep their own unlabelled group.
 

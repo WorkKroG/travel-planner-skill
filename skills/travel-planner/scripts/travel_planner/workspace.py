@@ -21,7 +21,7 @@ CANONICAL_FILES = (
     "readiness.yaml",
     "decisions.md",
 )
-GENERATED_FILES = ("sources.md",)
+GENERATED_FILES = ()
 GENERATED_DIRECTORIES = ("outputs",)
 WORKSPACE_FILES = CANONICAL_FILES + GENERATED_FILES
 PROJECT_REMINDER = (
@@ -53,7 +53,6 @@ class TripPaths:
     itinerary: Path
     readiness: Path
     decisions: Path
-    sources: Path
     outputs: Path
 
 
@@ -65,7 +64,6 @@ def _paths_for(root: Path) -> TripPaths:
         itinerary=root / "itinerary.yaml",
         readiness=root / "readiness.yaml",
         decisions=root / "decisions.md",
-        sources=root / "sources.md",
         outputs=root / "outputs",
     )
 

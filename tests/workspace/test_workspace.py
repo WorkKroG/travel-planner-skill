@@ -44,7 +44,6 @@ def test_initialize_creates_the_complete_workspace(tmp_path: Path) -> None:
         "itinerary.yaml",
         "outputs",
         "readiness.yaml",
-        "sources.md",
     }
     assert paths.outputs.is_dir()
     itinerary = yaml.safe_load(paths.itinerary.read_text())
@@ -58,7 +57,7 @@ def test_initialize_creates_the_complete_workspace(tmp_path: Path) -> None:
 
 
 def test_workspace_names_canonical_and_generated_paths_separately() -> None:
-    """Catch generated sources and outputs being mislabeled as canonical trip state."""
+    """Catch generated outputs being mislabeled as canonical trip state."""
     assert getattr(workspace_module, "CANONICAL_FILES", ()) == (
         "brief.yaml",
         "candidates.yaml",
@@ -66,7 +65,7 @@ def test_workspace_names_canonical_and_generated_paths_separately() -> None:
         "readiness.yaml",
         "decisions.md",
     )
-    assert getattr(workspace_module, "GENERATED_FILES", ()) == ("sources.md",)
+    assert getattr(workspace_module, "GENERATED_FILES", ()) == ()
     assert getattr(workspace_module, "GENERATED_DIRECTORIES", ()) == ("outputs",)
 
 

@@ -4,7 +4,13 @@
 
 This is a checklist and evidence index, not a runner or an eval framework. Catalog entries remain `not_executed` until their named review or observation is actually performed.
 
-## Latest merged implementation evidence
+## HTML-only delivery verification
+
+The current `codex/sources-in-research-history` branch removes separate materials lists and per-build inventories. Delivery is one HTML file; research discussion and citations remain in the available planning conversation. Full suite: **251 passed**. Ruff, dependency check, CLI help, skill validation and diff whitespace checks pass. Independent source review: ready for PR, no P0–P2 findings; its stale visual-spec wording was corrected. Manual browser/mobile/print gates below remain pending.
+
+The new wheel was built and installed in a clean temporary Python 3.12 environment. Temporary init/check/render smokes produce only HTML, and the installed package reproduces the unchanged Japan HTML byte-for-byte. No sources-report template is packaged.
+
+## Historical layout evidence (PR #11)
 
 [PR #11](https://github.com/WorkKroG/travel-planner-skill/pull/11) merged on 2026-09-08 as `58c20e55fa46307f1b5fa09f96dd7a79f25795d9`. Checks below were performed on its implementation head `4251869c0cf8cf8044ea4abe452ef38e6d878e45` before merging:
 
@@ -17,17 +23,9 @@ This is a checklist and evidence index, not a runner or an eval framework. Catal
 
 The historical PR #11 Japan HTML used `--at 2026-09-07T17:44:11+00:00` and SHA-256 `a348c53562959f4c024ba7036b3d8a49510c4e600400dfe316bd4484d24c1d58`. This is deterministic rendering evidence for that revision, not a fresh check of remote travel facts or a browser observation. Later checks are recorded separately, without relabelling these results as a new full run.
 
-## Source-list refinement verification
+## Historical source-list refinement (PR #13)
 
-The subsequent 8 September change in `codex/versioned-sources` removes research indexes from HTML and preserves build-specific Markdown inventories. Its exact commit is recorded in its PR; it is not merged at this documentation revision. Evidence for this change:
-
-- [x] Full Python 3.12 suite: **259 passed**; Ruff, `pip check`, CLI help, JavaScript syntax and `git diff --check`.
-- [x] Complete source inventory, HTML hash binding, deterministic repeat, preservation across builds, changed-input rejection, conflict/write failure handling and mixed YAML metadata preservation.
-- [x] All 242 example events retain their non-link content and order; existing claims, 46 source records and 18 photo files are unchanged. Program links total 332, with exceptions and URL-only verification scope in the [link audit](../examples/japan-autumn-2026/LINK_AUDIT.md).
-- [x] Clean wheel install and temporary `init`, `check`, `render` smokes. The installed package reproduces both final Japan HTML and its matching Markdown source snapshot byte-for-byte outside the source tree.
-- [x] Independent final review after source-consistency, metadata and missing rail-operator-link corrections: ready for PR, no open P0–P2 findings. Static inspection confirms all authored event URLs, unique IDs, ARIA/SVG/anchor targets and embedded photo bytes.
-
-The [current example](../examples/japan-autumn-2026/README.md) records generation time `2026-09-08T18:19:57+00:00` and HTML SHA-256 `969477e6dcdfafcd08b6faa7bbc48c90ae158c42c699207fa5c2daa9e9a2cda8`. Browser/mobile/print observations below remain pending. Prior PR #11 evidence does not validate this refinement.
+[PR #13](https://github.com/WorkKroG/travel-planner-skill/pull/13) merged as `bf8bdf2b5c396eb50fd5a7f061806778e6fa86e8`. Its implementation head `de4e3a5` passed 259 tests, lint/dependency/CLI/JS checks, clean-install reproduction of HTML and source inventory, and independent final review after corrections. Those checks describe the former archive mechanism, which the user's later decision removes. The practical links and HTML remain; the current branch has its own verification above.
 
 ## Historical automated baseline (PR #7)
 

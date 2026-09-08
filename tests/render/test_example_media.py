@@ -5,7 +5,6 @@ import re
 from pathlib import Path
 
 from travel_planner.cli import main
-from travel_planner.evidence import render_sources_markdown
 from travel_planner.state import load_trip
 
 EXAMPLE = Path(__file__).parents[2] / "examples/japan-autumn-2026"
@@ -20,15 +19,11 @@ def test_japan_example_retains_the_imported_day_photos_and_exact_html(tmp_path):
     assert len(hashes) == 18
     for digest, filename in hashes.items():
         assert hashlib.sha256((EXAMPLE / "media" / filename).read_bytes()).hexdigest() == digest
-    assert (EXAMPLE / "sources.md").read_text() == render_sources_markdown(state)
     output = tmp_path / "japan.html"
     assert main(["render", str(EXAMPLE), "--output", str(output), "--at",
                  "2026-09-08T18:19:57+00:00"]) == 0
     assert output.read_bytes() == (EXAMPLE / "outputs/itinerary.html").read_bytes()
-    snapshot_name = hashlib.sha256(output.read_bytes()).hexdigest() + ".md"
-    assert (output.parent / "sources" / snapshot_name).read_bytes() == (
-        EXAMPLE / "outputs/sources" / snapshot_name
-    ).read_bytes()
+    assert list(tmp_path.iterdir()) == [output]
     assert output.read_text().count('<figure class="day-photo"') == 18
     hakone = output.read_text().split('id="day-6" data-day', 1)[1].split('<nav class="day-nav"', 1)[0]
     assert re.findall(r'class="timeline-period">([^<]+)', hakone) == [
