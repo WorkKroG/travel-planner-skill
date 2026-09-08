@@ -12,6 +12,8 @@ Attach maps, route builders, official pages, tickets, and supporting sources to 
 
 Use `days[].scenarios[]` only when a material portion of the day changes. The primary plan remains `days[].timeline`; each alternative scenario records its own stable ID, user-facing label, optional summary, and complete timeline. Do not store fragment-only scenarios or duplicate the primary plan as a scenario.
 
+For the day layout, optionally record `timeline[].period` as `morning`, `afternoon`, or `evening` when that reading group is supported by the plan. Leave it absent for unassigned or reservation-dependent timing; the renderer groups only adjacent equal values and never sorts events or derives periods from text or clock time. `timeline[].icon` and `scenarios[].icon` may select a bundled semantic icon from the itinerary schema; otherwise the existing kind/weather icon is used. A day may also record `primary_label`, `primary_summary`, and `primary_icon` to name its main route. These are presentation annotations, not a second timeline or a change to the selected route.
+
 Represent a real decision moment as a `checkpoint` timeline event with both `checkpoint.check` and `checkpoint.adjust_plan`. Normally use no more than two checkpoints per primary day. Keep ordinary caveats beside their event instead of promoting every uncertainty to a checkpoint.
 
 Apply the same day contract in both cases:

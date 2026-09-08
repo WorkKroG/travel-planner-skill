@@ -49,30 +49,30 @@ typography:
     lineHeight: 1
     letterSpacing: "-0.035em"
   body:
-    fontFamily: 'Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
+    fontFamily: '"Avenir Next", Avenir, "Segoe UI", sans-serif'
     fontSize: "1rem"
     fontWeight: 400
     lineHeight: 1.65
   label:
-    fontFamily: 'Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
+    fontFamily: '"Avenir Next", Avenir, "Segoe UI", sans-serif'
     fontSize: "0.875rem"
     fontWeight: 400
     lineHeight: 1.65
   control:
-    fontFamily: 'Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
+    fontFamily: '"Avenir Next", Avenir, "Segoe UI", sans-serif'
     fontSize: "0.875rem"
     fontWeight: 600
     lineHeight: 1.4
   status:
-    fontFamily: 'Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
+    fontFamily: '"Avenir Next", Avenir, "Segoe UI", sans-serif'
     fontSize: "0.875rem"
     fontWeight: 700
     lineHeight: 1.4
 rounded:
   control: "6px"
   notice: "12px"
-  photo: "16px"
-  checkpoint: "0 12px 12px 0"
+  photo: "12px"
+  checkpoint: "12px"
   pill: "999px"
   circle: "50%"
 spacing:
@@ -113,12 +113,12 @@ components:
   timeline-activity:
     backgroundColor: "{colors.paper}"
     textColor: "{colors.ink}"
-    padding: "0.8rem 0 1.5rem 1.75rem"
+    padding: "0.375rem 0 0"
   checkpoint:
     backgroundColor: "{colors.checkpoint-field}"
     textColor: "{colors.ink}"
     rounded: "{rounded.checkpoint}"
-    padding: "0.8rem 1rem 1.5rem 1.75rem"
+    padding: "0.75rem 1rem"
 ---
 
 # Design System: Travel Planner
@@ -131,7 +131,7 @@ Travel Planner is a bright, readable travel guide. Lemon fields introduce the tr
 
 The same visual language covers the whole document: cover, route overview, contents, days, open decisions, preparation, budget, risks, sources and footer. Controls stay in the reading flow. Information hierarchy comes from type, spacing, thin rules and a few purposeful color fields.
 
-This document records the implemented shared template in `skills/travel-planner/assets/html/styles.css` and `itinerary.html.j2`, following the [approved September 7 visual specification](docs/superpowers/specs/2026-09-07-html-visual-redesign-design.md) and its Lemon HTML source. It describes source-level design properties; it does not record a completed browser or visual review.
+This document records the implemented shared template in `skills/travel-planner/assets/html/styles.css` and `itinerary.html.j2`, following the [approved September 7 visual specification](docs/superpowers/specs/2026-09-07-html-visual-redesign-design.md) and the one-day Hakone composition approved for the full template on September 8. The latter governs the three-fact header, larger circular markers, recorded day periods and closing source disclosure. It describes source-level properties; it does not record a completed browser review.
 
 **Key Characteristics:**
 
@@ -179,7 +179,7 @@ The palette is sunny and legible, with deep blue text, clear cobalt actions and 
 
 **Display Font:** Avenir Next, with Segoe UI and sans-serif fallbacks.
 
-**Body and Label Font:** Inter, with local system sans-serif fallbacks.
+**Body and Label Font:** Avenir Next, with Avenir, Segoe UI and sans-serif fallbacks.
 
 Both are CSS font stacks using available local fonts. The document downloads no web fonts, and exact letterforms can vary across devices.
 
@@ -193,7 +193,7 @@ Both are CSS font stacks using available local fonts. The document downloads no 
 - **Label:** Event kinds, dates, captions and compact metadata in sentence case. Labels have no global uppercase or tracking treatment.
 - **Control / Status:** Short labels with the stronger weights in the frontmatter.
 
-Ordinary event headings use 1.0625rem, weight 650 and 1.35 line height. Activity headings grow to `clamp(1.25rem, 3vw, 1.6875rem)`, use cobalt and keep 1.2 line height. Times and monetary totals use tabular numerals.
+Ordinary event headings use 1.25rem, weight 700 and 1.25 line height. Activity headings grow to `clamp(1.25rem, 3vw, 1.6875rem)`, use cobalt and keep 1.2 line height. Day-body copy uses 1.4 line height; supporting document prose retains 1.65. Times and monetary totals use tabular numerals.
 
 **The Sans-Serif Rule.** Use the local sans-serif stacks throughout the guide; place names gain hierarchy through scale and weight.
 
@@ -201,13 +201,13 @@ Ordinary event headings use 1.0625rem, weight 650 and 1.35 line height. Activity
 
 ## Layout
 
-The cover, document shell and footer share a centred maximum width of 58rem, with a 1rem outer margin on wide screens. Main content is bounded at 46rem. The shell has responsive horizontal padding; the cover uses `clamp(2rem, 5vw, 4rem)` padding. Sections use 4rem vertical spacing, and adjacent days have a 4rem gap.
+The cover, document shell and footer share a centred maximum width of 58rem, with a 1rem outer margin on wide screens. Main content is bounded at 54rem; paragraphs retain a 72ch maximum. The shell has 1rem horizontal padding; the cover uses `clamp(2rem, 5vw, 4rem)` padding. Sections use 4rem vertical spacing, and adjacent days have a 4rem gap.
 
-A day opens with a yellow header padded by 2rem. The destination and date are on the left, day number on the right; introduction, optional gallery and compact facts follow in that order. The body begins below the header with scenario controls and full chronological timelines. Previous/next links close the day in a blue field.
+A day opens with a yellow header padded by 2rem. The destination and date are on the left, two-digit day number on the right; introduction, optional gallery and three facts (overnight base, travel, load) follow. “How we’ll spend the day” introduces scenario controls and complete timelines. Source links, photo credits and last-check date sit in a closed native disclosure in the blue closing field, followed by previous/next links.
 
-The timeline retains a separate time column at every supported width: 6.4375rem on wide screens and 4.5rem at the compact breakpoint. A one-pixel line at the left edge of each event body connects the sequence. Event copy has 1.75rem left padding on wide screens.
+The timeline has separate time, icon and text columns: 5.5rem, 3.5rem and the remaining width, with 1.125rem gaps. A thin line connects the centres of circular markers. Adjacent recorded periods form reading groups without sorting events; unassigned events keep their own unlabelled group.
 
-At and below 760px, the outer document fills the viewport; its horizontal padding becomes 1rem. Day openings reach the page edges, use 1.5rem vertical and 1rem horizontal padding, and keep the title/number arrangement. The day number shrinks to 2.75rem. Galleries, compact facts, contents, route stops and supporting metadata become one column. Event copy uses 1.25rem left padding. Budget rows become labelled blocks, retaining the table's accessible headings. Long text can wrap, and the CSS minimum page width is 20rem.
+At and below 760px, the outer document fills the viewport with 1rem horizontal padding. Day openings reach its edges and retain the title/number arrangement. The day number shrinks to 2.75rem; time and icon columns narrow to 4.5rem and 3rem. Three-photo galleries, facts and supporting grids stack. At and below 460px, all galleries and scenario buttons stack; recorded times move above event text next to 2.625rem markers, following the same DOM reading order. Budget rows become labelled blocks. Long text wraps, and the CSS minimum page width is 20rem.
 
 The contents remains a closed native disclosure in normal flow. Page anchors use smooth scrolling, with automatic scrolling restored for reduced-motion preferences.
 
@@ -219,7 +219,7 @@ The system uses no ambient drop shadows. Yellow openings, paper event bodies, bl
 
 ## Shapes
 
-Major document surfaces and day openings have square edges. Buttons use restrained corners, notices use softer corners, and photographs have the largest rounded corners. Status labels are pills. Timeline markers are circles laid over the line; checkpoint fields round only their right-hand corners, keeping their left edge attached to the timeline.
+Major document surfaces and day openings have square edges. Buttons use restrained corners; photographs, notices and checkpoint text fields use soft corners. Status labels are pills. Timeline markers are outlined circles laid over the line; checkpoint text is inset in a separate pale yellow field.
 
 ## Components
 
@@ -244,18 +244,18 @@ A day has zero to three ordered photographs. No gallery markup is emitted when t
 | Photos | Wide-screen composition | Image aspect ratio |
 | --- | --- | --- |
 | 1 | One full-width photograph | 2.8 / 1 |
-| 2 | Two equal photographs | 1.65 / 1 |
+| 2 | Two equal photographs | 1.42 / 1 |
 | 3 | Three equal photographs | 1.3 / 1 |
 
-The gap is 0.75rem, photographs use the photo radius and `object-fit: cover`. At the compact breakpoint, all photographs stack in source order with a 1.9 / 1 ratio. Each preserves its alt text, caption, attribution, license and source link. Images are embedded, with explicit dimensions, lazy loading and asynchronous decoding hints. When JavaScript detects a decoding failure, a localized fallback appears while caption and provenance remain available; native alt text is retained without JavaScript.
+The gap is 0.75rem, photographs use the photo radius and `object-fit: cover`. At 760px, photographs use a 1.9 / 1 ratio and three-photo galleries stack; two-photo galleries stack at 460px. Captions remain below each photograph. Attribution, license and source links move to the day disclosure and its independent print projection. Images are embedded, with dimensions, lazy loading and asynchronous decoding hints. A decoding failure shows a localized fallback while caption and provenance remain available; native alt text is retained without JavaScript.
 
 ### Timelines and Checkpoints
 
-The event sequence is an ordered list. Semantic SVGs distinguish transport, activity, meal, lodging, rest and checkpoint events. They come from the bundled inline sprite, remain decorative to assistive technology and accompany visible text labels. Timeline icons are 1.1875rem inside 1.8125rem circular markers.
+Each contiguous event group is an ordered list. Bundled decorative SVGs distinguish event kinds; optional recorded icons add coffee, bus, train, mountain, museum, onsen, craft and weather imagery. Event-kind text remains available to assistive technology. Icons are 2rem inside 3.5rem outlined circular markers on wide screens.
 
-Events retain their recorded order and displayed times, including unknown values. The renderer does not invent morning, afternoon or evening groups. Links and local alternatives remain inside the event they describe; full scenario alternatives retain their own timelines.
+Events retain their recorded order and displayed times, including unknown values. Morning, afternoon and evening groups appear only from optional recorded `period` annotations; the renderer never guesses from titles, IDs or times. Links and local alternatives remain inside their event; full scenarios retain their own timelines. Links use simple underlined text while preserving the shared minimum touch target.
 
-Checkpoint copy sits in a pale yellow field attached to the line, with brown marker and kind label. A separated definition list states what to check and how to adjust the plan.
+Checkpoint copy sits in a pale yellow text field beside a brown marker. A compact definition list states what to check and how to adjust the plan.
 
 ### Reading Without JavaScript and Printing
 

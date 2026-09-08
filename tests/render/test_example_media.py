@@ -26,3 +26,7 @@ def test_japan_example_retains_the_imported_day_photos_and_exact_html(tmp_path):
                  "2026-09-07T17:44:11+00:00"]) == 0
     assert output.read_bytes() == (EXAMPLE / "outputs/itinerary.html").read_bytes()
     assert output.read_text().count('<figure class="day-photo"') == 18
+    hakone = output.read_text().split('id="day-6" data-day', 1)[1].split('<nav class="day-nav"', 1)[0]
+    assert re.findall(r'class="timeline-period">([^<]+)', hakone) == [
+        'Утро', 'День', 'Вечер', 'Утро', 'День', 'Вечер', 'Утро', 'День', 'Вечер',
+    ]

@@ -70,6 +70,8 @@ class TimelineEventView:
     links: tuple[LinkView, ...]
     alternatives: tuple[EventAlternativeView, ...]
     checkpoint: CheckpointView | None
+    period: str = ""
+    icon: str = ""
 
 
 @dataclass(frozen=True)
@@ -78,6 +80,7 @@ class ScenarioView:
     label: str
     summary: str
     timeline: tuple[TimelineEventView, ...]
+    icon: str = ""
 
 
 @dataclass(frozen=True)
@@ -99,6 +102,9 @@ class DayView:
     readiness_ids: tuple[str, ...]
     source_ids: tuple[str, ...]
     last_checked: str
+    primary_label: str = ""
+    primary_summary: str = ""
+    primary_icon: str = ""
 
 
 @dataclass(frozen=True)
@@ -412,6 +418,8 @@ def _timeline(value: Any, language: str) -> tuple[TimelineEventView, ...]:
                     for alternative in _mapping_items(event.get("alternatives"))
                 ),
                 checkpoint=checkpoint,
+                period=_text(event.get("period"), ""),
+                icon=_text(event.get("icon"), ""),
             )
         )
     return tuple(views)
@@ -423,6 +431,7 @@ def _scenario(item: Mapping[str, Any], language: str) -> ScenarioView:
         label=_text(item.get("label")),
         summary=_text(item.get("summary"), ""),
         timeline=_timeline(item.get("timeline"), language),
+        icon=_text(item.get("icon"), ""),
     )
 
 
@@ -452,6 +461,9 @@ def _days(state: TripState, language: str) -> tuple[DayView, ...]:
                 readiness_ids=_strings(item.get("readiness_ids")),
                 source_ids=_strings(item.get("source_ids")),
                 last_checked=_text(item.get("last_checked"), _unknown(language)),
+                primary_label=_text(item.get("primary_label"), ""),
+                primary_summary=_text(item.get("primary_summary"), ""),
+                primary_icon=_text(item.get("primary_icon"), ""),
             )
         )
     return tuple(sorted(views, key=lambda item: (item.number, item.day_id)))

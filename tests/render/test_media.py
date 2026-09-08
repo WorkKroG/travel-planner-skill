@@ -111,8 +111,10 @@ def test_gallery_css_and_no_js_keep_reading_and_print_contracts(japan_view):
 def test_print_credit_identifies_each_photos_source(japan_view):
     source_id = japan_view.sources[0].source_id
     html = render_html(japan_view, {"day-1": [photo(source_id)]}, DEFAULTS)
-    caption = re.search(r"<figcaption>(.*?)</figcaption>", html, re.DOTALL).group(1)
-    assert f'<span class="print-media-source"> · {source_id}</span>' in caption
+    credits = re.search(r'<div class="day-sources-print">(.*?)</div>\s*</div>', html, re.DOTALL).group(1)
+    assert f'<span class="print-media-source">· {source_id}</span>' in credits
     css = html[html.index("<style>"):html.index("</style>")]
     assert_css_rule(css[:css.index("@media print")], (".print-media-source",), {"display": "none"})
     assert_css_rule(css[css.index("@media print"):], (".print-media-source",), {"display": "inline"})
+    assert_css_rule(css[css.index("@media print"):], (".day-sources-print",), {"display": "block"})
+    assert_css_rule(css[css.index("@media print"):], (".day-sources",), {"display": "none"})

@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from decimal import Decimal
+from itertools import groupby
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -85,6 +86,12 @@ _COPY = {
         "primary_scenario": "Primary scenario",
         "alternative_scenario": "Alternative scenario",
         "timeline": "Timeline",
+        "day_plan": "How we’ll spend the day",
+        "choose_scenario": "Choose one complete route for the day.",
+        "morning": "Morning",
+        "afternoon": "Afternoon",
+        "evening": "Evening",
+        "day_sources": "Sources and photographs",
         "time": "Time",
         "event_type": "{kind}",
         "what_check": "What to check",
@@ -197,6 +204,12 @@ _COPY = {
         "primary_scenario": "Основной сценарий",
         "alternative_scenario": "Альтернативный сценарий",
         "timeline": "Расписание",
+        "day_plan": "Как проведём день",
+        "choose_scenario": "Выбираем один полный маршрут на день.",
+        "morning": "Утро",
+        "afternoon": "День",
+        "evening": "Вечер",
+        "day_sources": "Источники и фотографии",
         "time": "Время",
         "event_type": "{kind}",
         "what_check": "Что проверить",
@@ -429,6 +442,16 @@ def _validate_external_urls(view: ItineraryView) -> None:
             raise ValueError(f"External link {label!r} must be an absolute HTTPS URL.")
 
 
+def _timeline_groups(
+    timeline: Sequence[TimelineEventView],
+) -> list[tuple[str, tuple[TimelineEventView, ...]]]:
+    """Group adjacent recorded periods, preserving unknowns and source order."""
+    groups = [
+        (period, tuple(events)) for period, events in groupby(timeline, key=lambda e: e.period)
+    ]
+    return groups or [("", ())]
+
+
 def render_html(
     view: ItineraryView,
     media: Mapping[str, Sequence[MediaAsset]],
@@ -456,6 +479,7 @@ def render_html(
         view=view,
         tr=translate,
         enum_label=_enum_label(view.language),
+        timeline_groups=_timeline_groups,
         media=optional_media,
         options=options,
         css=Markup(_asset("styles.css").read_text(encoding="utf-8")),
