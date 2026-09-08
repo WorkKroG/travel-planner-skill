@@ -88,6 +88,9 @@
         "readiness_ids": {"$ref": "#/$defs/id_list"},
         "source_ids": {"$ref": "#/$defs/id_list"},
         "claim_ids": {"$ref": "#/$defs/id_list"},
+        "primary_label": {"type": "string", "minLength": 1, "pattern": "\\S"},
+        "primary_summary": {"type": "string"},
+        "primary_icon": {"$ref": "#/$defs/presentation_icon"},
         "media": {
           "type": "array",
           "maxItems": 3,
@@ -120,6 +123,9 @@
       },
       "additionalProperties": false
     },
+    "presentation_icon": {
+      "enum": ["route", "activity", "meal", "lodging", "rest", "stop", "coffee", "sun-cloud", "bus", "train", "plane", "mountain", "museum", "onsen", "cable-car", "rain", "craft"]
+    },
     "timeline_event": {
       "type": "object",
       "required": ["id", "kind", "title", "detail"],
@@ -127,6 +133,8 @@
         "id": {"$ref": "#/$defs/id"},
         "kind": {"enum": ["transport", "activity", "meal", "lodging", "rest", "checkpoint"]},
         "time": {"type": ["string", "null"]},
+        "period": {"enum": ["morning", "afternoon", "evening"]},
+        "icon": {"$ref": "#/$defs/presentation_icon"},
         "title": {"type": "string", "minLength": 1},
         "detail": {"type": "string"},
         "start_at": {"type": ["string", "null"], "format": "date-time"},
@@ -184,6 +192,7 @@
         "id": {"$ref": "#/$defs/id"},
         "label": {"type": "string", "minLength": 1, "pattern": "\\S"},
         "summary": {"type": "string"},
+        "icon": {"$ref": "#/$defs/presentation_icon"},
         "timeline": {
           "type": "array",
           "minItems": 1,

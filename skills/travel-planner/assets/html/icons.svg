@@ -12,4 +12,15 @@
   <symbol id="icon-rest" viewBox="0 0 24 24"><path d="M18 15.5A7 7 0 0 1 8.5 6 8 8 0 1 0 18 15.5Z"/></symbol>
   <symbol id="icon-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
   <symbol id="icon-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5"/></symbol>
+  <symbol id="icon-mountain" viewBox="0 0 32 32"> <path d="m2 27 8-15 5 9 6-17 10 23H2Z M6.8 18l3.2 1.5 2.6-1.5 M18 12l3 2.4 3-2.2 M15 21l3 6"/> </symbol>
+  <symbol id="icon-coffee" viewBox="0 0 32 32"> <path d="M6 15h17v6a8.5 8.5 0 0 1-17 0v-6Z M23 16h2a4 4 0 0 1 0 8h-2 M3 29h25 M10 11c4-3-4-4 0-8 M16 11c4-3-4-4 0-8 M22 11c4-3-4-4 0-8"/> </symbol>
+  <symbol id="icon-sun-cloud" viewBox="0 0 32 32"> <path d="M13.5 20a6 6 0 1 1 6-7 M12 2v2 M12 24v2 M0.8 14H3 M4.2 6.2l1.5 1.5 M20.5 5.5 19 7 M4.2 21.8l1.5-1.5 M23.5 12.5a6 6 0 0 1 5.8 6.5 4.2 4.2 0 0 1-1.2 8.2H14a4.2 4.2 0 0 1-.7-8.4 6.2 6.2 0 0 1 10.2-6.3Z"/> </symbol>
+  <symbol id="icon-bus" viewBox="0 0 32 32"> <rect x="6" y="4" width="20" height="23" rx="4"/> <path d="M6 10h20 M6 20h20 M12 7h8 M16 10v10 M9 27v3 M23 27v3 M3 10v6 M29 10v6"/> <circle cx="10" cy="23.5" r="1"/><circle cx="22" cy="23.5" r="1"/> </symbol>
+  <symbol id="icon-cable-car" viewBox="0 0 32 32"> <path d="m3 4 26-2 M16 3v9 M12 12h8 M8 15h16l3 11a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3l3-11Z M8 15l-2 9h20 M12 15v9 M20 15v9"/> </symbol>
+  <symbol id="icon-rain" viewBox="0 0 32 32"> <path d="M9 21a6 6 0 1 1 1-11 7.5 7.5 0 0 1 14.8-.4 5.5 5.5 0 0 1-.3 11H9Z M10 25l-1 3 M18 24l-1 3 M25 25l-1 3 M15 29l-.5 1.5"/> </symbol>
+  <symbol id="icon-museum" viewBox="0 0 32 32"> <path d="m3 10 13-7 13 7H3Z M4 28h24 M2 30h28 M6 13v12 M10 13v12 M14 13v12 M18 13v12 M22 13v12 M26 13v12"/> <circle cx="16" cy="7" r="1"/> </symbol>
+  <symbol id="icon-onsen" viewBox="0 0 32 32"> <path d="M9 4c-5 4 5 5 0 10 M16 3c-5 4 5 5 0 10 M23 4c-5 4 5 5 0 10 M3 18c4 5 7 5 11 0 M14 18c4 5 7 5 11 0 M3 24c4 5 7 5 11 0 M14 24c4 5 7 5 11 0 M25 18l4 2 M25 24l4 2"/> </symbol>
+  <symbol id="icon-craft" viewBox="0 0 32 32"> <path d="m16 2 13 7.5v15L16 32 3 24.5v-15L16 2Z M3 9.5l13 8 13-8 M16 17.5V32 M9.5 5.8l13 8v14.4 M22.5 5.8l-13 8v14.4"/> </symbol>
+  <symbol id="icon-train" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="15" rx="3"/><path d="M5 11h14M12 3v8M8 18l-3 4M16 18l3 4M7 21h10"/><circle cx="8" cy="15" r=".8"/><circle cx="16" cy="15" r=".8"/></symbol>
+  <symbol id="icon-plane" viewBox="0 0 24 24"><path d="m21 3-7 18-3-8-8-3L21 3ZM11 13 21 3"/></symbol>
 </svg>

@@ -546,7 +546,7 @@ def test_static_css_declares_reading_column_and_nonsticky_contents(
     assert_css_rule(
         css,
         ("main",),
-        {"width": "min(100%, 46rem)", "margin-inline": "auto"},
+        {"width": "min(100%, 54rem)", "margin-inline": "auto"},
     )
     assert_css_rule(
         css,
@@ -576,7 +576,7 @@ def test_scenarios_and_day_metadata_keep_semantic_source_wrappers(
         len(day.scenarios) for day in japan_view.days
     )
     assert len(scenario_groups) == expected_scenarios
-    assert all(group.count("<dt>") == 4 for group in metadata_groups)
+    assert all(group.count("<dt>") == 3 for group in metadata_groups)
 
 
 def test_html_is_deterministic_and_write_helper_uses_exact_bytes(

@@ -58,6 +58,8 @@ The HTML is derived and opens locally as a self-contained file. It uses one read
 
 ### Day photographs
 
+The day header shows the photo captions and three facts: overnight base, travel and load. Creator credits, licenses, source links and the day check date remain in its native “Sources and photographs” disclosure. A separate print projection preserves them even when the disclosure is closed. The timeline uses a separate circular icon column; on small screens its recorded times move above event text. Optional recorded periods, primary-route labels and semantic icons follow the [planning contract](planning.md).
+
 When suitable photographs are available, record 1–3 per day in `itinerary.yaml.days[].media`, in reading order. Keep one or two when that is all the relevant media; omit the field or use `[]` for no imagery. Do not add decorative duplicates. A caption must identify the location and distinguish an alternative scenario when needed. Each record requires:
 
 ```yaml

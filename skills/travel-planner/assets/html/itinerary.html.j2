@@ -58,12 +58,15 @@
   {%- endmacro %}
 
   {% macro render_timeline(timeline, panel_id, day) -%}
+  {% for period, events in timeline_groups(timeline) %}
+  <div class="timeline-group">
+  {% if period %}<h4 class="timeline-period">{{ tr(period) }}</h4>{% endif %}
   <ol class="timeline">
-    {% for event in timeline %}
+    {% for event in events %}
     <li class="timeline-event timeline-event--{{ event.kind }}" data-event-id="{{ event.event_id }}">
       <div class="timeline-time"><span class="timeline-time-label">{{ tr('time') }}</span><span>{{ event.time }}</span></div>
+      <span class="timeline-marker" aria-hidden="true"><svg class="icon"><use href="#icon-{{ event.icon or event_icons[event.kind] }}"></use></svg></span>
       <div class="event-body">
-        <span class="timeline-marker" aria-hidden="true"><svg class="icon"><use href="#icon-{{ event_icons[event.kind] }}"></use></svg></span>
         <p class="event-print-context">{{ tr('day') }} {{ day.number }} · {{ day.date_label }} · {{ day.region }}</p>
         <p class="event-kind">{{ enum_label(event.kind) }}</p>
         <h5>{{ event.title }}</h5>
@@ -101,6 +104,23 @@
     </li>
     {% else %}<li class="empty-state">{{ tr('no_days') }}</li>{% endfor %}
   </ol>
+  </div>
+  {% endfor %}
+  {%- endmacro %}
+
+  {% macro render_day_sources(day) -%}
+  <div class="day-source-content">
+    <p>{{ tr('last_checked') }}: {{ day.last_checked }}</p>
+    <ul class="day-source-list">
+      {% for source in view.sources if source.source_id in day.source_ids %}
+      <li><a class="external-link" href="{{ source.url }}" data-source-id="{{ source.source_id }}">{{ source.title }}</a><span class="print-url">{{ source.url }}</span></li>
+      {% endfor %}
+      {% for photo in media.get(day.day_id, ()) %}
+      <li class="photo-credit"><a class="external-link" href="{{ photo.source_url }}" data-source-id="{{ photo.source_id }}">{{ photo.caption }}</a><br>{{ photo.attribution }} · {{ photo.license }} <span class="print-media-source">· {{ photo.source_id }}</span><span class="print-url">{{ photo.source_url }}</span></li>
+      {% endfor %}
+    </ul>
+    <p class="network-label">{{ tr('internet') }}</p>
+  </div>
   {%- endmacro %}
 
   {% macro render_link_appendix(timeline, day, scenario_label='') -%}
@@ -256,7 +276,7 @@
           <header class="day-heading">
             <div class="day-title-row">
               <div class="day-title-group"><h3 id="{{ day.day_id }}-title">{{ day.region }}</h3><p class="day-date">{{ day.date_label }} · {{ day.weekday }}</p></div>
-              <div class="day-number"><span>{{ tr('day') }}</span><strong>{{ day.number }}</strong></div>
+              <div class="day-number"><span>{{ tr('day') }}</span><strong>{{ '%02d' | format(day.number) }}</strong></div>
             </div>
             <p class="day-thesis">{{ day.thesis }}</p>
             {% if media.get(day.day_id) %}
@@ -265,26 +285,29 @@
               <figure class="day-photo" data-optional-media>
                 <img src="{{ photo.data_url }}" alt="{{ photo.alt }}" width="{{ photo.width }}" height="{{ photo.height }}" loading="lazy" decoding="async" data-media-image>
                 <p class="media-fallback" data-media-fallback hidden>{{ tr('media_unavailable') }}</p>
-                <figcaption><strong>{{ photo.caption }}</strong><span>{{ photo.attribution }} · {{ photo.license }}</span><a class="external-link" href="{{ photo.source_url }}" data-source-id="{{ photo.source_id }}">{{ tr('source') }}</a><span class="print-media-source"> · {{ photo.source_id }}</span> <span class="network-label">{{ tr('internet') }}</span></figcaption>
+                <figcaption>{{ photo.caption }}</figcaption>
               </figure>
               {% endfor %}
             </div>
             {% endif %}
-            <dl class="day-meta"><div><dt>{{ tr('overnight') }}</dt><dd>{{ day.overnight }}</dd></div><div><dt>{{ tr('travel') }}</dt><dd>{{ day.travel }}</dd></div><div><dt>{{ tr('load')|capitalize }}</dt><dd>{{ enum_label(day.load) }}</dd></div><div><dt>{{ tr('last_checked') }}</dt><dd>{{ day.last_checked }}</dd></div></dl>
+            <dl class="day-meta"><div><dt>{{ tr('overnight') }}</dt><dd>{{ day.overnight }}</dd></div><div><dt>{{ tr('travel') }}</dt><dd>{{ day.travel }}</dd></div><div><dt>{{ tr('load')|capitalize }}</dt><dd>{{ enum_label(day.load) }}</dd></div></dl>
           </header>
           <div class="day-body">
+          <h4 class="day-plan-title">{{ tr('day_plan') }}</h4>
+          {% if day.scenarios %}<p class="day-plan-intro">{{ tr('choose_scenario') }}</p>{% endif %}
           {% if day.weather_sensitive %}<p class="weather-note"><svg class="icon" aria-hidden="true"><use href="#icon-cloud"></use></svg>{{ tr('weather_sensitive') }}</p>{% endif %}
 
           {% if day.scenarios %}
           <div class="scenario-tabs interactive-controls" data-scenario-tabs hidden role="tablist" aria-label="{{ tr('scenario_view', number=day.number) }}">
-            <button type="button" id="{{ day.day_id }}-tab-primary" role="tab" aria-selected="true" aria-controls="{{ day.day_id }}-panel-primary" tabindex="0" data-show-scenario="primary"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg>{{ tr('primary') }}</button>
-            {% for scenario in day.scenarios %}<button type="button" id="{{ day.day_id }}-tab-alternative-{{ scenario.scenario_id }}" role="tab" aria-selected="false" aria-controls="{{ day.day_id }}-panel-alternative-{{ scenario.scenario_id }}" tabindex="-1" data-show-scenario="alternative-{{ scenario.scenario_id }}"><svg class="icon" aria-hidden="true"><use href="#icon-{{ 'cloud' if day.weather_sensitive else 'conflict' }}"></use></svg>{{ scenario.label }}</button>{% endfor %}
+            <button type="button" id="{{ day.day_id }}-tab-primary" role="tab" aria-selected="true" aria-controls="{{ day.day_id }}-panel-primary" tabindex="0" data-show-scenario="primary"><svg class="icon" aria-hidden="true"><use href="#icon-{{ day.primary_icon or 'route' }}"></use></svg>{{ day.primary_label or tr('primary') }}</button>
+            {% for scenario in day.scenarios %}<button type="button" id="{{ day.day_id }}-tab-alternative-{{ scenario.scenario_id }}" role="tab" aria-selected="false" aria-controls="{{ day.day_id }}-panel-alternative-{{ scenario.scenario_id }}" tabindex="-1" data-show-scenario="alternative-{{ scenario.scenario_id }}"><svg class="icon" aria-hidden="true"><use href="#icon-{{ scenario.icon or ('cloud' if day.weather_sensitive else 'conflict') }}"></use></svg>{{ scenario.label }}</button>{% endfor %}
           </div>
           {% endif %}
 
           <div class="scenario-stack">
             <section class="scenario-panel scenario-panel--primary"{% if day.scenarios %} id="{{ day.day_id }}-panel-primary" data-scenario="primary" role="tabpanel" aria-labelledby="{{ day.day_id }}-tab-primary" tabindex="0"{% endif %}>
-              {% if day.scenarios %}<h4 class="scenario-heading">{{ tr('primary_scenario') }}</h4>{% else %}<h4 class="scenario-heading scenario-heading--primary-only">{{ tr('timeline') }}</h4>{% endif %}
+              {% if day.scenarios %}<h4 class="scenario-heading">{{ day.primary_label or tr('primary_scenario') }}</h4>{% else %}<h4 class="scenario-heading scenario-heading--primary-only">{{ tr('timeline') }}</h4>{% endif %}
+              {% if day.primary_summary %}<p class="scenario-summary">{{ day.primary_summary }}</p>{% endif %}
               {{ render_timeline(day.timeline, day.day_id ~ '-primary', day) }}
             </section>
             {% for scenario in day.scenarios %}
@@ -298,6 +321,10 @@
 
           </div>
 
+          <div class="day-provenance">
+            <details class="day-sources"><summary>{{ tr('day_sources') }}</summary>{{ render_day_sources(day) }}</details>
+            <div class="day-sources-print">{{ render_day_sources(day) }}</div>
+          </div>
           <nav class="day-nav" aria-label="{{ tr('detailed_days') }}">
             {% if not loop.first %}<a href="#{{ view.days[loop.index0 - 1].day_id }}">← {{ tr('previous_day') }}</a>{% else %}<span></span>{% endif %}
             {% if not loop.last %}<a href="#{{ view.days[loop.index0 + 1].day_id }}">{{ tr('next_day') }} →</a>{% endif %}

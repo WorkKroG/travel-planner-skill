@@ -20,7 +20,7 @@ def test_shared_document_uses_the_approved_palette_and_continuous_timeline(japan
     })
     assert_css_rule(css, ('.trip-hero',), {'background': 'var(--heading-field)'})
     assert_css_rule(css, ('.day-heading',), {'background': 'var(--heading-field)'})
-    assert_css_rule(css, ('.event-body',), {'border-left': '1px solid var(--timeline-line)'})
+    assert_css_rule(css, ('.timeline::before',), {'background': 'var(--timeline-line)'})
     assert_css_rule(css, ('.timeline-event--checkpoint .event-body',), {
         'background': 'var(--checkpoint-field)',
     })
@@ -31,10 +31,10 @@ def test_gallery_crop_compositions_and_mobile_order_have_explicit_source_rules(j
     html = render_html(japan_view, {}, DEFAULTS)
     css = html[html.index('<style>') + len('<style>'):html.index('</style>')]
     assert_css_rule(css, ('.day-gallery',), {'gap': '0.75rem'})
-    for count, ratio in ((1, '2.8 / 1'), (2, '1.65 / 1'), (3, '1.3 / 1')):
+    for count, ratio in ((1, '2.8 / 1'), (2, '1.42 / 1'), (3, '1.3 / 1')):
         assert_css_rule(css, (f'.day-gallery--{count} img',), {'aspect-ratio': ratio})
     assert_css_rule(css, ('.day-photo img',), {
-        'object-fit': 'cover', 'border-radius': '16px',
+        'object-fit': 'cover', 'border-radius': '12px',
     })
     mobile = css[css.index('@media (max-width: 760px)'):css.index('@media print')]
     assert_css_rule(mobile, ('.day-gallery',), {'grid-template-columns': 'minmax(0, 1fr)'})
