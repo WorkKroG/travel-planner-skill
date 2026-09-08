@@ -13,8 +13,9 @@ import yaml
 
 from . import __version__
 from .checks import CheckReport, run_checks
+from .evidence import canonical_input_hashes, write_source_snapshot
 from .render.html import DEFAULTS as HTML_DEFAULTS
-from .render.html import write_html
+from .render.html import render_html, write_rendered_html
 from .render.media import load_media
 from .render.viewmodel import build_view
 from .state import load_trip, validate_trip
@@ -92,18 +93,25 @@ def main(argv: Sequence[str] | None = None) -> int:
         if structural is not None:
             _print_report(structural)
             return 2
-        state = load_trip(args.path)
-        report = run_checks(state)
-        if not report.ok:
-            _print_report(report)
-            return 3
         try:
+            input_hashes = canonical_input_hashes(args.path)
+            state = load_trip(args.path)
+            report = run_checks(state)
+            if not report.ok:
+                _print_report(report)
+                return 3
             media = load_media(state)
-            write_html(build_view(state, report, args.at), args.output, HTML_DEFAULTS, media=media)
-        except ValueError as error:
+            html = render_html(build_view(state, report, args.at), media, HTML_DEFAULTS)
+            snapshot = write_source_snapshot(
+                state, html.encode("utf-8"), args.output.parent / "sources", args.at,
+                input_hashes=input_hashes,
+            )
+            write_rendered_html(html, args.output)
+        except (ValueError, OSError) as error:
             print(str(error), file=sys.stderr)
             return 2
         print(f"Rendered HTML: {args.output}")
+        print(f"Technical sources: {snapshot}")
         return 0
 
     _parser().print_help()

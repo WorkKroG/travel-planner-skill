@@ -15,7 +15,19 @@ This is a checklist and evidence index, not a runner or an eval framework. Catal
 - [x] Fixed-time Japan byte determinism, committed output/hash, all 18 embedded photographs, event order, URLs, IDs and ARIA/SVG/anchor references.
 - [x] Independent source review after corrections: no open P0–P2 findings; ready for PR.
 
-The current Japan HTML uses `--at 2026-09-07T17:44:11+00:00` and SHA-256 `a348c53562959f4c024ba7036b3d8a49510c4e600400dfe316bd4484d24c1d58`. This is deterministic rendering evidence, not a fresh check of remote travel facts or a browser observation. Subsequent documentation-only checks should be recorded in their own PR, without relabelling these results as a new full run.
+The historical PR #11 Japan HTML used `--at 2026-09-07T17:44:11+00:00` and SHA-256 `a348c53562959f4c024ba7036b3d8a49510c4e600400dfe316bd4484d24c1d58`. This is deterministic rendering evidence for that revision, not a fresh check of remote travel facts or a browser observation. Later checks are recorded separately, without relabelling these results as a new full run.
+
+## Source-list refinement verification
+
+The subsequent 8 September change in `codex/versioned-sources` removes research indexes from HTML and preserves build-specific Markdown inventories. Its exact commit is recorded in its PR; it is not merged at this documentation revision. Evidence for this change:
+
+- [x] Full Python 3.12 suite: **259 passed**; Ruff, `pip check`, CLI help, JavaScript syntax and `git diff --check`.
+- [x] Complete source inventory, HTML hash binding, deterministic repeat, preservation across builds, changed-input rejection, conflict/write failure handling and mixed YAML metadata preservation.
+- [x] All 242 example events retain their non-link content and order; existing claims, 46 source records and 18 photo files are unchanged. Program links total 332, with exceptions and URL-only verification scope in the [link audit](../examples/japan-autumn-2026/LINK_AUDIT.md).
+- [x] Clean wheel install and temporary `init`, `check`, `render` smokes. The installed package reproduces both final Japan HTML and its matching Markdown source snapshot byte-for-byte outside the source tree.
+- [x] Independent final review after source-consistency, metadata and missing rail-operator-link corrections: ready for PR, no open P0–P2 findings. Static inspection confirms all authored event URLs, unique IDs, ARIA/SVG/anchor targets and embedded photo bytes.
+
+The [current example](../examples/japan-autumn-2026/README.md) records generation time `2026-09-08T18:19:57+00:00` and HTML SHA-256 `969477e6dcdfafcd08b6faa7bbc48c90ae158c42c699207fa5c2daa9e9a2cda8`. Browser/mobile/print observations below remain pending. Prior PR #11 evidence does not validate this refinement.
 
 ## Historical automated baseline (PR #7)
 
@@ -55,9 +67,9 @@ Record date, exact PR head, browser/version, artifact hash, result, and failures
 - [ ] An induced enhancement failure leaves complete core content, both scenarios, and normal links readable with a concise notice.
 - [ ] Opening through `file://` causes no automatic HTTP(S) asset/fetch request; labelled external links are checked separately as user-initiated connectivity actions.
 - [ ] 320 px, 390×844, 768×1024, and 1440×900 layouts have no horizontal page scroll or hidden critical content.
-- [ ] Days with 0/1/2/3 photographs retain captions and accessible source/credit disclosure; narrow layouts preserve time/icon/text reading order and scenario controls.
+- [ ] Days with 0/1/2/3 photographs retain captions and compact linked creator/license credits without a research list; narrow layouts preserve time/icon/text reading order and scenario controls.
 - [ ] Keyboard/focus, 200% zoom, reduced motion, contrast, readable typography, and representative Draft/Prepared copy/conflict/stale/media states are reviewed.
-- [ ] A4 and Letter print previews keep lifecycle labels, blockers, critical events, all scenarios, sources and photo credits even when disclosures were closed; footer and page counters are checked in the chosen browser.
+- [ ] A4 and Letter print previews keep lifecycle labels, blockers, critical events, all scenarios, event links and photo credits even when event-alternative disclosures were closed; footer and page counters are checked in the chosen browser.
 
 No screenshots, baselines, device automation, or automated accessibility/layout claims are required or implied.
 

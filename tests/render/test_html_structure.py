@@ -39,7 +39,7 @@ def test_html_contains_required_semantic_reading_order(japan_view: ItineraryView
     assert html.index('id="trip-summary"') < html.index('id="route-overview"')
     assert html.index('id="open-decisions"') < html.index('id="day-1"')
     assert html.index('id="preparation"') < html.index('id="budget"')
-    assert html.index('id="risks"') < html.index('id="sources"')
+    assert html.index('id="risks"') < html.index('id="document-version"')
     assert '<a class="skip-link" href="#main-content">Skip to itinerary</a>' in html
     assert "<header" in html and "<nav" in html and "<main" in html and "<footer" in html
 
@@ -212,10 +212,10 @@ def test_html_preserves_all_canonical_lifecycle_dimensions(
     )
 
     assert label in html
-    assert f"<dt>document_status</dt><dd>{document_status}</dd>" in html
-    assert f"<dt>verification_level</dt><dd>{verification_level}</dd>" in html
+    assert f'data-document-status="{document_status}"' in html
+    assert f'data-verification-level="{verification_level}"' in html
     basis = finalization_basis or "none"
-    assert f"<dt>finalization_basis</dt><dd>{basis}</dd>" in html
+    assert f'data-finalization-basis="{basis}"' in html
     if finalization_basis == "user_confirmed":
         assert "Accepted blockers" in html
         assert "SCHEDULE_UNRELEASED · Blocking · Unresolved" in html

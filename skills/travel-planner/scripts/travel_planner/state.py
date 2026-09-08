@@ -169,6 +169,11 @@ def validate_trip(root: Path) -> ValidationReport:
     return ValidationReport(tuple(issues))
 
 
+def dump_state_yaml(value: Any) -> str:
+    """Serialize supported YAML metadata without losing key types or decimal digits."""
+    return yaml.dump(value, Dumper=_StateDumper, allow_unicode=True, sort_keys=False)
+
+
 def write_state_file(path: Path, value: Mapping[str, Any]) -> None:
     """Atomically replace one YAML state file while preserving mapping order."""
     destination = Path(path)
@@ -179,7 +184,7 @@ def write_state_file(path: Path, value: Mapping[str, Any]) -> None:
     temporary = Path(temporary_name)
     try:
         with os.fdopen(descriptor, "w", encoding="utf-8") as stream:
-            yaml.dump(dict(value), stream, Dumper=_StateDumper, allow_unicode=True, sort_keys=False)
+            stream.write(dump_state_yaml(dict(value)))
             stream.flush()
             os.fsync(stream.fileno())
         temporary.replace(destination)

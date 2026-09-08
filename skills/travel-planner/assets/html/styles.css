@@ -259,28 +259,6 @@ li {
   margin-top: var(--space-2);
 }
 
-.lifecycle-details {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-1) var(--space-3);
-  margin: var(--space-1) 0 0;
-  color: var(--ink-soft);
-  font-size: 0.875rem;
-}
-
-.lifecycle-details div {
-  display: flex;
-  gap: 0.35rem;
-}
-
-.lifecycle-details dt {
-  font-weight: 700;
-}
-
-.lifecycle-details dd {
-  margin: 0;
-}
-
 .lifecycle-warning {
   margin-block: var(--space-3);
   padding: var(--space-2) var(--space-3);
@@ -561,7 +539,6 @@ button[aria-selected="true"] {
 .decision-list,
 .blocker-list,
 .readiness-list,
-.source-list,
 .risk-list {
   margin: 0;
   padding: 0;
@@ -571,7 +548,6 @@ button[aria-selected="true"] {
 .decision-item,
 .blocker-item,
 .readiness-item,
-.source-item,
 .risk-item {
   padding: var(--space-3) 0;
   border-top: 1px solid var(--line);
@@ -603,8 +579,7 @@ button[aria-selected="true"] {
   font-size: 1.35rem;
 }
 
-.decision-details,
-.source-meta {
+.decision-details {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-1) var(--space-3);
@@ -984,10 +959,8 @@ button[aria-selected="true"] {
   font-size: 0.875rem;
 }
 
-.print-url,
 .event-print-context,
-.event-alternatives-print,
-.print-link-appendix {
+.event-alternatives-print {
   display: none;
 }
 
@@ -1084,36 +1057,16 @@ button[aria-selected="true"] {
   line-height: 1.4;
 }
 
-.day-provenance {
-  margin-top: var(--space-2);
-  padding-inline: var(--space-4);
-  background: var(--info-field);
+.photo-credit {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  line-height: 1.4;
 }
 
-.day-sources summary {
-  padding-block: var(--space-2);
-  color: var(--accent);
-}
-
-.day-source-content {
-  padding-bottom: var(--space-2);
-  font-size: 0.875rem;
-}
-
-.day-source-list {
-  padding-left: var(--space-3);
-}
-
-.day-source-list li + li {
-  margin-top: var(--space-1);
-}
-
-.day-sources-print {
-  display: none;
-}
-
-.print-media-source {
-  display: none;
+.photo-credit .external-link {
+  display: inline;
+  font-weight: 400;
 }
 
 .day-nav {
@@ -1168,14 +1121,6 @@ button[aria-selected="true"] {
 .risk-item--blocking {
   padding-inline: var(--space-2);
   border-top: 3px solid var(--danger);
-}
-
-.document-version {
-  margin: var(--space-3) 0 0;
-  padding-top: var(--space-2);
-  border-top: 1px solid var(--line);
-  color: var(--ink-soft);
-  font-size: 0.875rem;
 }
 
 .document-footer {
@@ -1308,10 +1253,6 @@ button[aria-selected="true"] {
     padding-inline: var(--space-2);
   }
 
-  .day-provenance {
-    padding-inline: var(--space-2);
-  }
-
   .timeline-event {
     grid-template-columns: 4.5rem 3rem minmax(0, 1fr);
     gap: 0.75rem;
@@ -1346,7 +1287,6 @@ button[aria-selected="true"] {
   .checkpoint-contract,
   .alternative-meta,
   .decision-details,
-  .source-meta,
   .budget-summary {
     grid-template-columns: 1fr;
   }
@@ -1425,10 +1365,6 @@ button[aria-selected="true"] {
 }
 
 @media print {
-  .print-media-source {
-    display: inline;
-  }
-
   @page {
     size: A4 portrait;
     margin: 16mm 14mm 18mm;
@@ -1555,10 +1491,6 @@ button[aria-selected="true"] {
   .timeline-marker { grid-column: auto; grid-row: auto; width: 9mm; height: 9mm; }
   .timeline-marker .icon { width: 6mm; height: 6mm; }
   .event-body { grid-column: auto; grid-row: auto; }
-  .day-sources { display: none; }
-  .day-sources-print { display: block; }
-  .day-provenance { background: #fff; padding: 3mm 0; }
-  .day-source-list .external-link { min-height: 0; }
   .js-enabled:not(.enhancement-failed) .scenario-heading,
   .scenario-heading--primary-only { display: block; }
   .js-enabled:not(.enhancement-failed) .scenario-panel--alternative {
@@ -1652,8 +1584,7 @@ button[aria-selected="true"] {
   .event-alternative,
   .decision-item,
   .readiness-item,
-  .risk-item,
-  .source-item {
+  .risk-item {
     break-inside: avoid;
   }
 
@@ -1698,20 +1629,5 @@ button[aria-selected="true"] {
   .no-print-images .day-gallery,
   body:not(.print-images) .day-gallery {
     display: none;
-  }
-
-  .print-url {
-    display: inline;
-    color: #333;
-    font-size: 8pt;
-  }
-
-  .print-link-appendix {
-    display: block;
-  }
-
-  .print-link-appendix .print-url {
-    display: block;
-    overflow-wrap: anywhere;
   }
 }

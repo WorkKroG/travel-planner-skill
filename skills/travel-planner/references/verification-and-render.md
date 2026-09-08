@@ -49,16 +49,28 @@ Never infer acceptance from silence. `ai_reviewed` never equals `codex_validated
 After review, render one self-contained HTML from the explicit workspace:
 
 ```bash
-travel-planner render PATH --output PATH/outputs/itinerary.html --at <evaluation-time-iso8601-with-offset>
+travel-planner render PATH --output PATH/outputs/itinerary.html --at <generation-time-iso8601-with-offset>
 ```
 
 In Codex, use the bundled helper. Where helpers are unavailable but skill assets can be used, build the downloadable HTML from the same bundled `assets/html/itinerary.html.j2`, `styles.css`, `app.js`, and `icons.svg` with the canonical bundle; do not create a second design. Keep verification `none` or `ai_reviewed`. If the surface cannot create a downloadable file, preserve/update the canonical bundle and state that limitation instead of claiming an HTML exists.
+
+Before rendering, review the official-site and map/route links for every concrete main program point, including alternative scenarios, according to [planning](planning.md). Preserve explicit gaps for unselected or unavailable venues. Do not replace missing practical links with a global source list.
+
+### Technical sources by build
+
+The reader's HTML and print output contain no research index, day source disclosure or URL appendix. Practical event links and compact photo attribution stay visible. Tell the organiser in the delivery message that the technical materials list for this version can be requested through Codex; do not add that technical explanation or a report link to the HTML.
+
+The Codex `render` command writes a complete source snapshot to `sources/<HTML-SHA256>.md` next to the requested HTML, then publishes the HTML. The snapshot includes generation time, lifecycle fields, hashes of the five canonical input files, every recorded source (even without a linked claim), claims, readiness references, photographs and event links. `--at` is generation time, not a freshness check. Identical builds reuse the same snapshot; a conflicting existing snapshot stops publication and requires a new generation time. Do not delete prior snapshots during a new build.
+
+To answer “show the sources for this version”, identify the supplied HTML or explicit build first, compute its SHA-256 and read the matching snapshot. Never silently substitute the current `candidates.yaml` or current `sources.md` for a missing historical record. `render_sources_markdown` can rebuild the current-state `sources.md`; it does not reconstruct previous versions. Preserve and transfer saved snapshots when their history is needed.
+
+On a surface without helpers, save a separate materials list with the trip ID and generation time and, where file hashing is available, the HTML SHA-256. If the surface cannot save or bind that list, state the limitation and preserve canonical source records for later Codex use; do not claim an archived version exists.
 
 The HTML is derived and opens locally as a self-contained file. It uses one readable column, a closed native contents disclosure, typed chronological day timelines, event-owned links and alternatives, and complete alternative scenario timelines. Use the shared Lemon and Cobalt visual language: yellow cover/day openings, sans-serif place headings, gallery under the day introduction and above compact facts, cobalt controls, semantic icons on a continuous timeline and blue closing fields. Do not infer day phases from ambiguous labels, add full-text search or depend on host icon globals. JavaScript enhances filtering and scenario tabs; without it all content remains readable. If the user wants a PDF, browser Print → Save as PDF is a manual browser action, not an automated product artifact or guarantee.
 
 ### Day photographs
 
-The day header shows the photo captions and three facts: overnight base, travel and load. Creator credits, licenses, source links and the day check date remain in its native “Sources and photographs” disclosure. A separate print projection preserves them even when the disclosure is closed. The timeline uses a separate circular icon column; on small screens its recorded times move above event text. Optional recorded periods, primary-route labels and semantic icons follow the [planning contract](planning.md).
+The day header shows photo captions and three facts: overnight base, travel and load. Each caption retains a compact creator credit linked to the photo's source and its recorded license, including in print. Technical source IDs, check dates and research provenance remain in the source snapshot. The timeline uses a separate circular icon column; on small screens its recorded times move above event text. Optional recorded periods, primary-route labels and semantic icons follow the [planning contract](planning.md).
 
 When suitable photographs are available, record 1–3 per day in `itinerary.yaml.days[].media`, in reading order. Keep one or two when that is all the relevant media; omit the field or use `[]` for no imagery. Do not add decorative duplicates. A caption must identify the location and distinguish an alternative scenario when needed. Each record requires:
 
@@ -79,4 +91,4 @@ Replace these illustrative values with actual metadata. `source_id` resolves to 
 
 Place the raster files beneath the trip's `media/` directory. The helper reads only relative files within that directory, rejects traversal/symlink escapes, and embeds bytes directly; it never fetches an image. `check` validates metadata and source references. `render` also checks local file readability and nonempty content before writing; a missing declared file is an explicit build error, while a day with no media renders normally. Browser decoding failure affects only that photograph and preserves its caption/credit and a localized notice. Where helpers are unavailable, use the same shared template with ordered galleries and inline data URLs; never substitute remote image dependencies.
 
-To continue elsewhere, the user manually transfers the five canonical files, the referenced `media/` directory when present, and may also transfer generated HTML. Do not promise invisible sync, server state, or filesystem access unavailable on that surface.
+To continue elsewhere, the user manually transfers the five canonical files, the referenced `media/` directory when present, and may also transfer generated HTML. Include saved source snapshots to retain access to earlier builds' evidence. Do not promise invisible sync, server state, or filesystem access unavailable on that surface.
