@@ -1,6 +1,6 @@
 # Readable Itinerary Days Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **Historical plan:** Readable days shipped in PR #9 and were subsequently refined by PR #10 and PR #11. See [project status](../../PROJECT_STATUS.md) for current evidence and remaining manual observations. The execution steps below record the original task, not pending work or new authorization.
 
 **Goal:** Rebuild the shared itinerary HTML around readable day chapters, typed event-owned context and complete alternative scenario timelines.
 

@@ -12,7 +12,7 @@ The workflow is intentionally collaborative:
 6. Run the verification available on the current surface.
 7. Produce one responsive, self-contained HTML itinerary for review and sharing.
 
-The complete product contract is in [PRODUCT.md](PRODUCT.md), the component boundary is in [ARCHITECTURE.md](ARCHITECTURE.md), and the current day-reading experience is defined by the [Readable Itinerary Days specification](docs/superpowers/specs/2026-09-06-itinerary-readable-days-design.md) over the retained requirements of the [original interactive itinerary specification](docs/superpowers/specs/2026-08-28-interactive-itinerary-html-design.md).
+The complete product contract is in [PRODUCT.md](PRODUCT.md), the component boundary is in [ARCHITECTURE.md](ARCHITECTURE.md), and the implemented visual system is in [DESIGN.md](DESIGN.md). The [Readable Itinerary Days specification](docs/superpowers/specs/2026-09-06-itinerary-readable-days-design.md) defines HTML behavior over the retained requirements of the [original interactive itinerary specification](docs/superpowers/specs/2026-08-28-interactive-itinerary-html-design.md). Historical design and implementation plans record earlier decisions; [project status](docs/PROJECT_STATUS.md) identifies what is merged and what remains unverified.
 
 ## Supported surfaces
 
@@ -45,7 +45,9 @@ Each trip has five canonical files:
 - `readiness.yaml`
 - `decisions.md`
 
-`sources.md` and `outputs/` are generated and can be rebuilt.
+When days reference local photographs, their files in `media/` are also canonical and must travel with those five files. Each photograph records its source, attribution, license, caption, alt text and dimensions. Photograph licenses are separate from the repository's MIT license.
+
+`sources.md` and `outputs/` are generated and can be rebuilt. The generated HTML embeds available local photographs and can be shared as one file; resuming or rebuilding the trip requires the canonical bundle, including referenced media.
 
 Draft and Prepared copy are document lifecycle labels, independent of verification. The internal value `document_status: final` retains the `codex_validated` or `user_confirmed` preparation basis. Open decisions, unknowns, and saved concerns remain visible in either copy; individual risk acceptance is not required to issue it. Any actual acceptance stays auditable and never erases the original concern.
 
@@ -69,6 +71,8 @@ The plugin root also passes the current `skill-creator` and `plugin-creator` val
 
 For local plugin testing, follow OpenAI's current [plugin packaging](https://developers.openai.com/plugins/build/plugins) and [connect-and-test](https://developers.openai.com/plugins/deploy/connect-chatgpt) guidance: add this existing plugin folder to a local marketplace, then install it from that local source and start a new conversation. ChatGPT Work guidance is also available in [Build plugins](https://learn.chatgpt.com/docs/build-plugins). This repository deliberately does not install or modify a personal marketplace for you.
 
+A local installation loads a [cached copy of the plugin](https://developers.openai.com/plugins/build/plugins#how-local-marketplaces-work), not the source checkout. After updating the source, make sure the installed copy contains the same skill, references and assets before testing in a new conversation. Updating Git alone does not establish that the installed plugin is current.
+
 Repository availability is not universal publication. A public listing in the shared ChatGPT and Codex plugin directory is a later external submission and review action. No one-click GitHub installation or identical local-marketplace availability across desktop, web, and mobile is promised.
 
 ## Internal helper commands
@@ -81,9 +85,19 @@ These commands are internal to the plugin and may change before a stable public 
 .venv/bin/travel-planner render /path/to/trip --output /path/to/trip/outputs/itinerary.html --at 2026-08-30T09:00:00+00:00
 ```
 
-`init` never overwrites an existing trip. `check` verifies recorded dates, IDs, typed day events and scenarios, declared references, present monetary values, and document-status consistency. It does not evaluate overall trip feasibility. `render` reads the same valid data and creates a one-column self-contained itinerary with chronological meal/transport/activity/checkpoint events, contextual links and alternatives, and complete alternative day scenarios. If a PDF is needed, open the HTML and use Browser/System Print → Save as PDF; the plugin has no built-in PDF pipeline.
+Replace the path, title, ID and `--at` timestamp with the values for your trip. `--at` records the HTML generation time; it does not recheck external sources or recalculate their freshness. Temporary smoke tests must use a new temporary workspace.
+
+`init` never overwrites an existing trip. `check` verifies recorded dates, IDs, typed day events and scenarios, declared references, present monetary values, and document-status consistency. It does not evaluate overall trip feasibility. `render` reads the same valid data and creates a one-column self-contained itinerary with chronological meal/transport/activity/checkpoint events, contextual links and alternatives, and complete alternative day scenarios.
+
+Each day uses the approved Lemon and Cobalt composition: a yellow destination header, zero to three photographs, overnight/travel/load facts, scenario tabs, and a timeline with separate time, icon and text columns. Recorded morning/afternoon/evening groups are optional; the renderer never infers them from event times. Sources, photo credits and the last-check date appear in a closing disclosure and remain available in print. The same template supports Russian and English, narrow screens and complete content without JavaScript.
+
+If a PDF is needed, open the HTML and use Browser/System Print → Save as PDF; the plugin has no built-in PDF pipeline. Browser, mobile and print observations still need manual evidence; see the [release checklist](docs/RELEASE_CHECKLIST.md).
 
 See the [Japan autumn 2026 example](examples/japan-autumn-2026/README.md) for a deterministic draft-quality workspace.
+
+## Test a new route
+
+Use the [new-chat route test guide](docs/ROUTE_BUILD_TEST.md) (Russian) to check which plugin copy is loaded, start a separate trip workspace, run the planning workflow and record the result. It includes a starting prompt and instructions for resuming from saved files. Keep the committed Japan example as reference data.
 
 ## Maps, sources, security, and privacy
 

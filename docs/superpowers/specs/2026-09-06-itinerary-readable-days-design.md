@@ -1,13 +1,13 @@
 # Readable Itinerary Days — HTML Design Specification
 
 **Date:** 2026-09-06
-**Status:** Approved by user; implementation contract
+**Status:** Approved by user; implementation contract amended through 2026-09-08 (merged PR #11)
 **Supersedes:** the detailed-day layout, navigation and scenario treatment in `2026-08-28-interactive-itinerary-html-design.md`
 **Keeps:** the earlier specification's product scope, lifecycle truth, self-contained local opening, accessibility, responsive and browser-print guarantees
 
 ## 1. Outcome
 
-The generated HTML is a calm, readable itinerary rather than a dashboard. The document uses the [7 September Lemon and Cobalt visual redesign](2026-09-07-html-visual-redesign-design.md) and replaces the permanent desktop sidebar and two-column day body with a bounded reading column and a sequence of visually distinct day chapters.
+The generated HTML is a calm, readable itinerary. The document uses the Lemon and Cobalt visual system in [DESIGN.md](../../../DESIGN.md), including the approved 8 September day composition, and replaces the permanent desktop sidebar and two-column day body with a bounded reading column and a sequence of visually distinct day chapters.
 
 The primary reading task is: understand each day in chronological order, notice the few moments that can change the plan, and open contextual links or alternatives only when needed. Day filters remain a progressive enhancement; they do not determine the visual architecture.
 
@@ -25,10 +25,10 @@ Every day is a distinct chapter with a clear beginning and ending:
 
 1. large region heading on the left, day number on the right, localized date/weekday and thesis;
 2. optional gallery of 1–3 photographs beneath the introduction inside the yellow header;
-3. compact overnight, travel, load and last-checked metadata beneath the gallery;
-4. scenario tabs only when materially different alternative day timelines exist;
-5. one complete chronological timeline with semantic icons on a continuous line;
-6. adjacent-day navigation in a light-blue closing field.
+3. three compact facts beneath the gallery: overnight, travel and load;
+4. a localized “How we’ll spend the day” heading on every day; scenario tabs appear only when materially different alternative day timelines exist;
+5. one complete chronological timeline with separate time, circular semantic icon and text columns, optionally grouped by recorded periods;
+6. a closed native “Sources and photographs” disclosure with day sources, photo credits and last-checked metadata, followed by adjacent-day navigation in a light-blue closing field.
 
 The [approved 7 September specification](2026-09-07-html-visual-redesign-design.md) replaces the earlier three-accent chapter cycle with Lemon and Cobalt throughout the complete document. Chapter openings, generous spacing and closing fields establish boundaries; semantic states remain explicit in text.
 
@@ -36,7 +36,7 @@ The user-approved amendment of 7 September replaces the one-image limit: each da
 
 `days[].media` is an ordered array, omitted or empty when no suitable media is available, with a maximum of three records. Each record has `path` (relative POSIX file path beneath the trip's `media/`, no traversal or symlink escape), `mime_type` (`image/jpeg`, `image/png`, `image/webp`, `image/avif`), `alt`, `caption`, `source_id` (resolves to `candidates.yaml.sources`), `attribution` (creator credit or generation provenance), `license`, and positive integer `width`/`height` in pixels. Source URLs must be absolute HTTPS links. Existing local sources may be imported without claiming a fresh remote verification. Keep their original attribution and licence; do not infer a licence from the repository's MIT licence.
 
-The gallery appears in the day header after the thesis and before metadata, scenario controls and timelines. Checkpoints remain in chronological order before the events they govern; the header gallery does not remove or collapse their instructions. One photograph fills the available reading width; two or three form equally sized columns on wide screens. At 760 CSS px and below, each image occupies its own row with its caption immediately following it. There are no empty columns, carousel, lightbox or new controls. Each figure preserves its caption and credit when JavaScript is absent. Print uses at most two columns with bounded image height, keeps each image and credit together when practical, and honors the existing no-image option for the entire gallery.
+The gallery appears in the day header after the thesis and before metadata, scenario controls and timelines. Checkpoints remain in chronological order before the events they govern; the header gallery does not remove or collapse their instructions. One photograph fills the available reading width; two or three form equally sized columns on wide screens. Three-photo galleries stack at 760 CSS px and below; all galleries stack at 460 CSS px and below. Captions immediately follow images; attribution, license and linked source appear in the closing disclosure, which works without JavaScript. There are no empty columns, carousel or lightbox. Print uses at most two columns with bounded image height, keeps each image and caption together when practical, and honors the existing no-image option. A separate print projection preserves all day sources and photo credits even when the screen disclosure is closed.
 
 ## 4. Canonical event contract
 
@@ -48,9 +48,12 @@ The gallery appears in the day header after the thesis and before metadata, scen
 - optional structured timestamps, duration, connection, buffers and canonical references already supported by v0.1;
 - optional `links[]` owned by that event;
 - optional `alternatives[]` owned by that event;
+- optional `period` (`morning`, `afternoon`, `evening`) and `icon` from the bundled schema enum;
 - for `kind: checkpoint`, required `checkpoint.check` and `checkpoint.adjust_plan`.
 
 Meals, transfers, activities, check-in and rest therefore share one chronological structure. There is no separate Food in context section and no separate day-level Contextual actions column.
+
+Period headings group only adjacent equal recorded values, preserving source order. Missing periods produce unlabelled groups; the renderer never derives periods from IDs, titles or clock times. An omitted icon retains the existing kind-based fallback. These optional annotations do not alter scheduling or require a migration.
 
 ### 4.1 Event links
 
@@ -72,7 +75,7 @@ A light-yellow field and labelled semantic icon identify checkpoints; lifecycle 
 
 ## 5. Alternative day scenarios
 
-`days[].scenarios[]` contains alternative day plans only. Each scenario has stable `id`, localized user-facing `label`, optional `summary`, and a complete `timeline[]` using the same event contract. The primary tab is represented by `days[].timeline`; no duplicate primary scenario is stored.
+`days[].scenarios[]` contains alternative day plans only. Each scenario has stable `id`, localized user-facing `label`, optional `summary` and bundled `icon`, and a complete `timeline[]` using the same event contract. The primary tab is represented by `days[].timeline`; optional day fields `primary_label`, `primary_summary` and `primary_icon` customize its presentation. No duplicate primary scenario is stored.
 
 - Tabs appear only when an alternative scenario is recorded because a substantial part of the day changes.
 - Tabs use the WAI-ARIA tab pattern with keyboard Left/Right, Home and End navigation.
@@ -100,7 +103,7 @@ User-authored itinerary content is never machine-translated by the renderer. A w
 - Interactive filters, tab controls and adjacent-day controls are hidden.
 - Filtered days and hidden scenario panels are forced visible.
 - Each normal day starts on a fresh page when practical; every printed event repeats a compact day/date/region context so continuation pages remain identifiable in browsers without paged-media string support.
-- Every page repeats the generated trip/version/status footer and a page counter; the fixed print footer is the narrow exception to the normal-flow print rule because it is page furniture, not document content.
+- Print CSS defines a fixed trip/version/status footer; page counters use `@page` margin boxes. Browser support and actual repetition/pagination require the manual print observations in the [release checklist](../../RELEASE_CHECKLIST.md); source tests alone do not establish them.
 - Primary timeline events, checkpoints and compact alternative scenario blocks avoid page splits when practical.
 - The primary timeline prints in full; alternative day scenarios print more compactly but with complete titles, times and details.
 - Link labels and source identifiers print without dumping naked URLs into the reading flow; the source section includes full source URLs plus a print-only appendix for every event and alternative action URL.
@@ -127,4 +130,4 @@ Automated evidence covers:
 - deterministic fixed-time Japan render and snapshot hash;
 - self-contained asset boundary and optional-media provenance.
 
-One bounded visual QA round inspects the generated Japan example at desktop and mobile widths. One batched correction and at most one confirmation round are allowed. Static tests remain static evidence and do not claim a browser accessibility engine, device farm or automated layout suite.
+Manual visual QA should inspect the generated Japan example at desktop and mobile widths and in print preview. These observations remain pending in the [release checklist](../../RELEASE_CHECKLIST.md). Static tests remain static evidence and do not claim a browser accessibility engine, device farm or automated layout suite.

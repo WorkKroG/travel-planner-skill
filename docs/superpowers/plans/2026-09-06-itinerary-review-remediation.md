@@ -1,6 +1,6 @@
 # Readable Itinerary Independent Review Remediation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
+> **Historical plan:** These corrections shipped with readable days in PR #9. See [project status](../../PROJECT_STATUS.md) for subsequent changes and current evidence. The execution steps below record the original review task, not pending work or new authorization.
 
 **Goal:** Resolve every finding from the independent review of `69487cc` and obtain a clean re-review before creating a pull request.
 
