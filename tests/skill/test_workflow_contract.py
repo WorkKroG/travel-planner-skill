@@ -354,7 +354,7 @@ def test_active_workflow_has_no_removed_pipeline_or_state_machine() -> None:
         r"\bvalidate\b",
         r"\bchallenge\b",
         r"\bimpact\b",
-        r"\bfinalize\b",
+        r"\btravel-planner\s+finalize\b",
         r"\bqa\b",
         r"\breceipt\b",
         r"\battestation\b",

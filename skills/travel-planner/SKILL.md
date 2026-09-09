@@ -7,9 +7,11 @@ description: Use when planning, revising, or finalizing a complete trip or пу�
 
 Plan collaboratively in the user's language. First identify the current surface and the explicit trip workspace or `trip_id`; if several workspaces match, ask the user to choose. Ask one meaningful question at a time unless the user explicitly requests a quick draft. A quick draft must expose its assumptions, unknowns, and recheck actions.
 
+New trips and intermediate HTML remain `draft` until the user explicitly chooses `final`. Checking data, selecting a route, or requesting a ready-to-share HTML file does not make that choice. Follow [lifecycle](references/verification-and-render.md#lifecycle) for the status question, recording the decision, and revising a final version.
+
 Keep facts, estimates, preferences, and unknowns distinct. Never invent unreleased schedules, unavailable prices, source confirmation, booking state, or verification. Before changing a material user decision, explain the affected route, days, budget, and readiness, obtain consent, record the reason, and update only the affected canonical scope.
 
-Review material constraints when choosing a route and detailing or changing a day: fact or unknown → applicability to this trip → consequence → next action. Recorded data checks and document preparation never establish trip feasibility. Keep open actions and saved concerns visible when the user requests a prepared copy.
+Review material constraints when choosing a route and detailing or changing a day: fact or unknown → applicability to this trip → consequence → next action. Recorded data checks and document preparation never establish trip feasibility. Keep open actions and saved concerns visible in drafts and user-finalized copies.
 
 Always review destination/transit situation and safety, and visas/entry/transit for each traveller, when choosing the route and again before delivering the plan. Follow [research](references/research.md) for the official-source review and [readiness](references/readiness-and-budget.md) for two separate visible preparation items with results, actual review dates or explicit unknowns, practical links, and mandatory recheck instructions. Keep both items in quick drafts and resumed trips; never equate a successful data check with either review.
 
