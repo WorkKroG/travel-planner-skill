@@ -36,7 +36,7 @@ def _all_keys(value: Any) -> set[str]:
     return set()
 
 
-def test_targeted_skill_catalog_has_eight_review_inputs_not_agent_answers() -> None:
+def test_targeted_skill_catalog_has_nine_review_inputs_not_agent_answers() -> None:
     catalog = _load_catalog(SKILL_CATALOG)
 
     assert catalog["catalog"] == {
@@ -45,8 +45,8 @@ def test_targeted_skill_catalog_has_eight_review_inputs_not_agent_answers() -> N
         "execution_status": "not_executed",
     }
     scenarios = catalog["scenarios"]
-    assert len(scenarios) == 8
-    assert len({scenario["id"] for scenario in scenarios}) == 8
+    assert len(scenarios) == 9
+    assert len({scenario["id"] for scenario in scenarios}) == 9
     for scenario in scenarios:
         assert set(scenario) == {
             "id",

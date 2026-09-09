@@ -314,6 +314,28 @@ def test_documented_acceptance_yaml_example_validates_against_actual_schema() ->
     assert errors == [], "; ".join(error.message for error in errors)
 
 
+def test_documented_user_report_validates_without_a_web_source() -> None:
+    """A copied user report must fit the claim schema without a fabricated source."""
+    claims = [
+        example for example in _yaml_examples()
+        if {"id", "topic", "status", "source_ids", "value"} <= example.keys()
+    ]
+    assert len(claims) == 1, "Provide one copyable claim for a user report without a URL."
+    claim = claims[0]
+    assert claim["status"] == "reported"
+    assert claim["source_ids"] == []
+    assert isinstance(claim["value"], str) and claim["value"].strip()
+    schema = json.loads(
+        (_skill_root() / "schemas" / "candidates.schema.json").read_text(encoding="utf-8")
+    )
+    validator = Draft202012Validator(
+        {"$schema": schema["$schema"], "$defs": schema["$defs"], "$ref": "#/$defs/claim"},
+        format_checker=FormatChecker(),
+    )
+    errors = list(validator.iter_errors(claim))
+    assert errors == [], "; ".join(error.message for error in errors)
+
+
 def test_user_confirmed_final_keeps_every_accepted_blocker_visible() -> None:
     """User confirmation records acceptance without erasing unresolved blockers."""
     rows = _contract_rows({"Final basis", "Required state", "Remaining blockers"})

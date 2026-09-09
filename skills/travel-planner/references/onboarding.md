@@ -1,14 +1,16 @@
 # Start or resume a trip
 
-One trip uses one explicit workspace. Before creating local files, confirm the exact path, title, and stable `trip_id` with the user. The path must not be the installed skill source or another trip workspace. Initialization never overwrites existing workspace files.
+One trip uses one explicit workspace. Resolve the exact path before creating local files. Use a path the user supplied or an unambiguous folder they designated for this trip without asking them to confirm it again. If the user explicitly delegated folder selection within a named project, choose a separate unused trip folder there and state the resolved path. Ask about location only when it is missing, ambiguous, or conflicts with existing files or workspace boundaries. The path must not be the installed skill source or another trip workspace. Initialization never overwrites existing workspace files.
 
-In a full local Codex environment, initialize only after that confirmation:
+Use the user's title and `trip_id` when supplied. Otherwise choose a concise title in the user's language from known trip details; do not invent dates or a destination to name it. Choose a valid stable ID or let `init` generate it by omitting `--trip-id`. Missing title/ID is not a reason for a confirmation question. Report the chosen name and location briefly, then continue. On resume, reuse the recorded `trip_id`; changing the display title does not change that identity.
+
+In a full local Codex environment, initialize once the location is resolved and authorized:
 
 ```bash
-travel-planner init PATH --title "TITLE" --trip-id TRIP_ID --confirm-path
+travel-planner init PATH --title "TITLE" --confirm-path
 ```
 
-`--confirm-path` records deliberate path selection; it does not create or switch a Codex project. A separate folder/local project is recommended, but the user chooses it.
+Add `--trip-id TRIP_ID` when preserving a supplied or explicitly chosen ID. `--confirm-path` records deliberate, authorized path selection; it is not a requirement for a second confirmation exchange and does not create or switch a Codex project. A separate folder/local project is recommended, within the location choice made or delegated by the user.
 
 ## Bundle ownership
 

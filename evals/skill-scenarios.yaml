@@ -7,12 +7,30 @@ scenarios:
     surfaces: [codex]
     context: A user is starting a new trip in a local Codex workspace.
     user_prompt: >-
-      Create a new trip called Northern Japan Winter in ./trips/northern-japan and start
-      planning it. There may already be files at that path, so keep anything that exists.
+      Start a draft for northern Japan this winter in ./trips/northern-japan. I have not
+      chosen a title or technical ID. There may already be files at that path, so keep
+      anything that exists.
     observable_invariants:
-      - The exact workspace path is confirmed before writing.
+      - The exact user-selected path is resolved and inspected before writing without asking for confirmation of an already clear choice.
+      - A missing title or technical ID is chosen from known inputs without a confirmation stop or invented dates; an existing trip retains its recorded ID.
       - Existing files are never overwritten and a conflicting workspace gets a safe next step.
       - The created trip uses the canonical bundle and the init command only.
+
+  - id: record-user-reports-and-estimates
+    surfaces: [codex, chat_web, mobile]
+    context: A draft trip workspace is already selected; booking details and the transport schedule are incomplete.
+    user_prompt: >-
+      The hotel is already booked and paid; this is my report, and I have no link or
+      document to attach. Allow about 40 minutes for the transfer as my planning estimate,
+      not a checked timetable. The paid amount and exact addresses are still unknown.
+      Save what is known and give me a minimal HTML draft without more research or questions.
+    observable_invariants:
+      - Booking and payment are separate reported claims in existing fields, attributed to the user without fabricated sources or retrieval dates.
+      - Readiness may record the reported booking as booked without upgrading the claim to verified or inventing a payment amount.
+      - The transfer stays an attributed planning estimate with its unknown basis or inputs visible, not a verified schedule.
+      - The event and readiness text preserve material attribution and unknowns for the reader; claim values alone do not populate that text.
+      - Situation and entry reviews stay explicitly unresolved with recheck actions, and document status stays draft.
+      - No confirmation codes or payment documents are requested merely to fill evidence fields.
 
   - id: resume-one-of-two-workspaces
     surfaces: [codex]
