@@ -2,6 +2,8 @@
 
 Use `readiness.yaml` for entry/transit, health/medication, insurance, transport, lodging, activities, dining, connectivity, money, documents, packing, emergency, and pre-departure actions. Each item needs a stable ID, status, owner when known, due/recheck time when known, source/claim links, dependencies, and a concise `next_action` with a completion or cancellation condition. Preserve recorded `due_at` independently of `next_check_at`; do not invent universal recheck deadlines. Critical unknowns remain visible actions or saved concerns until resolved with evidence.
 
+For a main-event booking, the readiness item owns its `status`, `next_action`, known `due_at` and evidence. Connect the timeline event through `readiness_ids[]` and summarize the current status, important deadline and conditions in that event's `detail`. The ID link does not copy this text into the event. A local alternative has its own displayed `alternatives[].booking`; create a readiness action when needed. On a booking change, update its record and every affected main/scenario/alternative summary together, following the [event field contract](planning.md#event-field-recording).
+
 Every plan includes two separate preparation items: **Situation and safety** (`emergency`) and **Visas, entry and transit** (`entry`). Use titles and prose in the document language. New trip templates seed both as `unknown`; when resuming a bundle, update existing equivalent items or add missing ones without duplicating them. A quick draft preserves both even when research or traveller details are unavailable. Follow the required [research reviews](research.md) at route selection and before delivery; per-traveller or per-country sub-actions may supplement the two summaries.
 
 For each summary record:
