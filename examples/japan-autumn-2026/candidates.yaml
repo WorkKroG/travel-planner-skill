@@ -6,25 +6,41 @@ sources:
     title: Визы и въезд — МИД Японии
     source_type: official
     publisher: Ministry of Foreign Affairs of Japan
-    retrieved_at: '2026-09-08T20:45:34+00:00'
+    retrieved_at: '2026-09-09T17:54:02+00:00'
     retrieval_status: ok
-    provenance: Official recheck entry page opened; no trip-specific visa or transit assessment completed.
+    provenance: Read the official visa page on 9 September; traveller-specific eligibility remains unresolved because citizenship, residence, documents and transit are unknown.
   - id: source-jnto-emergencies
     url: https://www.japan.travel/en/plan/emergencies/
     title: Экстренная информация — JNTO
     source_type: official
     publisher: Japan National Tourism Organization
-    retrieved_at: '2026-09-08T20:45:34+00:00'
+    retrieved_at: '2026-09-09T17:54:02+00:00'
     retrieval_status: ok
-    provenance: Official recheck entry page opened; no current trip-specific safety assessment completed.
+    provenance: Read the JNTO emergency guidance on 9 September; general preparedness advice does not establish November route safety or current local access.
   - id: source-who-outbreaks
     url: https://www.who.int/emergencies/disease-outbreak-news
     title: Сообщения о вспышках заболеваний — ВОЗ
     source_type: official
     publisher: World Health Organization
-    retrieved_at: '2026-09-08T20:45:34+00:00'
+    retrieved_at: '2026-09-09T17:54:02+00:00'
     retrieval_status: ok
-    provenance: Official global outbreak index opened; no Japan-specific health assessment completed.
+    provenance: Opened the global index on 9 September; its retrieved text did not expose a usable Japan-specific result list. No conclusion about absence of outbreaks was made.
+  - id: source-japan-visa-exemptions
+    url: https://www.mofa.go.jp/j_info/visit/visa/short/novisa.html
+    title: Условия безвизового въезда — МИД Японии
+    source_type: official
+    publisher: Ministry of Foreign Affairs of Japan
+    retrieved_at: '2026-09-09T17:56:50+00:00'
+    retrieval_status: ok
+    provenance: Read nationality and passport-dependent conditions; applicability to the four travellers is unknown.
+  - id: source-fcdo-japan-safety
+    url: https://www.gov.uk/foreign-travel-advice/japan/safety-and-security
+    title: Обстановка и природные риски — FCDO
+    source_type: official
+    publisher: UK Foreign, Commonwealth and Development Office
+    retrieved_at: '2026-09-09T17:56:50+00:00'
+    retrieval_status: ok
+    provenance: Read general Japan security and natural-hazard guidance; UK consular and nationality-specific advice is not assumed applicable to these travellers.
   - {id: source-keikyu, url: "https://www.haneda-tokyo-access.com/en/ride/fares.html", source_type: official, publisher: Keikyu, retrieved_at: "2026-09-06T22:33:50+03:00"}
   - {id: source-monorail, url: "https://www.tokyo-monorail.co.jp/english/haneda-tokyo-access/company.html", source_type: official, publisher: Tokyo Monorail, retrieved_at: "2026-09-06T22:33:50+03:00"}
   - {id: source-tobu-express, url: "https://www.tobu.co.jp/en/express_info/timetable.html", source_type: official, publisher: Tobu Railway, retrieved_at: "2026-09-06T22:33:50+03:00"}
@@ -261,7 +277,7 @@ items:
     geography: {country_code: JP, locality: Nikko}
     discovery_layers: [nature_active, hidden_gem]
     claims:
-      - {id: claim-packrafting-slot, topic: слот, экипировка и условия отмены, status: unverified, freshness_status: unknown, source_ids: [source-packrafting]}
+      - {id: claim-packrafting-slot, topic: "слот, экипировка и условия отмены", status: unverified, freshness_status: unknown, source_ids: [source-packrafting], value: "Слот 4 ноября для четверых и условия оператора не подтверждены; описание оборудования перенесено из исходного плана."}
     popularity_signals: []
     assessments: [{dimension: trip_value, value: high, rationale: выбранная необычная активность 4 ноября}]
     verdict: {status: selected, rationale: выбран пользователем; требует бронирования и погодной проверки}
@@ -279,7 +295,7 @@ items:
     geography: {country_code: JP, locality: Hakone}
     discovery_layers: [nature_active, cultural]
     claims:
-      - {id: claim-hakone-operations, topic: транспорт, тропы, ropeway и газовые ограничения, status: unverified, freshness_status: unknown, source_ids: [source-hakone-nav, source-kintoki, source-owakudani, source-pola]}
+      - {id: claim-hakone-operations, topic: "транспорт, тропы, ropeway и газовые ограничения", status: unverified, freshness_status: unknown, source_ids: [source-hakone-nav, source-kintoki, source-owakudani, source-pola]}
     popularity_signals: []
     assessments: [{dimension: resilience, value: high, rationale: три полных сценария под ясную, ветреную и дождевую погоду}]
     verdict: {status: selected, rationale: Mt Kintoki основной при ясной погоде; сценарий выбирается утром}
@@ -297,7 +313,7 @@ items:
     geography: {country_code: JP, locality: Lake Motosu}
     discovery_layers: [nature_active]
     claims:
-      - {id: claim-ryugatake-conditions, topic: маршрут, погода и транспорт к старту, status: unverified, freshness_status: unknown, source_ids: [source-ryugatake, source-fujikyu-bus]}
+      - {id: claim-ryugatake-conditions, topic: "маршрут, погода и транспорт к старту", status: unverified, freshness_status: unknown, source_ids: [source-ryugatake, source-fujikyu-bus]}
     popularity_signals: []
     assessments: [{dimension: trip_value, value: high, rationale: главное ясное утро в районе Фудзи}]
     verdict: {status: selected, rationale: ставится на 9 или 10 ноября по фактической видимости и состоянию тропы}
@@ -306,7 +322,7 @@ items:
     geography: {country_code: JP, locality: Tokyo}
     discovery_layers: [hidden_gem, cultural]
     claims:
-      - {id: claim-tokyo-bookable-access, topic: доступ, бронирование и ограничения, status: unverified, freshness_status: unknown, source_ids: [source-gcans, source-jal-sky, source-urban-kayak, source-edo-tokyo]}
+      - {id: claim-tokyo-bookable-access, topic: "доступ, бронирование и ограничения", status: unverified, freshness_status: unknown, source_ids: [source-gcans, source-jal-sky, source-urban-kayak, source-edo-tokyo]}
     popularity_signals: []
     assessments: [{dimension: decision_need, value: high, rationale: варианты несовместимы по времени и требуют отдельного бронирования}]
     verdict: {status: shortlisted, rationale: G-Cans оставлен основным только как рабочий вариант}
@@ -315,7 +331,25 @@ items:
     geography: {country_code: JP, locality: Tokyo}
     discovery_layers: [cultural, hidden_gem]
     claims:
-      - {id: claim-toyosu-edo-access, topic: календарь рынка, торги и мастерская, status: unverified, freshness_status: unknown, source_ids: [source-toyosu-auctions, source-toyosu-calendar, source-edo-kiriko, source-edo-tokyo]}
+      - {id: claim-toyosu-edo-access, topic: "календарь рынка, торги и мастерская", status: unverified, freshness_status: unknown, source_ids: [source-toyosu-auctions, source-toyosu-calendar, source-edo-kiriko, source-edo-tokyo]}
     popularity_signals: []
     assessments: [{dimension: trip_value, value: high, rationale: выбранный каркас финального полного дня в Токио}]
     verdict: {status: selected, rationale: ранний старт допускает сокращённый сценарий без подъёма в 05:00}
+claims:
+  - id: claim-departure-user-report
+    topic: Время вылета из HND
+    status: reported
+    source_ids: []
+    value: По предоставленному пользователем плану вылет из HND 13 ноября 2026 в 15:40; независимо не проверено. Номер рейса, терминал и статус оплаты неизвестны.
+  - id: claim-japan-visa-rule-scope
+    topic: Применимость безвизового въезда
+    status: verified
+    source_ids: [source-japan-visa-exemptions]
+    freshness_status: fresh
+    value: На прочитанной 9 сентября странице МИД Японии условия безвизового въезда зависят от гражданства и характеристик паспорта. Применимость к четырём участникам не установлена; условия на ноябрь требуют повторной проверки.
+  - id: claim-japan-natural-hazard-guidance
+    topic: Официальные предупреждения о природных рисках
+    status: verified
+    source_ids: [source-jnto-emergencies, source-fcdo-japan-safety]
+    freshness_status: fresh
+    value: Прочитанные 9 сентября официальные рекомендации требуют следить за местными предупреждениями о землетрясениях, цунами и вулканической активности. Это общее требование подготовки, а не подтверждение состояния троп или безопасности маршрута 2–13 ноября.
