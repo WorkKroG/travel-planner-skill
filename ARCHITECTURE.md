@@ -86,6 +86,8 @@ CLI проверяет записанные данные, загружает л�
 
 История исследования доступна через сохранённый чат. `evidence.py` содержит только helpers текущих source/claim metadata; `render_html` возвращает HTML, а CLI записывает его. Нет реестра соответствия версий HTML источникам или механизма восстановления утраченного разговора.
 
+Различение пользовательского сообщения, планировочной оценки и проверенного утверждения выполняет модель по runtime references. Для этого используются существующие claim `status`/`source_ids`/`value`, `brief.assumptions[]`, пояснения событий, бюджета и readiness. Новые поля происхождения и фиктивные источники разговора не нужны; helpers не устанавливают правдивость сообщения или качество внешней проверки.
+
 Команды не являются стабильным публичным интерфейсом. Модель может использовать внутренние функции напрямую, когда это проще и безопаснее.
 
 `init` создаёт пять канонических файлов и `outputs/`. Отдельный шаблон `sources.md` не поставляется. Текущие source IDs остаются частью данных, необходимых для ссылочной целостности claims и происхождения фотографий.
@@ -125,7 +127,7 @@ Print CSS сохраняет критический контент, lifecycle la
 - `pyproject.toml` только для внутренних/local helpers.
 - Node, `package.json`, axe и browser-driver dependencies отсутствуют.
 - Основные автоматические проверки: Python unit/integration tests, один deterministic Japan HTML reference/hash и минимальная contract validation каталогов.
-- Каталог targeted skill scenarios содержит восемь data-only inputs для независимого model review; он не содержит authored answers, runner, judge или offline simulator и не доказывает поведение модели.
+- Каталог targeted skill scenarios содержит девять data-only inputs для независимого model review; он не содержит authored answers, runner, judge или offline simulator и не доказывает поведение модели.
 - Каталог release scenarios содержит ровно три unexecuted evidence targets; browser/device observations не автоматизируются.
 - Перед релизом вручную выполняются ровно два surface smoke checks: Chat web и mobile.
 - Статические HTML/CSS tests честно проверяют source contracts, но не называются browser layout, accessibility-engine или visual evidence.
