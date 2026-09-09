@@ -36,16 +36,17 @@ scenarios:
       - Verification remains none or is explicitly labelled ai_reviewed with its limits.
       - The user is told how to obtain real Codex validation without blocking ordinary planning.
 
-  - id: codex-valid-final-html
+  - id: codex-checked-draft-html
     surfaces: [codex]
-    context: The recorded trip data is consistent, while a timetable question and preparation actions remain open.
+    context: The trip is a draft with consistent recorded data; a timetable question and preparation actions remain open.
     user_prompt: >-
       Check the recorded trip data and prepare the itinerary HTML for the group now.
       Keep the open timetable question and preparation actions visible.
     observable_invariants:
-      - The check command runs against the selected canonical bundle before finalization.
-      - A valid final keeps verification_level and finalization_basis codex_validated.
-      - The artifact is self-contained HTML with the exact Codex Prepared copy label and no trip-feasibility guarantee.
+      - The check command runs against the selected canonical bundle before rendering.
+      - Successful checking may set verification_level codex_validated; document_status stays draft and finalization_basis stays null.
+      - The artifact is self-contained HTML labelled Draft; preparing or sharing a file does not imply permission to finalize.
+      - A finalization question, if appropriate at handoff, does not delay the requested draft HTML or change status before an explicit answer.
       - Open questions and saved concerns remain visible without requiring individual risk acceptance to issue the copy.
 
   - id: user-confirmed-final-with-blocker
@@ -56,17 +57,20 @@ scenarios:
       want a Final version now; keep the recheck visible for the rest of the group.
     observable_invariants:
       - The user-requested preparation basis does not pretend the schedule is known; codex_validated describes only an actual data check.
+      - The explicit request for Final authorizes that transition without another confirmation question and is recorded in decisions.md.
       - The acceptance record is explicit, auditable, and tied to the existing blocker.
       - The blocker remains blocking, unresolved, and visible in canonical state and HTML.
 
   - id: consented-kyoto-kanazawa-change
     surfaces: [codex]
-    context: A selected Japan route changes materially from Kyoto to Kanazawa.
+    context: A finalized Japan route changes materially from Kyoto to Kanazawa; the user has not selected a status for the revision.
     user_prompt: >-
       Replace our Kyoto stay with Kanazawa and update the itinerary. Show me what changes
       before you edit anything, then wait for my approval.
     observable_invariants:
       - Route, affected days, budget, and readiness consequences are explained before editing.
+      - The same approval question proposes returning the final plan to draft for the revision; status and canonical content stay unchanged while the decision is pending.
+      - An explicit choice to keep final is respected; choosing draft clears finalization_basis and a later final needs a new explicit user choice.
       - Canonical files change only after explicit consent and the decision is appended to decisions.md.
       - Only affected scope changes and every revised day keeps intent, cutoffs, scenarios, transport, context, and evidence.
 

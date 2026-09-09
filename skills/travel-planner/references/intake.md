@@ -6,4 +6,4 @@ Collect traveller details only when they change the plan: anonymous ID, age grou
 
 Keep hard constraints separate from preferences. Label assumptions and unknowns, especially dates, prices, availability, and high-stakes requirements. Create readiness actions for unknowns that can block entry, transport, lodging, or timed activities.
 
-If the user explicitly asks for a quick draft, use only known inputs, keep lifecycle status `draft`, show every important assumption/unknown, and attach a recheck or user-decision action. Otherwise continue collaboratively until the brief is sufficient to research useful alternatives.
+If the user explicitly asks for a quick draft, use only known inputs, show every important assumption/unknown, and attach a recheck or user-decision action. Otherwise continue collaboratively until the brief is sufficient to research useful alternatives. Both paths start with lifecycle status `draft`. A request for an HTML file, including a ready-to-share copy, keeps it `draft` until the user's explicit finalization choice under [lifecycle](verification-and-render.md#lifecycle).

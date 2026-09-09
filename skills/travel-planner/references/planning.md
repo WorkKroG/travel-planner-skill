@@ -132,7 +132,7 @@ itinerary.yaml:
 
 For each day, retain 1–3 available photographs of its main locations when useful. Store the ordered `days[].media` records and local `media/` files using the contract in [verification and render](verification-and-render.md). Preserve the source, licence, creator credit and purposeful alt text; label alternative-scenario locations clearly. Do not pad a one- or two-photo day to three, and leave media absent when no suitable image is available.
 
-Before editing a material user decision, follow this contract:
+Before editing a material user decision, follow this contract. For an existing final version, include the proposed return to draft in the same approval, following [lifecycle](verification-and-render.md#lifecycle); a status choice already given by the user needs no repeat question. Typographical and formatting corrections preserve the recorded status.
 
 | Case | Explain before edit | User gate | Update scope | Record |
 | --- | --- | --- | --- | --- |
