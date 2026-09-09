@@ -278,14 +278,9 @@ def test_day_contract_applies_to_initial_detail_and_material_change() -> None:
         "summary": {"load", "travel"},
         "checkpoints": {"checkpoint.check", "checkpoint.adjust_plan"},
         "scenarios": {"days[].timeline", "days[].scenarios[].timeline"},
-        "context": {"meal", "booking", "links", "alternatives"},
-        "evidence": {"linked_sources", "claim_status"},
-        "transport": {
-            "local_time",
-            "door_to_door",
-            "comfortable_alternative",
-            "budget_alternative",
-        },
+        "context": {"kind: meal", "title", "detail", "links[]", "alternatives[]"},
+        "evidence": {"source_ids[]", "claim_ids[]", "detail"},
+        "transport": {"time", "detail", "alternatives[]"},
     }
     assert actual == expected
 
