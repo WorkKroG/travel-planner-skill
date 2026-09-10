@@ -127,7 +127,7 @@ Print CSS сохраняет критический контент, lifecycle la
 - `pyproject.toml` только для внутренних/local helpers.
 - Node, `package.json`, axe и browser-driver dependencies отсутствуют.
 - Основные автоматические проверки: Python unit/integration tests, один deterministic Japan HTML reference/hash и минимальная contract validation каталогов.
-- Каталог targeted skill scenarios содержит девять data-only inputs для независимого model review; он не содержит authored answers, runner, judge или offline simulator и не доказывает поведение модели.
+- Каталог targeted skill scenarios содержит десять data-only inputs для независимого model review; он не содержит authored answers, runner, judge или offline simulator и не доказывает поведение модели.
 - Каталог release scenarios содержит ровно три unexecuted evidence targets; browser/device observations не автоматизируются.
 - Перед релизом вручную выполняются ровно два surface smoke checks: Chat web и mobile.
 - Статические HTML/CSS tests честно проверяют source contracts, но не называются browser layout, accessibility-engine или visual evidence.

@@ -4,7 +4,7 @@
 
 This is a checklist and evidence index, not a runner or an eval framework. Catalog entries remain `not_executed` until their named review or observation is actually performed.
 
-The current targeted catalog has nine inputs, including user reports and planning estimates. Historical review of eight inputs below does not validate the added input or later revisions. Current implementation checks are recorded in [project status](PROJECT_STATUS.md).
+The current targeted catalog has ten inputs, including user reports, planning estimates and luggage handling on lodging-change days. Historical review of eight inputs below does not validate the added inputs or later revisions. Current implementation checks are recorded in [project status](PROJECT_STATUS.md).
 
 ## Situation and entry reviews
 
