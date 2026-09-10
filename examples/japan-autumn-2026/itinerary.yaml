@@ -40,7 +40,7 @@ days:
     weather_sensitive: false
     booking_state: recheck
     timeline:
-      - {id: d1-arrival, period: afternoon, icon: plane, kind: transport, time: Днём, title: Прилёт и формальности, detail: "На паспортный контроль, багаж и выход из терминала заложить 90–150 минут.", links: [{label: Haneda Airport, url: "https://tokyo-haneda.com/en/access/train/index.html?tab=terminal3", kind: official, requires_internet: true}, {label: Narita Airport, url: "https://www.narita-airport.jp/en/access/train/", kind: official, requires_internet: true}]}
+      - {id: d1-arrival, period: afternoon, icon: plane, kind: transport, time: Днём, title: Прилёт и формальности, detail: "На паспортный контроль, багаж и выход из терминала заложить 90–150 минут — это оценка исходного плана, не подтверждённая длительность. Фактическое время прилёта и загрузка аэропорта неизвестны.", links: [{label: Haneda Airport, url: "https://tokyo-haneda.com/en/access/train/index.html?tab=terminal3", kind: official, requires_internet: true}, {label: Narita Airport, url: "https://www.narita-airport.jp/en/access/train/", kind: official, requires_internet: true}]}
       - id: d1-transfer-check
         period: "afternoon"
         kind: checkpoint
@@ -117,7 +117,7 @@ days:
         kind: transport
         time: "07:30"
         title: Limited Express до Kinugawa-Onsen и локальный поезд до Ryūōkyō
-        detail: Ориентир в пути 2 ч 20 мин–3 ч; конкретный поезд и пересадку подтвердить после публикации расписания.
+        detail: "Оценка исходного плана: 2 ч 20 мин–3 ч в поездах с пересадкой. Рейс на 07:30 и места не подтверждены. После выбора отеля добавить путь до станции, ожидание и пересадочный запас; сверить ноябрьское расписание у оператора."
         readiness_ids: [reserve-tobu-and-odoriko]
         links:
           - {label: Asakusa → Ryūōkyō, url: "https://www.google.com/maps/dir/?api=1&origin=Asakusa+Station&destination=Ryuo+Gorge&travelmode=transit&waypoints=Kinugawa-Onsen+Station", kind: route, requires_internet: true}
@@ -173,7 +173,7 @@ days:
         label: Короткий Рюокё
         summary: Петля 3–4 км при усталости или мокрой тропе с более ранним приездом в Nikko.
         timeline:
-          - {id: d2s-train, period: morning, icon: train, kind: transport, time: "07:30", title: Поезд до Ryūōkyō, detail: Сохранить основной утренний переезд., links: [{label: Asakusa → Ryūōkyō, url: "https://www.google.com/maps/dir/?api=1&origin=Asakusa+Station&destination=Ryuo+Gorge&travelmode=transit&waypoints=Kinugawa-Onsen+Station", kind: route, requires_internet: true}, {label: Расписание Tobu Limited Express, url: "https://www.tobu.co.jp/en/express_info/timetable.html", kind: official, requires_internet: true}]}
+          - {id: d2s-train, period: morning, icon: train, kind: transport, time: "07:30", title: Поезд до Ryūōkyō, detail: "Сохранить основной утренний переезд. 07:30 — плановый ориентир исходного маршрута; рейс, места, путь до станции и пересадочный запас ещё нужно подтвердить.", links: [{label: Asakusa → Ryūōkyō, url: "https://www.google.com/maps/dir/?api=1&origin=Asakusa+Station&destination=Ryuo+Gorge&travelmode=transit&waypoints=Kinugawa-Onsen+Station", kind: route, requires_internet: true}, {label: Расписание Tobu Limited Express, url: "https://www.tobu.co.jp/en/express_info/timetable.html", kind: official, requires_internet: true}], readiness_ids: ["reserve-tobu-and-odoriko"]}
           - {id: d2s-hike, period: morning, icon: mountain, kind: activity, time: "10:30–12:30", title: Короткая петля Рюокё, detail: Пройти 3–4 км и не продолжать на сложный участок., links: [{label: Ущелье Рюокё, url: "https://www.google.com/maps/search/?api=1&query=Ryuo+Gorge+Nikko", kind: map, requires_internet: true}, {label: Официальное описание маршрута, url: "https://www.visitnikko.jp/en/spots/ryuo-valley-hiking/", kind: official, requires_internet: true}]}
           - {id: d2s-lunch, period: afternoon, kind: meal, time: "13:00", title: Обед после прогулки, detail: Поесть до переезда в Nikko.}
           - {id: d2s-transfer, period: afternoon, kind: transport, time: "14:00", title: Ранний переезд в Nikko, detail: Использовать подтверждённый локальный поезд или заранее согласованное такси., links: [{label: Ryūōkyō → Tobu-Nikkō, url: "https://www.google.com/maps/dir/?api=1&origin=Ryuo+Gorge&destination=Tobu-Nikko+Station&travelmode=transit", kind: route, requires_internet: true}, {label: Расписание Tobu, url: "https://www.tobu.co.jp/en/express_info/timetable.html", kind: official, requires_internet: true}]}
@@ -254,7 +254,8 @@ days:
         kind: activity
         time: "09:30–13:00"
         title: Треккинг и packrafting
-        detail: Маршрут по защищённой части озера; специальное оборудование по исходному плану предоставляет оператор, но это нужно подтвердить.
+        claim_ids: ["claim-packrafting-slot"]
+        detail: "Слот 09:30–13:00 на 4 ноября для четверых пока не подтверждён. Маршрут проходит по защищённой части озера; предоставление оборудования записано в исходном плане, но независимо не проверено. До оплаты уточнить точку и время регистрации, экипировку, ограничения, погоду и условия отмены."
         readiness_ids: [reserve-packrafting]
         links:
           - {label: Lake Chūzenji, url: "https://www.google.com/maps/search/?api=1&query=Lake+Chuzenji+Nikko", kind: map, requires_internet: true}
@@ -266,7 +267,7 @@ days:
         kind: activity
         time: "14:00–16:15"
         title: British и Italian Embassy Villa Memorial Parks
-        detail: Посетить обе виллы и пройти связующий участок вдоль берега; режим работы перепроверить.
+        detail: "Посетить обе виллы и пройти связующий участок вдоль берега. 14:00–16:15 — плановое окно; актуальные часы и последний вход каждой виллы ещё не проверены. Уточнить их до выхода, при нехватке времени сократить прогулку."
         links:
           - {label: British Embassy Villa, url: "https://www.google.com/maps/search/?api=1&query=British+Embassy+Villa+Memorial+Park+Nikko", kind: map, requires_internet: true}
           - {label: Сайт British Embassy Villa, url: "https://www.nikko-nsm.co.jp/british.html", kind: official, requires_internet: true}
@@ -358,7 +359,7 @@ days:
         kind: transport
         time: "05:45"
         title: JR Nikko → Utsunomiya → Tokyo
-        detail: Ранний вариант сохраняет пересадочный запас; в Tokyo Station оставить не менее 25–35 минут.
+        detail: "05:45 — плановый ориентир, рейс и места не подтверждены. В исходном плане заложен запас 25–35 минут в Tokyo Station; проверить фактические платформы, ожидание и стык с Odoriko после выбора поездов."
         readiness_ids: [reserve-tobu-and-odoriko]
         links:
           - {label: JR Nikko → Tokyo, url: "https://www.google.com/maps/dir/?api=1&origin=JR+Nikko+Station&destination=Tokyo+Station&travelmode=transit&waypoints=Utsunomiya+Station", kind: route, requires_internet: true}
@@ -369,7 +370,8 @@ days:
         kind: transport
         time: "Около 09:00"
         title: Limited Express Odoriko до Izu-Atagawa
-        detail: Номер поезда и время являются ориентиром исходного плана и должны быть подтверждены после публикации расписания.
+        readiness_ids: ["reserve-tobu-and-odoriko"]
+        detail: "Около 09:00 — ориентир исходного плана, а не подтверждённый рейс. Сверить ноябрьское расписание, резервирование мест и пересадку в Tokyo; путь до отеля и местные переезды считать отдельно."
         links:
           - {label: Nikko → Izu-Atagawa, url: "https://www.google.com/maps/dir/?api=1&origin=JR+Nikko+Station&destination=Izu-Atagawa+Station&travelmode=transit&waypoints=Utsunomiya+Station%7CTokyo+Station", kind: route, requires_internet: true}
           - {label: Odoriko, url: "https://www.jreast.co.jp/en/multi/traininformation/odoriko/", kind: official, requires_internet: true}
@@ -448,7 +450,7 @@ days:
     booking_state: action_needed
     timeline:
       - {id: d5-breakfast-checkout, period: morning, icon: coffee, kind: lodging, time: "07:30", title: "Завтрак, выселение и багаж", detail: Оставить багаж у Izu-Kōgen Station или отправить в Hakone.}
-      - {id: d5-to-omuro, period: morning, icon: bus, kind: transport, time: "08:20", title: Автобус или такси к Mt Omuro, detail: Такси экономит около 20–30 минут и лучше связывает полный план., links: [{label: Izu-Kōgen → Mt Omuro, url: "https://www.google.com/maps/dir/?api=1&origin=Izu-Kogen+Station&destination=Mount+Omuro+Izu&travelmode=driving", kind: route, requires_internet: true}]}
+      - {id: d5-to-omuro, period: morning, icon: bus, kind: transport, time: "08:20", title: Автобус или такси к Mt Omuro, detail: "Такси экономит около 20–30 минут по оценке исходного плана; это сравнение ещё не проверено. Выбор зависит от адреса отеля, ожидания автобуса и времени подтверждённой мастерской.", links: [{label: Izu-Kōgen → Mt Omuro, url: "https://www.google.com/maps/dir/?api=1&origin=Izu-Kogen+Station&destination=Mount+Omuro+Izu&travelmode=driving", kind: route, requires_internet: true}]}
       - id: d5-omuro-check
         period: "morning"
         icon: "sun-cloud"
@@ -475,7 +477,8 @@ days:
         kind: activity
         time: "10:20–12:15"
         title: Одна ремесленная мастерская
-        detail: Выбрать стекло или керамику, но не обе; учесть время четырёх участников и доставку готового изделия.
+        claim_ids: ["claim-izu-craft-logistics"]
+        detail: "Мастерская и четыре места на 10:20–12:15 ещё не выбраны и не подтверждены. Выбрать стекло или керамику, но не обе; уточнить длительность для четверых и доставку готового изделия. До подтверждения это плановое окно."
         readiness_ids: [choose-izu-workshop]
         links:
           - {label: Izu Craft House, url: "https://www.izu-crafthouse.org/glassblowing.html", kind: official, requires_internet: true}
@@ -509,13 +512,13 @@ days:
           - id: d5-alt-omuro-lunch
             title: Omuro Keishokudo
             reason: Если выбрана стеклодувная мастерская.
-            detail: Рисовый set с wasabi и dashi рядом с Omuro; ориентир ¥1 800–2 200 на человека.
+            detail: "Рисовый set с wasabi и dashi рядом с Omuro; ориентир ¥1 800–2 200 на человека. Прямая официальная страница не подтверждена; работу и цены уточнить перед посещением."
             links:
               - {label: Omuro Keishokudo, url: "https://www.google.com/maps/search/?api=1&query=Omuro+Keishokudo+Izu", kind: map, requires_internet: true}
           - id: d5-alt-akazawa-lunch
             title: Shokujidokoro Akazawa
             reason: Если выбрана керамика в Hachimano Kiln.
-            detail: Soba, sazae rice или kinmedai; ориентир ¥1 200–2 700 на человека.
+            detail: "Soba, sazae rice или kinmedai; ориентир ¥1 200–2 700 на человека. Прямая официальная страница не подтверждена; работу и цены уточнить перед посещением."
             links:
               - {label: Shokujidokoro Akazawa, url: "https://www.google.com/maps/search/?api=1&query=Shokujidokoro+Akazawa+Izu", kind: map, requires_internet: true}
       - id: d5-jogasaki
@@ -540,13 +543,13 @@ days:
           - {label: Izu-Kōgen → Sengokuhara, url: "https://www.google.com/maps/dir/?api=1&origin=Izu-Kogen+Station&destination=Sengokuhara&travelmode=transit&waypoints=Atami+Station%7COdawara+Station", kind: route, requires_internet: true}
           - {label: Izukyu Line, url: "https://www.izukyu.co.jp/global_site/", kind: official, requires_internet: true}
           - {label: Hakone transport, url: "https://www.hakonenavi.jp/international/en/transportation/", kind: official, requires_internet: true}
-      - {id: d5-ryokan, period: evening, kind: lodging, time: "18:30–19:15", title: Прибытие в рёкан Hakone, detail: Время ужина должно допускать позднее прибытие; заранее согласовать с отелем., readiness_ids: [confirm-hakone-ryokan]}
+      - {id: d5-ryokan, period: evening, kind: lodging, time: "18:30–19:15", title: Прибытие в рёкан Hakone, detail: "18:30–19:15 — плановое время прибытия. Позднее заселение и ужин не подтверждены; крайнее время ужина неизвестно. Согласовать оба условия с рёканом до фиксации переезда; при раннем ужине потребуется пересмотреть выезд из Идзу.", readiness_ids: [confirm-hakone-ryokan]}
       - id: d5-dinner
         period: "evening"
         kind: meal
         time: После заселения
         title: Irori Chaya Sengokuhara
-        detail: Рыба и мясо у традиционного очага irori; ориентир ¥3 000–4 000 на человека. Позднее время нужно подтвердить после ответа рёкана.
+        detail: "Рыба и мясо у традиционного очага irori; ориентир ¥3 000–4 000 на человека. Позднее время нужно подтвердить после ответа рёкана. Прямая официальная страница не подтверждена; часы, наличие мест и цены уточнить перед посещением."
         links:
           - {label: Irori Chaya Sengokuhara, url: "https://www.google.com/maps/search/?api=1&query=Irori+Chaya+Sengokuhara+Hakone", kind: map, requires_internet: true}
     scenarios:
@@ -557,7 +560,7 @@ days:
         timeline:
           - {id: d5r-breakfast, period: morning, icon: coffee, kind: meal, time: "07:30", title: Завтрак, detail: Выселиться и оставить багаж.}
           - {id: d5r-omuro, period: morning, icon: mountain, kind: activity, time: "09:00–10:10", title: Mt Omuro, detail: Пройти круг по кратеру при работающем lift., links: [{label: Mt Omuro, url: "https://www.google.com/maps/search/?api=1&query=Mount+Omuro+Izu", kind: map, requires_internet: true}, {label: Режим lift, url: "https://omuroyama.com/index_en/information_en/", kind: official, requires_internet: true}]}
-          - {id: d5r-workshop, period: morning, icon: craft, kind: activity, time: "10:30–12:15", title: Выбранная мастерская, detail: Только одна подтверждённая сессия., links: [{label: Izu Craft House, url: "https://www.izu-crafthouse.org/glassblowing.html", kind: official, requires_internet: true}, {label: Izu Craft House на карте, url: "https://www.google.com/maps/search/?api=1&query=Izu+Craft+House", kind: map, requires_internet: true}, {label: Hachimano Kiln, url: "https://taiken-jp.com/yawata/experience_eng.html", kind: official, requires_internet: true}, {label: Hachimano Kiln на карте, url: "https://www.google.com/maps/search/?api=1&query=Hachimano+Kiln+Izu", kind: map, requires_internet: true}]}
+          - {id: d5r-workshop, period: morning, icon: craft, kind: activity, time: "10:30–12:15", title: Выбранная мастерская, detail: "Только одна сессия, подтверждённая к моменту поездки. Сейчас мастерская и четыре места не выбраны; 10:30–12:15 остаётся оценочным окном. Уточнить длительность и доставку изделия.", links: [{label: Izu Craft House, url: "https://www.izu-crafthouse.org/glassblowing.html", kind: official, requires_internet: true}, {label: Izu Craft House на карте, url: "https://www.google.com/maps/search/?api=1&query=Izu+Craft+House", kind: map, requires_internet: true}, {label: Hachimano Kiln, url: "https://taiken-jp.com/yawata/experience_eng.html", kind: official, requires_internet: true}, {label: Hachimano Kiln на карте, url: "https://www.google.com/maps/search/?api=1&query=Hachimano+Kiln+Izu", kind: map, requires_internet: true}], readiness_ids: ["choose-izu-workshop"], claim_ids: ["claim-izu-craft-logistics"]}
           - {id: d5r-lunch, period: afternoon, kind: meal, time: "12:15", title: Быстрый обед, detail: Не задерживать берег.}
           - {id: d5r-coast, period: afternoon, kind: activity, time: "13:00–14:30", title: Короткий Jogasaki, detail: Прогулка у Kadowaki без набора километража., links: [{label: Kadowaki Suspension Bridge, url: "https://www.google.com/maps/search/?api=1&query=Kadowaki+Suspension+Bridge+Jogasaki", kind: map, requires_internet: true}, {label: Jogasaki Coast, url: "https://b-izu.com/feature/post-17833/", kind: official, requires_internet: true}]}
           - {id: d5r-transfer, period: afternoon, kind: transport, time: "15:00", title: Ранний выезд в Hakone, detail: Ехать через Atami и Odawara., links: [{label: Izu-Kōgen → Sengokuhara, url: "https://www.google.com/maps/dir/?api=1&origin=Izu-Kogen+Station&destination=Sengokuhara&travelmode=transit&waypoints=Atami+Station%7COdawara+Station", kind: route, requires_internet: true}, {label: Izukyu Line, url: "https://www.izukyu.co.jp/global_site/", kind: official, requires_internet: true}]}
@@ -581,9 +584,9 @@ days:
         summary: Закрытые ремесленные активности, кафе и ранний онсэн без мокрых скал.
         timeline:
           - {id: d5w-breakfast, period: morning, icon: coffee, kind: meal, time: "08:00", title: Завтрак и выселение, detail: Отказаться от берегового километража.}
-          - {id: d5w-workshop-one, period: morning, icon: craft, kind: activity, time: "09:30", title: Первая мастерская, detail: Использовать подтверждённую сессию., links: [{label: Izu Craft House, url: "https://www.izu-crafthouse.org/glassblowing.html", kind: official, requires_internet: true}, {label: Izu Craft House на карте, url: "https://www.google.com/maps/search/?api=1&query=Izu+Craft+House", kind: map, requires_internet: true}, {label: Hachimano Kiln, url: "https://taiken-jp.com/yawata/experience_eng.html", kind: official, requires_internet: true}, {label: Hachimano Kiln на карте, url: "https://www.google.com/maps/search/?api=1&query=Hachimano+Kiln+Izu", kind: map, requires_internet: true}]}
+          - {id: d5w-workshop-one, period: morning, icon: craft, kind: activity, time: "09:30", title: Первая мастерская, detail: "Использовать сессию только после подтверждения. Сейчас мастерская и четыре места не выбраны; 09:30 — плановый ориентир, время работы и доставка изделия требуют уточнения.", links: [{label: Izu Craft House, url: "https://www.izu-crafthouse.org/glassblowing.html", kind: official, requires_internet: true}, {label: Izu Craft House на карте, url: "https://www.google.com/maps/search/?api=1&query=Izu+Craft+House", kind: map, requires_internet: true}, {label: Hachimano Kiln, url: "https://taiken-jp.com/yawata/experience_eng.html", kind: official, requires_internet: true}, {label: Hachimano Kiln на карте, url: "https://www.google.com/maps/search/?api=1&query=Hachimano+Kiln+Izu", kind: map, requires_internet: true}], readiness_ids: ["choose-izu-workshop"], claim_ids: ["claim-izu-craft-logistics"]}
           - {id: d5w-lunch, period: afternoon, kind: meal, time: "12:00", title: Обед и кафе, detail: Оставаться в закрытом помещении.}
-          - {id: d5w-workshop-two, period: afternoon, icon: craft, kind: activity, time: "13:00", title: Вторая мастерская или галерея, detail: "Добавлять только при наличии подтверждённого места; это погодный сценарий, а не основной выбор."}
+          - {id: d5w-workshop-two, period: afternoon, icon: craft, kind: activity, time: "13:00", title: Вторая мастерская или галерея, detail: "Добавлять только при наличии отдельно подтверждённых четырёх мест и времени на переезд; сейчас такой брони в данных нет. Это погодный сценарий, а не основной выбор.", readiness_ids: ["choose-izu-workshop"]}
           - {id: d5w-transfer, period: afternoon, kind: transport, time: "15:00", title: Ранний переезд в Hakone, detail: Использовать поезд и автобус с запасом., links: [{label: Izu-Kōgen → Sengokuhara, url: "https://www.google.com/maps/dir/?api=1&origin=Izu-Kogen+Station&destination=Sengokuhara&travelmode=transit&waypoints=Atami+Station%7COdawara+Station", kind: route, requires_internet: true}, {label: Izukyu Line, url: "https://www.izukyu.co.jp/global_site/", kind: official, requires_internet: true}]}
           - {id: d5w-checkin, period: evening, kind: lodging, time: Вечером, title: Заселение и онсэн, detail: Завершить активную часть дня.}
           - {id: d5w-dinner, period: evening, kind: meal, time: Вечером, title: Ужин, detail: По подтверждённому времени рёкана.}
@@ -701,7 +704,7 @@ days:
             kind: meal
             time: "12:30"
             title: Caffè Terrazza Ukai
-            detail: Итальянская кухня при Venetian Glass Museum; ориентир ¥3 000–5 000 на человека.
+            detail: "Итальянская кухня при Venetian Glass Museum; ориентир ¥3 000–5 000 на человека. Прямая официальная страница не подтверждена; работу и цены уточнить перед посещением."
             links:
               - {label: Caffè Terrazza Ukai, url: "https://www.google.com/maps/search/?api=1&query=Caffe+Terrazza+Ukai+Hakone", kind: map, requires_internet: true}
           - {id: d6a-yosegi, period: afternoon, icon: craft, kind: activity, time: "14:00", title: Мастерская ёсэги-дзайку, detail: Забронировать заранее; при слабом дожде вместо неё допустим Open-Air Museum.}
@@ -756,8 +759,8 @@ days:
           - {label: Sengokuhara → Gotemba, url: "https://www.google.com/maps/dir/?api=1&origin=Sengoku+Hakone&destination=Gotemba+Station&travelmode=transit", kind: route, requires_internet: true}
           - {label: Hakone transport, url: "https://www.hakonenavi.jp/international/en/transportation/", kind: official, requires_internet: true}
         alternatives:
-          - {id: d7-alt-taxi, title: Такси до Gotemba, reason: Если автобусный стык ненадёжен., detail: Полезно для четверых и сохраняет нужный региональный рейс., effort: низкая, links: [{label: Sengokuhara → Gotemba, url: "https://www.google.com/maps/dir/?api=1&origin=Sengoku+Hakone&destination=Gotemba+Station&travelmode=driving", kind: route, requires_internet: true}]}
-          - {id: d7-alt-car, title: Машина целиком до Kawaguchiko, reason: Если ранняя выдача e-bike важнее бюджета., detail: Ориентир около 90 минут без сильного трафика; цену запросить на всю группу., price: Неизвестно, links: [{label: Sengokuhara → Kawaguchiko, url: "https://www.google.com/maps/dir/?api=1&origin=Sengoku+Hakone&destination=Kawaguchiko+Station&travelmode=driving", kind: route, requires_internet: true}]}
+          - {id: d7-alt-taxi, title: Такси до Gotemba, reason: Если автобусный стык ненадёжен., detail: "Полезно для четверых и сохраняет нужный региональный рейс. Перевозчик пока не выбран; цену, посадку и наличие машины согласовать отдельно.", effort: низкая, links: [{label: Sengokuhara → Gotemba, url: "https://www.google.com/maps/dir/?api=1&origin=Sengoku+Hakone&destination=Gotemba+Station&travelmode=driving", kind: route, requires_internet: true}]}
+          - {id: d7-alt-car, title: Машина целиком до Kawaguchiko, reason: Если ранняя выдача e-bike важнее бюджета., detail: "Ориентир около 90 минут без сильного трафика; цену запросить на всю группу. Перевозчик пока не выбран; 90 минут — оценка исходного плана, не подтверждённый расчёт от отеля до отеля.", price: Неизвестно, links: [{label: Sengokuhara → Kawaguchiko, url: "https://www.google.com/maps/dir/?api=1&origin=Sengoku+Hakone&destination=Kawaguchiko+Station&travelmode=driving", kind: route, requires_internet: true}]}
       - {id: d7-gotemba-kawaguchiko, period: morning, icon: bus, kind: transport, time: "Около 09:30", title: Gotemba → Kawaguchiko, detail: Автобус около 75–100 минут с учётом трафика; расписание перепроверить., links: [{label: Gotemba → Kawaguchiko, url: "https://www.google.com/maps/dir/?api=1&origin=Gotemba+Station&destination=Kawaguchiko+Station&travelmode=transit", kind: route, requires_internet: true}, {label: Автобусы Fujikyu, url: "https://www.fujikyubus.co.jp/shuyu", kind: official, requires_internet: true}]}
       - id: d7-luggage-lunch
         period: "morning"
@@ -773,7 +776,8 @@ days:
         kind: activity
         time: "12:30–16:30"
         title: Круг или большая дуга вокруг Lake Kawaguchi на e-bike
-        detail: Oishi Park, северный берег и фотоостановки; полный круг менее 20 км. Часть дорог общая с машинами, шлем обязателен.
+        claim_ids: ["claim-ebike-availability"]
+        detail: "Четыре e-bike, шлемы и выдача/возврат на 12:30–16:30 пока не подтверждены. Согласовать класс велосипедов и крайнее время возврата с прокатом. Oishi Park, северный берег и фотоостановки; полный круг менее 20 км по исходному плану. Часть дорог общая с машинами, шлем обязателен."
         readiness_ids: [reserve-kawaguchiko-ebikes]
         links:
           - {label: Oishi Park, url: "https://www.google.com/maps/search/?api=1&query=Oishi+Park+Kawaguchiko", kind: map, requires_internet: true}
@@ -877,14 +881,15 @@ days:
         kind: transport
         time: "06:30"
         title: Kawaguchiko → trailhead Ryūgatake
-        detail: Для четверых такси 35–50 минут в одну сторону — основной устойчивый вариант; Blue Line подходит только при совпадающем расписании.
+        claim_ids: ["claim-ryugatake-conditions"]
+        detail: "Такси для четверых — основной вариант исходного плана; 35–50 минут в одну сторону — непроверенная оценка. Заказ и обратный вывоз ещё не подтверждены; добавить посадку, путь от отеля и запас. Blue Line подходит только при совпадающем опубликованном расписании."
         readiness_ids: [arrange-ryugatake-transfer]
         links:
           - {label: Kawaguchiko → Ryūgatake trailhead, url: "https://www.google.com/maps/dir/?api=1&origin=Kawaguchiko+Station&destination=Ryugatake+Trailhead&travelmode=driving", kind: route, requires_internet: true}
           - {label: Blue Line Fujikyu, url: "https://www.fujikyubus.co.jp/shuyu", kind: official, requires_internet: true}
         alternatives:
           - {id: d8-alt-blue-line, title: Blue Line до Motosuko, reason: Если опубликованный автобус даёт безопасное окно старта и возврата., detail: "Путь около 60–80 минут; обратный автобус нельзя пропускать, такси держать резервом.", price: Бюджетнее такси, links: [{label: Kawaguchiko → Motosuko, url: "https://www.google.com/maps/dir/?api=1&origin=Kawaguchiko+Station&destination=Motosuko+Tourist+Information+Center&travelmode=transit", kind: route, requires_internet: true}, {label: Blue Line Fujikyu, url: "https://www.fujikyubus.co.jp/shuyu", kind: official, requires_internet: true}]}
-          - {id: d8-alt-car, title: Аренда авто на день, reason: Если есть уверенный водитель для левостороннего движения., detail: "Даёт свободу после трека, но требует заранее забронированных машины, страховки и парковки.", booking: Требуется бронь, links: [{label: Kawaguchiko → Ryūgatake trailhead, url: "https://www.google.com/maps/dir/?api=1&origin=Kawaguchiko+Station&destination=Ryugatake+Trailhead&travelmode=driving", kind: route, requires_internet: true}]}
+          - {id: d8-alt-car, title: Аренда авто на день, reason: Если есть уверенный водитель для левостороннего движения., detail: "Даёт свободу после трека, но требует заранее забронированных машины, страховки и парковки. Прокат и право управления для водителя ещё не проверены; не считать машину забронированной.", booking: Требуется бронь, links: [{label: Kawaguchiko → Ryūgatake trailhead, url: "https://www.google.com/maps/dir/?api=1&origin=Kawaguchiko+Station&destination=Ryugatake+Trailhead&travelmode=driving", kind: route, requires_internet: true}]}
       - id: d8-ryugatake
         period: "morning"
         icon: "mountain"
@@ -952,7 +957,7 @@ days:
             kind: meal
             time: "12:30"
             title: Sakurai Udon
-            detail: Простой локальный Yoshida udon для дождевого культурного сценария; ориентир ¥450–500 на человека.
+            detail: "Простой локальный Yoshida udon для дождевого культурного сценария; ориентир ¥450–500 на человека. Прямая официальная страница не подтверждена; работу и цены уточнить перед посещением."
             links:
               - {label: Sakurai Udon, url: "https://www.google.com/maps/search/?api=1&query=Sakurai+Udon+Fujiyoshida", kind: map, requires_internet: true}
           - {id: d8r-textile, period: afternoon, icon: craft, kind: activity, time: "14:00", title: Текстильная мастерская, detail: Подтвердить место заранее.}
@@ -1007,14 +1012,14 @@ days:
         links:
           - {label: Menkyo Kaiden, url: "https://www.google.com/maps/search/?api=1&query=Menkyo+Kaiden+Fujiyoshida", kind: map, requires_internet: true}
           - {label: Menkyo Kaiden, url: "https://en.fujiyoshida.net/gourmet/index.php?p=121", kind: official, requires_internet: true}
-      - {id: d9-textile, period: afternoon, icon: craft, kind: activity, time: "13:30–15:30", title: Текстильная мастерская или старый Fujiyoshida, detail: Выбрать одну спокойную программу перед переездом., links: [{label: Старый Fujiyoshida, url: "https://www.google.com/maps/search/?api=1&query=Honcho+Street+Fujiyoshida", kind: map, requires_internet: true}]}
+      - {id: d9-textile, period: afternoon, icon: craft, kind: activity, time: "13:30–15:30", title: Текстильная мастерская или старый Fujiyoshida, detail: "Выбрать одну спокойную программу перед переездом. Конкретная мастерская и её официальный сайт ещё не выбраны; до бронирования уточнить программу, адрес и время.", links: [{label: Старый Fujiyoshida, url: "https://www.google.com/maps/search/?api=1&query=Honcho+Street+Fujiyoshida", kind: map, requires_internet: true}]}
       - id: d9-tokyo-transfer
         period: "afternoon"
         icon: "train"
         kind: transport
         time: "16:30"
         title: Kawaguchiko → Tokyo
-        detail: Fuji Excursion удобнее с багажом; поезд через Ōtsuki гибче. Автобус выбирать только с запасом на вечерний трафик.
+        detail: "16:30 — плановый ориентир; рейс и места ещё не подтверждены. Fuji Excursion удобнее с багажом, поезд через Ōtsuki гибче. Сверить расписание, ожидания, пересадку и путь до токийского отеля; автобус выбирать только с запасом на вечерний трафик."
         links:
           - {label: Fuji Excursion до Shinjuku, url: "https://www.google.com/maps/dir/?api=1&origin=Kawaguchiko+Station&destination=Shinjuku+Station&travelmode=transit", kind: route, requires_internet: true}
           - {label: Через Ōtsuki, url: "https://www.google.com/maps/dir/?api=1&origin=Kawaguchiko+Station&destination=Shinjuku+Station&travelmode=transit&waypoints=Otsuki+Station", kind: route, requires_internet: true}
@@ -1030,7 +1035,7 @@ days:
         summary: Перенести Ryūgatake или Kōyōdai на это утро и выехать в Tokyo сразу после спуска.
         timeline:
           - {id: d9c-checkout, period: morning, kind: lodging, time: "05:45", title: Раннее выселение, detail: Багаж оставить в отеле или у станции.}
-          - {id: d9c-transfer, period: morning, kind: transport, time: "06:30", title: Трансфер к trailhead, detail: Использовать заранее подтверждённое такси или транспорт., links: [{label: Kawaguchiko → Ryūgatake trailhead, url: "https://www.google.com/maps/dir/?api=1&origin=Kawaguchiko+Station&destination=Ryugatake+Trailhead&travelmode=driving", kind: route, requires_internet: true}, {label: Kawaguchiko → Kōyōdai, url: "https://www.google.com/maps/dir/?api=1&origin=Kawaguchiko+Station&destination=Koyodai+Yamanashi&travelmode=driving", kind: route, requires_internet: true}]}
+          - {id: d9c-transfer, period: morning, kind: transport, time: "06:30", title: Трансфер к trailhead, detail: "Использовать такси или транспорт только после подтверждения, включая обратный вывоз. Сейчас заказ не записан; 06:30 — плановый ориентир исходного маршрута. Согласовать его до выбора этого сценария.", links: [{label: Kawaguchiko → Ryūgatake trailhead, url: "https://www.google.com/maps/dir/?api=1&origin=Kawaguchiko+Station&destination=Ryugatake+Trailhead&travelmode=driving", kind: route, requires_internet: true}, {label: Kawaguchiko → Kōyōdai, url: "https://www.google.com/maps/dir/?api=1&origin=Kawaguchiko+Station&destination=Koyodai+Yamanashi&travelmode=driving", kind: route, requires_internet: true}], readiness_ids: ["arrange-ryugatake-transfer"], claim_ids: ["claim-ryugatake-conditions"]}
           - {id: d9c-hike, period: morning, icon: mountain, kind: activity, time: "07:30–12:00", title: Ryūgatake или Kōyōdai, detail: "Выбрать маршрут по погоде, силам и времени последующего переезда.", links: [{label: Mt Ryūgatake, url: "https://www.yamanashi-kankou.jp/kankou/spot/p1_4756.html", kind: official, requires_internet: true}, {label: Mt Ryūgatake на карте, url: "https://www.google.com/maps/search/?api=1&query=Mount+Ryugatake+Yamanashi", kind: map, requires_internet: true}, {label: Kōyōdai и Sankōdai, url: "https://www.city.fujiyoshida.yamanashi.jp/uploaded/attachment/1551.pdf", kind: official, requires_internet: true}, {label: Kōyōdai на карте, url: "https://www.google.com/maps/search/?api=1&query=Koyodai+Yamanashi", kind: map, requires_internet: true}]}
           - {id: d9c-snack, period: morning, kind: meal, time: На маршруте, title: Перекус, detail: Взять с собой.}
           - {id: d9c-lunch, period: afternoon, kind: meal, time: "12:30", title: Быстрый обед, detail: Не задерживать поезд в Tokyo.}
@@ -1098,7 +1103,8 @@ days:
         kind: activity
         time: "09:30"
         title: Metropolitan Area Outer Underground Discharge Channel
-        detail: Около 100 ступеней; возможна отмена из-за эксплуатации объекта. Бронирование и требования языка подтвердить.
+        claim_ids: ["claim-tokyo-bookable-access"]
+        detail: "G-Cans пока не выбран окончательно и не забронирован; 09:30 — плановый ориентир. По исходному описанию около 100 ступеней, возможна отмена из-за эксплуатации объекта. Подтвердить слот для четверых, регистрацию, языковые и физические требования; при отсутствии мест выбрать другой сценарий."
         readiness_ids: [choose-tokyo-nov-11]
         links:
           - {label: Бронирование G-Cans, url: "https://gaikaku.jp/apply/", kind: tickets, requires_internet: true}
@@ -1137,7 +1143,7 @@ days:
         timeline:
           - {id: d10j-breakfast, period: morning, icon: coffee, kind: meal, time: "07:30", title: Завтрак, detail: Выехать к Hamamatsuchō.}
           - {id: d10j-monorail, period: morning, icon: train, kind: transport, time: Утро, title: Monorail Local до Shin-Seibijō, detail: Rapid и Haneda Express на станции не останавливаются., links: [{label: Hamamatsuchō → Shin-Seibijō, url: "https://www.google.com/maps/dir/?api=1&origin=Hamamatsucho+Station&destination=Shin-Seibijo+Station&travelmode=transit", kind: route, requires_internet: true}, {label: Tokyo Monorail, url: "https://www.tokyo-monorail.co.jp/english/haneda-tokyo-access/index.html", kind: official, requires_internet: true}]}
-          - {id: d10j-museum, icon: museum, kind: activity, time: По брони, title: JAL Sky Museum, detail: "Музей и ангар техобслуживания, ориентир около 130 минут.", links: [{label: JAL Sky Museum, url: "https://www.jal.com/ja/kengaku/en/info/", kind: official, requires_internet: true}, {label: JAL Sky Museum на карте, url: "https://www.google.com/maps/search/?api=1&query=JAL+Sky+Museum", kind: map, requires_internet: true}]}
+          - {id: d10j-museum, icon: museum, kind: activity, time: По брони, title: JAL Sky Museum, detail: "Бронь JAL Sky Museum для четверых пока не записана. Музей и ангар техобслуживания; около 130 минут — оценка исходного плана. Подтвердить доступность, время входа, язык и требования до выбора этого сценария.", links: [{label: JAL Sky Museum, url: "https://www.jal.com/ja/kengaku/en/info/", kind: official, requires_internet: true}, {label: JAL Sky Museum на карте, url: "https://www.google.com/maps/search/?api=1&query=JAL+Sky+Museum", kind: map, requires_internet: true}], readiness_ids: ["choose-tokyo-nov-11"], claim_ids: ["claim-tokyo-bookable-access"]}
           - {id: d10j-lunch, kind: meal, time: После визита, title: Обед, detail: В районе залива.}
           - {id: d10j-afternoon, period: afternoon, icon: museum, kind: activity, time: Во второй половине дня, title: Sona Area или Edo-Tokyo Museum, detail: Выбрать одну точку по времени., links: [{label: Tokyo Rinkai Disaster Prevention Park, url: "https://www.tokyorinkai-koen.jp/en/index.php", kind: official, requires_internet: true}, {label: Sona Area на карте, url: "https://www.google.com/maps/search/?api=1&query=Tokyo+Rinkai+Disaster+Prevention+Park", kind: map, requires_internet: true}, {label: Edo-Tokyo Museum, url: "https://edo-tokyo-museum.or.jp/en/information/hours/", kind: official, requires_internet: true}, {label: Edo-Tokyo Museum на карте, url: "https://www.google.com/maps/search/?api=1&query=Edo-Tokyo+Museum", kind: map, requires_internet: true}]}
           - {id: d10j-dinner, period: evening, kind: meal, time: "18:00", title: Ужин, detail: Перед вечерним событием.}
@@ -1148,10 +1154,10 @@ days:
         summary: Urban kayak, Edo-Tokyo Museum и Edo Kiriko или кабуки.
         timeline:
           - {id: d10u-breakfast, period: morning, icon: coffee, kind: meal, time: "07:30", title: Завтрак, detail: Проверить погоду и точку старта.}
-          - {id: d10u-kayak, period: morning, kind: activity, time: Утро, title: Urban kayak по каналам, detail: Около 1 ч 40 мин и 3 км; зависит от оператора и погоды., links: [{label: Tokyo Kayak, url: "https://www.zacsports.com/tokyo-kayak-e.htm", kind: official, requires_internet: true}]}
+          - {id: d10u-kayak, period: morning, kind: activity, time: Утро, title: Urban kayak по каналам, detail: "Оператор и бронь для четверых пока не выбраны. Около 1 ч 40 мин и 3 км — оценки исходного плана. Уточнить слот, условия по погоде, экипировку и отмену до выбора этого сценария.", links: [{label: Tokyo Kayak, url: "https://www.zacsports.com/tokyo-kayak-e.htm", kind: official, requires_internet: true}], readiness_ids: ["choose-tokyo-nov-11"], claim_ids: ["claim-tokyo-bookable-access"]}
           - {id: d10u-lunch, period: afternoon, kind: meal, time: "12:30", title: Обед, detail: По пути к Ryōgoku.}
           - {id: d10u-museum, period: afternoon, icon: museum, kind: activity, time: "14:00", title: Edo-Tokyo Museum, detail: Подтвердить повторное открытие и часы., links: [{label: Edo-Tokyo Museum, url: "https://edo-tokyo-museum.or.jp/en/information/hours/", kind: official, requires_internet: true}, {label: Edo-Tokyo Museum на карте, url: "https://www.google.com/maps/search/?api=1&query=Edo-Tokyo+Museum", kind: map, requires_internet: true}]}
-          - {id: d10u-craft, period: afternoon, icon: craft, kind: activity, time: "16:30", title: Edo Kiriko, detail: Добавлять только при отдельной брони и достаточном времени., links: [{label: Sumida Edo Kiriko-kan, url: "https://www.gotokyo.org/en/workshop/sd016/index.html", kind: official, requires_internet: true}, {label: Sumida Edo Kiriko-kan на карте, url: "https://www.google.com/maps/search/?api=1&query=Sumida+Edo+Kiriko-kan", kind: map, requires_internet: true}]}
+          - {id: d10u-craft, period: afternoon, icon: craft, kind: activity, time: "16:30", title: Edo Kiriko, detail: "Добавлять только при отдельной брони и достаточном времени; сейчас мастерская и четыре места на 16:30 не подтверждены. Не считать эту сессию заменой брони на 12 ноября без отдельного решения.", links: [{label: Sumida Edo Kiriko-kan, url: "https://www.gotokyo.org/en/workshop/sd016/index.html", kind: official, requires_internet: true}, {label: Sumida Edo Kiriko-kan на карте, url: "https://www.google.com/maps/search/?api=1&query=Sumida+Edo+Kiriko-kan", kind: map, requires_internet: true}]}
           - {id: d10u-dinner, period: evening, kind: meal, time: Вечером, title: Ужин, detail: Завершить день в том же секторе города.}
       - id: d10-rain-city
         icon: "rain"
@@ -1211,13 +1217,14 @@ days:
         checkpoint:
           check: Официальный календарь подтверждает работу рынка, а путь к 05:30 реалистичен?
           adjust_plan: Перейти на сценарий без подъёма в 05:00 и начать с Edo-Tokyo Museum.
-      - {id: d11-toyosu-transfer, period: morning, kind: transport, time: "05:00", title: Такси или первый транспорт до Toyosu Market, detail: Такси — основной безопасный вариант до нормального движения; первые поезда допустимы только из подходящего района., links: [{label: Toyosu Market, url: "https://www.google.com/maps/search/?api=1&query=Toyosu+Market", kind: map, requires_internet: true}]}
+      - {id: d11-toyosu-transfer, period: morning, kind: transport, time: "05:00", title: Такси или первый транспорт до Toyosu Market, detail: "Такси — основной безопасный вариант до нормального движения; первые поезда допустимы только из подходящего района. Заказ такси, адрес отеля и время пути с посадкой пока неизвестны; 05:00 — плановый ориентир.", links: [{label: Toyosu Market, url: "https://www.google.com/maps/search/?api=1&query=Toyosu+Market", kind: map, requires_internet: true}]}
       - id: d11-auctions
         period: "morning"
         kind: activity
         time: "05:30–06:30"
         title: Торги тунцом
-        detail: Верхний коридор — основной доступ; нижняя площадка только при выигрыше заявки.
+        claim_ids: ["claim-toyosu-edo-access"]
+        detail: "Верхний коридор — основной вариант исходного плана; календарь и доступ на 12 ноября ещё не проверены. Нижняя площадка возможна только при успешной заявке, которой в данных нет. Перепроверить правила и сроки до раннего выезда."
         readiness_ids: [recheck-toyosu]
         links:
           - {label: Правила торгов Toyosu, url: "https://www.toyosu-market.or.jp/en/wholesale-auctions/", kind: official, requires_internet: true}
@@ -1242,7 +1249,8 @@ days:
         kind: activity
         time: "14:30–16:00"
         title: Edo Kiriko
-        detail: Вырезать узор на собственном стакане; англоязычную программу и четыре места подтвердить.
+        claim_ids: ["claim-toyosu-edo-access"]
+        detail: "Мастерская и четыре места на 14:30–16:00 пока не подтверждены. План — вырезать узор на собственном стакане; уточнить англоязычную программу, длительность, условия бронирования и получения изделия."
         readiness_ids: [confirm-edo-kiriko]
         links:
           - {label: Edo Kiriko workshop, url: "https://www.gotokyo.org/en/workshop/sd016/index.html", kind: official, requires_internet: true}
@@ -1255,7 +1263,7 @@ days:
         label: Гастрономический
         summary: Рынок, мастерская пищевых муляжей и дегустационный ужин.
         timeline:
-          - {id: d11g-transfer, period: morning, kind: transport, time: "05:00", title: Переезд в Toyosu, detail: Такси или подтверждённый первый поезд., links: [{label: Toyosu Market, url: "https://www.google.com/maps/search/?api=1&query=Toyosu+Market", kind: map, requires_internet: true}]}
+          - {id: d11g-transfer, period: morning, kind: transport, time: "05:00", title: Переезд в Toyosu, detail: "Такси или подтверждённый первый поезд. Заказ и путь от отеля пока не подтверждены; 05:00 — плановый ориентир.", links: [{label: Toyosu Market, url: "https://www.google.com/maps/search/?api=1&query=Toyosu+Market", kind: map, requires_internet: true}]}
           - {id: d11g-market, period: morning, kind: activity, time: "05:30–07:00", title: Торги и рынок, detail: Следовать фактическим правилам доступа., links: [{label: Правила торгов Toyosu, url: "https://www.toyosu-market.or.jp/en/wholesale-auctions/", kind: official, requires_internet: true}, {label: Toyosu Market на карте, url: "https://www.google.com/maps/search/?api=1&query=Toyosu+Market", kind: map, requires_internet: true}]}
           - {id: d11g-breakfast, period: morning, icon: coffee, kind: meal, time: "07:00", title: Завтрак на рынке, detail: Не превращать утро в длинный ресторанный блок.}
           - {id: d11g-rest, period: morning, kind: rest, time: "09:00", title: Отдых, detail: Вернуться в отель или сделать длинную паузу.}
@@ -1270,7 +1278,7 @@ days:
           - {id: d11n-breakfast, period: morning, icon: coffee, kind: meal, time: "08:30", title: Поздний завтрак, detail: В районе отеля.}
           - {id: d11n-museum, period: morning, icon: museum, kind: activity, time: "10:00", title: Edo-Tokyo Museum, detail: Основной исторический блок., links: [{label: Edo-Tokyo Museum, url: "https://edo-tokyo-museum.or.jp/en/information/hours/", kind: official, requires_internet: true}, {label: Edo-Tokyo Museum на карте, url: "https://www.google.com/maps/search/?api=1&query=Edo-Tokyo+Museum", kind: map, requires_internet: true}]}
           - {id: d11n-lunch, period: afternoon, kind: meal, time: "13:00", title: Обед, detail: В Ryōgoku.}
-          - {id: d11n-craft, period: afternoon, icon: craft, kind: activity, time: "14:30", title: Shunkaen Bonsai или Edo Kiriko, detail: Выбрать одну заранее подтверждённую мастерскую., links: [{label: Shunkaen Bonsai Museum, url: "https://kunio-kobayashi.com/en/", kind: official, requires_internet: true}, {label: Shunkaen на карте, url: "https://www.google.com/maps/search/?api=1&query=Shunkaen+Bonsai+Museum", kind: map, requires_internet: true}, {label: Sumida Edo Kiriko-kan, url: "https://www.gotokyo.org/en/workshop/sd016/index.html", kind: official, requires_internet: true}, {label: Sumida Edo Kiriko-kan на карте, url: "https://www.google.com/maps/search/?api=1&query=Sumida+Edo+Kiriko-kan", kind: map, requires_internet: true}]}
+          - {id: d11n-craft, period: afternoon, icon: craft, kind: activity, time: "14:30", title: Shunkaen Bonsai или Edo Kiriko, detail: "Выбрать Shunkaen Bonsai или Edo Kiriko, только одну программу. Сейчас конкретная мастерская и четыре места не подтверждены; 14:30 — плановый ориентир. Сверить адрес, длительность и условия до выбора сценария.", links: [{label: Shunkaen Bonsai Museum, url: "https://kunio-kobayashi.com/en/", kind: official, requires_internet: true}, {label: Shunkaen на карте, url: "https://www.google.com/maps/search/?api=1&query=Shunkaen+Bonsai+Museum", kind: map, requires_internet: true}, {label: Sumida Edo Kiriko-kan, url: "https://www.gotokyo.org/en/workshop/sd016/index.html", kind: official, requires_internet: true}, {label: Sumida Edo Kiriko-kan на карте, url: "https://www.google.com/maps/search/?api=1&query=Sumida+Edo+Kiriko-kan", kind: map, requires_internet: true}]}
           - {id: d11n-free, period: afternoon, kind: rest, time: "17:00", title: Свободное время и сборы, detail: Не добавлять новый район.}
           - {id: d11n-dinner, period: evening, kind: meal, time: "19:00", title: Финальный ужин, detail: По отдельной брони.}
     readiness_ids: [recheck-toyosu, confirm-edo-kiriko]
@@ -1324,7 +1332,7 @@ days:
         kind: transport
         time: "11:30"
         title: Выезд в Haneda Airport
-        detail: Keikyu удобен через Shinagawa, monorail — через Hamamatsuchō; такси для четверых возможно только с большим запасом на трафик.
+        detail: "11:30 — плановый выезд из исходного маршрута с целью прибыть к 12:40–13:00. Терминал, адрес отеля и путь от двери до терминала ещё не подтверждены. Keikyu — через Shinagawa, monorail — через Hamamatsuchō; учесть пешие участки, ожидание и пересадки. Для такси нужен запас на трафик."
         readiness_ids: [confirm-hnd-terminal]
         links:
           - {label: Keikyu до HND, url: "https://www.google.com/maps/dir/?api=1&origin=Shinagawa+Station&destination=Haneda+Airport&travelmode=transit", kind: route, requires_internet: true}
@@ -1335,14 +1343,14 @@ days:
           - {id: d12-alt-monorail, title: Tokyo Monorail, reason: Если удобно ехать через Hamamatsuchō., detail: В исходнике указан ориентир Airport Rapid около 13 минут от Hamamatsuchō; перепроверить., links: [{label: Hamamatsuchō → HND, url: "https://www.google.com/maps/dir/?api=1&origin=Hamamatsucho+Station&destination=Haneda+Airport&travelmode=transit", kind: route, requires_internet: true}, {label: Tokyo Monorail, url: "https://www.tokyo-monorail.co.jp/english/haneda-tokyo-access/index.html", kind: official, requires_internet: true}]}
           - {id: d12-alt-taxi, title: Такси или airport bus, reason: Если у четверых много багажа и предусмотрен дополнительный запас., detail: Автобус выбирать только при остановке у отеля; трафик может увеличить путь., effort: низкая, links: [{label: Tokyo → HND, url: "https://www.google.com/maps/dir/?api=1&origin=Tokyo+Station&destination=Haneda+Airport&travelmode=driving", kind: route, requires_internet: true}, {label: Airport Limousine, url: "https://www.limousinebus.co.jp/en/", kind: official, requires_internet: true}]}
       - {id: d12-airport, period: afternoon, kind: meal, time: "12:40", title: "Регистрация, контроль и обед", detail: "Сначала пройти формальности, затем есть и делать покупки.", links: [{label: Haneda Airport, url: "https://tokyo-haneda.com/en/access/train/index.html?tab=terminal3", kind: official, requires_internet: true}, {label: Haneda Airport на карте, url: "https://www.google.com/maps/search/?api=1&query=Haneda+Airport", kind: map, requires_internet: true}]}
-      - {id: d12-flight, period: afternoon, icon: plane, kind: transport, time: "15:40", title: Вылет из HND, detail: Время перенесено из исходного плана; номер рейса и терминал не указаны., links: [{label: Haneda Airport, url: "https://tokyo-haneda.com/en/access/train/index.html?tab=terminal3", kind: official, requires_internet: true}, {label: Haneda Airport на карте, url: "https://www.google.com/maps/search/?api=1&query=Haneda+Airport", kind: map, requires_internet: true}]}
+      - {id: d12-flight, period: afternoon, icon: plane, kind: transport, time: "15:40", title: Вылет из HND, detail: "По предоставленному пользователем плану вылет из HND 13 ноября в 15:40; независимо не проверено. Номер рейса и терминал неизвестны, статус покупки и оплаты билетов не указан. Подтвердить эти сведения перед фиксацией трансфера.", links: [{label: Haneda Airport, url: "https://tokyo-haneda.com/en/access/train/index.html?tab=terminal3", kind: official, requires_internet: true}, {label: Haneda Airport на карте, url: "https://www.google.com/maps/search/?api=1&query=Haneda+Airport", kind: map, requires_internet: true}], readiness_ids: ["confirm-hnd-terminal"], claim_ids: ["claim-departure-user-report"]}
     scenarios: []
     readiness_ids: [confirm-hnd-terminal]
     source_ids: [source-haneda, source-keikyu, source-monorail]
     last_checked: "2026-08-28"
 budget_items:
   - id: food-nov-3-10
-    category: Еда 3–10 ноября без алкоголя, завтраков в отелях и токийских ужинов после возвращения
+    category: Еда 3–10 ноября — оценка из предоставленного плана, цены заново не проверены. Без алкоголя, завтраков в отелях и токийских ужинов после возвращения; это не полный бюджет и не факт оплаты.
     amount_type: range
     amount_min: 43000
     amount_max: 63000
@@ -1352,6 +1360,7 @@ budget_items:
     reference_group_amount: 208000
     reference_group_size: 4
     confidence: low
+    detail: Диапазон ¥43 000–63 000 на человека перенесён как оценка из пользовательского плана; актуальные меню и расчёт заново не проверены. Учитывается только еда 3–10 ноября с указанными исключениями, а не полный бюджет поездки и не факт оплаты.
   - {id: lodging-budget, category: Проживание, amount_type: unknown, amount: null, currency: JPY, basis: per_group}
   - {id: transport-budget, category: Междугородний и локальный транспорт, amount_type: unknown, amount: null, currency: JPY, basis: per_person}
   - {id: activities-budget, category: Платные активности и мастерские, amount_type: unknown, amount: null, currency: JPY, basis: per_person}
