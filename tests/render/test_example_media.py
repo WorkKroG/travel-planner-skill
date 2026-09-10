@@ -21,7 +21,7 @@ def test_japan_example_retains_the_imported_day_photos_and_exact_html(tmp_path):
         assert hashlib.sha256((EXAMPLE / "media" / filename).read_bytes()).hexdigest() == digest
     output = tmp_path / "japan.html"
     assert main(["render", str(EXAMPLE), "--output", str(output), "--at",
-                 "2026-09-10T17:24:46+00:00"]) == 0
+                 "2026-09-10T20:06:57+00:00"]) == 0
     assert output.read_bytes() == (EXAMPLE / "outputs/itinerary.html").read_bytes()
     assert list(tmp_path.iterdir()) == [output]
     assert output.read_text().count('<figure class="day-photo"') == 18

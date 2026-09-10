@@ -239,7 +239,7 @@ Status pills have a current-color border, compact sentence-case text and semanti
 
 ### Navigation and Supporting Sections
 
-The closed contents disclosure uses a pale blue field and a bold summary with a menu icon. Its links form two columns on wide screens and one on compact screens. The route uses a horizontal sequence that becomes vertical on compact screens. Open decisions, preparation and risks use divided reading rows. Budget totals use a two-column summary and a yellow-headed table. The footer repeats document provenance in a blue field.
+The closed contents disclosure uses a pale blue field and a bold summary with a menu icon. Its links form two columns on wide screens and one on compact screens. The route uses a horizontal sequence that becomes vertical on compact screens. Each open decision has its own one-pixel cobalt outline, strongly rounded 2rem corners, pale blue field and a 1rem gap from its neighbours, following the user's 10 September request for oval-like framing. Padding adapts from 1rem to 1.5rem; the next action spans the full width below the affected days and deadline. In print, the outline remains with compact padding and a transparent background. Preparation and risks retain divided reading rows. Budget totals use a two-column summary and a yellow-headed table. The footer repeats document provenance in a blue field.
 
 ### Day Galleries
 

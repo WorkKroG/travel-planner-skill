@@ -73,6 +73,7 @@ Both catalogs remain data-only with `execution_status: not_executed`. Here `not_
 Record date, exact PR head, browser/version, artifact hash, result, and failures for each item. Static source tests do not satisfy this checklist.
 
 - [ ] Route bases appear once with dates/night counts; no repeated day summaries or day filters. Closed contents link by date/place to all day chapters, and the cover link skips directly to them.
+- [ ] Open decisions have separate rounded outlines, clear spacing and a full-width next action on desktop/mobile; outlines remain visible in print without background graphics.
 - [ ] Contents opens; a section link and day link land without obscured heading or focus.
 - [ ] Primary/alternative scenario switching works in both directions, supports Arrow/Home/End keys, and announces each state.
 - [ ] An induced enhancement failure leaves complete core content, both scenarios, and normal links readable with a concise notice.

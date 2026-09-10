@@ -489,12 +489,27 @@ button[aria-selected="true"] {
   list-style: none;
 }
 
-.decision-item,
 .blocker-item,
 .readiness-item,
 .risk-item {
   padding: var(--space-3) 0;
   border-top: 1px solid var(--line);
+}
+
+.decision-list {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.decision-item {
+  padding: clamp(1rem, 3vw, 1.5rem);
+  border: 1px solid var(--accent);
+  border-radius: 2rem;
+  background: var(--info-field);
+}
+
+.decision-item > .status {
+  margin-top: 0;
 }
 
 .blocker-item {
@@ -530,6 +545,10 @@ button[aria-selected="true"] {
   margin-top: var(--space-2);
   color: var(--ink-soft);
   font-size: 0.9rem;
+}
+
+.decision-details > :last-child {
+  grid-column: 1 / -1;
 }
 
 .days-section > h2 {
@@ -1289,6 +1308,12 @@ button[aria-selected="true"] {
 }
 
 @media print {
+  .decision-item {
+    padding: 4mm 5mm;
+    border-color: var(--ink);
+    background: transparent;
+  }
+
   @page {
     size: A4 portrait;
     margin: 16mm 14mm 18mm;
@@ -7655,7 +7680,7 @@ button[aria-selected="true"] {
     </main>
   </div>
 
-  <footer class="document-footer" id="document-version" data-document-status="draft" data-verification-level="codex_validated" data-finalization-basis="none"><strong>Япония в движении — 2–13 ноября 2026</strong> · japan-02-13-nov-2026 · Черновик — данные проверены в Codex · Целостность данных проверена в Codex · Создан 2026-09-10T17:24:46+00:00 · Артефакт v0.1</footer>
+  <footer class="document-footer" id="document-version" data-document-status="draft" data-verification-level="codex_validated" data-finalization-basis="none"><strong>Япония в движении — 2–13 ноября 2026</strong> · japan-02-13-nov-2026 · Черновик — данные проверены в Codex · Целостность данных проверена в Codex · Создан 2026-09-10T20:06:57+00:00 · Артефакт v0.1</footer>
   <script>(() => {
   "use strict";
 
