@@ -32,6 +32,23 @@ scenarios:
       - Situation and entry reviews stay explicitly unresolved with recheck actions, and document status stays draft.
       - No confirmation codes or payment documents are requested merely to fill evidence fields.
 
+  - id: lodging-change-with-day-activities
+    surfaces: [codex, chat_web, mobile]
+    context: A selected draft route changes hotels before an afternoon bicycle outing. Luggage details, hotel names and bag-storage arrangements are missing.
+    user_prompt: >-
+      Make this transfer day clear enough for our group to follow. Keep the overnight
+      bases and cycling plan. We leave the old hotel early, arrive in the next town
+      before lunch, cycle in the afternoon and check in afterwards. Ask what you need
+      to know and show a conditional draft; do not research or book services yet.
+    observable_invariants:
+      - Missing luggage details prompt a relevant question and remain unknown rather than becoming daypacks only; known answers are reused.
+      - The day shows checkout, bag drop or carrying, activities, collection and room check-in with applicable unknown windows and handling detours.
+      - Bag drop before room access is distinct from early check-in, and a booked room does not confirm storage or forwarding.
+      - Relevant main and fallback options include both drop-off and collection or delivery, with cost and capacity unknown unless supported.
+      - Forwarding remains conditional on willingness, delivery timing, receiving-hotel acceptance and what is carried until delivery; same-day arrival is not assumed.
+      - Conditions reach visible event and alternative text in existing fields; readiness alone does not replace the timeline, and no new event kind is introduced.
+      - The selected program and draft status are preserved; changes required by unresolved luggage arrangements are proposed, not silently executed.
+
   - id: resume-one-of-two-workspaces
     surfaces: [codex]
     context: Two valid trip workspaces are available in the current project.
