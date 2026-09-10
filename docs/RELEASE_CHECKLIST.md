@@ -1,25 +1,29 @@
 # Travel Planner 0.1.0 release evidence
 
-**Status:** source release candidate; public-directory submission is out of scope
+**Status:** final source release candidate; publication awaits the required Chat web and mobile observations
 
 This is a checklist and evidence index, not a runner or an eval framework. Catalog entries remain `not_executed` until their named review or observation is actually performed.
 
 The current targeted catalog has ten inputs, including user reports, planning estimates and luggage handling on lodging-change days. Historical review of eight inputs below does not validate the added inputs or later revisions. Current implementation checks are recorded in [project status](PROJECT_STATUS.md).
 
-## Compact route navigation
+## Current 0.1.0 candidate
 
-The current compact-route branch removes day-summary duplication and day filtering, while preserving full day chapters, scenario controls, readiness and concerns. The committed Japan example uses the new template; a separate local preview uses the latest Japan data from open PR #19. Full suite: **272 passed**; Ruff, dependency check, CLI help, skill validation, JS syntax and diff whitespace checks passed. A clean wheel installation reproduced the example exactly and matched all HTML assets; temporary init/check/render produce only HTML. Both Japan versions retain all 12 detailed chapters, photos and links, with valid anchor/ARIA/SVG references. Independent review found no P0–P2; P3 documentation findings were corrected. Manual browser/mobile/print checks below remain pending.
+The release branch is based on exact merged head `93f60189bff57bb44556bff0ef2b0ee2d31c3800`. Versions in the plugin manifest and Python package are both `0.1.0`. Full suite: **272 passed**; Ruff, dependency check, CLI help and diff whitespace checks passed. A clean wheel installation passed temporary `init`/`check`/`render`, reproduced the committed Japan HTML byte-for-byte and matched all packaged HTML assets. Skill and staged-plugin validation passed. The Japan artifact SHA-256 is `1b6a2ebac7ecd324acdf038dc29d485f78445ee3b268de0db3fde7b06f9e8ed8`.
+
+PR #19 is merged. The current Japan example contains the latest recording-workflow explanations and the compact route navigation from PR #21 while preserving 12 detailed chapters, 242 events, 30 local alternatives, 18 photographs and contextual links. Automated evidence does not replace the manual observations below.
+
+Only the Chat web and Mobile checks in **Cross-surface user observations** block publication. The other unchecked manual items record useful, non-blocking evidence backlog.
 
 ## Situation and entry reviews
 
-[PR #15](https://github.com/WorkKroG/travel-planner-skill/pull/15) added two explicit preparation reviews to the workflow and new trip template. Results or unknowns, actual review dates, contextual official links and mandatory recheck instructions remain visible in HTML/print. The Japan example deliberately leaves both reviews unresolved. That revision's full suite: **262 passed**; Ruff, dependency check, CLI help, skill validation and diff whitespace checks passed. Independent review found no actionable P0–P2 issues. A clean wheel installation passed temporary init/check/render smokes, created only HTML, reproduced the Japan output byte-for-byte and matched the installed schema/templates to source. This is not a live assessment of Japan, a visa eligibility check, background monitoring or browser QA.
+[PR #15](https://github.com/WorkKroG/travel-planner-skill/pull/15) added two explicit preparation reviews to the workflow and new trip template. Results or unknowns, actual review dates, contextual official links and mandatory recheck instructions remain visible in HTML/print. The current Japan example records a partial official-source review dated 9 September and keeps both items at `action_needed`; it does not establish November safety or visa eligibility for the travellers. That revision's full suite: **262 passed**; Ruff, dependency check, CLI help, skill validation and diff whitespace checks passed. Independent review found no actionable P0–P2 issues. A clean wheel installation passed temporary init/check/render smokes, created only HTML, reproduced the Japan output byte-for-byte and matched the installed schema/templates to source. This is not a live assessment of Japan, a visa eligibility check, background monitoring or browser QA.
 
 - [ ] Observe both preparation items in desktop/mobile and print, including “Not checked” and the recheck requirement.
 - [ ] In the manual route-building scenario, confirm missing traveller/transit details and unavailable official evidence stay unresolved; a completed review still retains recheck instructions.
 
 ## Historical HTML-only delivery verification (PR #14)
 
-[PR #14](https://github.com/WorkKroG/travel-planner-skill/pull/14) merged as `df6bf977705c585f54da96adb8b8ca55ef36820f`, removing separate materials lists and per-build inventories. Delivery is one HTML file; research discussion and citations remain in the available planning conversation. Its full suite: **251 passed**. Ruff, dependency check, CLI help, skill validation and diff whitespace checks passed. Independent source review: ready for PR, no P0–P2 findings; its stale visual-spec wording was corrected. Manual browser/mobile/print gates below remain pending.
+[PR #14](https://github.com/WorkKroG/travel-planner-skill/pull/14) merged as `df6bf977705c585f54da96adb8b8ca55ef36820f`, removing separate materials lists and per-build inventories. Delivery is one HTML file; research discussion and citations remain in the available planning conversation. Its full suite: **251 passed**. Ruff, dependency check, CLI help, skill validation and diff whitespace checks passed. Independent source review: ready for PR, no P0–P2 findings; its stale visual-spec wording was corrected. Manual browser/mobile/print observations below remain pending.
 
 The new wheel was built and installed in a clean temporary Python 3.12 environment. Temporary init/check/render smokes produce only HTML, and the installed package reproduces the unchanged Japan HTML byte-for-byte. No sources-report template is packaged.
 
