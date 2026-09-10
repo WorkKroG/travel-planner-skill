@@ -177,7 +177,6 @@ class SummaryView:
     date_range: str
     traveler_count: int
     thesis: str
-    route_text: str
     readiness_confirmed: int
     readiness_total: int
 
@@ -753,8 +752,6 @@ def build_view(
         ),
         traveler_count=len(state.brief.get("travelers", [])),
         thesis=_text(state.brief.get("trip_thesis"), _unknown(language)),
-        route_text=" → ".join(stop.name for stop in route)
-        or ("Маршрут не выбран" if language == "ru" else "Route not selected"),
         readiness_confirmed=sum(item.status == "confirmed" for item in readiness),
         readiness_total=len(readiness),
     )

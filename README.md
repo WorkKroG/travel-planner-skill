@@ -28,6 +28,8 @@ Availability of a source or local marketplace can vary by surface. The table des
 
 `brief.yaml.document_language` selects `en` or `ru` for the whole generated document. Prepared-copy labels and every other renderer-owned label follow that choice. They describe document preparation, not a verified trip.
 
+The itinerary has one compact sequence of overnight bases, dates and night counts, followed by complete day chapters. Collapsible contents link directly to each day by date and place. There is no repeated list of day summaries or day filtering; alternative scenario controls remain inside their days.
+
 ## Package and trip data
 
 This repository contains one plugin manifest and one skill tree:

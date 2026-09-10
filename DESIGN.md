@@ -12,6 +12,8 @@ colors:
   checkpoint-field: "#fff0b7"
   timeline-line: "#acbee0"
   info-field: "#e7efff"
+  decision-field: "#f7f8fa"
+  decision-line: "#c4cdd9"
   heading-line: "#c2a844"
   line: "#d6dddf"
   danger: "#8b3028"
@@ -165,7 +167,7 @@ The palette is sunny and legible, with deep blue text, clear cobalt actions and 
 ### Tertiary
 
 - **Danger / Danger Ink / Danger Field:** Reddish borders and pale notices distinguish saved blockers, conflicting information and draft or inconsistent lifecycle labels.
-- **Warning / Attention Ink / Attention Field:** Brown labels and yellow notices distinguish recheck, stale and unknown states, accepted concerns and unavailable-photo feedback.
+- **Warning / Attention Ink / Attention Field:** Brown labels and yellow notices distinguish warning, recheck, stale and unknown states, accepted concerns and unavailable-photo feedback. Warning pills use the ochre warning ink instead of inheriting the main blue text.
 - **Success / Success Field:** Green labels and pale green fills distinguish confirmed, ready and prepared-copy states; their text retains the specific meaning.
 
 ### Neutral
@@ -174,6 +176,7 @@ The palette is sunny and legible, with deep blue text, clear cobalt actions and 
 - **Ink:** Main text and major section rules.
 - **Soft Ink:** Explanations, dates, captions and metadata.
 - **Line:** Quiet list and table dividers.
+- **Decision Field / Decision Line:** Near-white cool gray and muted blue-gray outlines separate open decisions while the dark text remains the visual focus.
 
 **The Meaning in Text Rule.** Color supports explicit labels, icons and document structure; it never establishes a status or resolves an uncertainty by itself.
 
@@ -227,9 +230,11 @@ Major document surfaces and day openings have square edges. Buttons use restrain
 
 ### Buttons and Scenario Tabs
 
-Buttons have paper fill, ink text, a one-pixel timeline-colored border and a minimum height of 2.75rem. Hover, `aria-pressed="true"` and `aria-selected="true"` apply selected cobalt with white text. Keyboard focus has a three-pixel cobalt outline with a three-pixel offset; there is no animated lift or scaling.
+Buttons have paper fill, ink text, a one-pixel timeline-colored border and a minimum height of 2.75rem. Hover and `aria-selected="true"` apply selected cobalt with white text. Keyboard focus has a three-pixel cobalt outline with a three-pixel offset; there is no animated lift or scaling.
 
-The existing day filters cover all days, unresolved bookings, weather, transfers and warnings. Scenario tabs appear only when full alternatives exist. They retain text labels and semantic SVGs, `tablist` / `tab` / `tabpanel` relationships, selected state, roving focus, ArrowLeft/ArrowRight/Home/End navigation and polite live announcements. There is no search field or theme selector.
+The 10 September simplification shows the route once as a compact sequence of overnight bases with dates and recorded night counts. The sequence wraps on wide screens and uses short rows on narrow screens, without the former tall route markers. The cover's primary link goes directly to detailed days. Closed native contents provide date-and-place links; there is no separate day-summary list or day filtering.
+
+Scenario tabs appear only when full alternatives exist. They retain text labels and semantic SVGs, `tablist` / `tab` / `tabpanel` relationships, selected state, roving focus, ArrowLeft/ArrowRight/Home/End navigation and polite live announcements. There is no search field or theme selector. Removing the overview does not remove day introductions, travel/load facts, unresolved decisions or preparation actions.
 
 ### Status Labels and Notices
 
@@ -237,7 +242,7 @@ Status pills have a current-color border, compact sentence-case text and semanti
 
 ### Navigation and Supporting Sections
 
-The closed contents disclosure uses a pale blue field and a bold summary with a menu icon. Its links form two columns on wide screens and one on compact screens. The route uses a horizontal sequence that becomes vertical on compact screens. Open decisions, preparation and risks use divided reading rows. Budget totals use a two-column summary and a yellow-headed table. The footer repeats document provenance in a blue field.
+The closed contents disclosure uses a pale blue field and a bold summary with a menu icon. Its links form two columns on wide screens and one on compact screens. The route uses a horizontal sequence that becomes vertical on compact screens. Each open decision has its own one-pixel muted blue-gray outline, strongly rounded 2rem corners, near-white cool-gray field and a 1rem gap from its neighbours. This retains the user's oval-like framing while softening the background and separating warning labels from the blue text, as requested on 11 September. Padding adapts from 1rem to 1.5rem; the next action spans the full width below the affected days and deadline. In print, the outline remains with compact padding and a transparent background. Preparation and risks retain divided reading rows. Budget totals use a two-column summary and a yellow-headed table. The footer repeats document provenance in a blue field.
 
 ### Day Galleries
 
@@ -263,7 +268,7 @@ Checkpoint copy sits in a pale yellow text field beside a brown marker. A compac
 
 Without JavaScript, enhancement controls are hidden, all full timelines remain visible and event alternatives start expanded. The contents disclosure and anchors remain native controls. If enhancement initialization fails, the template has an explicit notice and restores scenario and alternative visibility. No external icon library, host global or browser runtime package is required.
 
-Print CSS uses A4 portrait, a white page, 10.5pt body text and clear rules. The cover and each day start separate page sections. Filters, scenario controls, contents and adjacent-day navigation are removed; all days, scenarios and event alternatives are included regardless of screen selection. Event context, practical event links, photo credits and document provenance are printed. Research lists and the full-URL appendix are absent from both screen and print. Critical groups avoid internal page breaks, and table layout is restored.
+Print CSS uses A4 portrait, a white page, 10.5pt body text and clear rules. The cover and each day start separate page sections. Scenario controls, contents and adjacent-day navigation are removed; the compact base sequence, all days, scenarios and event alternatives are included regardless of screen selection. Event context, practical event links, photo credits and document provenance are printed. Research lists and the full-URL appendix are absent from both screen and print. Critical groups avoid internal page breaks, and table layout is restored.
 
 Gallery printing follows the existing print-images option. When enabled, one photo fills its row and multiple photos use two columns; images preserve their full proportions, lose rounded corners and keep caption, linked attribution and license. This is browser Print behavior, with PDF saving performed by the reader.
 

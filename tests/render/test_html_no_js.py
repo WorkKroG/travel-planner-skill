@@ -124,8 +124,6 @@ def test_print_static_css_keeps_both_scenarios_and_removes_interactive_chrome(
     assert "display: block !important" in html
     assert ".interactive-controls" in html
     assert "display: none !important" in html
-    assert "article[data-day][hidden]" in html
-    assert ".day-overview li[hidden]" in html
     print_css = html[html.index("@media print") :]
     assert_css_rule(print_css, CRITICAL_PRINT_SELECTORS, {"break-inside": "avoid"})
     assert_css_rule(

@@ -15,6 +15,8 @@
   --checkpoint-field: #fff0b7;
   --timeline-line: #acbee0;
   --info-field: #e7efff;
+  --decision-field: #f7f8fa;
+  --decision-line: #c4cdd9;
   --heading-line: #c2a844;
   --line: #d6dddf;
   --danger: #8b3028;
@@ -143,7 +145,6 @@ h1,
 h2,
 h3,
 .trip-thesis,
-.route-ribbon,
 .decision-question {
   font-family: var(--display);
   font-weight: 750;
@@ -257,6 +258,11 @@ li {
   background: var(--attention-field);
 }
 
+.status--warning {
+  color: var(--warning);
+  background: var(--attention-field);
+}
+
 .verification-line,
 .feasibility-note {
   color: var(--ink-soft);
@@ -285,17 +291,6 @@ li {
   letter-spacing: 0;
 }
 
-.route-ribbon {
-  display: flex;
-  gap: var(--space-2);
-  align-items: center;
-  margin: var(--space-3) 0;
-  padding-block: var(--space-3);
-  border-block: 1px solid var(--heading-line);
-  font-size: clamp(1.25rem, 2.8vw, 1.75rem);
-  line-height: 1.45;
-  color: var(--accent);
-}
 
 .summary-links a,
 .hero-fact a {
@@ -411,29 +406,28 @@ main {
 }
 
 .route-sequence {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-  margin: var(--space-4) 0 var(--space-6);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3) 2.5rem;
+  margin: var(--space-3) 0 0;
   padding: 0;
   list-style: none;
 }
 
 .route-stop {
   position: relative;
-  min-height: 8rem;
-  padding: var(--space-2) var(--space-3) var(--space-2) 0;
-  border-top: 2px solid var(--accent);
+  max-width: 100%;
 }
 
 .route-stop:not(:last-child)::after {
   content: "";
   position: absolute;
-  top: -0.45rem;
-  right: 0;
-  width: 0.8rem;
-  height: 0.8rem;
-  border-top: 2px solid var(--ink);
-  border-right: 2px solid var(--ink);
+  top: 0.4rem;
+  right: -1.35rem;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-top: 1px solid var(--accent);
+  border-right: 1px solid var(--accent);
   transform: rotate(45deg);
 }
 
@@ -443,7 +437,7 @@ main {
 }
 
 .route-stop strong {
-  font: 600 1.35rem/1.25 var(--display);
+  font: 600 1.125rem/1.4 var(--display);
 }
 
 .route-stop span {
@@ -459,13 +453,6 @@ main {
   display: flex;
 }
 
-.interactive-controls:not(.scenario-tabs) {
-  flex-direction: column;
-  gap: var(--space-2);
-  margin: var(--space-4) 0 var(--space-2);
-}
-
-.filters,
 .scenario-tabs {
   display: flex;
   flex-wrap: wrap;
@@ -489,55 +476,12 @@ button {
 }
 
 button:hover,
-button[aria-pressed="true"],
 button[aria-selected="true"] {
   background: var(--selected);
   border-color: var(--selected);
   color: #fff;
 }
 
-.filter-feedback {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--space-2);
-  color: var(--ink-soft);
-  font-size: 0.9rem;
-}
-
-.filter-feedback p {
-  margin: 0;
-}
-
-.day-overview {
-  margin: 0;
-  padding: 0;
-  border-bottom: 1px solid var(--ink);
-  list-style: none;
-}
-
-.day-overview a {
-  display: grid;
-  grid-template-columns: 3.5rem minmax(7rem, 0.85fr) minmax(0, 2fr);
-  gap: var(--space-2);
-  min-height: var(--control);
-  align-items: center;
-  padding: 0.8rem 0;
-  border-top: 1px solid var(--line);
-  color: var(--ink);
-  text-decoration: none;
-}
-
-.day-overview strong {
-  font-variant-numeric: tabular-nums;
-}
-
-.day-overview small {
-  grid-column: 3;
-  color: var(--ink-soft);
-  font-size: 0.875rem;
-}
-
-.day-overview a:hover,
 .contents a:hover {
   background: var(--info-field);
   color: var(--accent);
@@ -552,12 +496,27 @@ button[aria-selected="true"] {
   list-style: none;
 }
 
-.decision-item,
 .blocker-item,
 .readiness-item,
 .risk-item {
   padding: var(--space-3) 0;
   border-top: 1px solid var(--line);
+}
+
+.decision-list {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.decision-item {
+  padding: clamp(1rem, 3vw, 1.5rem);
+  border: 1px solid var(--decision-line);
+  border-radius: 2rem;
+  background: var(--decision-field);
+}
+
+.decision-item > .status {
+  margin-top: 0;
 }
 
 .blocker-item {
@@ -593,6 +552,10 @@ button[aria-selected="true"] {
   margin-top: var(--space-2);
   color: var(--ink-soft);
   font-size: 0.9rem;
+}
+
+.decision-details > :last-child {
+  grid-column: 1 / -1;
 }
 
 .days-section > h2 {
@@ -1192,39 +1155,19 @@ button[aria-selected="true"] {
   }
 
   .route-sequence {
-    grid-template-columns: 1fr;
+    flex-direction: column;
+    gap: var(--space-2);
   }
 
   .route-stop {
-    min-height: 0;
-    padding: var(--space-2) 0 var(--space-3) var(--space-3);
-    border-top: 0;
-    box-shadow: inset 3px 0 0 var(--ink);
-  }
-
-  .route-stop::before {
-    content: "";
-    position: absolute;
-    top: 1.2rem;
-    left: -0.42rem;
-    width: 0.7rem;
-    height: 0.7rem;
-    border: 2px solid var(--danger);
-    border-radius: 50%;
-    background: var(--paper);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 0.75rem;
   }
 
   .route-stop:not(:last-child)::after {
     display: none;
-  }
-
-  .day-overview a {
-    grid-template-columns: 3.4rem minmax(0, 1fr);
-  }
-
-  .day-overview span:nth-child(3),
-  .day-overview small {
-    grid-column: 2;
   }
 
   .document-section,
@@ -1372,6 +1315,12 @@ button[aria-selected="true"] {
 }
 
 @media print {
+  .decision-item {
+    padding: 4mm 5mm;
+    border-color: var(--ink);
+    background: transparent;
+  }
+
   @page {
     size: A4 portrait;
     margin: 16mm 14mm 18mm;
@@ -1451,14 +1400,6 @@ button[aria-selected="true"] {
 
   .event-alternatives-print {
     display: block;
-  }
-
-  article[data-day][hidden] {
-    display: block !important;
-  }
-
-  .day-overview li[hidden] {
-    display: list-item !important;
   }
 
   .document-section,
@@ -1640,12 +1581,12 @@ button[aria-selected="true"] {
 }
 </style>
 </head>
-<body class="print-images" data-days-shown-copy="Показано дней: {count}." data-scenario-shown-copy="Показан сценарий «{label}».">
+<body class="print-images" data-scenario-shown-copy="Показан сценарий «{label}».">
   <!--
   THESIS: A bright, readable travel guide with destination openings and a continuous chronological line.
   OWN-WORLD: Lemon headers, warm paper, cobalt actions, strong sans-serif titles, small outline icons, yellow checkpoints and blue closing fields.
   STORY: Readers understand the trip, scan unresolved choices, then follow one chronological timeline per day and open context only where it belongs.
-  FIRST VIEWPORT: Trip identity and text route lead inside a bounded reading sheet; readiness, expenses, and saved blockers follow as calm document facts.
+  FIRST VIEWPORT: Trip identity leads inside a bounded reading sheet; readiness, expenses, and saved blockers follow as calm document facts. A single compact base sequence precedes the full day chapters.
   FORM: Full reading document in the user-approved Lemon and Cobalt composition, 2026-09-07.
   FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
   -->
@@ -1692,10 +1633,9 @@ button[aria-selected="true"] {
       <p class="verification-line"><strong>Уровень проверки:</strong> Целостность данных проверена в Codex</p>
       <h1>Япония в движении — 2–13 ноября 2026</h1>
       <p class="trip-thesis">12 дней между ущельями Никко, вулканическим побережьем Идзу, Хаконэ, Фудзи и двумя полноценными днями в Токио. Время в программе — плановые ориентиры исходного маршрута; отдельно отмечено заявленное время вылета. Все часы местные для Японии.</p>
-      <p class="route-ribbon"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg>Tokyo → Nikko → Izu-Kōgen → Sengokuhara → Kawaguchiko → Tokyo</p>
       <p class="feasibility-note">Подготовка документа и проверка записанных данных не подтверждают выполнимость поездки. Открытые решения и замечания сохранены ниже.</p>
       <div class="summary-links">
-        <a href="#route-overview">Посмотреть все дни</a>
+        <a href="#detailed-days">Посмотреть все дни</a>
         <a href="#open-decisions">4 открытых решений</a>
       </div>
     </div>
@@ -1721,10 +1661,10 @@ button[aria-selected="true"] {
         <ol>
           <li><a href="#trip-summary">О поездке</a></li>
           <li><a href="#blockers">Блокеры</a></li>
-          <li><a href="#route-overview">Маршрут и дни</a></li>
+          <li><a href="#route-overview">Маршрут и ночёвки</a></li>
           <li><a href="#open-decisions">Открытые решения</a></li>
           <li><a href="#detailed-days">Дни подробно</a></li>
-<li class="day-link"><a href="#day-1">День 1 · Tokyo</a></li><li class="day-link"><a href="#day-2">День 2 · Tokyo → Ryūōkyō → Nikko</a></li><li class="day-link"><a href="#day-3">День 3 · Nikko ↔ Lake Chūzenji</a></li><li class="day-link"><a href="#day-4">День 4 · Nikko → Izu-Atagawa → Izu-Kōgen</a></li><li class="day-link"><a href="#day-5">День 5 · Izu-Kōgen → Mt Omuro → Jogasaki → Sengokuhara</a></li><li class="day-link"><a href="#day-6">День 6 · Hakone</a></li><li class="day-link"><a href="#day-7">День 7 · Sengokuhara → Gotemba → Kawaguchiko</a></li><li class="day-link"><a href="#day-8">День 8 · Kawaguchiko ↔ Lake Motosu</a></li><li class="day-link"><a href="#day-9">День 9 · Fujiyoshida → Tokyo</a></li><li class="day-link"><a href="#day-10">День 10 · Tokyo и Kasukabe</a></li><li class="day-link"><a href="#day-11">День 11 · Toyosu → Ryōgoku → Tokyo</a></li><li class="day-link"><a href="#day-12">День 12 · Tokyo → Haneda Airport</a></li>          <li><a href="#preparation">Подготовка</a></li>
+<li class="day-link"><a href="#day-1">2 ноября 2026 · Tokyo</a></li><li class="day-link"><a href="#day-2">3 ноября 2026 · Tokyo → Ryūōkyō → Nikko</a></li><li class="day-link"><a href="#day-3">4 ноября 2026 · Nikko ↔ Lake Chūzenji</a></li><li class="day-link"><a href="#day-4">5 ноября 2026 · Nikko → Izu-Atagawa → Izu-Kōgen</a></li><li class="day-link"><a href="#day-5">6 ноября 2026 · Izu-Kōgen → Mt Omuro → Jogasaki → Sengokuhara</a></li><li class="day-link"><a href="#day-6">7 ноября 2026 · Hakone</a></li><li class="day-link"><a href="#day-7">8 ноября 2026 · Sengokuhara → Gotemba → Kawaguchiko</a></li><li class="day-link"><a href="#day-8">9 ноября 2026 · Kawaguchiko ↔ Lake Motosu</a></li><li class="day-link"><a href="#day-9">10 ноября 2026 · Fujiyoshida → Tokyo</a></li><li class="day-link"><a href="#day-10">11 ноября 2026 · Tokyo и Kasukabe</a></li><li class="day-link"><a href="#day-11">12 ноября 2026 · Toyosu → Ryōgoku → Tokyo</a></li><li class="day-link"><a href="#day-12">13 ноября 2026 · Tokyo → Haneda Airport</a></li>          <li><a href="#preparation">Подготовка</a></li>
           <li><a href="#budget">Расходы</a></li>
           <li><a href="#risks">Риски и запасные планы</a></li>
         </ol>
@@ -1751,38 +1691,14 @@ button[aria-selected="true"] {
       </section>
 
       <section class="document-section" id="route-overview" aria-labelledby="route-title">
-        <h2 id="route-title">Обзор маршрута и дней</h2>
+        <h2 id="route-title">Маршрут и ночёвки</h2>
         <ol class="route-sequence">
-          <li class="route-stop"><strong>Tokyo</strong><span>2–3 ноября · 1 ночей</span><span>Прилёт и ранний выезд в Никко</span></li>
-          <li class="route-stop"><strong>Nikko</strong><span>3–5 ноября · 2 ночей</span><span>Tobu/JR и локальные автобусы</span></li>
-          <li class="route-stop"><strong>Izu-Kōgen</strong><span>5–6 ноября · 1 ночей</span><span>Через Tokyo и Izu-Atagawa</span></li>
-          <li class="route-stop"><strong>Sengokuhara</strong><span>6–8 ноября · 2 ночей</span><span>Через Atami и Odawara</span></li>
-          <li class="route-stop"><strong>Kawaguchiko</strong><span>8–10 ноября · 2 ночей</span><span>Через Gotemba</span></li>
-          <li class="route-stop"><strong>Tokyo</strong><span>10–13 ноября · 3 ночей</span><span>Fuji Excursion или поезд через Ōtsuki</span></li>
-        </ol>
-        <div class="interactive-controls" aria-label="Фильтр дней">
-          <div class="filters" aria-label="Фильтр дней">
-            <button type="button" data-filter="all" aria-pressed="true">Все дни</button>
-            <button type="button" data-filter="unresolved" aria-pressed="false">Не решено</button>
-            <button type="button" data-filter="weather" aria-pressed="false">Зависит от погоды</button>
-            <button type="button" data-filter="transfer" aria-pressed="false">Переезды</button>
-            <button type="button" data-filter="warning" aria-pressed="false">Контрольные точки</button>
-          </div>
-          <div class="filter-feedback"><p data-filter-results>Показано дней: 12.</p><p data-filter-empty hidden>Подходящих дней нет. <button type="button" data-reset-filters>Сбросить фильтры</button></p></div>
-        </div>
-        <ol class="day-overview">
-          <li data-day-overview="day-1"><a href="#day-1"><strong>День 1</strong><span>2 ноября 2026 · понедельник</span><span>Tokyo — Пройти формальности, спокойно добраться до отеля и сохранить силы для раннего выезда.</span><small>Аэропорт → район проживания в Tokyo; аэропорт прилёта ещё не указан · лёгкая нагрузка · перепроверить</small></a></li>
-          <li data-day-overview="day-2"><a href="#day-2"><strong>День 2</strong><span>3 ноября 2026 · вторник</span><span>Tokyo → Ryūōkyō → Nikko — Пройти ущелье Рюокё с запасом светового времени и переехать на ночёвку в Nikko.</span><small>Limited Express и локальные поезда; тропа по корням, камням и влажным ступеням · high нагрузка · перепроверить</small></a></li>
-          <li data-day-overview="day-3"><a href="#day-3"><strong>День 3</strong><span>4 ноября 2026 · среда</span><span>Nikko ↔ Lake Chūzenji — Совместить прогулку и packrafting на озере с двумя мемориальными виллами, сохранив погодный план B.</span><small>Автобус Oku-Nikkō и пешие переходы у озера · high нагрузка · требуется действие</small></a></li>
-          <li data-day-overview="day-4"><a href="#day-4"><strong>День 4</strong><span>5 ноября 2026 · четверг</span><span>Nikko → Izu-Atagawa → Izu-Kōgen — Защитить длинный переезд через Tokyo и оставить достаточно времени на Banana-Wani-En и отдых.</span><small>JR Nikko → Utsunomiya → Tokyo → Izu-Atagawa → Izu-Kōgen · high нагрузка · перепроверить</small></a></li>
-          <li data-day-overview="day-5"><a href="#day-5"><strong>День 5</strong><span>6 ноября 2026 · пятница</span><span>Izu-Kōgen → Mt Omuro → Jogasaki → Sengokuhara — Совместить Mt Omuro, одну ремесленную мастерскую и 4–6 км побережья, не рискуя переездом в Hakone.</span><small>Такси или автобус по Идзу, затем поезд через Atami/Odawara и автобус в Sengokuhara · high нагрузка · требуется действие</small></a></li>
-          <li data-day-overview="day-6"><a href="#day-6"><strong>День 6</strong><span>7 ноября 2026 · суббота</span><span>Hakone — Выбрать утром один из трёх полноценных сценариев Хаконэ по видимости, ветру и состоянию троп.</span><small>Локальные автобусы и такси; в основном сценарии хайкинг Mt Kintoki · high нагрузка · перепроверить</small></a></li>
-          <li data-day-overview="day-7"><a href="#day-7"><strong>День 7</strong><span>8 ноября 2026 · воскресенье</span><span>Sengokuhara → Gotemba → Kawaguchiko — Переехать через Gotemba, пройти озеро на e-bike и завершить день у вечерней подсветки кленов.</span><small>Два автобуса или такси до Gotemba; затем e-bike и пешая прогулка · средняя нагрузка · требуется действие</small></a></li>
-          <li data-day-overview="day-8"><a href="#day-8"><strong>День 8</strong><span>9 ноября 2026 · понедельник</span><span>Kawaguchiko ↔ Lake Motosu — Отдать главное ясное утро активному маршруту с видом на Fuji и вернуться без второй серьёзной нагрузки.</span><small>Раннее такси или редкий Blue Line до старта Ryūgatake · high нагрузка · требуется действие</small></a></li>
-          <li data-day-overview="day-9"><a href="#day-9"><strong>День 9</strong><span>10 ноября 2026 · вторник</span><span>Fujiyoshida → Tokyo — Использовать день как культурное продолжение у Fuji или резерв ясного окна, затем выехать в Tokyo не позднее безопасного времени.</span><small>Локальный транспорт и поезд Fuji Excursion или пересадка в Ōtsuki · средняя нагрузка · перепроверить</small></a></li>
-          <li data-day-overview="day-10"><a href="#day-10"><strong>День 10</strong><span>11 ноября 2026 · среда</span><span>Tokyo и Kasukabe — Выбрать одну необычную якорную активность — инфраструктуру, авиацию или воду — и связать её с Edo-Tokyo Museum.</span><small>Пригородный поезд, monorail или городской транспорт по выбранному сценарию · средняя нагрузка · требуется действие</small></a></li>
-          <li data-day-overview="day-11"><a href="#day-11"><strong>День 11</strong><span>12 ноября 2026 · четверг</span><span>Toyosu → Ryōgoku → Tokyo — Начать с рынка Toyosu, затем связать историю Edo и собственную ремесленную работу, оставив паузу после раннего подъёма.</span><small>Раннее такси или первые поезда, затем городской транспорт · high нагрузка · требуется действие</small></a></li>
-          <li data-day-overview="day-12"><a href="#day-12"><strong>День 12</strong><span>13 ноября 2026 · пятница</span><span>Tokyo → Haneda Airport — Оставить короткое утро рядом с багажом и прибыть в HND к 12:40–13:00 для вылета в 15:40.</span><small>Центральный Tokyo → HND; маршрут зависит от отеля и терминала · лёгкая нагрузка · перепроверить</small></a></li>
+          <li class="route-stop"><strong>Tokyo</strong><span>2–3 ноября · ночей: 1</span></li>
+          <li class="route-stop"><strong>Nikko</strong><span>3–5 ноября · ночей: 2</span></li>
+          <li class="route-stop"><strong>Izu-Kōgen</strong><span>5–6 ноября · ночей: 1</span></li>
+          <li class="route-stop"><strong>Sengokuhara</strong><span>6–8 ноября · ночей: 2</span></li>
+          <li class="route-stop"><strong>Kawaguchiko</strong><span>8–10 ноября · ночей: 2</span></li>
+          <li class="route-stop"><strong>Tokyo</strong><span>10–13 ноября · ночей: 3</span></li>
         </ol>
       </section>
 
@@ -1798,7 +1714,7 @@ button[aria-selected="true"] {
 
       <section class="days-section" id="detailed-days" aria-labelledby="days-title">
         <h2 id="days-title">Дни подробно</h2>
-        <article class="day-chapter" id="day-1" data-day data-weather="false" data-transfer="true" data-unresolved="true" data-warning="true" aria-labelledby="day-1-title">
+        <article class="day-chapter" id="day-1" data-day aria-labelledby="day-1-title">
           <header class="day-heading">
             <div class="day-title-row">
               <div class="day-title-group"><h3 id="day-1-title">Tokyo</h3><p class="day-date">2 ноября 2026 · понедельник</p></div>
@@ -2092,7 +2008,7 @@ button[aria-selected="true"] {
           <nav class="day-nav" aria-label="Дни подробно">
 <span></span><a href="#day-2">Следующий день →</a>          </nav>
         </article>
-        <article class="day-chapter" id="day-2" data-day data-weather="true" data-transfer="true" data-unresolved="true" data-warning="true" aria-labelledby="day-2-title">
+        <article class="day-chapter" id="day-2" data-day aria-labelledby="day-2-title">
           <header class="day-heading">
             <div class="day-title-row">
               <div class="day-title-group"><h3 id="day-2-title">Tokyo → Ryūōkyō → Nikko</h3><p class="day-date">3 ноября 2026 · вторник</p></div>
@@ -2576,7 +2492,7 @@ button[aria-selected="true"] {
           <nav class="day-nav" aria-label="Дни подробно">
 <a href="#day-1">← Предыдущий день</a><a href="#day-3">Следующий день →</a>          </nav>
         </article>
-        <article class="day-chapter" id="day-3" data-day data-weather="true" data-transfer="true" data-unresolved="true" data-warning="true" aria-labelledby="day-3-title">
+        <article class="day-chapter" id="day-3" data-day aria-labelledby="day-3-title">
           <header class="day-heading">
             <div class="day-title-row">
               <div class="day-title-group"><h3 id="day-3-title">Nikko ↔ Lake Chūzenji</h3><p class="day-date">4 ноября 2026 · среда</p></div>
@@ -3155,7 +3071,7 @@ button[aria-selected="true"] {
           <nav class="day-nav" aria-label="Дни подробно">
 <a href="#day-2">← Предыдущий день</a><a href="#day-4">Следующий день →</a>          </nav>
         </article>
-        <article class="day-chapter" id="day-4" data-day data-weather="false" data-transfer="true" data-unresolved="true" data-warning="false" aria-labelledby="day-4-title">
+        <article class="day-chapter" id="day-4" data-day aria-labelledby="day-4-title">
           <header class="day-heading">
             <div class="day-title-row">
               <div class="day-title-group"><h3 id="day-4-title">Nikko → Izu-Atagawa → Izu-Kōgen</h3><p class="day-date">5 ноября 2026 · четверг</p></div>
@@ -3468,7 +3384,7 @@ button[aria-selected="true"] {
           <nav class="day-nav" aria-label="Дни подробно">
 <a href="#day-3">← Предыдущий день</a><a href="#day-5">Следующий день →</a>          </nav>
         </article>
-        <article class="day-chapter" id="day-5" data-day data-weather="true" data-transfer="true" data-unresolved="true" data-warning="true" aria-labelledby="day-5-title">
+        <article class="day-chapter" id="day-5" data-day aria-labelledby="day-5-title">
           <header class="day-heading">
             <div class="day-title-row">
               <div class="day-title-group"><h3 id="day-5-title">Izu-Kōgen → Mt Omuro → Jogasaki → Sengokuhara</h3><p class="day-date">6 ноября 2026 · пятница</p></div>
@@ -4237,7 +4153,7 @@ button[aria-selected="true"] {
           <nav class="day-nav" aria-label="Дни подробно">
 <a href="#day-4">← Предыдущий день</a><a href="#day-6">Следующий день →</a>          </nav>
         </article>
-        <article class="day-chapter" id="day-6" data-day data-weather="true" data-transfer="true" data-unresolved="true" data-warning="true" aria-labelledby="day-6-title">
+        <article class="day-chapter" id="day-6" data-day aria-labelledby="day-6-title">
           <header class="day-heading">
             <div class="day-title-row">
               <div class="day-title-group"><h3 id="day-6-title">Hakone</h3><p class="day-date">7 ноября 2026 · суббота</p></div>
@@ -4718,7 +4634,7 @@ button[aria-selected="true"] {
           <nav class="day-nav" aria-label="Дни подробно">
 <a href="#day-5">← Предыдущий день</a><a href="#day-7">Следующий день →</a>          </nav>
         </article>
-        <article class="day-chapter" id="day-7" data-day data-weather="true" data-transfer="true" data-unresolved="true" data-warning="true" aria-labelledby="day-7-title">
+        <article class="day-chapter" id="day-7" data-day aria-labelledby="day-7-title">
           <header class="day-heading">
             <div class="day-title-row">
               <div class="day-title-group"><h3 id="day-7-title">Sengokuhara → Gotemba → Kawaguchiko</h3><p class="day-date">8 ноября 2026 · воскресенье</p></div>
@@ -5312,7 +5228,7 @@ button[aria-selected="true"] {
           <nav class="day-nav" aria-label="Дни подробно">
 <a href="#day-6">← Предыдущий день</a><a href="#day-8">Следующий день →</a>          </nav>
         </article>
-        <article class="day-chapter" id="day-8" data-day data-weather="true" data-transfer="true" data-unresolved="true" data-warning="true" aria-labelledby="day-8-title">
+        <article class="day-chapter" id="day-8" data-day aria-labelledby="day-8-title">
           <header class="day-heading">
             <div class="day-title-row">
               <div class="day-title-group"><h3 id="day-8-title">Kawaguchiko ↔ Lake Motosu</h3><p class="day-date">9 ноября 2026 · понедельник</p></div>
@@ -5940,7 +5856,7 @@ button[aria-selected="true"] {
           <nav class="day-nav" aria-label="Дни подробно">
 <a href="#day-7">← Предыдущий день</a><a href="#day-9">Следующий день →</a>          </nav>
         </article>
-        <article class="day-chapter" id="day-9" data-day data-weather="true" data-transfer="true" data-unresolved="true" data-warning="false" aria-labelledby="day-9-title">
+        <article class="day-chapter" id="day-9" data-day aria-labelledby="day-9-title">
           <header class="day-heading">
             <div class="day-title-row">
               <div class="day-title-group"><h3 id="day-9-title">Fujiyoshida → Tokyo</h3><p class="day-date">10 ноября 2026 · вторник</p></div>
@@ -6307,7 +6223,7 @@ button[aria-selected="true"] {
           <nav class="day-nav" aria-label="Дни подробно">
 <a href="#day-8">← Предыдущий день</a><a href="#day-10">Следующий день →</a>          </nav>
         </article>
-        <article class="day-chapter" id="day-10" data-day data-weather="true" data-transfer="true" data-unresolved="true" data-warning="true" aria-labelledby="day-10-title">
+        <article class="day-chapter" id="day-10" data-day aria-labelledby="day-10-title">
           <header class="day-heading">
             <div class="day-title-row">
               <div class="day-title-group"><h3 id="day-10-title">Tokyo и Kasukabe</h3><p class="day-date">11 ноября 2026 · среда</p></div>
@@ -6923,7 +6839,7 @@ button[aria-selected="true"] {
           <nav class="day-nav" aria-label="Дни подробно">
 <a href="#day-9">← Предыдущий день</a><a href="#day-11">Следующий день →</a>          </nav>
         </article>
-        <article class="day-chapter" id="day-11" data-day data-weather="false" data-transfer="true" data-unresolved="true" data-warning="true" aria-labelledby="day-11-title">
+        <article class="day-chapter" id="day-11" data-day aria-labelledby="day-11-title">
           <header class="day-heading">
             <div class="day-title-row">
               <div class="day-title-group"><h3 id="day-11-title">Toyosu → Ryōgoku → Tokyo</h3><p class="day-date">12 ноября 2026 · четверг</p></div>
@@ -7353,7 +7269,7 @@ button[aria-selected="true"] {
           <nav class="day-nav" aria-label="Дни подробно">
 <a href="#day-10">← Предыдущий день</a><a href="#day-12">Следующий день →</a>          </nav>
         </article>
-        <article class="day-chapter" id="day-12" data-day data-weather="false" data-transfer="true" data-unresolved="true" data-warning="true" aria-labelledby="day-12-title">
+        <article class="day-chapter" id="day-12" data-day aria-labelledby="day-12-title">
           <header class="day-heading">
             <div class="day-title-row">
               <div class="day-title-group"><h3 id="day-12-title">Tokyo → Haneda Airport</h3><p class="day-date">13 ноября 2026 · пятница</p></div>
@@ -7773,7 +7689,7 @@ button[aria-selected="true"] {
     </main>
   </div>
 
-  <footer class="document-footer" id="document-version" data-document-status="draft" data-verification-level="codex_validated" data-finalization-basis="none"><strong>Япония в движении — 2–13 ноября 2026</strong> · japan-02-13-nov-2026 · Черновик — данные проверены в Codex · Целостность данных проверена в Codex · Создан 2026-09-09T18:01:13+00:00 · Артефакт v0.1</footer>
+  <footer class="document-footer" id="document-version" data-document-status="draft" data-verification-level="codex_validated" data-finalization-basis="none"><strong>Япония в движении — 2–13 ноября 2026</strong> · japan-02-13-nov-2026 · Черновик — данные проверены в Codex · Целостность данных проверена в Codex · Создан 2026-09-10T21:33:32+00:00 · Артефакт v0.1</footer>
   <script>(() => {
   "use strict";
 
@@ -7797,55 +7713,6 @@ button[aria-selected="true"] {
   );
 
   try {
-    const days = Array.from(document.querySelectorAll("[data-day]"));
-    const overviewByDay = new Map(
-      Array.from(document.querySelectorAll("[data-day-overview]")).map((overview) => [
-        overview.dataset.dayOverview,
-        overview,
-      ]),
-    );
-    const filterButtons = Array.from(document.querySelectorAll("[data-filter]"));
-    const resultCount = document.querySelector("[data-filter-results]");
-    const emptyState = document.querySelector("[data-filter-empty]");
-    const resetFilters = document.querySelector("[data-reset-filters]");
-    let activeFilter = "all";
-
-    const matchesFilter = (day) =>
-      activeFilter === "all" || day.dataset[activeFilter] === "true";
-
-    const applyDayView = () => {
-      let visible = 0;
-      days.forEach((day) => {
-        const show = matchesFilter(day);
-        day.hidden = !show;
-        const overview = overviewByDay.get(day.id);
-        if (overview) overview.hidden = !show;
-        if (show) visible += 1;
-      });
-      const message = copy("daysShownCopy", { count: visible });
-      if (resultCount) resultCount.textContent = message;
-      if (emptyState) emptyState.hidden = visible !== 0;
-      announce(message);
-    };
-
-    filterButtons.forEach((button) => {
-      button.addEventListener("click", () => {
-        activeFilter = button.dataset.filter || "all";
-        filterButtons.forEach((candidate) => {
-          candidate.setAttribute("aria-pressed", String(candidate === button));
-        });
-        applyDayView();
-      });
-    });
-    resetFilters?.addEventListener("click", () => {
-      activeFilter = "all";
-      filterButtons.forEach((candidate) => {
-        candidate.setAttribute("aria-pressed", String(candidate.dataset.filter === "all"));
-      });
-      applyDayView();
-      filterButtons.find((candidate) => candidate.dataset.filter === "all")?.focus();
-    });
-
     document.querySelectorAll("[data-scenario-tabs]").forEach((tablist) => {
       const day = tablist.closest("[data-day]");
       const tabs = Array.from(tablist.querySelectorAll('[role="tab"]'));

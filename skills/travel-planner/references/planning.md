@@ -36,6 +36,26 @@ Apply the same day contract in both cases:
 | `evidence` | Attach `source_ids[]` and `claim_ids[]`; explain material uncertainty and its consequence in `detail`. |
 | `transport` | Put local time in `time`, door-to-door segments and buffers in `detail`, and comfortable/budget choices in `alternatives[]`. |
 
+## Lodging transitions and luggage
+
+For each arrival, lodging change and final departure day, account for the gap between access to rooms and the activities/transport in the plan. Start with the saved [luggage inputs](intake.md#luggage-inputs); when they are missing and affect the day's feasibility, ask about bags before treating a storage or forwarding option as selected. Continue a requested draft with the unknown visible. A traveller carrying only a suitable small bag can keep it throughout; say so briefly when relevant, without manufacturing storage errands or asking again on unchanged days.
+
+Complete these planning slots for the primary day and each full alternative scenario. They describe information to put in existing events, not new YAML fields. Combine adjacent actions when that keeps the sequence clear; omit inapplicable actions.
+
+| Step | What the reader needs |
+| --- | --- |
+| Leave the room | Planned checkout/departure and the hotel's actual latest checkout if known; early-departure/key handover arrangements when needed. Unknown hotel rules stay explicit. |
+| Place the bags | Which bags stay with the group, which go to which hotel, storage point or delivery destination; drop-off location/window and acceptance conditions. Bag drop before check-in does not imply early access to the room. |
+| Spend the day | Carrying assumption for walking, cycling and activities; route to/from storage, service/queue allowance, transport capacity and cost where relevant. Mark estimates and unresolved timing. |
+| Recover the bags | Who collects or receives which bags, where and when, before the service closes or the next departure. Include the detour, waiting and onward transfer. A forwarding route must identify the receiving stay/date, delivery window, hotel acceptance and small-bag coverage until delivery. |
+| Enter the next room | Planned arrival and check-in window, including any latest arrival or meal cutoff. Keep room access separate from bag collection even if handled at the same desk. On the last day, link collection to the airport/station departure instead. |
+
+Compare the relevant options in context: storage at the old hotel if returning makes sense; bag drop at the new hotel; station or staffed storage; forwarding to the next or a later stay. Recommend a conditional main option and a workable fallback where storage/delivery is needed. Explain the trade-off in detour, carrying burden, cost and timing. Forwarding can skip short stays only if the group agrees and can carry what is needed until delivery. Do not assume same-day delivery, hotel acceptance, locker availability/size or service hours. Check applicable official hotel/operator conditions under [research](research.md); if a service or hotel is unselected, preserve that gap rather than inventing a place or URL.
+
+Follow every proposed handoff through to collection or delivery, including local fallbacks. Put the fallback's changed drop-off, collection and onward route in the owning event's `alternatives[].detail`; if much of the day changes, use a complete scenario. If neither option is established, state that the day's luggage arrangement is unresolved and what would have to change. Propose any resulting change to the selected route/program under the existing consent rules. Time for bag handling belongs inside the day's travel allowance: a short gap after an activity is not automatically enough for a return to storage and a train departure.
+
+Use `kind: lodging` for checkout, hotel bag drop/collection and check-in; `kind: activity` for a standalone storage visit; `kind: transport` for movement. Use existing icons only. Put planned time/windows in `time`, the custody chain, confirmation status, consequential rules and unknowns in `detail`, and practical place/operator links in `links[]` when known. Use `readiness_ids[]` to connect the unresolved [preparation actions](readiness-and-budget.md); neither these IDs nor a generic packing reminder replaces the visible sequence. When delivery spans days, update the sending and receiving days together.
+
 ## Event field recording
 
 Here, **event** means an entry in `itinerary.yaml.days[].timeline[]` or `days[].scenarios[].timeline[]`. Use the same fields for primary and full alternative days. The paths below identify existing fields; they are not additional YAML keys.
@@ -50,6 +70,7 @@ Here, **event** means an entry in `itinerary.yaml.days[].timeline[]` or `days[].
 | Local time | `event.time`; supported exact instants additionally use `start_at` and `end_at` with timezone offsets. | `time` is the displayed label, such as “10:30–12:00, local UTC+03:00”. Explain timezone changes. Approximate/unknown times stay descriptive; do not invent dates or offsets. |
 | Opening, last entry or last service | Known `operating_start_at`, `operating_end_at`, `last_admission_at` or `last_service_at` on the event. | Explain any consequential cutoff in `event.detail`. For an actual switch decision, use a separate checkpoint event with `checkpoint.check` and `checkpoint.adjust_plan`. |
 | Door-to-door transport | A `kind: transport` event; supported `allocated_minutes`, `components_minutes`, `connection`, `buffer_markers` and `required_buffer_markers` may retain structured detail. | Describe the complete trip, walks, waits, changes and buffers in `event.detail`, marking estimates. `days[].travel` is the short day summary. |
+| Checkout, bag handling and check-in | Existing lodging/storage/transport events following the [transition contract](#lodging-transitions-and-luggage); readiness owns service confirmation and next actions. | `time` gives the planned action/window; `detail` identifies the bags, drop-off and collection, room access, relevant conditions and unknowns. Local fallback handling belongs in `alternatives[].detail`. |
 | Comfortable/budget alternatives | `event.alternatives[]` with `title`, `reason`, `detail` and known `price`, `effort`, `distance`, `booking`, `links[]`. | Name each alternative and when to choose it. A displayed alternative price is comparison text; only selected recorded expenses belong in `budget_items`. |
 
 Technical timestamps, duration fields and ID links support the working data; they do not populate visible event text automatically. Put every condition that changes what the traveller should do in `time`, `detail`, the checkpoint or the relevant alternative. Keep unknowns explicit without inventing values to fill slots.
@@ -126,6 +147,76 @@ itinerary.yaml:
           checkpoint:
             check: Check the operator before leaving.
             adjust_plan: Take a taxi if no departure is confirmed.
+```
+
+### Copyable luggage example
+
+Fictional conditional fragments for an initialized bundle, using the same filename-wrapper convention above. This example has one traveller; merge into the matching real traveller instead of adding a duplicate. It covers a hotel change and cycling, not a researched route. Replace the places and estimates, add practical links once places are selected, and retain other preparation items. No service is confirmed by this example.
+
+```yaml
+brief.yaml:
+  travelers:
+    - id: traveler-example
+      luggage:
+        description: "Per user: one large suitcase and one daypack; dimensions unknown."
+  soft_preferences:
+    - "Per user: prefers hotel bag drop; forwarding preference not yet discussed."
+  assumptions:
+    - "Hotel names, bag-drop acceptance, storage hours and handling costs are unknown."
+readiness.yaml:
+  items:
+    - id: confirm-bag-handling
+      title: Confirm bag drop and collection
+      category: lodging
+      status: action_needed
+      next_action: "Identify both hotels and agree early checkout, bag acceptance, collection hours and check-in before relying on storage; otherwise assess station storage and the changed route."
+itinerary.yaml:
+  days:
+    - id: luggage-cycling-day
+      date: "2026-11-08"
+      thesis: Change hotels and cycle with a daypack while the suitcase is stored.
+      load: Moderate, conditional on suitable bag storage.
+      travel: Intercity transfer plus storage detours and queues; duration unknown until places are selected.
+      timeline:
+        - id: leave-old-hotel
+          kind: lodging
+          title: Check out with both bags
+          time: Before departure
+          detail: "Agree early checkout and key handover with the old hotel; its checkout rules are unknown."
+          readiness_ids: [confirm-bag-handling]
+        - id: transfer-with-bags
+          kind: transport
+          title: Old hotel to new hotel
+          time: Morning, before cycling
+          detail: "Carry one large suitcase and one daypack, per user. Addresses, service, bag capacity and door-to-door duration are unknown; include the walk to the bag-drop desk."
+        - id: drop-bags
+          kind: lodging
+          title: Leave the suitcase at the new hotel
+          time: On arrival, before cycling
+          detail: "Proposed main option: store the suitcase at the new hotel and keep the daypack. Bag drop is not early room access; acceptance is unconfirmed. Hotel, opening window, queue allowance and cost remain to check. Collect at this desk after cycling."
+          readiness_ids: [confirm-bag-handling]
+          alternatives:
+            - id: station-storage
+              title: Station storage
+              reason: If the hotel cannot accept bags and a suitable station service is confirmed.
+              detail: "Drop the suitcase at the selected station storage before cycling. Collect here after returning the bicycles, before closing; allow the return detour and queue, then travel with both bags to the hotel. Place, capacity, opening hours and price are unknown; confirm these and the added travel time before choosing this option."
+        - id: cycle
+          kind: activity
+          title: Bicycle outing
+          time: After bag drop
+          detail: "Daypack only. The route and bicycle hire remain to select. If storage is still unresolved, the outing is conditional; agree a practical change before departing with the suitcase."
+        - id: collect-bags
+          kind: lodging
+          title: Collect the suitcase
+          time: After bicycle return, before storage closes
+          detail: "Return to the new hotel's bag desk; include the detour and queue. If station storage was chosen instead, return there before closing and add the onward hotel transfer. Places, closing time and duration are still unknown."
+          readiness_ids: [confirm-bag-handling]
+        - id: enter-new-hotel
+          kind: lodging
+          title: Room check-in
+          time: After bag collection, within the agreed hotel window
+          detail: "Both bags are with the traveller. The check-in window is unknown; confirm earliest room access and latest arrival separately from bag storage."
+          readiness_ids: [confirm-bag-handling]
 ```
 
 ## Changes and day media

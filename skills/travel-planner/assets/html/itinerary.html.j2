@@ -7,12 +7,12 @@
   <title>{{ view.title }} · {{ view.status_label }} · {{ tr('itinerary') }}</title>
   <style>{{ css }}</style>
 </head>
-<body class="{% if options.print_images %}print-images{% else %}no-print-images{% endif %}" data-days-shown-copy="{{ js_copy.daysShown }}" data-scenario-shown-copy="{{ js_copy.scenarioShown }}">
+<body class="{% if options.print_images %}print-images{% else %}no-print-images{% endif %}" data-scenario-shown-copy="{{ js_copy.scenarioShown }}">
   <!--
   THESIS: A bright, readable travel guide with destination openings and a continuous chronological line.
   OWN-WORLD: Lemon headers, warm paper, cobalt actions, strong sans-serif titles, small outline icons, yellow checkpoints and blue closing fields.
   STORY: Readers understand the trip, scan unresolved choices, then follow one chronological timeline per day and open context only where it belongs.
-  FIRST VIEWPORT: Trip identity and text route lead inside a bounded reading sheet; readiness, expenses, and saved blockers follow as calm document facts.
+  FIRST VIEWPORT: Trip identity leads inside a bounded reading sheet; readiness, expenses, and saved blockers follow as calm document facts. A single compact base sequence precedes the full day chapters.
   FORM: Full reading document in the user-approved Lemon and Cobalt composition, 2026-09-07.
   FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
   -->
@@ -127,10 +127,9 @@
       {% endif %}
       <h1>{{ view.title }}</h1>
       <p class="trip-thesis">{{ view.summary.thesis }}</p>
-      <p class="route-ribbon"><svg class="icon" aria-hidden="true"><use href="#icon-route"></use></svg>{{ view.summary.route_text }}</p>
       <p class="feasibility-note">{{ tr('feasibility_note') }}</p>
       <div class="summary-links">
-        <a href="#route-overview">{{ tr('review_days') }}</a>
+        <a href="#detailed-days">{{ tr('review_days') }}</a>
         <a href="#open-decisions">{{ view.open_decisions|length }} {{ tr('open_decisions_count') }}</a>
       </div>
     </div>
@@ -165,10 +164,10 @@
         <ol>
           <li><a href="#trip-summary">{{ tr('trip_summary') }}</a></li>
           <li><a href="#blockers">{{ tr('blockers') }}</a></li>
-          <li><a href="#route-overview">{{ tr('route_days') }}</a></li>
+          <li><a href="#route-overview">{{ tr('route_overview') }}</a></li>
           <li><a href="#open-decisions">{{ tr('open_decisions') }}</a></li>
           <li><a href="#detailed-days">{{ tr('detailed_days') }}</a></li>
-          {% for day in view.days %}<li class="day-link"><a href="#{{ day.day_id }}">{{ tr('day') }} {{ day.number }} · {{ day.region }}</a></li>{% endfor %}
+          {% for day in view.days %}<li class="day-link"><a href="#{{ day.day_id }}">{{ day.date_label }} · {{ day.region }}</a></li>{% endfor %}
           <li><a href="#preparation">{{ tr('preparation') }}</a></li>
           <li><a href="#budget">{{ tr('budget') }}</a></li>
           <li><a href="#risks">{{ tr('risks') }}</a></li>
@@ -215,23 +214,8 @@
         <h2 id="route-title">{{ tr('route_overview') }}</h2>
         <ol class="route-sequence">
           {% for stop in view.route %}
-          <li class="route-stop"><strong>{{ stop.name }}</strong><span>{{ stop.dates }}{% if stop.nights is not none %} · {{ stop.nights }} {{ tr('nights') }}{% endif %}</span>{% if stop.transfer_label %}<span>{{ stop.transfer_label }}</span>{% endif %}</li>
+          <li class="route-stop"><strong>{{ stop.name }}</strong><span>{{ stop.dates }}{% if stop.nights is not none %} · {{ tr('nights') }}: {{ stop.nights }}{% endif %}</span></li>
           {% else %}<li>{{ tr('route_empty') }}</li>{% endfor %}
-        </ol>
-        <div class="interactive-controls" aria-label="{{ tr('filter_days') }}">
-          <div class="filters" aria-label="{{ tr('filter_days') }}">
-            <button type="button" data-filter="all" aria-pressed="true">{{ tr('all_days') }}</button>
-            <button type="button" data-filter="unresolved" aria-pressed="false">{{ tr('unresolved_filter') }}</button>
-            <button type="button" data-filter="weather" aria-pressed="false">{{ tr('weather_filter') }}</button>
-            <button type="button" data-filter="transfer" aria-pressed="false">{{ tr('transfer_filter') }}</button>
-            <button type="button" data-filter="warning" aria-pressed="false">{{ tr('warning_filter') }}</button>
-          </div>
-          <div class="filter-feedback"><p data-filter-results>{{ tr('days_shown', count=view.days|length) }}</p><p data-filter-empty hidden>{{ tr('no_matches') }} <button type="button" data-reset-filters>{{ tr('reset') }}</button></p></div>
-        </div>
-        <ol class="day-overview">
-          {% for day in view.days %}
-          <li data-day-overview="{{ day.day_id }}"><a href="#{{ day.day_id }}"><strong>{{ tr('day') }} {{ day.number }}</strong><span>{{ day.date_label }} · {{ day.weekday }}</span><span>{{ day.region }} — {{ day.thesis }}</span><small>{{ day.travel }} · {{ enum_label(day.load) }} {{ tr('load') }} · {{ enum_label(day.booking_state) }}</small></a></li>
-          {% else %}<li>{{ tr('no_days') }}</li>{% endfor %}
         </ol>
       </section>
 
@@ -247,7 +231,7 @@
       <section class="days-section" id="detailed-days" aria-labelledby="days-title">
         <h2 id="days-title">{{ tr('detailed_days') }}</h2>
         {% for day in view.days %}
-        <article class="day-chapter" id="{{ day.day_id }}" data-day data-weather="{{ day.weather_sensitive|string|lower }}" data-transfer="{{ (day.timeline|selectattr('kind', 'equalto', 'transport')|list|length > 0)|string|lower }}" data-unresolved="{{ (day.booking_state not in ['booked', 'confirmed'])|string|lower }}" data-warning="{{ (day.timeline|selectattr('kind', 'equalto', 'checkpoint')|list|length > 0)|string|lower }}" aria-labelledby="{{ day.day_id }}-title">
+        <article class="day-chapter" id="{{ day.day_id }}" data-day aria-labelledby="{{ day.day_id }}-title">
           <header class="day-heading">
             <div class="day-title-row">
               <div class="day-title-group"><h3 id="{{ day.day_id }}-title">{{ day.region }}</h3><p class="day-date">{{ day.date_label }} · {{ day.weekday }}</p></div>
@@ -301,6 +285,7 @@
             {% if not loop.last %}<a href="#{{ view.days[loop.index0 + 1].day_id }}">{{ tr('next_day') }} →</a>{% endif %}
           </nav>
         </article>
+        {% else %}<p>{{ tr('no_days') }}</p>
         {% endfor %}
       </section>
 

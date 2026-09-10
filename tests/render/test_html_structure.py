@@ -255,19 +255,63 @@ def test_html_marks_a_recorded_data_error_as_inconsistent(japan_state) -> None:
     assert "cannot be treated as a consistent prepared copy" in html
 
 
-def test_day_filters_expose_overview_and_empty_state_without_search(
-    japan_view: ItineraryView,
+@pytest.mark.parametrize("language", ["en", "ru"])
+def test_day_introduction_is_read_once_and_contents_link_to_its_date(
+    japan_state, japan_report, language,
 ) -> None:
-    """Catch filters regressing into an unnecessary full-text search interface."""
-    html = render_html(japan_view, media={}, options=DEFAULTS)
+    """Catch a second summary repeating the program before its day chapter."""
+    japan_state.brief["document_language"] = language
+    japan_state.itinerary["days"][0]["thesis"] = "A unique introduction to the first day."
+    view = build_view(japan_state, japan_report, datetime(2026, 8, 28, 12, tzinfo=UTC))
+    html = render_html(view, media={}, options=DEFAULTS)
+    contents = html.split('<details class="contents">', 1)[1].split('</details>', 1)[0]
 
-    for day in japan_view.days:
-        assert f'data-day-overview="{day.day_id}"' in html
-    assert "data-filter-results" in html
-    assert "data-filter-empty" in html
-    assert "data-reset-filters" in html
+    assert html.count("A unique introduction to the first day.") == 1
+    first_date = "2 ноября 2026" if language == "ru" else "November 2, 2026"
+    assert f'<a href="#day-1">{first_date} · Tokyo</a>' in contents
+    assert "A unique introduction to the first day." not in contents
+    assert 'data-filter=' not in html
     assert 'type="search"' not in html
-    assert "data-day-search" not in html
+    assert '<a href="#detailed-days">' in html.split('</header>', 1)[0]
+
+
+@pytest.mark.parametrize("language", ["en", "ru"])
+def test_route_bases_are_shown_once_with_dates_and_known_nights(
+    japan_state, japan_report, language,
+) -> None:
+    """Catch a cover route duplicating the base overview or losing its dates/nights."""
+    japan_state.brief["document_language"] = language
+    japan_state.itinerary["route_stops"] = [
+        {"id": "base-first", "name": "First base", "dates": "2–5 Nov", "nights": 3},
+        {"id": "base-second", "name": "Second base", "dates": "5–7 Nov"},
+    ]
+    view = build_view(japan_state, japan_report, datetime(2026, 8, 28, 12, tzinfo=UTC))
+    html = render_html(view, media={}, options=DEFAULTS)
+    route = html.split('id="route-overview"', 1)[1].split('</section>', 1)[0]
+
+    assert html.count('First base') == 1
+    assert html.count('Second base') == 1
+    assert route.index('First base') < route.index('Second base')
+    assert '2–5 Nov' in route and '5–7 Nov' in route
+    assert ('ночей: 3' if language == 'ru' else 'nights: 3') in route
+    assert ('ночей: 0' if language == 'ru' else 'nights: 0') not in route
+    assert 'data-day-overview' not in route
+
+
+@pytest.mark.parametrize("language", ["en", "ru"])
+def test_empty_trip_explains_missing_route_and_days(japan_state, japan_report, language):
+    """Keep an incomplete draft understandable after removing the day overview."""
+    japan_state.brief["document_language"] = language
+    japan_state.itinerary["route_stops"] = []
+    japan_state.itinerary["days"] = []
+    view = build_view(japan_state, japan_report, datetime(2026, 8, 28, 12, tzinfo=UTC))
+    html = render_html(view, media={}, options=DEFAULTS)
+    route = html.split('id="route-overview"', 1)[1].split('</section>', 1)[0]
+    days = html.split('id="detailed-days"', 1)[1].split('</section>', 1)[0]
+
+    assert ("Маршрут не выбран." if language == "ru" else "Route not selected.") in route
+    assert ("Подробные дни не записаны." if language == "ru"
+            else "No detailed days recorded.") in days
 
 
 def test_day_chapter_owns_timeline_links_checkpoints_and_local_alternatives(
