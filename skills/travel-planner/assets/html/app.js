@@ -21,55 +21,6 @@
   );
 
   try {
-    const days = Array.from(document.querySelectorAll("[data-day]"));
-    const overviewByDay = new Map(
-      Array.from(document.querySelectorAll("[data-day-overview]")).map((overview) => [
-        overview.dataset.dayOverview,
-        overview,
-      ]),
-    );
-    const filterButtons = Array.from(document.querySelectorAll("[data-filter]"));
-    const resultCount = document.querySelector("[data-filter-results]");
-    const emptyState = document.querySelector("[data-filter-empty]");
-    const resetFilters = document.querySelector("[data-reset-filters]");
-    let activeFilter = "all";
-
-    const matchesFilter = (day) =>
-      activeFilter === "all" || day.dataset[activeFilter] === "true";
-
-    const applyDayView = () => {
-      let visible = 0;
-      days.forEach((day) => {
-        const show = matchesFilter(day);
-        day.hidden = !show;
-        const overview = overviewByDay.get(day.id);
-        if (overview) overview.hidden = !show;
-        if (show) visible += 1;
-      });
-      const message = copy("daysShownCopy", { count: visible });
-      if (resultCount) resultCount.textContent = message;
-      if (emptyState) emptyState.hidden = visible !== 0;
-      announce(message);
-    };
-
-    filterButtons.forEach((button) => {
-      button.addEventListener("click", () => {
-        activeFilter = button.dataset.filter || "all";
-        filterButtons.forEach((candidate) => {
-          candidate.setAttribute("aria-pressed", String(candidate === button));
-        });
-        applyDayView();
-      });
-    });
-    resetFilters?.addEventListener("click", () => {
-      activeFilter = "all";
-      filterButtons.forEach((candidate) => {
-        candidate.setAttribute("aria-pressed", String(candidate.dataset.filter === "all"));
-      });
-      applyDayView();
-      filterButtons.find((candidate) => candidate.dataset.filter === "all")?.focus();
-    });
-
     document.querySelectorAll("[data-scenario-tabs]").forEach((tablist) => {
       const day = tablist.closest("[data-day]");
       const tabs = Array.from(tablist.querySelectorAll('[role="tab"]'));

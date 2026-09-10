@@ -1,7 +1,7 @@
 # Readable Itinerary Days — HTML Design Specification
 
 **Date:** 2026-09-06
-**Status:** Approved by user; implementation contract amended on 2026-09-08: reader HTML without technical source lists
+**Status:** Approved by user; amended on 2026-09-08 for reader HTML without technical source lists and on 2026-09-10 for compact route navigation
 **Supersedes:** the detailed-day layout, navigation and scenario treatment in `2026-08-28-interactive-itinerary-html-design.md`
 **Keeps:** the earlier specification's product scope, lifecycle truth, self-contained local opening, accessibility, responsive and browser-print guarantees
 
@@ -9,15 +9,16 @@
 
 The generated HTML is a calm, readable itinerary. The document uses the Lemon and Cobalt visual system in [DESIGN.md](../../../DESIGN.md), including the approved 8 September day composition, and replaces the permanent desktop sidebar and two-column day body with a bounded reading column and a sequence of visually distinct day chapters.
 
-The primary reading task is: understand each day in chronological order, notice the few moments that can change the plan, and open contextual links or alternatives only when needed. Day filters remain a progressive enhancement; they do not determine the visual architecture.
+The primary reading task is: understand each day in chronological order, notice the few moments that can change the plan, and open contextual links or alternatives only when needed. A compact base sequence gives the trip geography; date-and-place contents links provide direct access to detailed days without a second list of day summaries.
 
 ## 2. Page structure and navigation
 
 - The document uses one centred reading column with a maximum readable width and generous section spacing.
 - A compact in-flow contents disclosure appears after the cover and is closed by default at every breakpoint. Without JavaScript it remains a native, usable disclosure containing all section and day links.
 - There is no permanent sticky left index, fixed bottom contents button or three-column composition.
-- The cover keeps trip identity, route, lifecycle status, readiness, recorded expenses and the highest-priority saved concerns, but its supporting facts read as document furniture rather than dashboard cards.
-- The day overview remains compact and filterable, with a stacked transformation on narrow screens. The document does not offer full-text search.
+- The cover keeps trip identity, lifecycle status, readiness, recorded expenses and the highest-priority saved concerns, but its supporting facts read as document furniture rather than dashboard cards. Its primary link goes directly to detailed days.
+- The route appears once in a compact sequence of bases, dates and recorded night counts, wrapping on wide screens and forming short rows on narrow screens. Unknown night counts are omitted, never zero-filled. Transfer explanations remain in detailed days and canonical working data rather than expanding this overview.
+- Native contents list each day by localized date and place. There is no separate day-summary list, day filtering or full-text search. Day introductions and travel/load facts remain in their chapters; open decisions, readiness and saved concerns retain their sections.
 
 ## 3. Day chapters
 
@@ -85,7 +86,7 @@ A light-yellow field and labelled semantic icon identify checkpoints; lifecycle 
 
 ## 6. Localization
 
-`brief.yaml.document_language` selects visible system copy. v0.1 supports `en` and `ru`; absence defaults to `en` for simple compatibility. Titles, status explanations, navigation, headings, filters, scenario controls, connectivity notes, dates, weekdays, enum labels, empty states and JavaScript announcements use the selected language. Canonical lifecycle values remain in the working data and footer data attributes; visible status labels remain localized.
+`brief.yaml.document_language` selects visible system copy. v0.1 supports `en` and `ru`; absence defaults to `en` for simple compatibility. Titles, status explanations, navigation, headings, scenario controls, connectivity notes, dates, weekdays, enum labels, empty states and JavaScript announcements use the selected language. Canonical lifecycle values remain in the working data and footer data attributes; visible status labels remain localized.
 
 User-authored itinerary content is never machine-translated by the renderer. A workspace should therefore author its content in the same language as `document_language`.
 
@@ -100,8 +101,8 @@ User-authored itinerary content is never machine-translated by the renderer. A w
 
 ## 8. Print
 
-- Interactive filters, tab controls and adjacent-day controls are hidden.
-- Filtered days and hidden scenario panels are forced visible.
+- Tab controls and adjacent-day controls are hidden. The compact base sequence remains; all detailed days print in order.
+- Hidden scenario panels are forced visible; full day chapters are always present.
 - Each normal day starts on a fresh page when practical; every printed event repeats a compact day/date/region context so continuation pages remain identifiable in browsers without paged-media string support.
 - Print CSS defines a fixed trip/version/status footer; page counters use `@page` margin boxes. Browser support and actual repetition/pagination require the manual print observations in the [release checklist](../../RELEASE_CHECKLIST.md); source tests alone do not establish them.
 - Primary timeline events, checkpoints and compact alternative scenario blocks avoid page splits when practical.
