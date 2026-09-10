@@ -8,6 +8,8 @@
   --checkpoint-field: #fff0b7;
   --timeline-line: #acbee0;
   --info-field: #e7efff;
+  --decision-field: #f7f8fa;
+  --decision-line: #c4cdd9;
   --heading-line: #c2a844;
   --line: #d6dddf;
   --danger: #8b3028;
@@ -246,6 +248,11 @@ li {
 .status--unknown,
 .status--not-released-yet {
   color: #65470f;
+  background: var(--attention-field);
+}
+
+.status--warning {
+  color: var(--warning);
   background: var(--attention-field);
 }
 
@@ -496,9 +503,9 @@ button[aria-selected="true"] {
 
 .decision-item {
   padding: clamp(1rem, 3vw, 1.5rem);
-  border: 1px solid var(--accent);
+  border: 1px solid var(--decision-line);
   border-radius: 2rem;
-  background: var(--info-field);
+  background: var(--decision-field);
 }
 
 .decision-item > .status {

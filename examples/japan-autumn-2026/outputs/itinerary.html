@@ -15,6 +15,8 @@
   --checkpoint-field: #fff0b7;
   --timeline-line: #acbee0;
   --info-field: #e7efff;
+  --decision-field: #f7f8fa;
+  --decision-line: #c4cdd9;
   --heading-line: #c2a844;
   --line: #d6dddf;
   --danger: #8b3028;
@@ -253,6 +255,11 @@ li {
 .status--unknown,
 .status--not-released-yet {
   color: #65470f;
+  background: var(--attention-field);
+}
+
+.status--warning {
+  color: var(--warning);
   background: var(--attention-field);
 }
 
@@ -503,9 +510,9 @@ button[aria-selected="true"] {
 
 .decision-item {
   padding: clamp(1rem, 3vw, 1.5rem);
-  border: 1px solid var(--accent);
+  border: 1px solid var(--decision-line);
   border-radius: 2rem;
-  background: var(--info-field);
+  background: var(--decision-field);
 }
 
 .decision-item > .status {
@@ -7680,7 +7687,7 @@ button[aria-selected="true"] {
     </main>
   </div>
 
-  <footer class="document-footer" id="document-version" data-document-status="draft" data-verification-level="codex_validated" data-finalization-basis="none"><strong>Япония в движении — 2–13 ноября 2026</strong> · japan-02-13-nov-2026 · Черновик — данные проверены в Codex · Целостность данных проверена в Codex · Создан 2026-09-10T20:06:57+00:00 · Артефакт v0.1</footer>
+  <footer class="document-footer" id="document-version" data-document-status="draft" data-verification-level="codex_validated" data-finalization-basis="none"><strong>Япония в движении — 2–13 ноября 2026</strong> · japan-02-13-nov-2026 · Черновик — данные проверены в Codex · Целостность данных проверена в Codex · Создан 2026-09-10T21:16:58+00:00 · Артефакт v0.1</footer>
   <script>(() => {
   "use strict";
 
