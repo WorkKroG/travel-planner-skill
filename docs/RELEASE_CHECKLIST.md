@@ -6,6 +6,10 @@ This is a checklist and evidence index, not a runner or an eval framework. Catal
 
 The current targeted catalog has ten inputs, including user reports, planning estimates and luggage handling on lodging-change days. Historical review of eight inputs below does not validate the added inputs or later revisions. Current implementation checks are recorded in [project status](PROJECT_STATUS.md).
 
+## Compact route navigation
+
+The current compact-route branch removes day-summary duplication and day filtering, while preserving full day chapters, scenario controls, readiness and concerns. The committed Japan example uses the new template; a separate local preview uses the latest Japan data from open PR #19. Full suite: **272 passed**; Ruff, dependency check, CLI help, skill validation, JS syntax and diff whitespace checks passed. A clean wheel installation reproduced the example exactly and matched all HTML assets; temporary init/check/render produce only HTML. Both Japan versions retain all 12 detailed chapters, photos and links, with valid anchor/ARIA/SVG references. Independent review found no P0–P2; P3 documentation findings were corrected. Manual browser/mobile/print checks below remain pending.
+
 ## Situation and entry reviews
 
 [PR #15](https://github.com/WorkKroG/travel-planner-skill/pull/15) added two explicit preparation reviews to the workflow and new trip template. Results or unknowns, actual review dates, contextual official links and mandatory recheck instructions remain visible in HTML/print. The Japan example deliberately leaves both reviews unresolved. That revision's full suite: **262 passed**; Ruff, dependency check, CLI help, skill validation and diff whitespace checks passed. Independent review found no actionable P0–P2 issues. A clean wheel installation passed temporary init/check/render smokes, created only HTML, reproduced the Japan output byte-for-byte and matched the installed schema/templates to source. This is not a live assessment of Japan, a visa eligibility check, background monitoring or browser QA.
@@ -68,7 +72,7 @@ Both catalogs remain data-only with `execution_status: not_executed`. Here `not_
 
 Record date, exact PR head, browser/version, artifact hash, result, and failures for each item. Static source tests do not satisfy this checklist.
 
-- [ ] Every filter—All days, unresolved, weather-sensitive, transfers, warnings—keeps detailed days and overview synchronized; reset works.
+- [ ] Route bases appear once with dates/night counts; no repeated day summaries or day filters. Closed contents link by date/place to all day chapters, and the cover link skips directly to them.
 - [ ] Contents opens; a section link and day link land without obscured heading or focus.
 - [ ] Primary/alternative scenario switching works in both directions, supports Arrow/Home/End keys, and announces each state.
 - [ ] An induced enhancement failure leaves complete core content, both scenarios, and normal links readable with a concise notice.

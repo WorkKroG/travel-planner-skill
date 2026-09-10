@@ -227,9 +227,11 @@ Major document surfaces and day openings have square edges. Buttons use restrain
 
 ### Buttons and Scenario Tabs
 
-Buttons have paper fill, ink text, a one-pixel timeline-colored border and a minimum height of 2.75rem. Hover, `aria-pressed="true"` and `aria-selected="true"` apply selected cobalt with white text. Keyboard focus has a three-pixel cobalt outline with a three-pixel offset; there is no animated lift or scaling.
+Buttons have paper fill, ink text, a one-pixel timeline-colored border and a minimum height of 2.75rem. Hover and `aria-selected="true"` apply selected cobalt with white text. Keyboard focus has a three-pixel cobalt outline with a three-pixel offset; there is no animated lift or scaling.
 
-The existing day filters cover all days, unresolved bookings, weather, transfers and warnings. Scenario tabs appear only when full alternatives exist. They retain text labels and semantic SVGs, `tablist` / `tab` / `tabpanel` relationships, selected state, roving focus, ArrowLeft/ArrowRight/Home/End navigation and polite live announcements. There is no search field or theme selector.
+The 10 September simplification shows the route once as a compact sequence of overnight bases with dates and recorded night counts. The sequence wraps on wide screens and uses short rows on narrow screens, without the former tall route markers. The cover's primary link goes directly to detailed days. Closed native contents provide date-and-place links; there is no separate day-summary list or day filtering.
+
+Scenario tabs appear only when full alternatives exist. They retain text labels and semantic SVGs, `tablist` / `tab` / `tabpanel` relationships, selected state, roving focus, ArrowLeft/ArrowRight/Home/End navigation and polite live announcements. There is no search field or theme selector. Removing the overview does not remove day introductions, travel/load facts, unresolved decisions or preparation actions.
 
 ### Status Labels and Notices
 
@@ -263,7 +265,7 @@ Checkpoint copy sits in a pale yellow text field beside a brown marker. A compac
 
 Without JavaScript, enhancement controls are hidden, all full timelines remain visible and event alternatives start expanded. The contents disclosure and anchors remain native controls. If enhancement initialization fails, the template has an explicit notice and restores scenario and alternative visibility. No external icon library, host global or browser runtime package is required.
 
-Print CSS uses A4 portrait, a white page, 10.5pt body text and clear rules. The cover and each day start separate page sections. Filters, scenario controls, contents and adjacent-day navigation are removed; all days, scenarios and event alternatives are included regardless of screen selection. Event context, practical event links, photo credits and document provenance are printed. Research lists and the full-URL appendix are absent from both screen and print. Critical groups avoid internal page breaks, and table layout is restored.
+Print CSS uses A4 portrait, a white page, 10.5pt body text and clear rules. The cover and each day start separate page sections. Scenario controls, contents and adjacent-day navigation are removed; the compact base sequence, all days, scenarios and event alternatives are included regardless of screen selection. Event context, practical event links, photo credits and document provenance are printed. Research lists and the full-URL appendix are absent from both screen and print. Critical groups avoid internal page breaks, and table layout is restored.
 
 Gallery printing follows the existing print-images option. When enabled, one photo fills its row and multiple photos use two columns; images preserve their full proportions, lose rounded corners and keep caption, linked attribution and license. This is browser Print behavior, with PDF saving performed by the reader.
 
