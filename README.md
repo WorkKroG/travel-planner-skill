@@ -117,6 +117,6 @@ Research explanations and citations belong in the planning conversation. The use
 
 ## Release status and license
 
-Version `0.1.0` is packaged as a source release candidate. Automated gates and remaining manual evidence are tracked in [docs/RELEASE_CHECKLIST.md](docs/RELEASE_CHECKLIST.md) and factual project progress in [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md). Public-directory submission, release tags, and binaries are not part of this repository state.
+Version `0.1.0` is packaged as a source release candidate. Its automated gates pass; the release tag and GitHub Release await the required Chat web and mobile observations tracked in [docs/RELEASE_CHECKLIST.md](docs/RELEASE_CHECKLIST.md). Factual project progress is recorded in [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md). PyPI distribution, binaries and public-directory submission are outside this release.
 
 Licensed under the [MIT License](LICENSE).
